@@ -62,10 +62,10 @@ export async function getServerSideProps({ params }: any) {
     console.error('An error occurred:', error);
     found = false;
   }
-  const serilizedSpace = JSON.parse(JSON.stringify(space));
+  const serializedSpace = JSON.parse(JSON.stringify(space));
   return {
     props: {
-      space: serilizedSpace,
+      space: serializedSpace,
       found
     }
   }
