@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import SpaceContext from '../../modules/MultiDomain/context/SpaceContext';
 
 export default function SpaceHome() {
-  const { space, loading } = useContext(SpaceContext);
+  const { space } = useContext(SpaceContext);
 
   return (
     <div>

@@ -13,7 +13,7 @@ function onboardingStep1() {
       subdomain: subdomain,
       name: name,
       pallete: {
-        primary: '#ffffff',
+        primary: '#000000',
         'primary-focus': '#ffffff',
         'primary-content': '#ffffff',
         'base-100': '#ffffff',

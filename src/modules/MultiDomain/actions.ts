@@ -95,10 +95,10 @@ export const createSpace = async (data: CreateSpaceAction) => {
 export const getSpaceByDomain = async (domain: string) => {
   try {
     await connection();
-    console.log('getting space ', domain);
+
     const spaceSubdomain = await SpaceModel.findOne({ subdomain: domain });
     const spaceDomain = await SpaceModel.findOne({ customDomain: domain });
-    console.log('fetched spaces, ', spaceSubdomain, spaceDomain);
+
     if (spaceSubdomain) {
       return spaceSubdomain;
     } else if (spaceDomain) {

@@ -1,4 +1,4 @@
-interface iSpacePallete {
+export interface iSpacePallete {
   primary: string;
   'primary-focus': string;
   'primary-content': string;
@@ -14,6 +14,11 @@ interface iSpacePallete {
   'warning-content': string;
   error: string;
   'error-content': string;
+}
+
+export interface iSpaceContext {
+  space?: Space;
+  setSpaceContext: (space: Space) => void;
 }
 
 export interface UpdateSpace {
