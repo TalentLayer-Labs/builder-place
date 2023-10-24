@@ -68,6 +68,6 @@ describe('getCompletionScores', () => {
         percentage: 100,
       },
     };
-    expect(getCompletionScores(user)).toEqual(expected);
+    expect(getCompletionScores(user as IUser)).toEqual(expected);
   });
 });

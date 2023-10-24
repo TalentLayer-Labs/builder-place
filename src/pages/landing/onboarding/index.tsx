@@ -1,11 +1,9 @@
-import * as Yup from 'yup';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useState } from 'react';
 import { useCreateSpaceMutation } from '../../../modules/MultiDomain/hooks/UseCreateSpaceMutation';
 import { generateSubdomainPrefix } from '../../../modules/MultiDomain/utils';
-import { useState } from 'react';
 
 function onboardingStep1() {
-  const { data: createdSpace, mutateAsync: createSpaceAsync } = useCreateSpaceMutation();
+  const { mutateAsync: createSpaceAsync } = useCreateSpaceMutation();
   const [name, setName] = useState('');
 
   const sendDomain = async () => {
@@ -14,8 +12,23 @@ function onboardingStep1() {
     await createSpaceAsync({
       subdomain: subdomain,
       name: name,
-      primaryColor: '#ffffff',
-      secondaryColor: '#ffffff',
+      pallete: {
+        primary: '#ffffff',
+        'primary-focus': '#ffffff',
+        'primary-content': '#ffffff',
+        'base-100': '#ffffff',
+        'base-200': '#ffffff',
+        'base-300': '#ffffff',
+        'base-content': '#ffffff',
+        info: '#ffffff',
+        'info-content': '#ffffff',
+        success: '#ffffff',
+        'success-content': '#ffffff',
+        warning: '#ffffff',
+        'warning-content': '#ffffff',
+        error: '#ffffff',
+        'error-content': '#ffffff',
+      },
     });
     window.location.href = `${window.location.protocol}//${subdomain}/admin`;
   };

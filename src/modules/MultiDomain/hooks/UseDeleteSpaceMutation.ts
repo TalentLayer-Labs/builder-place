@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { CreateSpaceProps } from '../types';
 
 export function useDeleteSpaceMutation() {
   const queryClient = useQueryClient();
@@ -8,7 +7,6 @@ export function useDeleteSpaceMutation() {
     (subDomain: string): Promise<any> =>
       fetch(`/api/domain/delete-space/?subDomain=${subDomain}`, {
         method: 'DELETE',
-
       }).then(res => {
         if (res.status === 200) {
           return res.json();
@@ -20,6 +18,6 @@ export function useDeleteSpaceMutation() {
       onSuccess: () => {
         queryClient.invalidateQueries('createSpaces');
       },
-    }
+    },
   );
 }

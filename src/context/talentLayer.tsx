@@ -1,12 +1,12 @@
+import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
+import { chains, defaultChain } from '../pages/_app';
 import { getUserByAddress } from '../queries/users';
 import { IAccount, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
-import { toast } from 'react-toastify';
-import { chains, defaultChain } from '../pages/_app';
-import { TalentLayerClient } from '@talentlayer/client';
 
 const TalentLayerContext = createContext<{
   user?: IUser;
@@ -83,10 +83,10 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
       setIsActiveDelegate(
         process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
-        userResponse.data.data.users[0].delegates &&
-        userResponse.data.data.users[0].delegates.indexOf(
-          (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
-        ) !== -1,
+          userResponse.data.data.users[0].delegates &&
+          userResponse.data.data.users[0].delegates.indexOf(
+            (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
+          ) !== -1,
       );
       setLoading(false);
       return true;

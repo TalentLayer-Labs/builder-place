@@ -1,11 +1,11 @@
-import { DomainVerificationStatusProps, DomainResponse, CreateSpaceProps, Space } from '../types';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
+import { CreateSpaceProps, Space } from '../types';
 
 export function useCreateSpaceMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<Space, Error, CreateSpaceProps>(
-    (createSpace) =>
+    createSpace =>
       fetch('/api/domain/create-space', {
         method: 'POST',
         body: JSON.stringify(createSpace),
@@ -23,6 +23,6 @@ export function useCreateSpaceMutation() {
       onSuccess: () => {
         queryClient.invalidateQueries('createSpaces');
       },
-    }
+    },
   );
 }

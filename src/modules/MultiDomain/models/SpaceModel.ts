@@ -1,7 +1,55 @@
 // https://mongoosejs.com/docs/schematypes.html#
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
-var space = new Schema({
+const pallete = new Schema({
+  primary: {
+    type: String,
+  },
+  'primary-focus': {
+    type: String,
+  },
+  'primary-content': {
+    type: String,
+  },
+  'base-100': {
+    type: String,
+  },
+  'base-200': {
+    type: String,
+  },
+  'base-300': {
+    type: String,
+  },
+  'base-content': {
+    type: String,
+  },
+  info: {
+    type: String,
+  },
+  'info-content': {
+    type: String,
+  },
+  success: {
+    type: String,
+  },
+  'success-content': {
+    type: String,
+  },
+  warning: {
+    type: String,
+  },
+  'warning-content': {
+    type: String,
+  },
+  error: {
+    type: String,
+  },
+  'error-content': {
+    type: String,
+  },
+});
+
+const space = new Schema({
   name: {
     type: String,
   },
@@ -17,12 +65,7 @@ var space = new Schema({
   cover: {
     type: String,
   },
-  primaryColor: {
-    type: String,
-  },
-  secondaryColor: {
-    type: String,
-  },
+  pallete,
   presentation: {
     type: String,
   },
@@ -31,8 +74,8 @@ var space = new Schema({
   },
   status: {
     type: String,
-    default: 'pending'
-  }
+    default: 'pending',
+  },
 });
 
 export const SpaceModel = models.SpaceModel || model('SpaceModel', space);

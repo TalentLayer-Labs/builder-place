@@ -12,7 +12,7 @@ export function useUpdateSpace() {
         headers: {
           'Content-type': 'application/json',
         },
-      }).then((res) => {
+      }).then(res => {
         if (res.status === 200) {
           return res.json();
         } else {
@@ -23,7 +23,7 @@ export function useUpdateSpace() {
       // onSuccess: (e) => {
       //   queryClient.invalidateQueries([`spaces-${data.subdomain}`]);
       // },
-    }
+    },
   );
 
   return updateSpaceDomainMutation;

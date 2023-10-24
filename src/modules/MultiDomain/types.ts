@@ -1,15 +1,32 @@
+interface iSpacePallete {
+  primary: string;
+  'primary-focus': string;
+  'primary-content': string;
+  'base-100': string;
+  'base-200': string;
+  'base-300': string;
+  'base-content': string;
+  info: string;
+  'info-content': string;
+  success: string;
+  'success-content': string;
+  warning: string;
+  'warning-content': string;
+  error: string;
+  'error-content': string;
+}
+
 export interface UpdateSpace {
-  subdomain: string,
-  name: string | undefined,
-  primaryColor: string | undefined,
-  secondaryColor: string | undefined,
-  owners: string[] | undefined,
-  status: string | undefined,
+  subdomain: string;
+  name: string | undefined;
+  pallete?: iSpacePallete;
+  owners: string[] | undefined;
+  status: string | undefined;
 }
 
 export interface UpdateSpaceDomain {
-  subdomain: string,
-  customDomain: string
+  subdomain: string;
+  customDomain: string;
 }
 
 export enum DomainVerificationStatusProps {
@@ -17,23 +34,20 @@ export enum DomainVerificationStatusProps {
   Invalid = 'Invalid Configuration',
   Pending = 'Pending Verification',
   NotFound = 'Domain Not Found',
-  Error = 'Unknown Error'
+  Error = 'Unknown Error',
 }
 
-
 export interface CreateSpaceAction {
-  name: string,
-  subdomain: string,
-  primaryColor: string,
-  secondaryColor: string,
-  owners: string[],
+  name: string;
+  subdomain: string;
+  pallete: iSpacePallete;
+  owners: string[];
 }
 
 export interface CreateSpaceProps {
-  name: string,
-  subdomain: string,
-  primaryColor: string,
-  secondaryColor: string,
+  name: string;
+  subdomain: string;
+  pallete: iSpacePallete;
 }
 
 export type Space = {
@@ -43,8 +57,7 @@ export type Space = {
   customDomain: string | null;
   logo: string;
   cover: string;
-  primaryColor: string;
-  secondaryColor: string;
+  pallete: iSpacePallete;
   presentation: string;
   owners: string[];
   status: 'Validated' | 'Pending';
