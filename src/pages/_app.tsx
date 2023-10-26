@@ -17,6 +17,7 @@ import { MessagingProvider } from '../modules/Messaging/context/messging';
 import '../styles/globals.css';
 import { NetworkEnum } from '../types';
 import Layout from './Layout';
+import { Head } from 'next/document';
 
 export let chains: Chain[] = [];
 if ((process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum) == NetworkEnum.MUMBAI) {

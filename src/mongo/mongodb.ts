@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
-import mongoose from 'mongoose';
 
-const { NEXT_MONGO_URI } = process.env;
 const { NEXT_MONGO_URI } = process.env;
 
 export const connection = async () => {
