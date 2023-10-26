@@ -73,7 +73,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
       try {
         const profile = {
           title: values.title,
-          role: values.role,
+          role: 'worker',
           image_url: values.image_url,
           video_url: values.video_url,
           name: values.name,

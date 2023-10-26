@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 
 function workerOnboardingStep1() {
   const { account, loading, user } = useContext(TalentLayerContext);
-
   const router = useRouter();
 
   useEffect(() => {
