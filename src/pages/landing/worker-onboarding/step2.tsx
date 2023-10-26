@@ -1,11 +1,11 @@
-import Layout from "../../../components/EditProfile/Layout";
+import CreateProfileLayout from "../../../components/CreateProfileLayout";
 import CreateWorkerProfileForm from "../../../components/Form/CreateWorkerProfileForm";
 
 function workerOnboardingStep2() {
   return (
-    <Layout>
+    <CreateProfileLayout>
       <CreateWorkerProfileForm />
-    </Layout>
+    </CreateProfileLayout>
 
   );
 }

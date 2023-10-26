@@ -9,12 +9,14 @@ import { useChainId } from '../../hooks/useChainId';
 import useUserById from '../../hooks/useUserById';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
+import { generatePicture } from '../../utils/ai-picture-gen';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import { useRouter } from 'next/router';
 
 interface IFormValues {
   title?: string;
@@ -37,9 +39,10 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const [selectedTypes, setSelectedTypes] = useState(['']);
+  const [aiLoading, setAiLoading] = useState(false);
   const userDescription = user?.id ? useUserById(user?.id)?.description : null;
   const talentLayerClient = useTalentLayerClient();
+  const router = useRouter();
 
   if (!user?.id) {
     return <Loading />;
@@ -55,14 +58,14 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
     skills: userDescription?.skills_raw || '',
   };
 
-  const toggleType = (type: string) => {
-    if (selectedTypes.includes(type)) {
-      // If the type is already in the array, remove it
-      setSelectedTypes(selectedTypes.filter(selectedType => selectedType !== type));
-    } else {
-      // If the type is not in the array, add it
-      setSelectedTypes([...selectedTypes, type]);
+  const generatePictureUrl = async (e: React.FormEvent, callback: (string: string) => void) => {
+    e.preventDefault();
+    setAiLoading(true);
+    const image_url = await generatePicture();
+    if (image_url) {
+      callback(image_url);
     }
+    setAiLoading(false);
   };
 
   const onSubmit = async (
@@ -73,7 +76,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
       try {
         const profile = {
           title: values.title,
-          role: 'worker',
+          role: values.role,
           image_url: values.image_url,
           video_url: values.video_url,
           name: values.name,
@@ -98,9 +101,9 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         await createMultiStepsTransactionToast(
           chainId,
           {
-            pending: 'Updating profile...',
-            success: 'Congrats! Your profile has been updated',
-            error: 'An error occurred while updating your profile',
+            pending: 'Creating Worker Profile..',
+            success: 'Congrats! Your profile has been created',
+            error: 'An error occurred while creating your profile',
           },
           publicClient,
           tx,
@@ -117,6 +120,9 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         if (process.env.NEXT_PUBLIC_ACTIVE_WEB3MAIL == 'true' && !platformHasAccess) {
           createWeb3mailToast();
         }
+
+        router.push('/worker-onboarding/step3');
+
       } catch (error) {
         console.log(error);
         showErrorTransactionToast(error);
@@ -136,21 +142,11 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         <Form>
           <div className='grid grid-cols-1 gap-6'>
             <label className='block'>
-              <span className='text-stone-800'>Handle</span>
+              <span className='text-stone-800'>Title</span>
               <Field
                 type='text'
-                id='handle'
-                name='handle'
-                className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
-                placeholder=''
-              />
-            </label>
-            <label className='block'>
-              <span className='text-stone-800'>HeadLine</span>
-              <Field
-                type='text'
-                id='headline'
-                name='headline'
+                id='title'
+                name='title'
                 className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
@@ -165,13 +161,56 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 placeholder=''
               />
             </label>
+            <label className='block'>
+              <span className='text-stone-800'>Role</span>
+              <Field
+                as='input'
+                type='text'
+                id='role'
+                name='role'
+                value='worker'
+                className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
+                readOnly
+              />
+            </label>
 
             <label className='block'>
-              <span className='text-stone-800'>Skills</span>
-
-              <SkillsInput initialValues={userDescription?.skills_raw} entityId={'skills'} />
-
-              <Field type='hidden' id='skills' name='skills' />
+              <span className='text-stone-800'>Picture Url</span>
+              <Field
+                type='text'
+                id='image_url'
+                name='image_url'
+                className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
+                placeholder=''
+              />
+              <div className='border-redpraha bg-redpraha relative w-full border transition-all duration-300 rounded-xl p-4'>
+                <div className='flex w-full items-center gap-3'>
+                  <QuestionMarkCircle className='hidden' />
+                  <div>
+                    <h2 className='font-heading text-xs font-bold text-stone-800 mb-1'>
+                      <span>Need help?</span>
+                    </h2>
+                    <p className='font-alt text-xs font-normal'>
+                      <span className='text-stone-600'>Use our AI to generate a cool one</span>
+                    </p>
+                  </div>
+                  <div className='ms-auto'>
+                    <button
+                      disabled={aiLoading}
+                      onClick={e =>
+                        generatePictureUrl(e, newUrl => setFieldValue('image_url', newUrl))
+                      }
+                      className='border text-stone-800 bg-endnight hover:bg-white border-white rounded-md h-10 w-10 p-2 relative inline-flex items-center justify-center space-x-1 font-sans text-sm font-normal leading-5 no-underline outline-none transition-all duration-300'>
+                      {aiLoading ? <Loading /> : 'GO'}
+                    </button>
+                  </div>
+                </div>
+                {values.image_url && (
+                  <div className='flex items-center justify-center py-3'>
+                    <img width='300' height='300' src={values.image_url} alt='' />
+                  </div>
+                )}
+              </div>
             </label>
 
             <label className='block'>
@@ -187,78 +226,13 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
             </label>
 
             <label className='block'>
-              <span className='text-stone-800'>I'm Interested in</span>
-              <div className='flex space-x-2'>
-                <button
-                  type='button'
-                  className={`rounded-xl border border-redpraha p-2 ${
-                    selectedTypes.includes('jobs') ? 'bg-redpraha' : 'bg-midnight'
-                  }`}
-                  onClick={() => toggleType('jobs')}>
-                  Jobs
-                </button>
-                <button
-                  type='button'
-                  className={`rounded-xl border border-redpraha p-2 ${
-                    selectedTypes.includes('bounties') ? 'bg-redpraha' : 'bg-midnight'
-                  }`}
-                  onClick={() => toggleType('bounties')}>
-                  Bounties
-                </button>
-                <button
-                  type='button'
-                  className={`rounded-xl border border-redpraha p-2 ${
-                    selectedTypes.includes('grants') ? 'bg-redpraha' : 'bg-midnight'
-                  }`}
-                  onClick={() => toggleType('grants')}>
-                  Grants
-                </button>
-                <button
-                  type='button'
-                  className={`rounded-xl border border-redpraha p-2 ${
-                    selectedTypes.includes('gigs') ? 'bg-redpraha' : 'bg-midnight'
-                  }`}
-                  onClick={() => toggleType('gigs')}>
-                  Gigs
-                </button>
-              </div>
-            </label>
+              <span className='text-stone-800'>Skills</span>
 
-            <label className='block'>
-              <span className='text-stone-800'>Profile Photo</span>
-              <div className='relative rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'>
-                <input
-                  type='file'
-                  id='profile_photo'
-                  name='profile_photo'
-                  accept='image/*'
-                  onChange={e => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = e => {
-                        const image_url = e.target?.result;
-                        setFieldValue('image_url', image_url);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                  className='opacity-0 absolute h-full w-full top-0 left-0 cursor-pointer'
-                />
-                <label
-                  htmlFor='profile_photo'
-                  className='h-full w-full flex items-center justify-center cursor-pointer'>
-                  Upload File
-                </label>
-              </div>
-            </label>
+              <SkillsInput initialValues={userDescription?.skills_raw} entityId={'skills'} />
 
-            {values.image_url && (
-              <div className='flex items-center justify-center py-3'>
-                <img width='300' height='300' src={values.image_url} alt='' />
-              </div>
-            )}
-            <SubmitButton isSubmitting={isSubmitting} label='Update' />
+              <Field type='hidden' id='skills' name='skills' />
+            </label>
+            <SubmitButton isSubmitting={isSubmitting} label='Create Profile' />
           </div>
         </Form>
       )}
