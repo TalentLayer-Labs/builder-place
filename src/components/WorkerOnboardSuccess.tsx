@@ -6,7 +6,7 @@ function WorkerOnboardSuccess() {
     const { user } = useContext(TalentLayerContext);
     const router = useRouter();
     const viewFullProfile = () => {
-      router.push(`/profile/${user?.id}`);
+      router.push(`/profiles/${user?.id}`);
     };
     return (
       <>

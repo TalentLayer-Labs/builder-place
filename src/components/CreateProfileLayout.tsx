@@ -1,6 +1,3 @@
-import { EyeIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import Link from 'next/link';
 import { ReactNode, useContext } from 'react';
 import TalentLayerContext from './../context/talentLayer';
 import Steps from './Steps';
