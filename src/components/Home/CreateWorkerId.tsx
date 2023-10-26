@@ -3,7 +3,7 @@ import TalentLayerContext from '../../context/talentLayer';
 
 function CreateWorkerId() {
   const { user } = useContext(TalentLayerContext);
-
+  
   if (user) {
     return null;
   }
