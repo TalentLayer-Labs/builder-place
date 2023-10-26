@@ -28,7 +28,7 @@ function WorkerOnboardSuccess() {
                     className='object-cover w-full h-full'
                   />
                 </div>
-                <p className='text-2xl font-medium mt-4'>{user?.description?.name}</p>
+                <p className='text-2xl text-stone-400'>{user?.description?.name}</p>
                 <p className='text-xl text-stone-400'>{user?.description?.title}</p>
                 <p className='text-xl text-stone-400 text-center max-w-lg'>{user?.description?.about}</p>
                 <button
