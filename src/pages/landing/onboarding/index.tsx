@@ -1,36 +1,25 @@
+import * as Yup from 'yup';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hooks/UseCreateBuilderPlaceMutation';
+import { generateSubdomainPrefix } from '../../../modules/BuilderPlace/utils';
 import { useState } from 'react';
-import { useCreateSpaceMutation } from '../../../modules/MultiDomain/hooks/UseCreateSpaceMutation';
-import { generateSubdomainPrefix } from '../../../modules/MultiDomain/utils';
 
 function onboardingStep1() {
-  const { mutateAsync: createSpaceAsync } = useCreateSpaceMutation();
+  const { data: createdBuilderPlace, mutateAsync: createBuilderPlaceAsync } =
+    useCreateBuilderPlaceMutation();
   const [name, setName] = useState('');
 
   const sendDomain = async () => {
     const subdomainPrefix = generateSubdomainPrefix(name);
     const subdomain = `${subdomainPrefix}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
-    await createSpaceAsync({
+    await createBuilderPlaceAsync({
       subdomain: subdomain,
       name: name,
-      pallete: {
-        primary: '#000000',
-        'primary-focus': '#ffffff',
-        'primary-content': '#ffffff',
-        'base-100': '#ffffff',
-        'base-200': '#ffffff',
-        'base-300': '#ffffff',
-        'base-content': '#ffffff',
-        info: '#ffffff',
-        'info-content': '#ffffff',
-        success: '#ffffff',
-        'success-content': '#ffffff',
-        warning: '#ffffff',
-        'warning-content': '#ffffff',
-        error: '#ffffff',
-        'error-content': '#ffffff',
-      },
+      primaryColor: '#ffffff',
+      secondaryColor: '#ffffff',
+      ownerTalentLayerId: '1',
     });
-    window.location.href = `${window.location.protocol}//${subdomain}/admin`;
+    window.location.href = `${window.location.protocol}//${subdomain}/dashboard`;
   };
 
   return (

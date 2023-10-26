@@ -1,8 +1,11 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
-import { useContext, useEffect } from 'react';
-import { getSpaceByDomain } from '../../../modules/MultiDomain/actions';
-import SpaceContext from '../../../modules/MultiDomain/context/SpaceContext';
+
+import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
+
+export async function getServerSideProps({ params }: any) {
+  return await getBuilderPlace(params.domain);
+}
 
 export default function AdminDashboard(
   props: InferGetServerSidePropsType<typeof getServerSideProps>,

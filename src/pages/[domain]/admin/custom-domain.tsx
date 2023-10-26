@@ -1,24 +1,33 @@
+import { InferGetServerSidePropsType } from 'next';
+import Error from 'next/error';
 import { useContext, useEffect, useState } from 'react';
-import DomainConfiguration from '../../../modules/MultiDomain/components/DomainConfiguration';
-import SpaceContext from '../../../modules/MultiDomain/context/SpaceContext';
-import { useUpdateSpaceDomain } from '../../../modules/MultiDomain/hooks/UseUpdateSpaceDomain';
+import DomainConfiguration from '../../../modules/BuilderPlace/components/DomainConfiguration';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { useUpdateBuilderPlaceDomain } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlaceDomain';
+import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
 
-export default function CustomDomain() {
-  const { space, setSpaceContext } = useContext(SpaceContext);
+export async function getServerSideProps({ params }: any) {
+  return await getBuilderPlace(params.domain);
+}
+
+export default function CustomDomain(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const [customDomain, setCustomDomain] = useState('');
 
   useEffect(() => {
-    if (space?.customDomain) {
-      setCustomDomain(space.customDomain);
+    if (builderPlace?.customDomain) {
+      setCustomDomain(builderPlace.customDomain);
     }
-  }, [space]);
+  }, [builderPlace]);
 
-  const updateSpaceDomainMutation = useUpdateSpaceDomain();
+  const updateBuilderPlaceDomainMutation = useUpdateBuilderPlaceDomain();
   const handleUpdateDomainClick = async () => {
     try {
-      updateSpaceDomainMutation.mutate({
+      updateBuilderPlaceDomainMutation.mutate({
         customDomain: customDomain,
-        subdomain: space?.subdomain!,
+        subdomain: builderPlace?.subdomain!,
       });
     } catch (error) {
       console.error('Error updating domain:', error);
@@ -27,7 +36,8 @@ export default function CustomDomain() {
 
   return (
     <div>
-      <p>Space name: {space?.name}</p>
+      <p>BuilderPlace name: {builderPlace?.name}</p>
+
       <label htmlFor='custom-domain'>Custom Domain:</label>
       <input
         type='text'

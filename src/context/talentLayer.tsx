@@ -29,7 +29,6 @@ const TalentLayerContext = createContext<{
 
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
-  const { switchNetwork } = useSwitchNetwork();
   const [user, setUser] = useState<IUser | undefined>();
   const account = useAccount();
   const [isActiveDelegate, setIsActiveDelegate] = useState(false);
@@ -39,25 +38,18 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
   // automatically switch to the default chain is the current one is not part of the config
   useEffect(() => {
-    if (!switchNetwork) return;
-    const chain = chains.find(chain => chain.id === chainId);
-    if (!chain && defaultChain) {
-      switchNetwork(defaultChain.id);
-    }
-    if (chainId && account.address) {
-      const talentLayerClient = new TalentLayerClient({
-        chainId,
-        ipfsConfig: {
-          clientId: process.env.NEXT_PUBLIC_INFURA_ID as string,
-          clientSecret: process.env.NEXT_PUBLIC_INFURA_SECRET as string,
-          baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
-        },
-        platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-        signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
-      });
-      setTalentLayerClient(talentLayerClient);
-    }
-  }, [chainId, switchNetwork, account.address]);
+    const talentLayerClient = new TalentLayerClient({
+      chainId: chainId || (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number),
+      ipfsConfig: {
+        clientId: process.env.NEXT_PUBLIC_INFURA_ID as string,
+        clientSecret: process.env.NEXT_PUBLIC_INFURA_SECRET as string,
+        baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
+      },
+      platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+      signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
+    });
+    setTalentLayerClient(talentLayerClient);
+  }, [chainId, account.address]);
 
   const fetchData = async () => {
     if (!account.address || !account.isConnected || !talentLayerClient) {

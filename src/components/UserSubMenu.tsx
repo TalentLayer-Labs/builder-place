@@ -18,7 +18,7 @@ function UserSubMenu() {
   return (
     <div
       role='menu'
-      className='divide-stone-300 border-redpraha bg-endnight mt-2 w-64 origin-top-right divide-y rounded-md border shadow-lg focus:outline-none'>
+      className='divide-stone-300 bg-midnight mt-2 w-64 origin-top-right divide-y rounded-md focus:outline-none'>
       <div className='p-6 text-center' role='none'>
         <div
           className='relative mx-auto flex h-20 w-20 items-center justify-center rounded-full'
@@ -43,7 +43,7 @@ function UserSubMenu() {
           </p>
           {user && (
             <Link
-              href='/dashboard/profile/edit'
+              href='/profiles/edit'
               className='mt-2 border border-redpraha rounded-xl hover:bg-endnight text-stone-800 bg-midnight px-5 py-2 w-full'
               role='none'>
               Manage Account
