@@ -1,9 +1,3 @@
-import {
-  BanknotesIcon,
-  BriefcaseIcon,
-  ChatBubbleBottomCenterTextIcon,
-  SparklesIcon,
-} from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import { useState } from 'react';
 import { IntroducationSecion } from '../../components/introduction-section';
@@ -345,7 +339,7 @@ function Home() {
               data-wow-delay='.2s'>
               <h2 className='mb-0 mt-10 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
                 teams like yours are shipping faster thanks to{' '}
-                <a class='text-landingprimary'>open-source contributors</a>
+                <a className='text-landingprimary'>open-source contributors</a>
               </h2>
             </div>
           </div>
