@@ -79,7 +79,7 @@ function Home() {
                   </li>
                   <li>
                     <a
-                      href='#'
+                      href='/onboarding'
                       className='rounded-md text-center bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-bold text-stone-800 hover:bg-opacity-60'>
                       contribute
                     </a>
@@ -1177,7 +1177,7 @@ function Home() {
               <div className='order-last w-full text-center px-3 lg:order-first lg:w-1/3'>
                 <p className='text-center text-base text-stone-800'>
                   &copy; 2023 BuilderPlace |{' '}
-                  <a href='/terms' className='underline'>
+                  <a href='#' className='underline'>
                     Terms of Service
                   </a>
                 </p>
