@@ -14,7 +14,7 @@ function workerOnboardingStep1() {
     if (account?.isConnected && user) {
       router.push('/worker-onboarding/step2');
     }
-  }, [account, user, router]);
+  }, [user]);
 
   if (loading) {
     return <Loading />;
