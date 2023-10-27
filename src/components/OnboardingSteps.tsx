@@ -16,7 +16,7 @@ function OnboardingSteps({ currentStep }: { currentStep: number }) {
               className={`w-12 h-12 p-2 rounded-full border border-dark flex items-center justify-center ${getCircleColor(
                 1,
               )}`}>
-              <div className='text-white text-3xl font-semibold'>1</div>
+              <div className='text-white text-xl font-semibold'>1</div>
             </div>
             <div className='ml-4 flex flex-col'>
               <div className='text-light text-xl font-semibold'>Create</div>
@@ -28,7 +28,7 @@ function OnboardingSteps({ currentStep }: { currentStep: number }) {
               className={`w-12 h-12 p-2 rounded-full border border-dark flex items-center justify-center ${getCircleColor(
                 2,
               )}`}>
-              <div className='text-white text-3xl font-semibold'>2</div>
+              <div className='text-white text-xl font-semibold'>2</div>
             </div>
             <div className='ml-4 flex flex-col'>
               <div className='text-light text-xl font-semibold'>Setup</div>
@@ -40,7 +40,7 @@ function OnboardingSteps({ currentStep }: { currentStep: number }) {
               className={`w-12 h-12 p-2 rounded-full border border-dark flex items-center justify-center ${getCircleColor(
                 3,
               )}`}>
-              <div className='text-white text-3xl font-semibold'>3</div>
+              <div className='text-white text-xl font-semibold'>3</div>
             </div>
             <div className='ml-4 flex flex-col'>
               <div className='text-light text-xl font-semibold'>View</div>

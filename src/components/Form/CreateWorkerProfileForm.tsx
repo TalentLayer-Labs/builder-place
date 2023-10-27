@@ -146,7 +146,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='title'
                 name='title'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-300 bg- shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>
@@ -156,7 +156,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='name'
                 name='name'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-300 bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>
@@ -168,7 +168,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 id='role'
                 name='role'
                 value='worker'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-300 bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
                 readOnly
               />
             </label>
@@ -179,10 +179,10 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='image_url'
                 name='image_url'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-300 bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
-              <div className='border-gray-300 bg-info relative w-full border transition-all duration-300 rounded-xl p-4'>
+              <div className='border-2 border-gray-200 bg-midnight relative w-full border transition-all duration-300 rounded-xl p-4'>
                 <div className='flex w-full items-center gap-3'>
                   <QuestionMarkCircle className='hidden' />
                   <div>
@@ -219,7 +219,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 id='about'
                 name='about'
                 rows='4'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-300 bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>
