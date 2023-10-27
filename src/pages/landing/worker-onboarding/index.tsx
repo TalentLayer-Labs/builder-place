@@ -4,6 +4,7 @@ import Steps from '../../../components/Steps';
 import TalentLayerContext from '../../../context/talentLayer';
 import Loading from '../../../components/Loading';
 import { useRouter } from 'next/router';
+import OnboardingSteps from '../../../components/OnboardingSteps';
 
 function workerOnboardingStep1() {
   const { account, loading, user } = useContext(TalentLayerContext);
@@ -21,6 +22,7 @@ function workerOnboardingStep1() {
 
   return (
     <>
+      <OnboardingSteps currentStep={1} />
       <CreateWorkerId />
       <div className='flex flex-col items-center justify-center gap-10'>
         <Steps />
