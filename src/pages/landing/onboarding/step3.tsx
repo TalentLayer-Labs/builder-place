@@ -1,17 +1,18 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
-import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
-import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import { useRouter } from 'next/router';
+import TalentLayerContext from '../../../context/talentLayer';
+import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
+import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
 import { upload } from '../../../modules/BuilderPlace/request';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { themes } from '../../../utils/themes';
 
 interface IFormValues {
   subdomain: string;
-  palette?: iBuilderPlacePalette;
+  palette: keyof typeof themes;
   logo?: File;
   cover?: File;
 }
@@ -30,6 +31,7 @@ function onboardingStep3() {
 
   const initialValues: IFormValues = {
     subdomain: builderPlaceData?.subdomain || '',
+    palette: 'light',
   };
 
   const handleSubmit = async (
@@ -65,7 +67,7 @@ function onboardingStep3() {
             cover: cover?.variants[0] || null,
             name: builderPlaceData.name,
             ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
-            palette: undefined,
+            palette: themes[values.palette],
             owners: builderPlaceData.owners,
             status: builderPlaceData.status,
             signature,
@@ -137,6 +139,46 @@ function onboardingStep3() {
                 <ErrorMessage name='cover' />
               </span>
 
+              <label className='block'>
+                <span className='text-stone-800'>Choose a Color Palette</span>
+
+                <div className='flex flex-col gap-2'>
+                  {Object.keys(themes).map((value, index) => {
+                    return (
+                      <div>
+                        <input
+                          type='radio'
+                          className='hidden peer'
+                          name='num'
+                          id={`radio${index}`}
+                          key={value}
+                          onChange={() => {
+                            setFieldValue('palette', value);
+                          }}
+                        />
+                        <label>{value} Palette</label>
+                        <label
+                          htmlFor={`radio${index}`}
+                          className='h-24 peer-checked:border-blue-500 border-2 border-solid rounded-lg flex items-center px-1 gap-2 w-fit'>
+                          {Object.keys(themes[value as keyof typeof themes]).map(color => {
+                            return (
+                              <div
+                                className='w-20 h-20 border'
+                                style={{
+                                  backgroundColor:
+                                    themes[value as keyof typeof themes][
+                                      color as keyof iBuilderPlacePalette
+                                    ],
+                                }}
+                              />
+                            );
+                          })}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </label>
               <button
                 type='submit'
                 className='grow px-5 py-2 rounded-xl bg-redpraha text-stone-800'>
