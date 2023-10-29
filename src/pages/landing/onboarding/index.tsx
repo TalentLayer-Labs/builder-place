@@ -3,10 +3,13 @@ import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hooks/UseCreateBuilderPlaceMutation';
 import { upload } from '../../../modules/BuilderPlace/request';
-import { generateDomainName, slugify } from '../../../modules/BuilderPlace/utils';
+import { generateDomainName, uploadImage } from '../../../modules/BuilderPlace/utils';
 import { PreferredWorkTypes } from '../../../types';
 import { themes } from '../../../utils/themes';
 import { showErrorTransactionToast } from '../../../utils/toast';
+import { useState } from 'react';
+import HirerProfileLayout from '../../../components/HirerProfileLayout';
+import Loading from '../../../components/Loading';
 
 interface IFormValues {
   name: string;
@@ -49,7 +52,7 @@ function onboardingStep1() {
 
       await createBuilderPlaceAsync({
         subdomain: subdomain,
-        name: name,
+        name: values.name,
         palette: themes['light'],
         presentation: values.presentation,
         preferredWorkTypes: values.preferred_work_types,
