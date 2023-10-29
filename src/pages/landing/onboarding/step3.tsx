@@ -28,17 +28,32 @@ function onboardingStep3() {
     useUpdateBuilderPlace();
   const builderPlaceData = useGetBuilderPlaceFromOwner(user?.id as string);
   const router = useRouter();
+  const [logoLoader, setLogoLoader] = useState(false);
+  const [coverLoader, setCoverLoader] = useState(false);
+  const [logoErrorMessage, setLogoErrorMessage] = useState('');
+  const [coverErrorMessage, setCoverErrorMessage] = useState('');
 
   const initialValues: IFormValues = {
     subdomain: builderPlaceData?.subdomain || '',
     palette: 'light',
+    logo: builderPlaceData?.logo || '',
+    cover: builderPlaceData?.cover || '',
   };
 
+  if (loading) {
+    console.log('no data');
+    return (
+      <div className='flex flex-col mt-5 pb-8'>
+        <Loading />
+      </div>
+    );
+  }
   const handleSubmit = async (
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     if (walletClient && account?.address) {
+      setSubmitting(true);
       try {
         /**
          * @dev Sign message to prove ownership of the address
@@ -48,23 +63,11 @@ function onboardingStep3() {
           message: values.subdomain,
         });
 
-        let logo;
-        if (values.logo) {
-          logo = await upload(values.logo);
-          console.log({ logo, url: logo?.variants[0] });
-        }
-
-        let cover;
-        if (values.cover) {
-          cover = await upload(values.cover);
-          console.log({ cover, url: cover?.variants[0] });
-        }
-
         if (builderPlaceData) {
           await updateBuilderPlaceAsync({
             subdomain: values.subdomain,
-            logo: logo?.variants[0] || null,
-            cover: cover?.variants[0] || null,
+            logo: values.logo || undefined,
+            cover: values.cover || undefined,
             name: builderPlaceData.name,
             ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
             palette: themes[values.palette],
@@ -72,74 +75,40 @@ function onboardingStep3() {
             status: builderPlaceData.status,
             signature,
           });
-
-          setSubmitting(false);
           router.push(`${window.location.protocol}//${values.subdomain}/dashboard`);
         }
       } catch (e: any) {
         console.error(e);
+      } finally {
+        setSubmitting(false);
       }
     }
   };
 
   return (
     <>
-      <p>Hirer onboarding - step3</p>
-      <Formik
-        initialValues={initialValues}
-        enableReinitialize={true}
-        onSubmit={handleSubmit}
-        validationSchema={validationSchema}>
-        {({ isSubmitting, setFieldValue, values }) => (
-          <Form>
-            <div className='grid grid-cols-1 gap-6'>
-              <label className='block'>
-                <span className='text-stone-800'>Subdomain</span>
-                <Field
-                  type='text'
-                  id='subdomain'
-                  name='subdomain'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
-                  placeholder=''
-                />
-              </label>
-              <span className='text-red-500'>
-                <ErrorMessage name='subdomain' />
-              </span>
-
-              <label className='block'>
-                <span className='text-stone-800'>Logo</span>
-                <input
-                  type='file'
-                  id='logo'
-                  name='logo'
-                  onChange={(event: any) => {
-                    setFieldValue('logo', event.currentTarget.files[0]);
-                  }}
-                  className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
-                  placeholder=''
-                />
-              </label>
-              <span className='text-red-500'>
-                <ErrorMessage name='logo' />
-              </span>
-              <label className='block'>
-                <span className='text-stone-800'>Cover</span>
-                <input
-                  type='file'
-                  id='cover'
-                  name='cover'
-                  onChange={(event: any) => {
-                    setFieldValue('cover', event.currentTarget.files[0]);
-                  }}
-                  className='mt-1 mb-1 block w-full rounded-xl border border-redpraha bg-midnight shadow-sm focus:ring-opacity-50'
-                  placeholder=''
-                />
-              </label>
-              <span className='text-red-500'>
-                <ErrorMessage name='cover' />
-              </span>
-
+      <HirerProfileLayout step={3}>
+        <Formik
+          initialValues={initialValues}
+          enableReinitialize={true}
+          onSubmit={handleSubmit}
+          validationSchema={validationSchema}>
+          {({ isSubmitting, setFieldValue, values }) => (
+            <Form>
+              <div className='grid grid-cols-1 gap-6'>
+                <label className='block'>
+                  <span className='text-stone-800 font-bold text-xl'>custom domain</span>
+                  <Field
+                    type='text'
+                    id='subdomain'
+                    name='subdomain'
+                    className='mt-1 mb-1 block w-full rounded-xl border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
+                    placeholder={`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`}
+                  />
+                </label>
+                <span className='text-red-500'>
+                  <ErrorMessage name='subdomain' />
+                </span>
               <label className='block'>
                 <span className='text-stone-800'>Choose a Color Palette</span>
 
