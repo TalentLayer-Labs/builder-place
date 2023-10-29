@@ -152,14 +152,14 @@ function Home() {
                 🕒 spent endless hours sifting through open issues on Github to find open-source
                 projects to help
                 <br></br>
-                🤔 tried to figure out unclear policies on bounty pay-outs for contributions
+                🤔 struggled to figure out unclear policies on bounties for contributions
                 <br></br>
-                😞 discovered only bug-bounties available when you hoped to contribute work with
-                actual impact
+                😞 discovered only bug-bounties available when you hoped to contribute in a bigger
+                way
                 <br></br>
                 <br></br>
                 we’ve been there! BuilderPlace is a network of open-source ecosystems that need your
-                help, built by open-source contributors, for open-source contributors.
+                help, built by open-source contributors for open-source contributors.
               </p>
               <img
                 src='/images/stats.png'
@@ -211,7 +211,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
+                {/* <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20 rounded-3xl'
                     data-wow-delay='.3s'>
@@ -236,7 +236,7 @@ function Home() {
                       </a>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20 rounded-3xl'
@@ -263,7 +263,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
+                {/* <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] rounded-lg bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20'
                     data-wow-delay='.3s'>
@@ -288,7 +288,7 @@ function Home() {
                       </a>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -402,8 +402,11 @@ function Home() {
                   data-wow-delay='.2s'>
                   <div className='mb-5 border-b border-stroke'>
                     <p className='pb-9 text-base text-body'>
-                      This is a quote about how I started to open-source contribute and what I've
-                      helped with so far, and how it's impacted me and my personal goals.
+                      Open source helps me make a big difference in public good software. It's not
+                      just code; it's about working together for a common goal. I can share my
+                      skills and time with others to create technology that helps people. It's not
+                      just about my code, but all of us coming together to make the world better
+                      with technology.
                     </p>
                   </div>
 
@@ -562,8 +565,9 @@ function Home() {
                   data-wow-delay='.3s'>
                   <div className='mb-5 border-b border-stroke'>
                     <p className='pb-9 text-base text-body'>
-                      This is a quote about how I started to open-source contribute and what I've
-                      helped with so far, and how it's impacted me and my personal goals.
+                      Open source contributions gave me a big boost in learning new skills quickly
+                      and opened up many opportunities for remote work. It's like a superhighway for
+                      personal and professional growth!
                     </p>
                   </div>
 
@@ -735,7 +739,7 @@ function Home() {
                     className='wow fadeInUp relative z-10 mx-auto mb-14 w-full max-w-[470px] pb-6 lg:mx-0 lg:mb-0'
                     data-wow-delay='.2s'>
                     <img
-                      src='/images/iframe.png'
+                      src='/images/make-profile.png'
                       alt='about image'
                       className='mx-auto max-w-full'
                     />
@@ -751,7 +755,7 @@ function Home() {
                       start your reputation
                     </h2>
                     <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      set up your custom domain and branded open-source management center
+                      set up your profile and get ready to work
                     </p>
 
                     <div className='mb-[30px] flex items-center'>
@@ -760,12 +764,11 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          set up your hirer profile
+                          set up your contributor profile
                         </h5>
                         <p className='text-base text-body'>
-                          tell the world a bit about you and why you are building what you are
-                          building. mint a soul-bound work ID - the beginning of your on-chian work
-                          reputation.
+                          tell the world a bit about you and what types of projects you care about.
+                          link your github, portofolio, and other sites. reputation.
                         </p>
                       </div>
                     </div>
@@ -776,37 +779,12 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          configure your brand theme
+                          start your on-chain work reputation
                         </h5>
                         <p className='text-base text-body'>
-                          add a custom logo and configure your color pallet.
-                        </p>
-                      </div>
-                    </div>
-                    <div className='mb-[30px] flex items-center'>
-                      <div className='shrink-0 mr-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-stroke text-xl font-semibold text-black  '>
-                        03
-                      </div>
-                      <div>
-                        <h5 className='text-xl font-medium text-black '>
-                          access yourbrand.builder.place
-                        </h5>
-                        <p className='text-base text-body'>
-                          get to know your new command center for open-source contribution.
-                        </p>
-                      </div>
-                    </div>
-                    <div className='mb-[30px] flex items-center'>
-                      <div className='shrink-0 mr-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-stroke text-xl font-semibold text-black  '>
-                        04
-                      </div>
-                      <div>
-                        <h5 className='text-xl font-medium text-black '>
-                          embed your work board on your website
-                        </h5>
-                        <p className='text-base text-body'>
-                          copy a code snippet and have a live work board on your website in a few
-                          seconds.
+                          mint a soul-bound work ID - the beginning of your on-chian work history.
+                          your jobs completed, reviews, and other stats are linked to your on-chain
+                          work ID.
                         </p>
                       </div>
                     </div>
@@ -823,7 +801,7 @@ function Home() {
                     className='wow fadeInUp relative z-10 mx-auto mb-10 w-full max-w-[470px] lg:mx-0 lg:mb-0'
                     data-wow-delay='.2s'>
                     <img
-                      src='/images/myplace.png'
+                      src='/images/search.png'
                       alt='about image'
                       className='mx-auto max-w-full'
                     />
@@ -839,8 +817,7 @@ function Home() {
                       explore opportunities
                     </h2>
                     <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      This project aims to help builders and hackers to start fast on using XMTP and
-                      TalentLayer protocols. It contains demo code for all the previous features.
+                      visit different team's BuilderPlaces and see what they need help with.
                     </p>
 
                     <div className='mb-[30px] flex items-center'>
@@ -849,12 +826,11 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          post what you need help with
+                          find projects that resonate with you
                         </h5>
                         <p className='text-base text-body'>
-                          request work ranging from logo design to software development. open-source
-                          contributors love to have impact - they appreciate working on tasks that
-                          are core to your project.
+                          discover opportunities ranging from app development and solidity
+                          programming to graphic design and copywriting.
                         </p>
                       </div>
                     </div>
@@ -865,12 +841,12 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          get applications from open-source workers across the ecosystem
+                          submit applications to projects you want to work on
                         </h5>
                         <p className='text-base text-body'>
-                          contributors will apply to handle a task for you. you white-list one
-                          contributor to handle the task - that way there’s no duplicative work, and
-                          contributors know what to focus on.
+                          one contributor is white-listed to handle each task - that way there’s no
+                          duplicative work, and you know you'll get paid for what you complete (no
+                          more battling for bug bounties).
                         </p>
                       </div>
                     </div>
@@ -886,7 +862,11 @@ function Home() {
                   <div
                     className='wow fadeInUp relative z-10 mx-auto mb-14 w-full max-w-[470px] pb-6 lg:mx-0 lg:mb-0'
                     data-wow-delay='.2s'>
-                    <img src='/images/list.png' alt='about image' className='mx-auto max-w-full' />
+                    <img
+                      src='/images/reviews.png'
+                      alt='about image'
+                      className='mx-auto max-w-full'
+                    />
                   </div>
                 </div>
 
@@ -896,11 +876,8 @@ function Home() {
                       step 3
                     </span>
                     <h2 className='mb-4 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                      get project approval and earn bounties
+                      earn bounties and grow your reputation
                     </h2>
-                    <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      ship faster than ever before and compensate contributors for their help
-                    </p>
 
                     <div className='mb-[30px] flex items-center'>
                       <div className='shrink-0 mr-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-stroke text-xl font-semibold text-black text-center '>
@@ -908,7 +885,7 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          pay out contributors in USDC, MATIC, or WETH on Polygon
+                          earn rewards in USDC, MATIC, or WETH on Polygon
                         </h5>
                         <p className='text-base text-body'>
                           Do you have a token you'd like to see supported?{' '}
@@ -926,11 +903,11 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          give reviews to help contributors build a reputation
+                          get reviews to build a reputation
                         </h5>
                         <p className='text-base text-body'>
-                          through completing work, contributors grow a strong reputation across
-                          open-source ecosystems
+                          through completing work, contributors grow a strong reputation that's
+                          visible across all BuilderPlace open-source ecosystems
                         </p>
                       </div>
                     </div>
@@ -976,7 +953,7 @@ function Home() {
                       explore other open-source projects
                     </h2>
                     <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      pull in passionate open-source builders from beyond your ecosystem
+                      contribute to projects from beyond your ecosystem
                     </p>
 
                     <div className='mb-[30px] flex items-center'>
@@ -985,12 +962,18 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          get your posts shared across a network of hiring platforms
+                          explore BuilderPlace opportunities on network of hiring platforms
                         </h5>
                         <p className='text-base text-body'>
-                          posts on your BuilderPlace board are searchable by workers across a
-                          network of other hiring platforms - this is made possible by TalentLayer,
-                          an interoperability layer for hiring platforms
+                          visit marketplace platforms like{' '}
+                          <a href='https://workx.io' target='_blank' className='underline'>
+                            WorkX
+                          </a>{' '}
+                          and others in the{' '}
+                          <a href='https://talentlayer.org' target='_blank' className='underline'>
+                            TalentLayer
+                          </a>{' '}
+                          network to explore even more opportunities.
                         </p>
                       </div>
                     </div>
@@ -1001,11 +984,11 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          a steady funnel of new open-source contributors for your project
+                          watch out for new open-source communities joining BuilderPlace
                         </h5>
                         <p className='text-base text-body'>
-                          contributors are constantly looking for new projects to help - by posting
-                          your work publicly, you help them find you!
+                          new teams are joining BuilderPlace in the coming months! get ready to help
+                          them.
                         </p>
                       </div>
                     </div>

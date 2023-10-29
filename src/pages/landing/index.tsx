@@ -332,7 +332,7 @@ function Home() {
           </div>
         </section>
 
-        {/* <section id='work-process' className='relative lg:pt-[110px]'>
+        <section id='work-process' className='relative lg:pt-[110px]'>
           <div className='container'>
             <div
               className='wow fadeInUp mx-auto mb-5 max-w-[690px] text-center lg:mb-[70px]'
@@ -373,7 +373,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
+                {/* <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20 rounded-3xl'
                     data-wow-delay='.3s'>
@@ -398,7 +398,7 @@ function Home() {
                       </a>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20 rounded-3xl'
@@ -425,7 +425,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-                <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
+                {/* <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
                   <div
                     className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp mb-[50px] rounded-lg bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20'
                     data-wow-delay='.3s'>
@@ -448,6 +448,50 @@ function Home() {
                         className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
                         brian.builder.place
                       </a>
+                    </div>
+                  </div>
+                </div> */}
+                <div className='w-full px-4 md:w-1/2 lg:w-1/2'>
+                  <div
+                    className='wow fadeInUp group mx-auto max-w-[510px] text-center pt-4 pb-1 wow fadeInUp bg-redpraha bg-opacity-60 shadow-lg hover:bg-opacity-20 rounded-3xl'
+                    data-wow-delay='.3s'>
+                    <div className='container overflow-hidden lg:max-w-[1160px]'>
+                      <div className='-mx-6 flex flex-wrap'>
+                        <div className='w-full px-6'>
+                          <div
+                            className='wow fadeInUp mb-[15px] rounded-lg bg-white py-9 px-7 shadow-md sm:px-9 lg:px-7 xl:px-9'
+                            data-wow-delay='.2s'>
+                            <div className='mb-5 border-b border-stroke'>
+                              <p className='pb-9 text-base text-body'>
+                                "At TalentLayer, in just under two months, we augmented our core
+                                team of three developers with 8 new open-source contributors, it
+                                completely boosted our production and helped us accomplish far more
+                                than expected. It also encouraged us to enhance our development
+                                process, making it robust and intuitive for anyone inspired to
+                                contribute."
+                              </p>
+                            </div>
+
+                            <div className='items-center justify-center sm:flex lg:block xl:flex'>
+                              <div className='mb-4 flex justify-center items-center sm:mb-0 lg:mb-4 xl:mb-0'>
+                                <div className='mr-4 h-[56px] w-full max-w-[56px] rounded-full'>
+                                  <img
+                                    src='/images/romain.png'
+                                    alt='author'
+                                    className='h-full w-full object-cover object-center'
+                                  />
+                                </div>
+                                <div>
+                                  <h5 className='text-base font-medium text-black '>
+                                    Romain Martin
+                                  </h5>
+                                  <p className='text-sm text-body'>Technical Lead, TalentLayer</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -539,7 +583,7 @@ function Home() {
               </defs>
             </svg>
           </div>
-        </section> */}
+        </section>
 
         <section id='pricing' className='relative lg:pt-[50px]'>
           <div className='container'>
