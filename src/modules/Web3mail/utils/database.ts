@@ -84,5 +84,5 @@ export const getCronProbeCount = async (): Promise<number> => {
 
 export const getDomain = async (buyerTlId: string): Promise<string> => {
   const builderPlace = await getBuilderPlaceFromOwner(buyerTlId);
-  return builderPlace?.subdomain || builderPlace?.customDomain;
+  return builderPlace?.customDomain || builderPlace?.subdomain;
 };
