@@ -12,7 +12,7 @@ import TalentLayerContext from '../../../context/talentLayer';
 import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
 import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
 import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
-import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { IBuilderPlace, iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { uploadImage } from '../../../modules/BuilderPlace/utils';
 
 interface IFormValues {
@@ -35,7 +35,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   const { data: walletClient } = useWalletClient({ chainId });
   const { data: updateBuilderPlace, mutateAsync: updateBuilderPlaceAsync } =
     useUpdateBuilderPlace();
-  const builderPlaceData = useGetBuilderPlaceFromOwner(user?.id as string);
+  const builderPlace = props.builderPlace as IBuilderPlace
   const router = useRouter();
   const [logoLoader, setLogoLoader] = useState(false);
   const [logoErrorMessage, setLogoErrorMessage] = useState('');
@@ -45,8 +45,8 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   const [color, setColor] = useColor(palette[colorName as keyof iBuilderPlacePalette]);
 
   const initialValues: IFormValues = {
-    subdomain: builderPlaceData?.subdomain || '',
-    logo: builderPlaceData?.logo || '',
+    subdomain: builderPlace.subdomain || '',
+    logo: builderPlace.logo || '',
     palette,
   };
 
@@ -92,14 +92,6 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     );
   }
 
-  if (!builderPlaceData) {
-    return (
-      <div className='flex flex-col mt-5 pb-8'>
-        <p>No builderPlace found in link to this wallet</p>
-      </div>
-    );
-  }
-
   const handleSubmit = async (
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
@@ -118,10 +110,10 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
         await updateBuilderPlaceAsync({
           subdomain: values.subdomain,
           logo: values.logo,
-          name: builderPlaceData.name,
-          ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
+          name: builderPlace.name,
+          ownerTalentLayerId: builderPlace.ownerTalentLayerId,
           palette,
-          owners: builderPlaceData.owners,
+          owners: builderPlace.owners,
           status: 'validated',
           signature,
         });
