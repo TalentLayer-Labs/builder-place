@@ -68,9 +68,11 @@ function onboardingStep3() {
           message: builderPlaceData._id,
         });
 
+        const subdomain = generateDomainName(values.subdomain);
+
         const res = await updateBuilderPlaceAsync({
           _id: builderPlaceData._id,
-          subdomain: generateDomainName(values.subdomain),
+          subdomain: subdomain,
           logo: values.logo,
           name: builderPlaceData.name,
           ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
@@ -80,7 +82,7 @@ function onboardingStep3() {
           signature,
         });
         if (res?.id) {
-          router.push(`${window.location.protocol}//${values.subdomain}/dashboard`);
+          router.push(`${window.location.protocol}//${subdomain}/dashboard`);
         }
       } catch (e: any) {
         console.error(e);
