@@ -24,6 +24,24 @@ function onboardingStep2() {
     );
   }
 
+  if (!builderPlaceData) {
+    return (
+      <HirerProfileLayout step={2}>
+        <div className={'flex items-center justify-center'}>
+          <span>
+            You first need to{' '}
+            <strong
+              className={`cursor-pointer text-pink-500`}
+              onClick={() => router.push(`/onboarding`)}>
+              {' '}
+              create a BuilderPlace
+            </strong>
+          </span>
+        </div>
+      </HirerProfileLayout>
+    );
+  }
+
   if (!account?.isConnected || !user) {
     return (
       <HirerProfileLayout step={2}>
@@ -62,44 +80,30 @@ function onboardingStep2() {
     <>
       <HirerProfileLayout step={2}>
         <div className='flex flex-col items-center justify-center'>
-          {!builderPlaceData ? (
-            <span>
-              You first need to{' '}
-              <strong
-                className={`cursor-pointer text-pink-500`}
-                onClick={() => router.push(`/onboarding`)}>
-                {' '}
-                create a BuilderPlace
-              </strong>
-            </span>
-          ) : (
-            <>
-              <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-6 text-center'>
-                Hello {user.handle} 👋
-              </p>
-              <div className='grid grid-cols-1 gap-3 sm:gap-4'>
-                <p className='text-center'>
-                  You are about to link your TalentLayer ID to your BuilderPlace:{' '}
-                  {builderPlaceData?.name}
-                </p>
-                {isSubmitting ? (
-                  <button
-                    disabled
-                    type='submit'
-                    className='grow px-5 py-2 rounded-xl bg-pink-300 text-white'>
-                    Loading...
-                  </button>
-                ) : (
-                  <button
-                    type='submit'
-                    onClick={() => handleSubmit()}
-                    className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
-                    Use this Id
-                  </button>
-                )}
-              </div>
-            </>
-          )}
+          <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-6 text-center'>
+            Hello {user.handle} 👋
+          </p>
+          <div className='grid grid-cols-1 gap-3 sm:gap-4'>
+            <p className='text-center'>
+              You are about to link your TalentLayer ID to your BuilderPlace:{' '}
+              {builderPlaceData?.name}
+            </p>
+            {isSubmitting ? (
+              <button
+                disabled
+                type='submit'
+                className='grow px-5 py-2 rounded-xl bg-pink-300 text-white'>
+                Loading...
+              </button>
+            ) : (
+              <button
+                type='submit'
+                onClick={() => handleSubmit()}
+                className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                Use this Id
+              </button>
+            )}
+          </div>
         </div>
       </HirerProfileLayout>
     </>
