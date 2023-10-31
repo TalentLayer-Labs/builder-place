@@ -2,18 +2,20 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { ColorPicker, useColor } from 'react-color-palette';
+import { useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
+import CustomizePalette from '../../../components/CustomizePalette';
+import DefaultPalettes from '../../../components/DefaultPalettes';
 import Loading from '../../../components/Loading';
 import TalentLayerContext from '../../../context/talentLayer';
-import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
 import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
 import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
 import { IBuilderPlace, iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { uploadImage } from '../../../modules/BuilderPlace/utils';
+import { themes } from '../../../utils/themes';
 
 interface IFormValues {
   subdomain: string;
@@ -35,7 +37,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   const { data: walletClient } = useWalletClient({ chainId });
   const { data: updateBuilderPlace, mutateAsync: updateBuilderPlaceAsync } =
     useUpdateBuilderPlace();
-  const builderPlace = props.builderPlace as IBuilderPlace
+  const builderPlace = props.builderPlace as IBuilderPlace;
   const router = useRouter();
   const [logoLoader, setLogoLoader] = useState(false);
   const [logoErrorMessage, setLogoErrorMessage] = useState('');
@@ -180,36 +182,19 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                   <p>{logoErrorMessage}</p>
                 </span>
 
-                {palette && (
-                  <label className='block'>
-                    <span className='text-stone-800 font-bold text-md'>
-                      customize your current palette
-                    </span>
+                <DefaultPalettes
+                  onChange={palette => {
+                    setPalette(themes[palette as keyof typeof themes]);
+                  }}
+                />
 
-                    <div className='flex flex-col gap-2 mt-1'>
-                      <label className=' peer-checked:border-blue-500 border-2 border-solid rounded-lg flex flex-wrap items-center p-2 w-full'>
-                        {Object.keys(palette).map(color => {
-                          if (color !== '_id')
-                            return (
-                              <div
-                                className='group relative inline-block w-[36px] h-[36px] border'
-                                style={{
-                                  backgroundColor: palette[color as keyof iBuilderPlacePalette],
-                                }}
-                                onClick={() => setColorName(color)}>
-                                <span className="absolute hidden group-hover:flex -top-2 -right-3 translate-x-full w-auto px-2 py-1 bg-gray-700 rounded-lg text-center text-white text-sm before:content-[''] before:absolute before:top-1/2  before:right-[100%] before:-translate-y-1/2 before:border-8 before:border-y-transparent before:border-l-transparent before:border-r-gray-700 z-50">
-                                  {color} <br />
-                                  {palette[color as keyof iBuilderPlacePalette]}
-                                </span>
-                              </div>
-                            );
-                        })}
-                        <div className='w-full mt-4'>
-                          <ColorPicker color={color} onChange={setColor} />
-                        </div>
-                      </label>
-                    </div>
-                  </label>
+                {palette && (
+                  <CustomizePalette
+                    palette={palette}
+                    color={color}
+                    setColor={setColor}
+                    setColorName={setColorName}
+                  />
                 )}
 
                 {isSubmitting ? (
