@@ -1,4 +1,4 @@
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
@@ -7,14 +7,15 @@ import 'react-color-palette/css';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
+import CustomDomain from '../../../components/CustomDomain';
 import CustomizePalette from '../../../components/CustomizePalette';
 import DefaultPalettes from '../../../components/DefaultPalettes';
 import Loading from '../../../components/Loading';
+import UploadLogo from '../../../components/UploadLogo';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
 import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
 import { IBuilderPlace, iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
-import { uploadImage } from '../../../modules/BuilderPlace/utils';
 import { themes } from '../../../utils/themes';
 
 interface IFormValues {
@@ -139,48 +140,16 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           {({ isSubmitting, setFieldValue, values }) => (
             <Form>
               <div className='grid grid-cols-1 gap-6'>
-                <label className='block'>
-                  <span className='text-stone-800 font-bold text-md'>custom domain</span>
-                  <Field
-                    type='text'
-                    id='subdomain'
-                    name='subdomain'
-                    className='mt-1 mb-1 block w-full rounded-xl border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
-                    placeholder={`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`}
-                  />
-                </label>
-                <span className='text-red-500'>
-                  <ErrorMessage name='subdomain' />
-                </span>
-                <label className='block'>
-                  <span className='text-stone-800 font-bold text-md'>logo</span>
-                  <input
-                    type='file'
-                    id='logo'
-                    name='logo'
-                    onChange={async (event: any) => {
-                      await uploadImage(
-                        event.currentTarget.files[0],
-                        setFieldValue,
-                        setLogoErrorMessage,
-                        'logo',
-                        setLogoLoader,
-                        user?.handle,
-                      );
-                    }}
-                    className='mt-1 mb-1 block w-full rounded-xl border-2 border-gray-200 shadow-sm focus:ring-opacity-50'
-                    placeholder=''
-                  />
-                  {logoLoader && <Loading />}
-                  {!!values.logo && (
-                    <div className='flex items-center justify-center py-3'>
-                      <img width='300' height='300' src={values.logo} alt='' />
-                    </div>
-                  )}
-                </label>
-                <span className='text-red-500'>
-                  <p>{logoErrorMessage}</p>
-                </span>
+                <CustomDomain />
+
+                <UploadLogo
+                  logo={values.logo}
+                  logoLoader={logoLoader}
+                  logoErrorMessage={logoErrorMessage}
+                  setLogoLoader={setLogoLoader}
+                  setFieldValue={setFieldValue}
+                  setLogoErrorMessage={setLogoErrorMessage}
+                />
 
                 <DefaultPalettes
                   onChange={palette => {
