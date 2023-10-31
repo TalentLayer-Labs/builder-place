@@ -1,16 +1,18 @@
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
+import CustomDomain from '../../../components/CustomDomain';
+import DefaultPalettes from '../../../components/DefaultPalettes';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import Loading from '../../../components/Loading';
+import UploadLogo from '../../../components/UploadLogo';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
 import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
-import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { themes } from '../../../utils/themes';
-import { generateDomainName, slugify, uploadImage } from '../../../modules/BuilderPlace/utils';
+import { generateDomainName, slugify } from '../../../modules/BuilderPlace/utils';
 interface IFormValues {
   subdomain: string;
   palette: keyof typeof themes;
@@ -48,7 +50,7 @@ function onboardingStep3() {
   if (!builderPlaceData) {
     return (
       <div className='flex flex-col mt-5 pb-8'>
-        <p>No builderPlace found in link to this wallet</p>
+        <p>No builderPlace found associated to this wallet</p>
       </div>
     );
   }
@@ -103,105 +105,22 @@ function onboardingStep3() {
           {({ isSubmitting, setFieldValue, values }) => (
             <Form>
               <div className='grid grid-cols-1 gap-6'>
-                <label className='block'>
-                  <span className='text-stone-800 font-bold text-md'>custom domain</span>
-                  <div className={'flex flex-row items-center ml-2 text-gray-500'}>
-                    <Field
-                      type='text'
-                      id='subdomain'
-                      name='subdomain'
-                      className='mt-1 mb-1 block w-full rounded-xl border-2 border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
-                    />
-                    <span>.{process.env.NEXT_PUBLIC_ROOT_DOMAIN}</span>
-                  </div>
-                </label>
-                <span className='text-red-500'>
-                  <ErrorMessage name='subdomain' />
-                </span>
+                <CustomDomain />
 
-                <label className='block'>
-                  <span className='text-stone-800 font-bold text-md'>logo</span>
-                  <span className='text-stone-800 italic text-sm'> (400 x 50 format)</span>
-                  <input
-                    type='file'
-                    id='logo'
-                    name='logo'
-                    onChange={async (event: any) => {
-                      await uploadImage(
-                        event.currentTarget.files[0],
-                        setFieldValue,
-                        setLogoErrorMessage,
-                        'logo',
-                        setLogoLoader,
-                        user?.handle,
-                      );
-                    }}
-                    className='mt-1 mb-1 block w-full rounded-xl border-2 border-gray-200 shadow-sm focus:ring-opacity-50'
-                    placeholder=''
-                  />
-                  {logoLoader && <Loading />}
-                  {!!values.logo && (
-                    <div className='flex items-center justify-center py-3'>
-                      <img width='300' height='300' src={values.logo} alt='' />
-                    </div>
-                  )}
-                </label>
-                <span className='text-red-500'>
-                  <p>{logoErrorMessage}</p>
-                </span>
+                <UploadLogo
+                  logo={values.logo}
+                  logoLoader={logoLoader}
+                  logoErrorMessage={logoErrorMessage}
+                  setLogoLoader={setLogoLoader}
+                  setFieldValue={setFieldValue}
+                  setLogoErrorMessage={setLogoErrorMessage}
+                />
 
-                <label className='block'>
-                  <span className='text-stone-800 font-bold text-md'>choose a Color Palette</span>
-
-                  <div className='flex flex-col gap-2'>
-                    {Object.keys(themes).map((value, index) => {
-                      return (
-                        <div className='mt-1'>
-                          <input
-                            type='radio'
-                            className='hidden peer'
-                            name='palette'
-                            id={`palette-${index}`}
-                            key={value}
-                            onChange={() => {
-                              setFieldValue('palette', value);
-                            }}
-                          />
-                          <label
-                            key={`palette-${value}`}
-                            htmlFor={`palette-${index}`}
-                            className=' peer-checked:border-blue-500 border-2 border-solid rounded-lg flex flex-wrap items-center p-2 w-full'>
-                            <span className='block w-full mb-1'>{value} Palette</span>
-                            {Object.keys(themes[value as keyof typeof themes]).map(color => {
-                              return (
-                                <div
-                                  key={`palette-${value}-style-${color}`}
-                                  className='group relative inline-block w-[36px] h-[36px]'
-                                  style={{
-                                    backgroundColor:
-                                      themes[value as keyof typeof themes][
-                                        color as keyof iBuilderPlacePalette
-                                      ],
-                                  }}>
-                                  <span
-                                    key={`palette-${value}-color-${color}`}
-                                    className="absolute hidden group-hover:flex -top-2 -right-3 translate-x-full w-auto px-2 py-1 bg-gray-700 rounded-lg text-center text-white text-sm before:content-[''] before:absolute before:top-1/2  before:right-[100%] before:-translate-y-1/2 before:border-8 before:border-y-transparent before:border-l-transparent before:border-r-gray-700 z-50">
-                                    {color} <br />
-                                    {
-                                      themes[value as keyof typeof themes][
-                                        color as keyof iBuilderPlacePalette
-                                      ]
-                                    }
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </label>
+                <DefaultPalettes
+                  onChange={palette => {
+                    setFieldValue('palette', palette);
+                  }}
+                />
 
                 {isSubmitting ? (
                   <button
