@@ -57,11 +57,15 @@ const builderPlace = new Schema({
   },
   subdomain: {
     type: String,
+    required: false,
     unique: true,
+    sparse: true,
   },
   customDomain: {
     type: String,
+    required: false,
     unique: true,
+    sparse: true,
   },
   logo: {
     type: String,
@@ -81,7 +85,9 @@ const builderPlace = new Schema({
   },
   ownerTalentLayerId: {
     type: String,
+    required: false,
     unique: true,
+    sparse: true,
   },
   owners: {
     type: Array,
