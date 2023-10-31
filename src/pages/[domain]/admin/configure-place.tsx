@@ -6,7 +6,7 @@ import { ColorPicker, useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import HirerProfileLayout from '../../../components/HirerProfileLayout';
+import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
 import Loading from '../../../components/Loading';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
@@ -136,7 +136,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
 
   return (
     <>
-      <HirerProfileLayout step={0}>
+      <AdminSettingsLayout title={'customize Your BuilderPlace'} route={'/admin'}>
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}
@@ -238,7 +238,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
             </Form>
           )}
         </Formik>
-      </HirerProfileLayout>
+      </AdminSettingsLayout>
     </>
   );
 }
