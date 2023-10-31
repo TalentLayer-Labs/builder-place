@@ -7,7 +7,7 @@ import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 
-function ServiceList() {
+function  ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
   const router = useRouter();
@@ -39,7 +39,7 @@ function ServiceList() {
         <SearchServiceButton value={searchQuery} />
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 gap-4'>
         {services.map((service: IService, i: number) => {
           return <ServiceItem service={service} key={i} />;
         })}

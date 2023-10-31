@@ -12,6 +12,33 @@ function ServiceItem({ service }: { service: IService }) {
       <div className='flex flex-col items-top justify-between gap-4 w-full'>
         <div className='flex flex-col justify-start items-start gap-4'>
           <div className='flex items-center justify-start'>
+            <div className='flex flex-col'>
+              <p className='font-medium break-all'>{service.description?.title}</p>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-col justify-start items-start gap-4'>
+          <div className='flex items-center justify-start'>
+            <div className='flex flex-col'>
+              <p className='font-medium break-all'>{service.description?.about}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className='flex flex-row justify-between items-center pt-4'>
+          <p className='text-xs text-base-content'>
+            Created on {formatDate(Number(service.createdAt) * 1000)}
+          </p>
+          {service.description?.rateToken && service.description?.rateAmount && (
+            <p className='text-base-content text-xs max-w-[100px]'>
+              {renderTokenAmountFromConfig(
+                chainId,
+                service.description.rateToken,
+                service.description.rateAmount,
+              )}
+            </p>
+          )}
+          <span className='flex justify-center items-center'>
             <img
               src={
                 service?.buyer?.description?.image_url ||
@@ -22,25 +49,9 @@ function ServiceItem({ service }: { service: IService }) {
               height={50}
               alt='default avatar'
             />
-            <div className='flex flex-col'>
-              <p className='font-medium break-all'>{service.description?.title}</p>
-              <p className='text-xs text-base-content'>
-                created by {service.buyer.handle} the {formatDate(Number(service.createdAt) * 1000)}
-              </p>
-            </div>
-          </div>
-        </div>
+            <p className='text-xs text-base-content'>{service.buyer.handle}</p>
+          </span>
 
-        <div className='flex flex-row gap-4 justify-between items-center border-t border-info pt-4'>
-          {service.description?.rateToken && service.description?.rateAmount && (
-            <p className='text-base-content font-bold line-clamp-1 max-w-[100px]'>
-              {renderTokenAmountFromConfig(
-                chainId,
-                service.description.rateToken,
-                service.description.rateAmount,
-              )}
-            </p>
-          )}
           <Link
             className='text-primary bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md relative'
             href={`/work/${service.id}`}>
