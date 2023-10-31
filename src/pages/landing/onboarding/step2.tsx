@@ -63,7 +63,15 @@ function onboardingStep2() {
       <HirerProfileLayout step={2}>
         <div className='flex flex-col items-center justify-center'>
           {!builderPlaceData ? (
-            <p>You first need to create a BuilderPlace === Go step 1</p>
+            <span>
+              You first need to{' '}
+              <strong
+                className={`cursor-pointer text-pink-500`}
+                onClick={() => router.push(`/onboarding`)}>
+                {' '}
+                create a BuilderPlace
+              </strong>
+            </span>
           ) : (
             <>
               <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-6 text-center'>
