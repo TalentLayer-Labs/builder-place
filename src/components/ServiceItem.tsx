@@ -15,7 +15,7 @@ function ServiceItem({ service }: { service: IService }) {
         <div className='flex items-center justify-between gap-4'>
           <p className='font-bold break-all'>{service.description?.title}</p>
           <div className='flex flex-row justify-end items-center'>
-            <button className='bg-pink-200 px-4 py-2 text-black border border-2 border-pink-300 text-sm rounded-3xl' disabled>
+            <button className='bg-pink-200 px-4 py-2 text-black border border-2 border-pink-300 text-sm rounded-full' disabled>
               Gig
             </button>
           </div>

@@ -7,7 +7,7 @@ import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 
-function  ServiceList() {
+function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
   const router = useRouter();
@@ -49,12 +49,11 @@ function  ServiceList() {
         <div className='flex justify-center items-center gap-10 flex-col pb-5'>
           <button
             type='submit'
-            className={`px-5 py-2 mt-5 content-center border border-zinc-600 rounded-full text-content 
-                  hover:text-base-content hover:bg-base-200
+            className={`px-5 py-2 mt-5 content-center border border-2 text-black border-black rounded-xl font-medium text-content 
                 `}
             disabled={!hasMoreData}
             onClick={() => loadMore()}>
-            Load More
+            Load More Posts
           </button>
         </div>
       )}
