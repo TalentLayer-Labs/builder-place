@@ -47,6 +47,11 @@ function WorkerPublicDetail({ user }: { user: IUser }) {
               ))}
             </div>
           </div>
+          <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
+            <p className='text-xl text-black font-bold'>Reviews</p>
+            <Stars rating={Number(user.rating)} numReviews={user.userStats.numReceivedReviews} />
+          </div>
+          
         </div>
       </div>
 
