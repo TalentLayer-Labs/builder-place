@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useChainId } from '../hooks/useChainId';
 import { IService } from '../types';
 import { renderTokenAmountFromConfig } from '../utils/conversion';
-import { formatDaysAgo } from '../utils/dates'; // Add a new utility function
+import { formatDaysAgo } from '../utils/dates';
 
 function ServiceItem({ service }: { service: IService }) {
   const chainId = useChainId();
@@ -10,13 +10,14 @@ function ServiceItem({ service }: { service: IService }) {
   const daysAgo = formatDaysAgo(createdAt);
 
   return (
-    <div className='flex flex-row gap-2 rounded-xl p-4 border border-3 border-gray-300 text-base-content bg-transparent'>
+    <div className='relative flex flex-row gap-2 rounded-xl p-4 border border-3 border-gray-300 text-base-content bg-transparent'>
       <div className='flex flex-col items-top justify-between gap-4 w-full'>
-        <div className='flex flex-col justify-start items-start gap-4'>
-          <div className='flex items-center justify-start'>
-            <div className='flex flex-col'>
-              <p className='font-bold break-all'>{service.description?.title}</p>
-            </div>
+        <div className='flex items-center justify-between gap-4'>
+          <p className='font-bold break-all'>{service.description?.title}</p>
+          <div className='flex flex-row justify-end items-center'>
+            <button className='bg-pink-200 px-4 py-2 text-black border border-2 border-pink-300 text-sm rounded-3xl' disabled>
+              Gig
+            </button>
           </div>
         </div>
         <div className='flex flex-col justify-start items-start gap-4'>
@@ -29,9 +30,7 @@ function ServiceItem({ service }: { service: IService }) {
 
         <div className='flex flex-row justify-between items-center pt-4'>
           <div className='flex flex-row grow gap-10 items-center'>
-            <p className='text-s text-base-content'>
-              📅 {daysAgo}
-            </p>
+            <p className='text-s text-base-content'>🗓️ {daysAgo}</p>
             {service.description?.rateToken && service.description?.rateAmount && (
               <p className='text-base-content text-s max-w-[100px] ml-10 mr-10'>
                 💰{' '}
@@ -59,7 +58,7 @@ function ServiceItem({ service }: { service: IService }) {
           <Link
             className='text-white bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md relative'
             href={`/work/${service.id}`}>
-            Show details
+            View Post
           </Link>
         </div>
       </div>
