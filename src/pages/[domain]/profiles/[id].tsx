@@ -24,6 +24,12 @@ function Profile() {
             <div className='mb-6'>
               <WorkerPublicDetail user={user} />
             </div>
+            <div className='mb-6'>
+              <UserServices user={user} type='seller' />
+            </div>
+            <div className='mb-6'>
+              <LensModule address={user.address} />
+            </div>
         </>
       )}
     </div>
