@@ -18,7 +18,7 @@ function Profile() {
   }
 
   return (
-    <div className='max-w-5xl mx-auto text-base-content'>
+    <div className='mx-auto text-base-content'>
       {user && (
         <>
             <div className='mb-6'>

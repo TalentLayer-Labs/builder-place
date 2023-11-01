@@ -35,7 +35,7 @@ function WorkerPublicDetail({ user }: { user: IUser }) {
           </div>
           <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
             <p className='text-xl text-black font-bold'>Skills</p>
-            <div className='mt-2 flex w-full flex-row gap-4 justify-start items-start -ml-1'>
+            <div className='mt-2 flex w-full flex-col lg:flex-row sm:felx-col gap-4 justify-start items-start -ml-1'>
               {userDescription?.skills_raw?.split(',').map((skill, index) => (
                 <span
                   key={index}
