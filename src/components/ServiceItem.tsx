@@ -15,7 +15,9 @@ function ServiceItem({ service }: { service: IService }) {
         <div className='flex items-center justify-between gap-4'>
           <p className='font-bold break-all'>{service.description?.title}</p>
           <div className='flex flex-row justify-end items-center'>
-            <button className='bg-pink-200 px-4 py-2 text-black border border-2 border-pink-300 text-sm rounded-full' disabled>
+            <button
+              className='bg-pink-300 px-4 py-2 text-black border border-2 border-pink-400 text-sm rounded-full'
+              disabled>
               Gig
             </button>
           </div>
@@ -28,8 +30,8 @@ function ServiceItem({ service }: { service: IService }) {
           </div>
         </div>
 
-        <div className='flex flex-row justify-between items-center pt-4'>
-          <div className='flex flex-row grow gap-10 items-center'>
+        <div className='flex flex-col lg:flex-row sm:flex-col gap-5 justify-between items-center pt-4'>
+          <div className='flex flex-col lg:flex-row sm:flex-col gap-5 sm:gap-5 lg:gap-10 items-center'>
             <p className='text-s text-base-content'>🗓️ {daysAgo}</p>
             {service.description?.rateToken && service.description?.rateAmount && (
               <p className='text-base-content text-s max-w-[100px] ml-10 mr-10'>
@@ -56,7 +58,7 @@ function ServiceItem({ service }: { service: IService }) {
             </span>
           </div>
           <Link
-            className='text-white bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md relative'
+            className='text-white bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md'
             href={`/work/${service.id}`}>
             View Post
           </Link>

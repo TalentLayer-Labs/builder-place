@@ -23,9 +23,9 @@ function SearchServiceButton(props?: { value?: string }) {
 
   return (
     <form onSubmit={e => handleSubmit(e)} className='flex w-full'>
-      <div className='flex w-full justify-between'>
+      <div className='flex w-full justify-end'>
         <div className='flex flex-row rounded-3xl border'>
-          <div className='sm:px-6 flex flex-row items-center'>  
+          <div className='sm:px-6 flex flex-row items-center'>
             <input
               className='text-base-content opacity-50 py-2 focus:ring-0 outline-none text-sm sm:text-lg border-0'
               type='text'
@@ -48,4 +48,3 @@ function SearchServiceButton(props?: { value?: string }) {
 }
 
 export default SearchServiceButton;
-    
