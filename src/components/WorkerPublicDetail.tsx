@@ -29,25 +29,26 @@ function WorkerPublicDetail({ user }: { user: IUser }) {
               <p className='text-2xl text-gray-500 font-bold '>{user?.description?.title}</p>
             </div>
           </div>
-          <div className='flex w-full flex-col gap-4 justify-start items-start'>
+          <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
             <p className='text-xl text-black font-bold'>About</p>
             <p className='text-xl text-gray-500 font-medium '>{user?.description?.about}</p>
           </div>
+          <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
+            <p className='text-xl text-black font-bold'>Skills</p>
+            <div className='mt-2 flex w-full flex-row gap-4 justify-start items-start -ml-1'>
+              {userDescription?.skills_raw?.split(',').map((skill, index) => (
+                <span
+                  key={index}
+                  className={`${
+                    index % 2 === 0 ? 'bg-green-200' : 'bg-pink-200'
+                  } text-s rounded-full px-4 py-1 ml-1`}>
+                  {skill.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-
-        {/* <Stars rating={Number(user.rating)} numReviews={user.userStats.numReceivedReviews} /> */}
       </div>
-      {/* <div className=' border-t border-info pt-2 w-full'>
-        <p className='text-sm text-base-content mt-4'>
-          <strong>Skills:</strong>
-
-          {userDescription?.skills_raw?.split(',').map((skill, index) => (
-            <span key={index} className='text-xs border border-base-300 rounded-md px-2 py-1 ml-2'>
-              {skill.trim()}
-            </span>
-          ))}
-        </p>
-      </div> */}
 
       {currentUser?.id === user.id && process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && (
         <div className=' border-t border-info pt-4 w-full mt-4'>
