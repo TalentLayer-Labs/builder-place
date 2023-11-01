@@ -37,7 +37,7 @@ function SearchServiceButton(props?: { value?: string }) {
           <div className='sm:px-4 flex flex-row sm:space-x-4 justify-between items-center'>
             <button
               type='submit'
-              className='px-5 rounded-3xl hover:text-content hover:bg-base-100 text-base-content bg-gray-400'>
+              className='px-5 py-1   rounded-3xl hover:text-content hover:bg-base-100 text-base-content bg-gray-400'>
               Search
             </button>
           </div>
