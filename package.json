@@ -42,7 +42,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "format": "prettier --config .prettierrc 'src/**/*.{js,ts,tsx}' --write",
