@@ -23,10 +23,23 @@ const generateServicesEmbedIframeCode = (servicesEmbedUrl: string): string => {
 
 export default function EmbedPlace() {
   const { user } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
   const { isCopied: isDomainCopied, copyToClipboard: copyDomain } = useCopyToClipBoard();
 
+  if (!isBuilderPlaceOwner) {
+    return (
+      <>
+        <div className='max-w-7xl mx-auto text-base-content'>
+          <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
+            <div className='flex py-2 px-6 sm:px-0 items-center w-full mb-8'>
+              <p className='text-2xl font-bold flex-1 mt-6'>You are not an admin of this domain</p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <div className='max-w-7xl mx-auto text-base-content'>
@@ -43,12 +56,13 @@ export default function EmbedPlace() {
               <code className={'basis-5/6 border border-t-gray-500 rounded-xl p-2'}>
                 {user?.id && generateServicesEmbedIframeCode(generateServicesEmbedUrl(user.id))}
               </code>
-              {!isIframeCopied && user?.id ? (
+              {!isIframeCopied ? (
                 <span
                   className={
                     'flex flex-row basis-1/6 items-center border-l border-t-gray-500 ml-2 px-2 py-1 hover:rounded-xl hover:cursor-pointer hover:bg-gray-200 hover:transition-all duration-150'
                   }
                   onClick={() =>
+                    user?.id &&
                     copyIframe(generateServicesEmbedIframeCode(generateServicesEmbedUrl(user.id)))
                   }>
                   <ClipboardCopy />
