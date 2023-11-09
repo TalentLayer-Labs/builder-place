@@ -13,8 +13,8 @@ export async function getServerSideProps({ params }: any) {
 const BASE_URL = global?.location?.origin;
 const GIG_BOARD_IFRAME_PATH = 'services-embeddable';
 
-const generateServicesEmbedUrl = (buyerId: string) => {
-  return `${BASE_URL}/${GIG_BOARD_IFRAME_PATH}?buyerId=${buyerId}`;
+const generateServicesEmbedUrl = (buyerId: string, title: string) => {
+  return `${BASE_URL}/${GIG_BOARD_IFRAME_PATH}?buyerId=${buyerId}&title=${title}`;
 };
 
 const generateServicesEmbedIframeCode = (servicesEmbedUrl: string): string => {
@@ -50,7 +50,11 @@ export default function EmbedPlace() {
               <p>embed your job board on a page in your website. read the guide</p>
               <div className={'flex flex-row gap-2'}>
                 <code className={'basis-5/6 border border-t-gray-500 rounded-xl p-2'}>
-                  {user?.id && generateServicesEmbedIframeCode(generateServicesEmbedUrl(user.id))}
+                  {user?.id &&
+                    builderPlace?.name &&
+                    generateServicesEmbedIframeCode(
+                      generateServicesEmbedUrl(user.id, builderPlace.name),
+                    )}
                 </code>
                 {!isIframeCopied ? (
                   <span
@@ -59,7 +63,12 @@ export default function EmbedPlace() {
                     }
                     onClick={() =>
                       user?.id &&
-                      copyIframe(generateServicesEmbedIframeCode(generateServicesEmbedUrl(user.id)))
+                      builderPlace?.name &&
+                      copyIframe(
+                        generateServicesEmbedIframeCode(
+                          generateServicesEmbedUrl(user.id, builderPlace.name),
+                        ),
+                      )
                     }>
                     <ClipboardCopy />
                     <p className={'text-sm text-gray-500'}>Copy</p>
@@ -107,10 +116,13 @@ export default function EmbedPlace() {
           </div>
         </div>
       )}
-      {isBuilderPlaceOwner && user?.id && (
+      {isBuilderPlaceOwner && user?.id && builderPlace?.name && (
         <div className={'flex flex-col items-center justify-center mt-4'}>
           <h1 className='text-title text-4xl mb-4 text-center'>Work Board Preview</h1>
-          <iframe src={generateServicesEmbedUrl(user.id)} width='600' height='400'></iframe>
+          <iframe
+            src={generateServicesEmbedUrl(user.id, builderPlace.name)}
+            width='600'
+            height='400'></iframe>
         </div>
       )}
     </div>
