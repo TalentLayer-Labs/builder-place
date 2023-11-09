@@ -107,13 +107,10 @@ export default function EmbedPlace() {
           </div>
         </div>
       )}
-      {isBuilderPlaceOwner && (
+      {isBuilderPlaceOwner && user?.id && (
         <div className={'flex flex-col items-center justify-center mt-4'}>
           <h1 className='text-title text-4xl mb-4 text-center'>Work Board Preview</h1>
-          <iframe
-            src='http://mongo-boss.localhost:3000/services-embeddable?buyerId=172'
-            width='600'
-            height='400'></iframe>
+          <iframe src={generateServicesEmbedUrl(user.id)} width='600' height='400'></iframe>
         </div>
       )}
     </div>
