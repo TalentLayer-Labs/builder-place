@@ -25,7 +25,6 @@ export default function EmbedPlace() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
-  const { isCopied: isDomainCopied, copyToClipboard: copyDomain } = useCopyToClipBoard();
 
   if (loading) {
     return (
@@ -77,35 +76,6 @@ export default function EmbedPlace() {
                   <span
                     className={
                       'flex flex-row basis-1/6 items-center border-l border-t-green-500 ml-2 px-2 py-1 rounded-xl bg-green-200'
-                    }>
-                    <CheckCircle />
-                    <p className={'text-sm text-gray-500'}>Copied !</p>
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className={'flex-1 border border-gray-700 rounded-xl'}>
-              <p className={'text-xl font-bold flex-1 mt-6'}>Shareable board</p>
-              <p>share your hosted work board with your community</p>
-              <div className={'flex flex-row gap-2'}>
-                <p className={'basis-5/6 border border-t-gray-500 rounded-full p-2'}>
-                  {builderPlace?.customDomain || builderPlace?.subdomain}
-                </p>
-                {!isDomainCopied && (builderPlace?.customDomain || builderPlace?.subdomain) ? (
-                  <span
-                    className={
-                      'flex flex-row basis-1/6 items-center border-l border-t-gray-500 ml-2 px-2 py-1 hover:rounded-full hover:cursor-pointer hover:bg-gray-200 hover:transition-all duration-150'
-                    }
-                    onClick={() =>
-                      copyDomain((builderPlace?.customDomain || builderPlace?.subdomain) as string)
-                    }>
-                    <ClipboardCopy />
-                    <p className={'text-sm text-gray-500'}>Copy</p>
-                  </span>
-                ) : (
-                  <span
-                    className={
-                      'flex flex-row basis-1/6 items-center border-l border-t-green-500 ml-2 px-2 py-1 rounded-full bg-green-200'
                     }>
                     <CheckCircle />
                     <p className={'text-sm text-gray-500'}>Copied !</p>
