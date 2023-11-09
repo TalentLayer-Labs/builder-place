@@ -1,8 +1,8 @@
 import React from 'react';
-import { ServiceStatusEnum } from '../../../types';
-import useServices from '../../../hooks/useServices';
-import Loading from '../../../components/Loading';
-import ServiceItem from '../../../components/ServiceItem';
+import { ServiceStatusEnum } from '../../types';
+import useServices from '../../hooks/useServices';
+import Loading from '../../components/Loading';
+import ServiceItem from '../../components/ServiceItem';
 
 interface IServicesEmbedProps {
   buyerId: string;

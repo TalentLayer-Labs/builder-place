@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React from 'react';
 import { ServiceStatusEnum } from '../../types';
-import ServicesEmbed from './ServicesEmbed';
+import ServicesEmbed from './services-embed';
 
 const ServicesEmbeddable = () => {
   const router = useRouter();
