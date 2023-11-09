@@ -114,7 +114,7 @@ function ServiceDetail({ service }: { service: IService }) {
                 {!userProposal && (
                   <Link
                     className='text-base-content bg-info hover:redpraha/80 hover:text-base-content px-5 py-2.5 rounded-xl text-md'
-                    href={account?.isConnected ? `/work/${service.id}/proposal` : `/worker-onboarding`}>
+                    href={account?.isConnected ? `/work/${service.id}/proposal` : `/worker-onboarding?serviceId=${service.id}`}>
                     Create proposal
                   </Link>
                 )}

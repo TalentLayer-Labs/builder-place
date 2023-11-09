@@ -9,10 +9,10 @@ import OnboardingSteps from '../../../components/OnboardingSteps';
 function workerOnboardingStep1() {
   const { account, loading, user } = useContext(TalentLayerContext);
   const router = useRouter();
-
+  const serviceId = new URL(window.location.href).searchParams.get('serviceId');
   useEffect(() => {
     if (account?.isConnected && user) {
-      router.push('/worker-onboarding/step2');
+      router.push(`/worker-onboarding/step2?serviceId=${serviceId}`);
     }
   }, [user]);
 
