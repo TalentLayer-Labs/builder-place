@@ -86,36 +86,26 @@ export default function EmbedPlace() {
               <p className={'basis-5/6 border border-t-gray-500 rounded-full p-2'}>
                 {builderPlace?.customDomain || builderPlace?.subdomain}
               </p>
-              <div className={'flex flex-col'}>
-                {!isDomainCopied && (builderPlace?.customDomain || builderPlace?.subdomain) ? (
-                  <span
-                    className={
-                      'flex flex-row basis-1/6 items-center border-l border-t-gray-500 ml-2 px-2 py-1 hover:rounded-full hover:cursor-pointer hover:bg-gray-200 hover:transition-all duration-150'
-                    }
-                    onClick={() =>
-                      copyDomain((builderPlace?.customDomain || builderPlace?.subdomain) as string)
-                    }>
-                    <ClipboardCopy />
-                    <p className={'text-sm text-gray-500'}>Copy</p>
-                  </span>
-                ) : (
-                  <span
-                    className={
-                      'flex flex-row basis-1/6 items-center border-l border-t-green-500 ml-2 px-2 py-1 rounded-full bg-green-200'
-                    }>
-                    <CheckCircle />
-                    <p className={'text-sm text-gray-500'}>Copied !</p>
-                  </span>
-                )}
-                <Link
+              {!isDomainCopied && (builderPlace?.customDomain || builderPlace?.subdomain) ? (
+                <span
                   className={
-                    'basis-1/6 items-center border-l border-t-gray-500 ml-2 px-2 py-1 hover:rounded-full hover:cursor-pointer hover:bg-gray-200 hover:transition-all duration-150'
+                    'flex flex-row basis-1/6 items-center border-l border-t-gray-500 ml-2 px-2 py-1 hover:rounded-full hover:cursor-pointer hover:bg-gray-200 hover:transition-all duration-150'
                   }
-                  href={`http://${builderPlace?.customDomain || builderPlace?.subdomain}` as string}
-                  target={'_blank'}>
-                  View
-                </Link>
-              </div>
+                  onClick={() =>
+                    copyDomain((builderPlace?.customDomain || builderPlace?.subdomain) as string)
+                  }>
+                  <ClipboardCopy />
+                  <p className={'text-sm text-gray-500'}>Copy</p>
+                </span>
+              ) : (
+                <span
+                  className={
+                    'flex flex-row basis-1/6 items-center border-l border-t-green-500 ml-2 px-2 py-1 rounded-full bg-green-200'
+                  }>
+                  <CheckCircle />
+                  <p className={'text-sm text-gray-500'}>Copied !</p>
+                </span>
+              )}
             </div>
           </div>
         </div>
