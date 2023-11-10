@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import { InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 import { useChainId, useWalletClient } from 'wagmi';

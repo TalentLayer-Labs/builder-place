@@ -1,5 +1,5 @@
 import { InferGetServerSidePropsType } from 'next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import TalentLayerContext from '../../../context/talentLayer';
 import DomainConfiguration from '../../../modules/BuilderPlace/components/DomainConfiguration';

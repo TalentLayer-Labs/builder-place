@@ -1,6 +1,6 @@
 import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
 import AccessDenied from '../../../components/AccessDenied';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export async function getServerSideProps({ params }: any) {
