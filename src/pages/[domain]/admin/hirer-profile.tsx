@@ -11,7 +11,7 @@ export default function HirerProfile() {
   const context = useContext(BuilderPlaceContext);
   return (
     <>
-      <h1>Edit your profile</h1>
+      <h1>Hirer profile</h1>
       <ProfileForm context={context} isBuilderPlaceOwner={context.isBuilderPlaceOwner} />
     </>
   );
