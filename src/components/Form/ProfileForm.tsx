@@ -14,7 +14,6 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import AccessDenied from '../AccessDenied';
 import { iBuilderPlaceContext, iTalentLayerContext } from '../../types';
 
 interface IFormValues {
@@ -34,11 +33,9 @@ const validationSchema = Yup.object({
 function ProfileForm({
   callback,
   context,
-  isBuilderPlaceOwner,
 }: {
   callback?: () => void;
   context: iBuilderPlaceContext | iTalentLayerContext;
-  isBuilderPlaceOwner: boolean;
 }) {
   const { user, isActiveDelegate, loading, refreshData } = context;
   const chainId = useChainId();
@@ -51,10 +48,6 @@ function ProfileForm({
 
   if (!user?.id || loading) {
     return <Loading />;
-  }
-
-  if (!isBuilderPlaceOwner) {
-    return <AccessDenied />;
   }
 
   const initialValues: IFormValues = {
