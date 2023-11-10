@@ -4,7 +4,6 @@ import { QuestionMarkCircle } from 'heroicons-react';
 import { useContext, useState } from 'react';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
 import { useChainId } from '../../hooks/useChainId';
 import useUserById from '../../hooks/useUserById';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
@@ -18,6 +17,7 @@ import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import AccessDenied from '../AccessDenied';
+import { IUser } from '../../types';
 
 interface IFormValues {
   title?: string;
@@ -34,32 +34,31 @@ const validationSchema = Yup.object({
 });
 
 function ProfileForm({
+  user,
+  isActiveDelegate,
+  refreshData,
   callback,
-  isHirerProfile,
 }: {
+  user?: IUser;
+  isActiveDelegate: boolean;
+  refreshData: () => Promise<boolean>;
   callback?: () => void;
-  isHirerProfile?: boolean;
 }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const { platformHasAccess } = useContext(Web3MailContext);
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
-  const { user: connectedUser, isActiveDelegate, refreshData } = useContext(TalentLayerContext);
-
-  const userId = isHirerProfile ? builderPlace?._id : connectedUser?.id;
-  const userAddress = isHirerProfile ? builderPlace?.ownerTalentLayerId : connectedUser?.address;
-
+  const { isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const [aiLoading, setAiLoading] = useState(false);
-  const userDescription = userId ? useUserById(userId)?.description : null;
+  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
   const talentLayerClient = useTalentLayerClient();
 
-  if (!userId) {
+  if (!user?.id) {
     return <Loading />;
   }
 
-  if (isBuilderPlaceOwner) {
+  if (!isBuilderPlaceOwner) {
     return <AccessDenied />;
   }
 
@@ -87,7 +86,7 @@ function ProfileForm({
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (userDescription && userAddress && walletClient && publicClient && talentLayerClient) {
+    if (userDescription && user.address && walletClient && publicClient && talentLayerClient) {
       try {
         const profile = {
           title: values.title,
@@ -104,10 +103,10 @@ function ProfileForm({
 
         let tx;
         if (isActiveDelegate) {
-          const response = await delegateUpdateProfileData(chainId, userId, userAddress, cid);
+          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {
-          const res = await talentLayerClient?.profile.update(profile, userId);
+          const res = await talentLayerClient?.profile.update(profile, user.id);
 
           tx = res.tx;
           cid = res.cid;
