@@ -74,7 +74,7 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
       );
 
       // const isBuilderPlaceOwner = data?.owners?.some(
-      //   owner => owner.toLocaleLowerCase() === currentUser?.address.toLocaleLowerCase(),
+      //   owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
       // );
       //
       // setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
@@ -114,12 +114,12 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
     if (!data) return;
 
     const isBuilderPlaceOwner = data?.owners?.some(
-      owner => owner.toLocaleLowerCase() === user?.address.toLocaleLowerCase(),
+      owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
     );
 
     setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
     setBuilderPlace(data);
-  }, [data, user]);
+  }, [data, user, account]);
 
   const value = {
     user,
