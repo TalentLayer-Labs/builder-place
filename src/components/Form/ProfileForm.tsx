@@ -81,7 +81,7 @@ function ProfileForm({
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user.description && user.address && walletClient && publicClient && talentLayerClient) {
+    if (user?.address && walletClient && publicClient && talentLayerClient) {
       try {
         const profile = {
           title: values.title,
@@ -91,7 +91,7 @@ function ProfileForm({
           name: values.name,
           about: values.about,
           skills: values.skills,
-          web3mailPreferences: user.description.web3mailPreferences,
+          web3mailPreferences: user.description?.web3mailPreferences,
         };
 
         let cid = await talentLayerClient.profile.upload(profile);

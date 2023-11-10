@@ -73,12 +73,12 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
           ) !== -1,
       );
 
-      // const isBuilderPlaceOwner = data?.owners?.some(
-      //   owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
-      // );
-      //
-      // setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
-      // setBuilderPlace(data);
+      const isBuilderPlaceOwner = data?.owners?.some(
+        owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
+      );
+
+      setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
+      setBuilderPlace(data);
 
       setLoading(false);
       return true;
@@ -102,24 +102,13 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
 
   useEffect(() => {
     fetchData();
-  }, [chainId, data, talentLayerClient]);
+  }, [chainId, data, account.address, talentLayerClient]);
 
   useEffect(() => {
     if (!user) return;
     const completionScores = getCompletionScores(user);
     setCompletionScores(completionScores);
   }, [user]);
-
-  useEffect(() => {
-    if (!data) return;
-
-    const isBuilderPlaceOwner = data?.owners?.some(
-      owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
-    );
-
-    setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
-    setBuilderPlace(data);
-  }, [data, user, account]);
 
   const value = useMemo(() => {
     return {
