@@ -16,6 +16,8 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AccessDenied from '../AccessDenied';
 
 interface IFormValues {
   title?: string;
@@ -31,19 +33,34 @@ const validationSchema = Yup.object({
   title: Yup.string().required('title is required'),
 });
 
-function ProfileForm({ callback }: { callback?: () => void }) {
+function ProfileForm({
+  callback,
+  isHirerProfile,
+}: {
+  callback?: () => void;
+  isHirerProfile?: boolean;
+}) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, isActiveDelegate, refreshData } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
+  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const { user: connectedUser, isActiveDelegate, refreshData } = useContext(TalentLayerContext);
+
+  const userId = isHirerProfile ? builderPlace?._id : connectedUser?.id;
+  const userAddress = isHirerProfile ? builderPlace?.ownerTalentLayerId : connectedUser?.address;
+
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const [aiLoading, setAiLoading] = useState(false);
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
+  const userDescription = userId ? useUserById(userId)?.description : null;
   const talentLayerClient = useTalentLayerClient();
 
-  if (!user?.id) {
+  if (!userId) {
     return <Loading />;
+  }
+
+  if (isBuilderPlaceOwner) {
+    return <AccessDenied />;
   }
 
   const initialValues: IFormValues = {
@@ -70,7 +87,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && walletClient && publicClient && talentLayerClient) {
+    if (userDescription && userAddress && walletClient && publicClient && talentLayerClient) {
       try {
         const profile = {
           title: values.title,
@@ -80,17 +97,17 @@ function ProfileForm({ callback }: { callback?: () => void }) {
           name: values.name,
           about: values.about,
           skills: values.skills,
-          web3mailPreferences: user.description?.web3mailPreferences,
+          web3mailPreferences: userDescription.web3mailPreferences,
         };
 
         let cid = await talentLayerClient.profile.upload(profile);
 
         let tx;
         if (isActiveDelegate) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
+          const response = await delegateUpdateProfileData(chainId, userId, userAddress, cid);
           tx = response.data.transaction;
         } else {
-          const res = await talentLayerClient?.profile.update(profile, user.id);
+          const res = await talentLayerClient?.profile.update(profile, userId);
 
           tx = res.tx;
           cid = res.cid;

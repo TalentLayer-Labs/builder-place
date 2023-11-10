@@ -1,4 +1,5 @@
 import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
+import ProfileForm from '../../../components/Form/ProfileForm';
 
 export async function getServerSideProps({ params }: any) {
   return await getBuilderPlace(params.domain);
@@ -6,8 +7,9 @@ export async function getServerSideProps({ params }: any) {
 
 export default function HirerProfile() {
   return (
-    <div>
-      <h1>hirer profile</h1>
-    </div>
+    <>
+      <h1>Edit your profile</h1>
+      <ProfileForm />
+    </>
   );
 }
