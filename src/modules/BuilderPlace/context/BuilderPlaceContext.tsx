@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { iBuilderPlaceContext, IUser } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
@@ -121,17 +121,28 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
     setBuilderPlace(data);
   }, [data, user, account]);
 
-  const value = {
-    user,
-    account: account ? account : undefined,
+  const value = useMemo(() => {
+    return {
+      user,
+      account: account ? account : undefined,
+      isActiveDelegate,
+      refreshData: fetchData,
+      loading,
+      completionScores,
+      talentLayerClient,
+      builderPlace,
+      isBuilderPlaceOwner,
+    };
+  }, [
+    account.address,
+    user?.id,
     isActiveDelegate,
-    refreshData: fetchData,
     loading,
     completionScores,
     talentLayerClient,
     builderPlace,
     isBuilderPlaceOwner,
-  };
+  ]);
 
   return <BuilderPlaceContext.Provider value={value}>{children}</BuilderPlaceContext.Provider>;
 };
