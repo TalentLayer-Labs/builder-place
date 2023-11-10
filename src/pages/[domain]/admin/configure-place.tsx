@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import { InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import 'react-color-palette/css';
 import { useChainId, useWalletClient } from 'wagmi';
@@ -18,6 +18,8 @@ import { getBuilderPlace } from '../../../modules/BuilderPlace/queries';
 import { IBuilderPlace, iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { themes } from '../../../utils/themes';
 import { slugify } from '../../../modules/BuilderPlace/utils';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AccessDenied from '../../../components/AccessDenied';
 
 interface IFormValues {
   subdomain: string;
@@ -35,6 +37,7 @@ const validationSchema = Yup.object({
 
 function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { account, loading } = useContext(TalentLayerContext);
+  const { isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: updateBuilderPlaceAsync } = useUpdateBuilderPlace();
@@ -96,6 +99,10 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
         <Loading />
       </div>
     );
+  }
+
+  if (!isBuilderPlaceOwner) {
+    return <AccessDenied />;
   }
 
   const handleSubmit = async (
