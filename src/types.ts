@@ -1,6 +1,7 @@
 import { TalentLayerClient } from '@talentlayer/client';
 import { Connector } from 'wagmi';
 import { ICompletionScores } from './utils/profile';
+import { IBuilderPlace } from './modules/BuilderPlace/types';
 
 export type IUser = {
   id: string;
@@ -332,4 +333,16 @@ export type iTalentLayerContext = {
   account?: IAccount;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
+};
+
+export type iBuilderPlaceContext = {
+  loading: boolean;
+  isActiveDelegate: boolean;
+  refreshData: () => Promise<boolean>;
+  user?: IUser;
+  account?: IAccount;
+  completionScores?: ICompletionScores;
+  talentLayerClient?: TalentLayerClient;
+  builderPlace?: IBuilderPlace;
+  isBuilderPlaceOwner: boolean;
 };

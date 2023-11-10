@@ -5,7 +5,6 @@ import { useContext, useState } from 'react';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import { useChainId } from '../../hooks/useChainId';
-import useUserById from '../../hooks/useUserById';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import { generatePicture } from '../../utils/ai-picture-gen';
@@ -15,9 +14,8 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import AccessDenied from '../AccessDenied';
-import { IUser } from '../../types';
+import { iBuilderPlaceContext, iTalentLayerContext } from '../../types';
 
 interface IFormValues {
   title?: string;
@@ -34,27 +32,24 @@ const validationSchema = Yup.object({
 });
 
 function ProfileForm({
-  user,
-  isActiveDelegate,
-  refreshData,
   callback,
+  context,
+  isBuilderPlaceOwner,
 }: {
-  user?: IUser;
-  isActiveDelegate: boolean;
-  refreshData: () => Promise<boolean>;
   callback?: () => void;
+  context: iBuilderPlaceContext | iTalentLayerContext;
+  isBuilderPlaceOwner: boolean;
 }) {
+  const { user, isActiveDelegate, loading, refreshData } = context;
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const { platformHasAccess } = useContext(Web3MailContext);
-  const { isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const [aiLoading, setAiLoading] = useState(false);
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
   const talentLayerClient = useTalentLayerClient();
 
-  if (!user?.id) {
+  if (!user?.id || loading) {
     return <Loading />;
   }
 
@@ -63,13 +58,13 @@ function ProfileForm({
   }
 
   const initialValues: IFormValues = {
-    title: userDescription?.title || '',
-    role: userDescription?.role || '',
-    image_url: userDescription?.image_url || '',
-    video_url: userDescription?.video_url || '',
-    name: userDescription?.name || '',
-    about: userDescription?.about || '',
-    skills: userDescription?.skills_raw || '',
+    title: user.description?.title || '',
+    role: user.description?.role || '',
+    image_url: user.description?.image_url || '',
+    video_url: user.description?.video_url || '',
+    name: user.description?.name || '',
+    about: user.description?.about || '',
+    skills: user.description?.skills_raw || '',
   };
 
   const generatePictureUrl = async (e: React.FormEvent, callback: (string: string) => void) => {
@@ -86,7 +81,7 @@ function ProfileForm({
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (userDescription && user.address && walletClient && publicClient && talentLayerClient) {
+    if (user.description && user.address && walletClient && publicClient && talentLayerClient) {
       try {
         const profile = {
           title: values.title,
@@ -96,7 +91,7 @@ function ProfileForm({
           name: values.name,
           about: values.about,
           skills: values.skills,
-          web3mailPreferences: userDescription.web3mailPreferences,
+          web3mailPreferences: user.description.web3mailPreferences,
         };
 
         let cid = await talentLayerClient.profile.upload(profile);
@@ -241,7 +236,7 @@ function ProfileForm({
             <label className='block'>
               <span className='text-base-content'>Skills</span>
 
-              <SkillsInput initialValues={userDescription?.skills_raw} entityId={'skills'} />
+              <SkillsInput initialValues={user.description?.skills_raw} entityId={'skills'} />
 
               <Field type='hidden' id='skills' name='skills' />
             </label>
