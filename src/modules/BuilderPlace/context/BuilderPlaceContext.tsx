@@ -4,7 +4,6 @@ import { iBuilderPlaceContext, IUser } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
 import { useAccount } from 'wagmi';
 import { getCompletionScores, ICompletionScores } from '../../../utils/profile';
-import { getUserById } from '../../../queries/users';
 import { toast } from 'react-toastify';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 
@@ -18,7 +17,13 @@ const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
   isBuilderPlaceOwner: false,
 });
 
-const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; children: ReactNode }) => {
+const BuilderPlaceProvider = ({
+  data,
+  children,
+}: {
+  data: { builderPlace: IBuilderPlace; connectedUser: IUser };
+  children: ReactNode;
+}) => {
   const chainId = useChainId();
   const [user, setUser] = useState<IUser | undefined>();
   const account = useAccount();
@@ -30,40 +35,39 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState<boolean>(false);
 
   const fetchData = async () => {
-    if (!data || !data.ownerTalentLayerId || !account.isConnected || !talentLayerClient) {
+    if (
+      !data.builderPlace ||
+      !data.builderPlace.ownerTalentLayerId ||
+      !data.connectedUser ||
+      !account.isConnected ||
+      !talentLayerClient
+    ) {
       setLoading(false);
       return false;
     }
 
     try {
-      const userResponse = await getUserById(chainId, data.ownerTalentLayerId);
-
-      if (!userResponse?.data?.data?.user) {
-        setLoading(false);
-        return false;
-      }
-      const currentUser = userResponse.data.data.user;
-
       const platform = await talentLayerClient.platform.getOne(
         process.env.NEXT_PUBLIC_PLATFORM_ID as string,
       );
-      currentUser.isAdmin = platform?.address === currentUser?.address;
 
-      setUser(currentUser);
+      data.connectedUser.isAdmin = platform?.address === data.connectedUser?.address;
+
+      setUser(data.connectedUser);
       setIsActiveDelegate(
         process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
-          userResponse.data.data.users[0].delegates &&
-          userResponse.data.data.users[0].delegates.indexOf(
+          !!data.connectedUser.delegates &&
+          data.connectedUser.delegates.indexOf(
             (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
           ) !== -1,
       );
 
-      const isBuilderPlaceOwner = data?.owners?.some(
+      const isBuilderPlaceOwner = data?.builderPlace.owners?.some(
         owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
       );
 
       setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
-      setBuilderPlace(data);
+      setBuilderPlace(data.builderPlace);
 
       setLoading(false);
       return true;
