@@ -4,9 +4,9 @@ import { iBuilderPlaceContext, IUser } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
 import { useAccount } from 'wagmi';
 import { getCompletionScores, ICompletionScores } from '../../../utils/profile';
-import { TalentLayerClient } from '@talentlayer/client';
 import { getUserById } from '../../../queries/users';
 import { toast } from 'react-toastify';
+import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 
 const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
   loading: true,
@@ -25,24 +25,9 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   const [isActiveDelegate, setIsActiveDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
   const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
-  const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
+  const talentLayerClient = useTalentLayerClient();
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState<boolean>(false);
-
-  // automatically switch to the default chain is the current one is not part of the config
-  useEffect(() => {
-    const talentLayerClient = new TalentLayerClient({
-      chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
-      ipfsConfig: {
-        clientId: process.env.NEXT_PUBLIC_INFURA_ID as string,
-        clientSecret: process.env.NEXT_PUBLIC_INFURA_SECRET as string,
-        baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
-      },
-      platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-      signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
-    });
-    setTalentLayerClient(talentLayerClient);
-  }, [account.address]);
 
   const fetchData = async () => {
     if (!data || !data.ownerTalentLayerId || !account.isConnected || !talentLayerClient) {
