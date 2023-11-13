@@ -338,7 +338,7 @@ export type iTalentLayerContext = {
 export type iBuilderPlaceContext = {
   loading: boolean;
   refreshData: () => Promise<boolean>;
-  user?: IUser;
+  builderPlaceOwner?: IUser;
   builderPlace?: IBuilderPlace;
   isBuilderPlaceOwner: boolean;
 };
