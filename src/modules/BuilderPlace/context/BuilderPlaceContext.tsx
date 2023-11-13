@@ -11,7 +11,7 @@ const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
   },
   builderPlace: undefined,
   builderPlaceOwner: undefined,
-  isBuilderPlaceOwner: false,
+  isConnectedUserBuilderPlaceOwner: false,
 });
 
 const BuilderPlaceProvider = ({
@@ -25,7 +25,8 @@ const BuilderPlaceProvider = ({
   const [builderPlaceOwner, setBuilderPlaceOwner] = useState<IUser | undefined>();
   const [loading, setLoading] = useState(true);
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
-  const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState<boolean>(false);
+  const [isConnectedUserBuilderPlaceOwner, setIsConnectedUserBuilderPlaceOwner] =
+    useState<boolean>(false);
 
   const fetchData = async () => {
     if (
@@ -43,7 +44,7 @@ const BuilderPlaceProvider = ({
         owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
       );
 
-      setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
+      setIsConnectedUserBuilderPlaceOwner(isBuilderPlaceOwner || false);
       setBuilderPlace(data.builderPlace);
       setBuilderPlaceOwner(data.builderPlaceOwner);
 
@@ -75,11 +76,17 @@ const BuilderPlaceProvider = ({
     return {
       loading,
       refreshData: fetchData,
-      builderPlaceOwner: builderPlaceOwner,
+      builderPlaceOwner,
       builderPlace,
-      isBuilderPlaceOwner,
+      isConnectedUserBuilderPlaceOwner,
     };
-  }, [account.address, builderPlaceOwner?.id, loading, builderPlace, isBuilderPlaceOwner]);
+  }, [
+    account.address,
+    builderPlaceOwner?.id,
+    loading,
+    builderPlace,
+    isConnectedUserBuilderPlaceOwner,
+  ]);
 
   return <BuilderPlaceContext.Provider value={value}>{children}</BuilderPlaceContext.Provider>;
 };

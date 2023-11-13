@@ -23,7 +23,7 @@ const generateServicesEmbedIframeCode = (servicesEmbedUrl: string): string => {
 
 export default function EmbedPlace() {
   const { user, loading } = useContext(TalentLayerContext);
-  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { builderPlace, isConnectedUserBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
 
   if (loading) {
@@ -36,7 +36,7 @@ export default function EmbedPlace() {
 
   return (
     <div>
-      {isBuilderPlaceOwner && (
+      {isConnectedUserBuilderPlaceOwner && (
         <div className='max-w-7xl mx-auto text-base-content'>
           <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
             <div className='flex py-2 px-6 sm:px-0 items-center w-full mb-8'>
@@ -86,7 +86,7 @@ export default function EmbedPlace() {
           </div>
         </div>
       )}
-      {isBuilderPlaceOwner && user?.id && builderPlace?.name && (
+      {isConnectedUserBuilderPlaceOwner && user?.id && builderPlace?.name && (
         <div className={'flex flex-col items-center justify-center mt-4'}>
           <h1 className='text-title text-4xl mb-4 text-center'>Work Board Preview</h1>
           <iframe

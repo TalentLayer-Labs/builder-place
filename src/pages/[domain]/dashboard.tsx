@@ -18,7 +18,7 @@ export async function getServerSideProps({ params }: any) {
 
 function Dashboard() {
   const { account, user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const { isConnectedUserBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
 
   if (!user) {
     return <Steps />;
@@ -36,7 +36,7 @@ function Dashboard() {
 
       {account?.isConnected && user && (
         <div>
-          {isBuilderPlaceOwner && (!builderPlace?.logo || !builderPlace?.icon) && (
+          {isConnectedUserBuilderPlaceOwner && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
@@ -62,7 +62,7 @@ function Dashboard() {
               </div>
             </>
           )}
-          {!isBuilderPlaceOwner && (
+          {!isConnectedUserBuilderPlaceOwner && (
             <>
               <div className='mb-12'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>

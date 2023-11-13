@@ -340,5 +340,5 @@ export type iBuilderPlaceContext = {
   refreshData: () => Promise<boolean>;
   builderPlaceOwner?: IUser;
   builderPlace?: IBuilderPlace;
-  isBuilderPlaceOwner: boolean;
+  isConnectedUserBuilderPlaceOwner: boolean;
 };

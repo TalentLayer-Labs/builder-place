@@ -11,13 +11,13 @@ import {
 
 function SideMenu() {
   const { user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { isConnectedUserBuilderPlaceOwner } = useContext(BuilderPlaceContext);
 
-  console.log({ isBuilderPlaceOwner });
+  console.log({ isConnectedUserBuilderPlaceOwner });
 
   return (
     <nav className='space-y-1 px-3'>
-      {isBuilderPlaceOwner && (
+      {isConnectedUserBuilderPlaceOwner && (
         <>
           <div className='pt-4'>
             <div className='border-info h-px mx-3'></div>
@@ -54,7 +54,7 @@ function SideMenu() {
         </>
       )}
 
-      {!isBuilderPlaceOwner && (
+      {!isConnectedUserBuilderPlaceOwner && (
         <nav className='space-y-1 mt-6'>
           {workerNavigation.map(item => (
             <SideLink key={item.name} href={item.href}>

@@ -19,7 +19,7 @@ interface ContainerProps {
 
 function Layout({ children, className }: ContainerProps) {
   const router = useRouter();
-  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { builderPlace, isConnectedUserBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const { account } = useContext(TalentLayerContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -150,7 +150,7 @@ function Layout({ children, className }: ContainerProps) {
                 <SideMenu />
               </div>
               <div className='mt-8 flex flex-1 flex-col items-center justify-end pb-4'>
-                {isBuilderPlaceOwner && (
+                {isConnectedUserBuilderPlaceOwner && (
                   <div className='block mb-4'>
                     <a
                       href='/'

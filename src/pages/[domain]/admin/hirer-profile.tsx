@@ -9,9 +9,9 @@ export async function getServerSideProps({ params }: any) {
 }
 
 export default function HirerProfile() {
-  const { builderPlaceOwner, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { builderPlaceOwner, isConnectedUserBuilderPlaceOwner } = useContext(BuilderPlaceContext);
 
-  if (!isBuilderPlaceOwner) {
+  if (!isConnectedUserBuilderPlaceOwner) {
     return <AccessDenied />;
   }
 
