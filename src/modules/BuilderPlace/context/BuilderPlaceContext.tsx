@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { iBuilderPlaceContext, IUser } from '../../../types';
-import { useChainId } from '../../../hooks/useChainId';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 
@@ -21,7 +20,6 @@ const BuilderPlaceProvider = ({
   data: { builderPlace: IBuilderPlace; builderPlaceOwner: IUser };
   children: ReactNode;
 }) => {
-  const chainId = useChainId();
   const account = useAccount();
   const [user, setUser] = useState<IUser | undefined>();
   const [loading, setLoading] = useState(true);
@@ -70,7 +68,7 @@ const BuilderPlaceProvider = ({
 
   useEffect(() => {
     fetchData();
-  }, [chainId, data, account.address]);
+  }, [data, account.address]);
 
   const value = useMemo(() => {
     return {
