@@ -3,13 +3,10 @@ import { IBuilderPlace } from '../types';
 import { iBuilderPlaceContext, IUser } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
 import { useAccount } from 'wagmi';
-import { getCompletionScores, ICompletionScores } from '../../../utils/profile';
 import { toast } from 'react-toastify';
-import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 
 const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
   loading: true,
-  isActiveDelegate: false,
   refreshData: async () => {
     return false;
   },
@@ -21,16 +18,13 @@ const BuilderPlaceProvider = ({
   data,
   children,
 }: {
-  data: { builderPlace: IBuilderPlace; connectedUser: IUser };
+  data: { builderPlace: IBuilderPlace; builderPlaceOwner: IUser };
   children: ReactNode;
 }) => {
   const chainId = useChainId();
-  const [user, setUser] = useState<IUser | undefined>();
   const account = useAccount();
-  const [isActiveDelegate, setIsActiveDelegate] = useState(false);
+  const [user, setUser] = useState<IUser | undefined>();
   const [loading, setLoading] = useState(true);
-  const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
-  const talentLayerClient = useTalentLayerClient();
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState<boolean>(false);
 
@@ -38,36 +32,21 @@ const BuilderPlaceProvider = ({
     if (
       !data.builderPlace ||
       !data.builderPlace.ownerTalentLayerId ||
-      !data.connectedUser ||
-      !account.isConnected ||
-      !talentLayerClient
+      !data.builderPlaceOwner ||
+      !account.isConnected
     ) {
       setLoading(false);
       return false;
     }
 
     try {
-      const platform = await talentLayerClient.platform.getOne(
-        process.env.NEXT_PUBLIC_PLATFORM_ID as string,
-      );
-
-      data.connectedUser.isAdmin = platform?.address === data.connectedUser?.address;
-
-      setUser(data.connectedUser);
-      setIsActiveDelegate(
-        process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
-          !!data.connectedUser.delegates &&
-          data.connectedUser.delegates.indexOf(
-            (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
-          ) !== -1,
-      );
-
-      const isBuilderPlaceOwner = data?.builderPlace.owners?.some(
+      const isBuilderPlaceOwner = data?.builderPlace?.owners?.some(
         owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
       );
 
       setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
       setBuilderPlace(data.builderPlace);
+      setUser(data.builderPlaceOwner);
 
       setLoading(false);
       return true;
@@ -91,36 +70,18 @@ const BuilderPlaceProvider = ({
 
   useEffect(() => {
     fetchData();
-  }, [chainId, data, account.address, talentLayerClient]);
-
-  useEffect(() => {
-    if (!user) return;
-    const completionScores = getCompletionScores(user);
-    setCompletionScores(completionScores);
-  }, [user]);
+  }, [chainId, data, account.address]);
 
   const value = useMemo(() => {
     return {
       user,
       account: account ? account : undefined,
-      isActiveDelegate,
       refreshData: fetchData,
       loading,
-      completionScores,
-      talentLayerClient,
       builderPlace,
       isBuilderPlaceOwner,
     };
-  }, [
-    account.address,
-    user?.id,
-    isActiveDelegate,
-    loading,
-    completionScores,
-    talentLayerClient,
-    builderPlace,
-    isBuilderPlaceOwner,
-  ]);
+  }, [account.address, user?.id, loading, builderPlace, isBuilderPlaceOwner]);
 
   return <BuilderPlaceContext.Provider value={value}>{children}</BuilderPlaceContext.Provider>;
 };

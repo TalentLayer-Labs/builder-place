@@ -9,16 +9,16 @@ export async function getServerSideProps({ params }: any) {
 }
 
 export default function HirerProfile() {
-  const context = useContext(BuilderPlaceContext);
+  const { user, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
 
-  if (!context.isBuilderPlaceOwner) {
+  if (!isBuilderPlaceOwner) {
     return <AccessDenied />;
   }
 
   return (
     <>
       <h1>Hirer profile</h1>
-      <ProfileForm context={context} />
+      <ProfileForm isUserDelegatedOwner={true} editedUser={user} />
     </>
   );
 }

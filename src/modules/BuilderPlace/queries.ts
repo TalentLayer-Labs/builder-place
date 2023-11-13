@@ -19,16 +19,16 @@ export const getBuilderPlace = async (domain: string) => {
   }
 
   const serializedBuilderPlace = JSON.parse(JSON.stringify(builderPlace));
-  const serializedConnectedUser = JSON.parse(JSON.stringify(userResponse.data.data.user));
+  const serializedBuilderPlaceOwner = JSON.parse(JSON.stringify(userResponse.data.data.user));
 
   console.log({
     serializedBuilderPlace,
-    serializedConnectedUser,
+    serializedConnectedUser: serializedBuilderPlaceOwner,
   });
   return {
     props: {
       builderPlace: serializedBuilderPlace,
-      connectedUser: serializedConnectedUser,
+      builderPlaceOwner: serializedBuilderPlaceOwner,
     },
   };
 };

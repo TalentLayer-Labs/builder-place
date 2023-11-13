@@ -14,7 +14,8 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import { iBuilderPlaceContext, iTalentLayerContext } from '../../types';
+import { IUser } from '../../types';
+import TalentLayerContext from '../../context/talentLayer';
 
 interface IFormValues {
   title?: string;
@@ -32,14 +33,16 @@ const validationSchema = Yup.object({
 
 function ProfileForm({
   callback,
-  context,
+  editedUser,
+  isUserDelegatedOwner = false,
 }: {
   callback?: () => void;
-  context: iBuilderPlaceContext | iTalentLayerContext;
+  editedUser?: IUser;
+  isUserDelegatedOwner?: boolean;
 }) {
-  const { user, isActiveDelegate, loading, refreshData } = context;
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
+  const { user, isActiveDelegate, refreshData, loading } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
@@ -51,13 +54,13 @@ function ProfileForm({
   }
 
   const initialValues: IFormValues = {
-    title: user.description?.title || '',
-    role: user.description?.role || '',
-    image_url: user.description?.image_url || '',
-    video_url: user.description?.video_url || '',
-    name: user.description?.name || '',
-    about: user.description?.about || '',
-    skills: user.description?.skills_raw || '',
+    title: editedUser?.description?.title || user.description?.title || '',
+    role: editedUser?.description?.role || user.description?.role || '',
+    image_url: editedUser?.description?.image_url || user.description?.image_url || '',
+    video_url: editedUser?.description?.video_url || user.description?.video_url || '',
+    name: editedUser?.description?.name || user.description?.name || '',
+    about: editedUser?.description?.about || user.description?.about || '',
+    skills: editedUser?.description?.skills_raw || user.description?.skills_raw || '',
   };
 
   const generatePictureUrl = async (e: React.FormEvent, callback: (string: string) => void) => {
@@ -90,7 +93,12 @@ function ProfileForm({
         let cid = await talentLayerClient.profile.upload(profile);
 
         let tx;
-        if (isActiveDelegate) {
+        if (isUserDelegatedOwner && editedUser) {
+          const res = await talentLayerClient?.profile.update(profile, editedUser.id);
+
+          tx = res.tx;
+          cid = res.cid;
+        } else if (isActiveDelegate) {
           const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {
