@@ -10,6 +10,7 @@ const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
     return false;
   },
   builderPlace: undefined,
+  builderPlaceOwner: undefined,
   isBuilderPlaceOwner: false,
 });
 
@@ -21,7 +22,7 @@ const BuilderPlaceProvider = ({
   children: ReactNode;
 }) => {
   const account = useAccount();
-  const [user, setUser] = useState<IUser | undefined>();
+  const [builderPlaceOwner, setBuilderPlaceOwner] = useState<IUser | undefined>();
   const [loading, setLoading] = useState(true);
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState<boolean>(false);
@@ -44,7 +45,7 @@ const BuilderPlaceProvider = ({
 
       setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);
       setBuilderPlace(data.builderPlace);
-      setUser(data.builderPlaceOwner);
+      setBuilderPlaceOwner(data.builderPlaceOwner);
 
       setLoading(false);
       return true;
@@ -72,14 +73,13 @@ const BuilderPlaceProvider = ({
 
   const value = useMemo(() => {
     return {
-      user,
-      account: account ? account : undefined,
-      refreshData: fetchData,
       loading,
+      refreshData: fetchData,
+      builderPlaceOwner: builderPlaceOwner,
       builderPlace,
       isBuilderPlaceOwner,
     };
-  }, [account.address, user?.id, loading, builderPlace, isBuilderPlaceOwner]);
+  }, [account.address, builderPlaceOwner?.id, loading, builderPlace, isBuilderPlaceOwner]);
 
   return <BuilderPlaceContext.Provider value={value}>{children}</BuilderPlaceContext.Provider>;
 };
