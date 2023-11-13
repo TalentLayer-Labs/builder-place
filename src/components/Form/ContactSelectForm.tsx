@@ -1,7 +1,6 @@
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import SubmitButton from './SubmitButton';
 import * as Yup from 'yup';
-import axios from 'axios';
 import { showErrorTransactionToast } from '../../utils/toast';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
@@ -123,7 +122,7 @@ export const ContactListForm = ({
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder='Type your subject here...'
               />
-              <span className='text-error'>
+              <span className='text-alone-error'>
                 <ErrorMessage name='subject' />
               </span>
             </label>
@@ -138,7 +137,7 @@ export const ContactListForm = ({
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder='Type the email body here...'
               />
-              <span className='text-error'>
+              <span className='text-alone-error'>
                 <ErrorMessage name='body' />
               </span>
             </label>
@@ -192,7 +191,7 @@ export const ContactListForm = ({
                       />
                       <p className={'ml-2 text-base-content center-items'}>Add all contacts</p>
                     </div>
-                    <span className='text-error'>
+                    <span className='text-alone-error'>
                       <ErrorMessage name='users' />
                     </span>
                   </div>

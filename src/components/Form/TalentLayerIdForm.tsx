@@ -14,7 +14,6 @@ import { delegateMintID } from '../request';
 import { HandlePrice } from './HandlePrice';
 import SubmitButton from './SubmitButton';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 
 interface IFormValues {
   handle: string;
@@ -23,7 +22,6 @@ interface IFormValues {
 function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: () => void }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { platformHasAccess } = useContext(Web3MailContext);
   const { account, refreshData } = useContext(TalentLayerContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
@@ -161,7 +159,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
               </div>
             </div>
           </div>
-          <span className='label-text text-error mt-2'>
+          <span className='label-text text-alone-error mt-2'>
             <ErrorMessage name='handle' />
           </span>
         </Form>

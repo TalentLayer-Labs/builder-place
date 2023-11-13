@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { buildMediaUrl } from '../utils/ipfs';
 import { IlensUser } from '../utils/types';
 interface IProps {
@@ -20,7 +19,7 @@ function UserLensProfile({ lensUser }: IProps) {
             />
           )}
           <div className='text-center text-base-content text-lg font-medium'>{lensUser?.name}</div>
-          <div className='text-center text-success text-sm'>@{lensUser?.handle}</div>
+          <div className='text-center text-alone-success text-sm'>@{lensUser?.handle}</div>
           <span id='lens-follow-small' data-handle={'nader.lens'} />
           <div className='px-2 text-center mt-2 font-light text-sm'>
             <p>
