@@ -52,7 +52,7 @@ function UserServices({ user, type }: IProps) {
   return (
     <>
       <h2 className='pb-4 text-base font-bold break-all'>
-        {type == 'buyer' ? 'my project posts' : 'projects applied to'}
+        {type == 'buyer' ? 'my posts' : 'posts applied to'}
       </h2>
       <div className='grid grid-cols-1 gap-4'>
         {services.map((service, i) => {

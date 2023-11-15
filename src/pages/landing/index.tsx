@@ -883,12 +883,8 @@ function Home() {
                       step 2
                     </span>
                     <h2 className='mb-4 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                      post your work
+                      post your opportunities
                     </h2>
-                    <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      This project aims to help builders and hackers to start fast on using XMTP and
-                      TalentLayer protocols. It contains demo code for all the previous features.
-                    </p>
 
                     <div className='mb-[30px] flex items-center'>
                       <div className='shrink-0 mr-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-stroke text-xl font-semibold text-black text-center '>
