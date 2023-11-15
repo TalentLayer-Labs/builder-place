@@ -81,7 +81,7 @@ function Home() {
                     <a
                       href='/worker-landing'
                       className='rounded-md text-center bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-bold text-stone-800 hover:bg-opacity-60'>
-                      i'm a worker
+                      i'm a contributor
                     </a>
                   </li>
                 </ul>
@@ -116,6 +116,11 @@ function Home() {
                       create a <br />
                       BuilderPlace
                     </a>
+                    {/* <a
+                      href='#'
+                      className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
+                      register for<br></br> beta
+                    </a> */}
                     <a
                       href='/worker-landing'
                       className='max-w-[186px] flex-1 text-center rounded-md bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-stone-800 font-bold hover:bg-opacity-60'>
@@ -181,7 +186,8 @@ function Home() {
                       the place
                     </h3>
                     <p className='text-base mx-auto max-w-[400px] mx-auto text-body pb-5'>
-                      a custom-domain and branded open-source contribution center for your community
+                      a branded open-source contribution center for your community, hosted on your
+                      domain or yourname.builder.place
                     </p>
                   </div>
                 </div>
@@ -200,7 +206,7 @@ function Home() {
                       the embed
                     </h3>
                     <p className='text-base text-body max-w-[400px] mx-auto pb-5'>
-                      an embedable work board, hosted on your team's own website
+                      an embedable work board, perfect for putting on your team's current jobs page
                     </p>
                   </div>
                 </div>
@@ -368,9 +374,16 @@ function Home() {
                     </p>
                     <div className='flex justify-center gap-4'>
                       <a
-                        href='https://talentlayer.builder.place'
-                        className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        href='https://www.talentlayer.builder.place'
+                        target='_blank'
+                        className='max-w-[210px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
                         talentlayer.builder.place
+                      </a>
+                      <a
+                        href='https://www.talentlayer.org'
+                        target='_blank'
+                        className='max-w-[210px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        meet the project
                       </a>
                     </div>
                   </div>
@@ -420,9 +433,16 @@ function Home() {
                     </p>
                     <div className='flex justify-center gap-4'>
                       <a
-                        href='https://thebadge.builder.place'
-                        className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        href='https://www.thebadge.builder.place'
+                        target='_blank'
+                        className='max-w-[210px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
                         thebadge.builder.place
+                      </a>
+                      <a
+                        href='https://www.thebadge.xyz'
+                        target='_blank'
+                        className='max-w-[210px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        meet the project
                       </a>
                     </div>
                   </div>
@@ -1196,7 +1216,13 @@ function Home() {
               <h2 className='mb-4 mt-20 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
                 grow your open-source movement today
               </h2>
+
               <div className='flex justify-center gap-4'>
+                {/* <a
+                  href='#'
+                  className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
+                  register for <br></br>beta
+                </a> */}
                 <a
                   href='/onboarding'
                   className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
@@ -1225,8 +1251,8 @@ function Home() {
                     &copy; 2023 BuilderPlace
                   </a>{' '}
                   |{' '}
-                  <a href='/terms' className='hover:opacity-60'>
-                    Terms of Service
+                  <a href='/terms' className='underline hover:opacity-60'>
+                    terms of service
                   </a>
                 </p>
               </div>
@@ -1234,8 +1260,8 @@ function Home() {
             <a
               href='https://github.com/TalentLayer-Labs/builder-place'
               target='_blank'
-              className='hover:opacity-60'>
-              Powered by OpenSource
+              className='text-landingprimary underline hover:opacity-60'>
+              100% opens-source
             </a>
           </div>
         </div>

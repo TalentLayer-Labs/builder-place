@@ -70,18 +70,11 @@ function Home() {
                       support
                     </a>
                   </li>
-                  {/* <li>
-                    <a
-                      href='/worker-onboarding'
-                      className='rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-bold text-white hover:bg-opacity-60'>
-                      register
-                    </a>
-                  </li> */}
                   <li>
                     <a
                       href='/'
                       className='rounded-md text-center bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-bold text-stone-800 hover:bg-opacity-60'>
-                      i'm an hirer
+                      i'm an open-source project
                     </a>
                   </li>
                 </ul>
@@ -110,15 +103,15 @@ function Home() {
 
                   <div className='flex justify-center md:justify-start gap-4'>
                     <a
-                      href='/worker-onboarding'
-                      className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
-                      create my <br />
-                      profile
+                      href='https://tally.so/r/319k9Q'
+                      target='_blank'
+                      className='max-w-[286px] flex-1 rounded-md font-bold text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white hover:bg-opacity-60'>
+                      get open-source opportunity alerts
                     </a>
                     <a
                       href='#work-process'
                       className='max-w-[186px] flex-1 text-center rounded-md bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-stone-800 font-bold hover:bg-opacity-60'>
-                      explore the <br />
+                      contribute to <br />
                       projects
                     </a>
                   </div>
@@ -200,6 +193,10 @@ function Home() {
                 projects that <br></br>
                 <a className='text-landingprimary'>need your help</a>
               </h2>
+              <p className='text-base text-body mt-5 mb-10'>
+                BuilderPlace is currently in alpha. there are open-source opportunities live today
+                for you to contribute to.
+              </p>
             </div>
           </div>
 
@@ -225,10 +222,15 @@ function Home() {
                     </p>
                     <div className='flex justify-center gap-4'>
                       <a
-                        href='#'
+                        href='https://www.talentlayer.builder.place'
                         className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
                         talentlayer.builder.place
                       </a>
+                      {/* <a
+                        href='https://www.talentlayer.org'
+                        className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        meet the project
+                      </a> */}
                     </div>
                   </div>
                 </div>
@@ -277,10 +279,15 @@ function Home() {
                     </p>
                     <div className='flex justify-center gap-4'>
                       <a
-                        href='#'
+                        href='https://www.thebadge.builder.place'
                         className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
                         thebadge.builder.place
                       </a>
+                      {/* <a
+                        href='https://www.thebadge.xyz'
+                        className='max-w-[250px] flex-1 mb-5 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white font-bold hover:bg-opacity-60'>
+                        meet the project
+                      </a> */}
                     </div>
                   </div>
                 </div>
@@ -776,7 +783,9 @@ function Home() {
                       start your reputation
                     </h2>
                     <p className='mb-[30px] text-base leading-relaxed text-body'>
-                      set up your profile and get ready to work
+                      set up your profile and get ready to work. you can set up your profile on any
+                      team's builder.place platform - you'll be able to use it across all in-network
+                      platforms.
                     </p>
 
                     <div className='mb-[30px] flex items-center'>
@@ -1176,8 +1185,14 @@ function Home() {
               <div className='flex justify-center gap-4'>
                 <a
                   href='#work-process'
-                  className='max-w-[286px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
+                  className='max-w-[286px] flex-1 rounded-md text-center bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-black font-bold hover:bg-opacity-60'>
                   explore the projects
+                </a>
+                <a
+                  href='https://tally.so/r/319k9Q'
+                  target='_blank'
+                  className='max-w-[286px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
+                  get alerts
                 </a>
               </div>
               <div className='pb-6 pt-10 w-1/2'></div>
@@ -1195,8 +1210,8 @@ function Home() {
                     &copy; 2023 BuilderPlace
                   </a>{' '}
                   |{' '}
-                  <a href='/terms' className='hover:opacity-60'>
-                    Terms of Service
+                  <a href='/terms' className='underline hover:opacity-60'>
+                    terms of service
                   </a>
                 </p>
               </div>
@@ -1204,8 +1219,8 @@ function Home() {
             <a
               href='https://github.com/TalentLayer-Labs/builder-place'
               target='_blank'
-              className='hover:opacity-60'>
-              Powered by OpenSource
+              className='text-landingprimary underline hover:opacity-60'>
+              100% opens-source
             </a>
           </div>
         </div>
