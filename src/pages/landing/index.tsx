@@ -883,7 +883,7 @@ function Home() {
                       step 2
                     </span>
                     <h2 className='mb-4 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                      post your opportunities
+                      post your missions
                     </h2>
 
                     <div className='mb-[30px] flex items-center'>
