@@ -97,7 +97,7 @@ export default function EmbedPlace() {
         <div className='mt-6'>
           <h2 className='pb-4 text-base font-bold break-all'>preview</h2>
           <p className='text-sm mb-6 text-landingprimary italic'>
-            when you post your contribution missions, they will show up here
+            when you post your open-source missions, they will show up here
           </p>
           <div
             className='border border-info rounded-xl overflow-hidden'

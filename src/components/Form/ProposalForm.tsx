@@ -186,12 +186,12 @@ function ProposalForm({
     <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
       {({ isSubmitting, values, setFieldValue }) => (
         <Form>
-          <h2 className='mb-2 text-base-content font-bold'>the project</h2>
+          <h2 className='mb-2 text-base-content font-bold'>the mission</h2>
           <ServiceItem service={service} />
 
           <h2 className=' mt-8 mb-2 text-base-content font-bold'>how can you help?</h2>
           <p className='text-sm mb-2'>
-            describe how you can help achive the goals of the contribution mission and why you want
+            describe how you can help achive the goals of the open-source mission and why you want
             to help
           </p>
           <div className='grid grid-cols-1 gap-6 border border-info rounded-xl p-6 bg-base-100'>

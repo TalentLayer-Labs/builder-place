@@ -142,7 +142,7 @@ function Home() {
               className='wow fadeInUp mx-auto mb-14 max-w-[780px] text-center lg:mb-[70px]'
               data-wow-delay='.2s'>
               <h2 className='mb-0 mt-10 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                finding <a className='text-landingprimary'>open-source missions</a>
+                finding <a className='text-landingprimary'>open-source opportunities</a>
                 <br></br>
                 shouldn't be hard
               </h2>
@@ -594,7 +594,7 @@ function Home() {
                   <div className='mb-5 border-b border-stroke'>
                     <p className='pb-9 text-base text-body'>
                       Open source contributions gave me a big boost in learning new skills quickly
-                      and opened up many missions for remote work. It's like a superhighway for
+                      and opened up many opportunities for remote work. It's like a superhighway for
                       personal and professional growth!
                     </p>
                   </div>
@@ -992,7 +992,7 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          explore BuilderPlace missions on network of hiring platforms
+                          explore missions on a network of third-party hiring platforms
                         </h5>
                         <p className='text-base text-body'>
                           visit marketplace platforms like{' '}
