@@ -1,4 +1,4 @@
-import { PreferredWorkTypes } from '../../types';
+import { IUser, PreferredWorkTypes } from '../../types';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -85,6 +85,7 @@ export type IBuilderPlace = {
   ownerTalentLayerId?: string;
   status: 'Validated' | 'Pending';
   preferredWorkTypes: PreferredWorkTypes[];
+  ownerTalentLayerUser?: IUser;
 };
 
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain

@@ -10,7 +10,6 @@ import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import { generatePicture } from '../../utils/ai-picture-gen';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
-import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
@@ -31,18 +30,10 @@ const validationSchema = Yup.object({
   title: Yup.string().required('title is required'),
 });
 
-function ProfileForm({
-  callback,
-  editedUser,
-  isUserDelegatedOwner = false,
-}: {
-  callback?: () => void;
-  editedUser?: IUser;
-  isUserDelegatedOwner?: boolean;
-}) {
+function ProfileForm({ callback, user }: { callback?: () => void; user?: IUser }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, isActiveDelegate, refreshData, loading } = useContext(TalentLayerContext);
+  const { refreshData, loading } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
@@ -54,13 +45,13 @@ function ProfileForm({
   }
 
   const initialValues: IFormValues = {
-    title: editedUser?.description?.title || user.description?.title || '',
-    role: editedUser?.description?.role || user.description?.role || '',
-    image_url: editedUser?.description?.image_url || user.description?.image_url || '',
-    video_url: editedUser?.description?.video_url || user.description?.video_url || '',
-    name: editedUser?.description?.name || user.description?.name || '',
-    about: editedUser?.description?.about || user.description?.about || '',
-    skills: editedUser?.description?.skills_raw || user.description?.skills_raw || '',
+    title: user?.description?.title || '',
+    role: user?.description?.role || '',
+    image_url: user?.description?.image_url || '',
+    video_url: user?.description?.video_url || '',
+    name: user?.description?.name || '',
+    about: user?.description?.about || '',
+    skills: user?.description?.skills_raw || '',
   };
 
   const generatePictureUrl = async (e: React.FormEvent, callback: (string: string) => void) => {
@@ -90,23 +81,11 @@ function ProfileForm({
           web3mailPreferences: user.description?.web3mailPreferences,
         };
 
-        let cid = await talentLayerClient.profile.upload(profile);
-
         let tx;
-        if (isUserDelegatedOwner && editedUser) {
-          const res = await talentLayerClient?.profile.update(profile, editedUser.id);
+        const res = await talentLayerClient?.profile.update(profile, user.id);
 
-          tx = res.tx;
-          cid = res.cid;
-        } else if (isActiveDelegate) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
-          tx = response.data.transaction;
-        } else {
-          const res = await talentLayerClient?.profile.update(profile, user.id);
-
-          tx = res.tx;
-          cid = res.cid;
-        }
+        tx = res.tx;
+        const cid = res.cid;
 
         await createMultiStepsTransactionToast(
           chainId,

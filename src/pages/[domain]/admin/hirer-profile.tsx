@@ -18,7 +18,7 @@ export default function HirerProfile() {
   return (
     <>
       <h1>Hirer profile</h1>
-      <ProfileForm isUserDelegatedOwner={true} editedUser={builderPlaceOwner} />
+      <ProfileForm user={builderPlaceOwner} />
     </>
   );
 }

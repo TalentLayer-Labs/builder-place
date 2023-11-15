@@ -6,9 +6,6 @@ import { toast } from 'react-toastify';
 
 const BuilderPlaceContext = createContext<iBuilderPlaceContext>({
   loading: true,
-  refreshData: async () => {
-    return false;
-  },
   builderPlace: undefined,
   builderPlaceOwner: undefined,
   isConnectedUserBuilderPlaceOwner: false,
@@ -18,7 +15,7 @@ const BuilderPlaceProvider = ({
   data,
   children,
 }: {
-  data: { builderPlace: IBuilderPlace; builderPlaceOwner: IUser };
+  data: { builderPlace: IBuilderPlace };
   children: ReactNode;
 }) => {
   const account = useAccount();
@@ -32,8 +29,8 @@ const BuilderPlaceProvider = ({
     if (
       !data.builderPlace ||
       !data.builderPlace.ownerTalentLayerId ||
-      !data.builderPlaceOwner ||
-      !account.isConnected
+      !data.builderPlace.ownerTalentLayerUser ||
+      !(account?.status === 'connected')
     ) {
       setLoading(false);
       return false;
@@ -46,7 +43,7 @@ const BuilderPlaceProvider = ({
 
       setIsConnectedUserBuilderPlaceOwner(isBuilderPlaceOwner || false);
       setBuilderPlace(data.builderPlace);
-      setBuilderPlaceOwner(data.builderPlaceOwner);
+      setBuilderPlaceOwner(data.builderPlace.ownerTalentLayerUser);
 
       setLoading(false);
       return true;
@@ -70,12 +67,11 @@ const BuilderPlaceProvider = ({
 
   useEffect(() => {
     fetchData();
-  }, [data, account.address]);
+  }, [data, account]);
 
   const value = useMemo(() => {
     return {
       loading,
-      refreshData: fetchData,
       builderPlaceOwner,
       builderPlace,
       isConnectedUserBuilderPlaceOwner,
