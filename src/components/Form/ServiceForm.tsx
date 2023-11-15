@@ -149,8 +149,8 @@ function ServiceForm() {
           chainId,
           {
             pending: 'Creating your project...',
-            success: 'Congrats! Your project has been added',
-            error: 'An error occurred while creating your project',
+            success: 'Congrats! Your open-source post has been created',
+            error: 'An error occurred while creating your post',
           },
           publiClient,
           tx,
