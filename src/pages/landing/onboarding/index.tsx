@@ -279,7 +279,7 @@ function onboardingStep1() {
                 </button>
               ) : (
                 <button type='submit' className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
-                  Create My Profile
+                  create my profile
                 </button>
               )}
             </div>
