@@ -165,7 +165,7 @@ function Web3mailPreferencesForm() {
 
                   <Toogle
                     entityId={'activeOnNewService'}
-                    label='A new gig corresponding to your skills is open'
+                    label='A new open-source contribution opportunity corresponding to your skills is open'
                   />
 
                   <Toogle

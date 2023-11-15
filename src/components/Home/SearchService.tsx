@@ -9,7 +9,7 @@ function SearchService() {
             Find your <span className='text-base-content'>Next Post </span> Now
           </p>
           <p className='text-base-content opacity-50'>
-            Earn money doing what you love. Find a gig that fits your skills and schedule.
+            Earn money doing what you love. Find a project that fits your skills and schedule.
           </p>
           <SearchServiceButton value={''} />
         </div>

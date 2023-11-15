@@ -175,7 +175,7 @@ function Home() {
                   <div
                     className='wow fadeInUp group mx-auto mb-[60px] max-w-[510px] text-center'
                     data-wow-delay='.3s'>
-                    <div className='mx-auto mb-8 flex h-[250px] w-[350px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
+                    <div className='mx-auto mb-8 flex h-[250px] w-[300px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
                       <img
                         src='/images/myplace.png'
                         alt='about image'
@@ -195,7 +195,7 @@ function Home() {
                   <div
                     className='wow fadeInUp group mx-auto mb-[60px] max-w-[510px] text-center'
                     data-wow-delay='.2s'>
-                    <div className='mx-auto mb-8 flex h-[250px] w-[350px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
+                    <div className='mx-auto mb-8 flex h-[250px] w-[300px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
                       <img
                         src='/images/iframe.png'
                         alt='about image'
@@ -215,7 +215,7 @@ function Home() {
                   <div
                     className='wow fadeInUp group mx-auto mb-[60px] max-w-[510px] text-center'
                     data-wow-delay='.4s'>
-                    <div className='mx-auto mb-8 flex h-[250px] w-[350px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
+                    <div className='mx-auto mb-8 flex h-[250px] w-[300px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
                       <img
                         src='/images/review.png'
                         alt='about image'
@@ -234,7 +234,7 @@ function Home() {
                   <div
                     className='wow fadeInUp group mx-auto mb-[60px] max-w-[510px] text-center'
                     data-wow-delay='.4s'>
-                    <div className='mx-auto mb-8 flex h-[250px] w-[350px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
+                    <div className='mx-auto mb-8 flex h-[250px] w-[300px] items-center justify-center rounded-3 bg-opacity-20 text-redpraha duration-300   '>
                       <img
                         src='/images/network.png'
                         alt='about image'
@@ -912,7 +912,7 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          get applications from open-source workers across the ecosystem
+                          get applications from open-source contributors across the ecosystem
                         </h5>
                         <p className='text-base text-body'>
                           contributors will apply to handle a task for you. you white-list one
@@ -1035,7 +1035,7 @@ function Home() {
                           get your posts shared across a network of hiring platforms
                         </h5>
                         <p className='text-base text-body'>
-                          posts on your BuilderPlace board are searchable by workers across a
+                          posts on your BuilderPlace board are searchable by contributors across a
                           network of other hiring platforms - this is made possible by TalentLayer,
                           an interoperability layer for hiring platforms
                         </p>

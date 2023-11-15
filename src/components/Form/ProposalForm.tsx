@@ -186,11 +186,11 @@ function ProposalForm({
     <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
       {({ isSubmitting, values, setFieldValue }) => (
         <Form>
-          <h2 className='mb-2 text-base-content font-bold'>For the job:</h2>
+          <h2 className='mb-2 text-base-content font-bold'>For the project:</h2>
           <ServiceItem service={service} />
 
           <h2 className=' mt-8 mb-2 text-base-content font-bold'>
-            Describe your proposal in details:
+            Describe your proposal in detail and how you can help on the project:
           </h2>
           <div className='grid grid-cols-1 gap-6 border border-info rounded-xl p-6 bg-base-100'>
             <label className='block'>

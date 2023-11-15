@@ -53,7 +53,7 @@ function Steps({
   return (
     <>
       <p className='text-center pb-10 sm:pb-16'>
-        mint a soul-bound work ID - the beginning of your on-chian hirer reputation.
+        mint a soul-bound work ID - the beginning of your on-chian reputation.
       </p>
       {!account?.isConnected && (
         <div className='p-8 flex flex-col items-center'>

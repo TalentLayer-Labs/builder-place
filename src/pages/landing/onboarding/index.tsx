@@ -71,8 +71,8 @@ function onboardingStep1() {
   return (
     <HirerProfileLayout step={1}>
       <p className='text-center pb-10 sm:pb-16'>
-        your hirer profile helps workers get to know you - whether they’re visiting your team’s job
-        board, or if they’ve found your opportunity through a third-party platform
+        your organization profile helps contributors get to know you - whether they’re visiting your
+        team’s job board, or if they’ve found your opportunity through a third-party platform
       </p>
 
       <Formik
