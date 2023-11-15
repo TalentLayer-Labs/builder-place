@@ -105,8 +105,8 @@ function Home() {
                     <a
                       href='https://tally.so/r/319k9Q'
                       target='_blank'
-                      className='max-w-[286px] flex-1 rounded-md font-bold text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white hover:bg-opacity-60'>
-                      get open-source mission alerts
+                      className='max-w-[200px] flex-1 rounded-md font-bold text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white hover:bg-opacity-60'>
+                      get alerts <br></br>for new missions
                     </a>
                     <a
                       href='#work-process'
