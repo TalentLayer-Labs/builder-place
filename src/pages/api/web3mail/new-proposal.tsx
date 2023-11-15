@@ -114,7 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         const email = renderWeb3mail(
           `You got a new proposal!`,
-          `You just received a new proposal for the open-source opportunity "${
+          `You just received a new proposal for the open-source mission "${
             proposal.service.description?.title
           }" you posted on BuilderPlace !
           ${

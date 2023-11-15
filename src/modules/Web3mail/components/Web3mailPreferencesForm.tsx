@@ -151,7 +151,7 @@ function Web3mailPreferencesForm() {
 
                   <Toogle
                     entityId={'activeOnNewProposal'}
-                    label='a new proposal is posted on your open-source opportunity'
+                    label='a new proposal is posted on your open-source mission'
                   />
 
                   <Toogle
@@ -165,7 +165,7 @@ function Web3mailPreferencesForm() {
 
                   <Toogle
                     entityId={'activeOnNewService'}
-                    label='a new open-source contribution opportunity corresponding to your skills is open'
+                    label='a new open-source contribution mission corresponding to your skills is open'
                   />
 
                   <Toogle

@@ -106,7 +106,7 @@ function Home() {
                       href='https://tally.so/r/319k9Q'
                       target='_blank'
                       className='max-w-[286px] flex-1 rounded-md font-bold text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base text-white hover:bg-opacity-60'>
-                      get open-source opportunity alerts
+                      get open-source mission alerts
                     </a>
                     <a
                       href='#work-process'
@@ -142,7 +142,7 @@ function Home() {
               className='wow fadeInUp mx-auto mb-14 max-w-[780px] text-center lg:mb-[70px]'
               data-wow-delay='.2s'>
               <h2 className='mb-0 mt-10 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                finding <a className='text-landingprimary'>open-source opportunities</a>
+                finding <a className='text-landingprimary'>open-source missions</a>
                 <br></br>
                 shouldn't be hard
               </h2>
@@ -194,8 +194,8 @@ function Home() {
                 <a className='text-landingprimary'>need your help</a>
               </h2>
               <p className='text-base text-body mt-5 mb-10'>
-                BuilderPlace is currently in alpha. there are open-source opportunities live today
-                for you to contribute to.
+                BuilderPlace is currently in alpha. there are open-source missions live today for
+                you to contribute to.
               </p>
             </div>
           </div>
@@ -594,7 +594,7 @@ function Home() {
                   <div className='mb-5 border-b border-stroke'>
                     <p className='pb-9 text-base text-body'>
                       Open source contributions gave me a big boost in learning new skills quickly
-                      and opened up many opportunities for remote work. It's like a superhighway for
+                      and opened up many missions for remote work. It's like a superhighway for
                       personal and professional growth!
                     </p>
                   </div>
@@ -844,7 +844,7 @@ function Home() {
                       step 2
                     </span>
                     <h2 className='mb-4 text-3xl font-bold text-black  sm:text-4xl md:text-[44px] md:leading-tight'>
-                      explore opportunities
+                      explore missions
                     </h2>
                     <p className='mb-[30px] text-base leading-relaxed text-body'>
                       visit different team's BuilderPlaces and see what they need help with.
@@ -859,8 +859,8 @@ function Home() {
                           find projects that resonate with you
                         </h5>
                         <p className='text-base text-body'>
-                          discover opportunities ranging from app development and solidity
-                          programming to graphic design and copywriting.
+                          discover missions ranging from app development and solidity programming to
+                          graphic design and copywriting.
                         </p>
                       </div>
                     </div>
@@ -992,7 +992,7 @@ function Home() {
                       </div>
                       <div>
                         <h5 className='text-xl font-medium text-black '>
-                          explore BuilderPlace opportunities on network of hiring platforms
+                          explore BuilderPlace missions on network of hiring platforms
                         </h5>
                         <p className='text-base text-body'>
                           visit marketplace platforms like{' '}
@@ -1003,7 +1003,7 @@ function Home() {
                           <a href='https://talentlayer.org' target='_blank' className='underline'>
                             TalentLayer
                           </a>{' '}
-                          network to explore even more opportunities.
+                          network to explore even more missions.
                         </p>
                       </div>
                     </div>

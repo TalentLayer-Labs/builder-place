@@ -9,8 +9,8 @@ function NotFound() {
           not found
         </h1>
         <p className='mt-6 text-base-content leading-7 text-base-content'>
-          this opportunity is posted on a different BuilderPlace. please view it on the
-          corresponding place.
+          this mission is posted on a different BuilderPlace. please view it on the corresponding
+          place.
         </p>
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           <a

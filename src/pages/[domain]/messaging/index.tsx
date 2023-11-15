@@ -44,8 +44,8 @@ function MessagingIndex() {
               set up messaging
             </p>
             <p className='text-sm mb-6'>
-              in order to communicate with contributors about your open-source opportunities, please
-              set up decentralized messaging for your organization. decentralized messaging on
+              in order to communicate with contributors about your open-source missions, please set
+              up decentralized messaging for your organization. decentralized messaging on
               BuilderPlace platforms is powered by{' '}
               <a className='underline' href='https://xmtp.org/' target='_blank'>
                 XMTP
