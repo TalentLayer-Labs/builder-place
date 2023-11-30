@@ -1220,7 +1220,7 @@ function Home() {
               href='https://github.com/TalentLayer-Labs/builder-place'
               target='_blank'
               className='text-landingprimary underline hover:opacity-60'>
-              100% opens-source
+              100% open-source
             </a>
           </div>
         </div>
