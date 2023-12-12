@@ -3,7 +3,7 @@ import CreateWorkerProfileForm from '../../../components/Form/CreateWorkerProfil
 
 function workerOnboardingStep2() {
   return (
-    <CreateProfileLayout>
+    <CreateProfileLayout step={2}>
       <CreateWorkerProfileForm />
     </CreateProfileLayout>
   );

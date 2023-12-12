@@ -8,7 +8,13 @@ import {
   validDomainRegex,
 } from './domains';
 import { BuilderPlace } from './models/BuilderPlace';
-import { CreateBuilderPlaceAction, UpdateBuilderPlace, UpdateBuilderPlaceDomain } from './types';
+import { Worker } from './models/Worker';
+import {
+  CreateBuilderPlaceAction,
+  CreateWorkerProfileAction,
+  UpdateBuilderPlace,
+  UpdateBuilderPlaceDomain,
+} from './types';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
@@ -222,6 +228,49 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     }
 
     return response;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
+  try {
+    await connection();
+
+    const newWorkerProfile = new Worker({
+      email: data.email,
+      status: 'pending',
+      name: data.name,
+      image_url: data.image_url,
+      about: data.about,
+      skills: data.skills,
+    });
+    const { _id } = await newWorkerProfile.save();
+    return {
+      message: 'Worker Profile created successfully',
+      _id: _id,
+    };
+  } catch (error: any) {
+    console.log('Error creating new Worker Profile:', error);
+    return {
+      error: error.message!,
+    };
+  }
+};
+
+export const getWorkerProfileByEmail = async (email: string) => {
+  try {
+    await connection();
+    console.log('Getting Worker Profile with id:', email);
+    const workerProfile = await Worker.findOne({ _id: email });
+    console.log('Fetched Worker Profile, ', workerProfile);
+    if (workerProfile) {
+      return workerProfile;
+    }
+
+    return null;
   } catch (error: any) {
     return {
       error: error.message,

@@ -62,12 +62,28 @@ export interface CreateBuilderPlaceAction {
   profilePicture?: string;
 }
 
+export interface CreateWorkerProfileAction {
+  email: string;
+  name: string;
+  image_url?: string;
+  about?: string;
+  skills?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
   presentation: string;
   preferredWorkTypes: PreferredWorkTypes[];
   profilePicture?: string;
+}
+
+export interface CreateWorkerProfileProps {
+  email: string;
+  name: string;
+  image_url?: string;
+  about?: string;
+  skills?: string;
 }
 
 export type IBuilderPlace = {
