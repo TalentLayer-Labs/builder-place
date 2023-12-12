@@ -46,6 +46,11 @@ export interface SetBuilderPlaceOwner {
   ownerTalentLayerId: string;
 }
 
+export interface SetWorkerProfileOwner {
+  id: string;
+  talentLayerId: string;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',
