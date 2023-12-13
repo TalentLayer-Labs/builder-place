@@ -20,7 +20,11 @@ function onboardingStep2() {
     return (
       <HirerProfileLayout step={2}>
         <div className='flex flex-col items-center justify-center'>
-          <Steps handle={slugify(builderPlaceData?.name)} />
+          <Steps
+            handle={slugify(builderPlaceData?.name)}
+            description={builderPlaceData?.presentation}
+            profilePicture={builderPlaceData?.profilePicture}
+          />
         </div>
       </HirerProfileLayout>
     );
