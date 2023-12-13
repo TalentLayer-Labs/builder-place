@@ -108,6 +108,17 @@ export type IBuilderPlace = {
   preferredWorkTypes: PreferredWorkTypes[];
 };
 
+export type IWorkerProfile = {
+  _id: string;
+  email: string;
+  status: 'Validated' | 'Pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string;
+};
+
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain
 export interface DomainResponse {
   name: string;

@@ -11,6 +11,8 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import { useGetWorkerProfileByOwnerId } from '../../modules/BuilderPlace/hooks/UseGetWorkerProfileByOwnerId';
+import axios from 'axios';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -19,6 +21,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Dashboard() {
   const { account, user } = useContext(TalentLayerContext);
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const workerProfile = useGetWorkerProfileByOwnerId(user?.id);
+  console.log('workerProfile', workerProfile);
+
+  const onVerifyMail = async () => {
+    const response = await axios.post(`domain/verify-email`, {
+      email: workerProfile?.email,
+    });
+    console.log('response', response);
+  };
 
   if (!user) {
     return <Steps />;
@@ -39,7 +50,7 @@ function Dashboard() {
           {isBuilderPlaceOwner && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
-                <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
+                <h2 className='pb-4 text-base-content break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
@@ -60,7 +71,20 @@ function Dashboard() {
           )}
           {!isBuilderPlaceOwner && (
             <>
-              <div className='mb-12'>
+              {/*//TODO Condition sur email vérifié*/}
+              {workerProfile?.email && (
+                // TODO faire la notif de vérif du mail : display si unverified
+                <Notification
+                  title='Verify your email !'
+                  text='Tired of paying gas fees ? Veryfy your email and get gassless transactions !'
+                  link='/admin/configure-place'
+                  linkText='Verify my email'
+                  color='success'
+                  imageUrl={user?.description?.image_url}
+                  callback={onVerifyMail}
+                />
+              )}
+              <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>
                   <Link
