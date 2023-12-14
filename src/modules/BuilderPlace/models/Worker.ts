@@ -6,6 +6,10 @@ const worker = new Schema({
     required: true,
     unique: true,
   },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
   status: {
     type: String,
     enum: ['pending', 'validated'],
