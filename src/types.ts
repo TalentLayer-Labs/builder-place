@@ -332,4 +332,5 @@ export type iTalentLayerContext = {
   account?: IAccount;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
+  emailVerified: boolean;
 };

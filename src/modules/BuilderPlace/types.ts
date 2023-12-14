@@ -111,6 +111,7 @@ export type IBuilderPlace = {
 export type IWorkerProfile = {
   _id: string;
   email: string;
+  emailVerified: boolean;
   status: 'Validated' | 'Pending';
   talentLayerId?: string;
   name: string;

@@ -13,22 +13,55 @@ import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlace
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import { useGetWorkerProfileByOwnerId } from '../../modules/BuilderPlace/hooks/UseGetWorkerProfileByOwnerId';
 import axios from 'axios';
+import { usePublicClient, useWalletClient } from 'wagmi';
+import { useChainId } from '../../hooks/useChainId';
+import { createMultiStepsTransactionToast } from '../../utils/toast';
+import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user } = useContext(TalentLayerContext);
+  const { account, user, talentLayerClient } = useContext(TalentLayerContext);
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const chainId = useChainId();
+  const { data: walletClient } = useWalletClient({ chainId });
+  const publicClient = usePublicClient({ chainId });
   const workerProfile = useGetWorkerProfileByOwnerId(user?.id);
-  console.log('workerProfile', workerProfile);
+  const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
 
   const onVerifyMail = async () => {
+    //TODO create API endpoint
     const response = await axios.post(`domain/verify-email`, {
       email: workerProfile?.email,
     });
     console.log('response', response);
+  };
+
+  const onActivateDelegation = async () => {
+    if (talentLayerClient && walletClient) {
+      const { request } = await publicClient.simulateContract({
+        address: talentLayerClient.config.contracts.talentLayerId.address,
+        abi: talentLayerClient.config.contracts.talentLayerId.abi,
+        functionName: 'addDelegate',
+        args: [user?.id, delegateAddress],
+        account: account?.address,
+      });
+      const tx = await walletClient.writeContract(request);
+      const toastMessages = {
+        pending: 'Submitting the delegation...',
+        success: 'Congrats! the delegation is active',
+        error: 'An error occurred while delegation process',
+      };
+      await createMultiStepsTransactionToast(
+        chainId,
+        toastMessages,
+        publicClient,
+        tx,
+        'Delegation',
+      );
+    }
   };
 
   if (!user) {
@@ -71,19 +104,29 @@ function Dashboard() {
           )}
           {!isBuilderPlaceOwner && (
             <>
-              {/*//TODO Condition sur email vérifié*/}
-              {workerProfile?.email && (
-                // TODO faire la notif de vérif du mail : display si unverified
+              {!workerProfile?.emailVerified && (
                 <Notification
                   title='Verify your email !'
                   text='Tired of paying gas fees ? Veryfy your email and get gassless transactions !'
                   link='/admin/configure-place'
-                  linkText='Verify my email'
+                  linkText=''
                   color='success'
                   imageUrl={user?.description?.image_url}
                   callback={onVerifyMail}
                 />
               )}
+              {workerProfile?.emailVerified &&
+                !user.delegates?.includes(delegateAddress.toLowerCase()) && (
+                  <Notification
+                    title='Activate Gasless Transactions'
+                    text='You can now activate gassless transactions'
+                    link=''
+                    linkText='Activate Gassless'
+                    color='success'
+                    imageUrl={user?.description?.image_url}
+                    callback={onActivateDelegation}
+                  />
+                )}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>
