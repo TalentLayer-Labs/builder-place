@@ -27,7 +27,16 @@ To activate gasless transactions and delegation you will need a dedicated Seed &
 - Add matic to NEXT_PUBLIC_DELEGATE_ADDRESS: To pay for transactions on behalf of your users
 - Set NEXT_PUBLIC_ACTIVE_DELEGATE_MINT to true
 
-Your Users will need to activate delegation by calling the `function addDelegate(uint256 _profileId, address _delegate)` function on the TalentLayerId smart contract to use this feature.
+To use this feature your Users will need to activate delegation by calling the following function on the TalentLayerId smart contract:
+```solidity
+/**
+ * @notice Allows to give rights to a delegate to perform actions for a user's profile
+ * @param _profileId The TalentLayer ID of the user
+ * @param _delegate Address of the delegate to add
+ */
+function addDelegate(uint256 _profileId, address _delegate);
+``` 
+
 
 
 ## 🛠️ TalentLayer
