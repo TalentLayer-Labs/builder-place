@@ -26,6 +26,11 @@ export type IUserDetails = {
   web3mailPreferences?: IWeb3mailPreferences;
 };
 
+export type IWorkerData = {
+  email: string;
+  emailVerified: boolean;
+};
+
 export type IWeb3mailPreferences = {
   activeOnNewService: boolean;
   activeOnNewProposal: boolean;
@@ -330,7 +335,7 @@ export type iTalentLayerContext = {
   refreshData: () => Promise<boolean>;
   user?: IUser;
   account?: IAccount;
+  workerData?: IWorkerData;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
-  emailVerified: boolean;
 };

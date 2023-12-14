@@ -4,8 +4,9 @@ import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
 import { getUserByAddress } from '../queries/users';
-import { iTalentLayerContext, IUser } from '../types';
+import { iTalentLayerContext, IUser, IWorkerData } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
+import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
@@ -18,6 +19,7 @@ const TalentLayerContext = createContext<iTalentLayerContext>({
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
   const [user, setUser] = useState<IUser | undefined>();
+  const [workerData, setWorkerData] = useState<IWorkerData | undefined>();
   const account = useAccount();
   const [isActiveDelegate, setIsActiveDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -96,19 +98,40 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
     const completionScores = getCompletionScores(user);
     setCompletionScores(completionScores);
+
+    if (user?.id) {
+      const getWorkerData = async () => {
+        const response = await getWorkerProfileByOwnerId(user?.id);
+        const data = await response.json();
+        setWorkerData({
+          email: data.email,
+          emailVerified: data.emailVerified,
+        });
+      };
+      getWorkerData();
+    }
   }, [user]);
 
   const value = useMemo(() => {
     return {
       user,
       account: account ? account : undefined,
+      workerData,
       isActiveDelegate,
       refreshData: fetchData,
       loading,
       completionScores,
       talentLayerClient,
     };
-  }, [account.address, user?.id, isActiveDelegate, loading, completionScores, talentLayerClient]);
+  }, [
+    account.address,
+    user?.id,
+    isActiveDelegate,
+    workerData,
+    loading,
+    completionScores,
+    talentLayerClient,
+  ]);
 
   return <TalentLayerContext.Provider value={value}>{children}</TalentLayerContext.Provider>;
 };

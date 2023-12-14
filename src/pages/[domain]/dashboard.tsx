@@ -11,32 +11,29 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-import { useGetWorkerProfileByOwnerId } from '../../modules/BuilderPlace/hooks/UseGetWorkerProfileByOwnerId';
-import axios from 'axios';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../hooks/useChainId';
 import { createMultiStepsTransactionToast } from '../../utils/toast';
-import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
+import { verifyEmail } from '../../modules/BuilderPlace/request';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user, talentLayerClient } = useContext(TalentLayerContext);
+  const { account, user, talentLayerClient, workerData } = useContext(TalentLayerContext);
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const workerProfile = useGetWorkerProfileByOwnerId(user?.id);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
 
   const onVerifyMail = async () => {
     //TODO create API endpoint
-    const response = await axios.post(`domain/verify-email`, {
-      email: workerProfile?.email,
-    });
-    console.log('response', response);
+    if (workerData?.email && !workerData.emailVerified) {
+      const response = await verifyEmail(workerData.email);
+      console.log('response', response);
+    }
   };
 
   const onActivateDelegation = async () => {
@@ -104,18 +101,18 @@ function Dashboard() {
           )}
           {!isBuilderPlaceOwner && (
             <>
-              {!workerProfile?.emailVerified && (
+              {!workerData?.emailVerified && (
                 <Notification
                   title='Verify your email !'
                   text='Tired of paying gas fees ? Veryfy your email and get gassless transactions !'
-                  link='/admin/configure-place'
-                  linkText=''
+                  link=''
+                  linkText='Verify email'
                   color='success'
                   imageUrl={user?.description?.image_url}
                   callback={onVerifyMail}
                 />
               )}
-              {workerProfile?.emailVerified &&
+              {workerData?.emailVerified &&
                 !user.delegates?.includes(delegateAddress.toLowerCase()) && (
                   <Notification
                     title='Activate Gasless Transactions'

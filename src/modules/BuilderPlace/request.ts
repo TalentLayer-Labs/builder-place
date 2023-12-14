@@ -64,3 +64,20 @@ export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
     throw err;
   }
 };
+
+export const verifyEmail = async (email: string): Promise<any> => {
+  try {
+    return await fetch('/api/domain/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
