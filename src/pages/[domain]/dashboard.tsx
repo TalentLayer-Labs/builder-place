@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
 import UserDetail from '../../components/UserDetail';
@@ -14,7 +14,9 @@ import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../hooks/useChainId';
 import { createMultiStepsTransactionToast } from '../../utils/toast';
+import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { verifyEmail } from '../../modules/BuilderPlace/request';
+import EmailModal from '../../components/Modal/EmailModal';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -24,9 +26,15 @@ function Dashboard() {
   const { account, user, talentLayerClient, workerData } = useContext(TalentLayerContext);
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
+  const [show, setShow] = useState(false);
+
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
+
+  const onAddMail = async () => {
+    setShow(true);
+  };
 
   const onVerifyMail = async () => {
     //TODO create API endpoint
@@ -101,15 +109,16 @@ function Dashboard() {
           )}
           {!isBuilderPlaceOwner && (
             <>
+              <EmailModal show={show} setShow={setShow} />
               {!workerData?.emailVerified && (
                 <Notification
                   title='Verify your email !'
-                  text='Tired of paying gas fees ? Veryfy your email and get gassless transactions !'
+                  text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
                   link=''
-                  linkText='Verify email'
+                  linkText={workerData?.email ? 'Verify my email' : 'Add my email'}
                   color='success'
                   imageUrl={user?.description?.image_url}
-                  callback={onVerifyMail}
+                  callback={workerData?.email ? onVerifyMail : onAddMail}
                 />
               )}
               {workerData?.emailVerified &&
