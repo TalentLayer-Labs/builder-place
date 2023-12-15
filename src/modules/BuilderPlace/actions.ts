@@ -15,6 +15,7 @@ import {
   UpdateBuilderPlace,
   UpdateBuilderPlaceDomain,
 } from './types';
+import { NextApiResponse } from 'next';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
@@ -241,6 +242,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
 
     const newWorkerProfile = new Worker({
       email: data.email,
+      emailVerified: true,
       status: 'pending',
       name: data.name,
       image_url: data.image_url,
@@ -313,3 +315,53 @@ export const getWorkerProfileByEmail = async (email: string) => {
     };
   }
 };
+
+export async function checkOrResetTransactionCounter(
+  userId: string,
+  res: NextApiResponse,
+): Promise<any> {
+  try {
+    await connection();
+    const worker = await Worker.findOne({ talentLayerId: userId });
+    if (!worker) {
+      console.error('Worker not found');
+      throw new Error('Worker not found');
+    }
+
+    const nowMilliseconds = new Date().getTime();
+    const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
+
+    if (worker.counterStartDate > oneWeekAgoMilliseconds) {
+      // Less than one week since counterStartDate
+      if (worker.weeklyTransactionCounter >= 50) {
+        // If the counter is already 50, stop the function
+        console.log('Transaction limit reached for the week');
+        throw new Error('Transaction limit reached for the week');
+      }
+    } else {
+      console.log('More than a week since the start date, reset counter');
+      worker.counterStartDate = nowMilliseconds;
+      worker.weeklyTransactionCounter = 0;
+      await worker.save();
+    }
+    console.log('Delegating transaction');
+    return worker;
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+export async function incrementWeeklyTransactionCounter(
+  worker: any,
+  res: NextApiResponse,
+): Promise<void> {
+  try {
+    await connection();
+    // Increment the counter
+    worker.weeklyTransactionCounter = (worker.weeklyTransactionCounter || 0) + 1;
+    console.log('Transaction counter incremented', worker.weeklyTransactionCounter);
+    await worker.save();
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
