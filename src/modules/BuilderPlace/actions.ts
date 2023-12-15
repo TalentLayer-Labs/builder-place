@@ -244,7 +244,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
       email: data.email,
       status: 'pending',
       name: data.name,
-      image_url: data.image_url,
+      picture: data.image_url,
       about: data.about,
       skills: data.skills,
     });
