@@ -103,10 +103,12 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       const getWorkerData = async () => {
         const response = await getWorkerProfileByOwnerId(user?.id);
         const data = await response.json();
-        setWorkerData({
-          email: data.email,
-          emailVerified: data.emailVerified,
-        });
+        if (data) {
+          setWorkerData({
+            email: data.email,
+            emailVerified: data.emailVerified,
+          });
+        }
       };
       getWorkerData();
     }

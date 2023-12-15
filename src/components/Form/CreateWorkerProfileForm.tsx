@@ -54,43 +54,6 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      // const profile = {
-      //   title: values.email,
-      //   role: values.role,
-      //   image_url: values.image_url,
-      //   video_url: values.video_url,
-      //   name: values.name,
-      //   about: values.about,
-      //   skills: values.skills,
-      //   web3mailPreferences: user.description?.web3mailPreferences,
-      // };
-      //
-      // let cid = await talentLayerClient.profile.upload(profile);
-      //
-      // let tx;
-      // if (isActiveDelegate) {
-      //   const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
-      //   tx = response.data.transaction;
-      // } else {
-      //   const res = await talentLayerClient?.profile.update(profile, user.id);
-      //
-      //   tx = res.tx;
-      //   cid = res.cid;
-      // }
-      //
-      // await createMultiStepsTransactionToast(
-      //   chainId,
-      //   {
-      //     pending: 'Creating Worker Profile..',
-      //     success: 'Congrats! Your profile has been created',
-      //     error: 'An error occurred while creating your profile',
-      //   },
-      //   publicClient,
-      //   tx,
-      //   'user',
-      //   cid,
-      // );
-
       setSubmitting(true);
 
       const response = await createWorkerProfileAsync({
