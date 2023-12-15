@@ -242,7 +242,6 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
 
     const newWorkerProfile = new Worker({
       email: data.email,
-      emailVerified: true,
       status: 'pending',
       name: data.name,
       image_url: data.image_url,
