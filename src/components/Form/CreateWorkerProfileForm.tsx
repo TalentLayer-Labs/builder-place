@@ -100,7 +100,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='email'
                 name='email'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>
@@ -110,7 +110,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='name'
                 name='name'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>
@@ -121,14 +121,14 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='image_url'
                 name='image_url'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
-              <div className='border-gray-200 bg-midnight relative w-full border transition-all duration-300 rounded-xl p-4'>
+              <div className='border-2 border-info bg-base-200 relative w-full transition-all duration-300 rounded-xl p-4'>
                 <div className='flex w-full items-center gap-3'>
                   <QuestionMarkCircle className='hidden' />
                   <div>
-                    <h2 className='font-heading font-bold text-xl  mb-1'>
+                    <h2 className='font-heading text-xl font-bold  mb-1'>
                       <span>Need help?</span>
                     </h2>
                     <p className='font-alt text-xs font-normal'>
@@ -161,7 +161,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
                 id='about'
                 name='about'
                 rows='4'
-                className='mt-1 mb-1 block w-full rounded-xl border border-gray-200 bg-midnight shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
             </label>

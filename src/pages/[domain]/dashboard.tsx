@@ -14,9 +14,9 @@ import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../hooks/useChainId';
 import { createMultiStepsTransactionToast } from '../../utils/toast';
-import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { verifyEmail } from '../../modules/BuilderPlace/request';
 import EmailModal from '../../components/Modal/EmailModal';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -24,8 +24,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function Dashboard() {
   const { account, user, talentLayerClient, workerData } = useContext(TalentLayerContext);
+  const router = useRouter();
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
+  const isComingFromOnboarding = router.asPath.includes('onboarding') && isBuilderPlaceOwner;
+
   const [show, setShow] = useState(false);
 
   const { data: walletClient } = useWalletClient({ chainId });
@@ -70,7 +73,35 @@ function Dashboard() {
   };
 
   if (!user) {
-    return <Steps />;
+    return (
+      <>
+        {isComingFromOnboarding ? (
+          <div className='max-w-7xl mx-auto text-base-content text-center'>
+            <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
+              <div className='py-2 px-6 sm:px-0 w-full mb-8'>
+                <p className='text-2xl font-bold flex-1 mt-6'>
+                  <span className='text-base-content ml-1'> your new Builder Place is ready!</span>
+                </p>
+                <p>Please connect your wallet to your new custom domain to access your dashboard</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className='max-w-7xl mx-auto text-base-content text-center'>
+            <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
+              <div className='py-2 px-6 sm:px-0 w-full mb-8'>
+                <p className='text-2xl font-bold flex-1 mt-6'>
+                  <span className='text-base-content ml-1'> Connect your wallet </span>
+                </p>
+                <p>You need first to connect your wallet to access your dashboard</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <Steps />
+      </>
+    );
   }
 
   return (
