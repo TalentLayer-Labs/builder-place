@@ -35,6 +35,12 @@ const worker = new Schema({
   skills: {
     type: [String],
   },
+  weeklyTransactionCounter: {
+    type: Number,
+  },
+  counterStartDate: {
+    type: Number,
+  },
 });
 
 export const Worker = models.Worker || model('Worker', worker);
