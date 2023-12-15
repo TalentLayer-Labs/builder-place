@@ -4,12 +4,19 @@ import TalentLayerService from '../../../contracts/ABI/TalentLayerService.json';
 import { getServiceSignature } from '../../../utils/signature';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
 import { getConfig } from '../../../config';
+import {
+  checkOrResetTransactionCounter,
+  incrementWeeklyTransactionCounter,
+} from '../../../modules/BuilderPlace/actions';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, cid, chainId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delagation for a user
+
+  const worker = await checkOrResetTransactionCounter(userId, res);
+
   await isPlatformAllowedToDelegate(chainId, userAddress, res);
 
   try {
@@ -25,6 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       functionName: 'createService',
       args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
     });
+
+    await incrementWeeklyTransactionCounter(worker, res);
 
     res.status(200).json({ transaction: transaction });
   } catch (error) {

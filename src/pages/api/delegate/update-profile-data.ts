@@ -3,12 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getConfig } from '../../../config';
 import TalentLayerID from '../../../contracts/ABI/TalentLayerID.json';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
+import {
+  checkOrResetTransactionCounter,
+  incrementWeeklyTransactionCounter,
+} from '../../../modules/BuilderPlace/actions';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, cid, chainId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delagation for a user
+
+  const worker = await checkOrResetTransactionCounter(userId, res);
 
   await isPlatformAllowedToDelegate(chainId, userAddress, res);
 
@@ -24,6 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       functionName: 'updateProfileData',
       args: [userId, cid],
     });
+
+    await incrementWeeklyTransactionCounter(worker, res);
 
     res.status(200).json({ transaction: transaction });
   } catch (error) {

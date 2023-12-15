@@ -3,12 +3,19 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getConfig } from '../../../config';
 import TalentLayerReview from '../../../contracts/ABI/TalentLayerReview.json';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
+import {
+  checkOrResetTransactionCounter,
+  incrementWeeklyTransactionCounter,
+} from '../../../modules/BuilderPlace/actions';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, serviceId, uri, valuesRating, chainId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delagation for a user
+
+  const worker = await checkOrResetTransactionCounter(userId, res);
+
   await isPlatformAllowedToDelegate(chainId, userAddress, res);
 
   try {
@@ -23,6 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       functionName: 'mint',
       args: [userId, serviceId, uri, valuesRating],
     });
+
+    await incrementWeeklyTransactionCounter(worker, res);
 
     res.status(200).json({ transaction: transaction });
   } catch (error) {
