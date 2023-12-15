@@ -63,10 +63,8 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         about: values.about,
         skills: values.skills,
       });
-      console.log('response', response);
 
       if (response?.id) {
-        console.log('response.id', response.id);
         router.query.id = response.id;
         router.push({
           pathname: `/worker-onboarding/step2`,
@@ -78,11 +76,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         callback();
       }
 
-      // refreshData();
       setSubmitting(false);
-      // if (process.env.NEXT_PUBLIC_ACTIVE_WEB3MAIL == 'true' && !platformHasAccess) {
-      //   createWeb3mailToast();
-      // }
     } catch (error) {
       console.log(error);
       showErrorTransactionToast(error);
