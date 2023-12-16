@@ -10,7 +10,7 @@ import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/Us
 function workerOnboardingStep2() {
   const { account, loading, user } = useContext(TalentLayerContext);
   const { mutateAsync: updateWorkerProfileAsync } = useSetWorkerProfileOwner();
-  const [alreadyTaken, setProfileAlreadyHasOwner] = useState(false);
+  const [profileAlreadyHasOwner, setProfileAlreadyHasOwner] = useState(false);
   const router = useRouter();
   const id = new URL(window.location.href).searchParams.get('id');
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
@@ -47,7 +47,7 @@ function workerOnboardingStep2() {
   return (
     <>
       <OnboardingSteps currentStep={2} type='worker' />
-      {!alreadyTaken ? (
+      {!profileAlreadyHasOwner ? (
         <>
           <CreateWorkerId />
           <div className='flex flex-col items-center justify-center gap-10'>
