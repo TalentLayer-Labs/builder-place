@@ -56,6 +56,10 @@ export interface SetWorkerProfileOwner {
   talentLayerId: string;
 }
 
+export interface VerifyEmail {
+  email: string;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',

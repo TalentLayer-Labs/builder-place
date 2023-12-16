@@ -364,3 +364,17 @@ export async function incrementWeeklyTransactionCounter(
     res.status(500).json({ error: error });
   }
 }
+
+export const validateWorkerProfileEmail = async (email: string) => {
+  try {
+    await connection();
+    await Worker.updateOne({ email: email }, { emailVerified: true }).exec();
+    return {
+      message: 'Email verified successfully',
+    };
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
