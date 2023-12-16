@@ -14,7 +14,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(500).json({ error: 'Missing data.' });
     }
 
-    //TODO a check toutes les conditions
     const existingProfile = await getWorkerProfileByTalentLayerId(body.talentLayerId);
     if (existingProfile) {
       return res.status(401).json({ error: 'You already have a profile' });
