@@ -1,9 +1,9 @@
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DefaultSeo } from 'next-seo';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { WagmiConfig } from 'wagmi';
 import CustomPalette from '../components/CustomPalette';
 import { TalentLayerProvider } from '../context/talentLayer';
 import { Web3Modal } from '../context/web3modal';
@@ -14,6 +14,7 @@ import { MessagingProvider } from '../modules/Messaging/context/messging';
 import '../styles/globals.css';
 import '../styles/markdown.css';
 import Layout from './Layout';
+import { Analytics } from '@vercel/analytics/react';
 
 // react-query client
 const queryClient = new QueryClient();
@@ -22,12 +23,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   console.log('MyApp', { pageProps });
   return (
     <>
-      <CustomPalette builderPlace={pageProps.builderPlace} />
       <QueryClientProvider client={queryClient}>
         <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
         <Web3Modal>
           <TalentLayerProvider>
             <BuilderPlaceProvider data={pageProps.builderPlace}>
+              <CustomPalette />
               <XmtpContextProvider>
                 <MessagingProvider>
                   <Layout>
@@ -40,6 +41,8 @@ function MyApp({ Component, pageProps }: AppProps) {
           </TalentLayerProvider>
         </Web3Modal>
       </QueryClientProvider>
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }
