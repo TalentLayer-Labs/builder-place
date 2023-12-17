@@ -242,11 +242,12 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
 
     const newWorkerProfile = new Worker({
       email: data.email,
-      status: 'pending',
+      status: data.status,
       name: data.name,
       picture: data.image_url,
       about: data.about,
       skills: data.skills,
+      talentLayerId: data.talentLayerId,
     });
     const { _id } = await newWorkerProfile.save();
     return {
@@ -365,10 +366,36 @@ export async function incrementWeeklyTransactionCounter(
   }
 }
 
-export const validateWorkerProfileEmail = async (email: string) => {
+export const validateWorkerProfileEmail = async (userId: string, email: string) => {
   try {
     await connection();
-    await Worker.updateOne({ email: email }, { emailVerified: true }).exec();
+    const existingWorker = await Worker.findOne({ email: email, talentLayerId: userId });
+    if (existingWorker) {
+      const resp = await Worker.updateOne(
+        { email: email, talentLayerId: userId },
+        { emailVerified: true },
+      ).exec();
+      if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
+        return {
+          error: 'Email already validated',
+        };
+      }
+      console.log('Updated worker profile email', resp);
+    } else {
+      //TODO soit je crée une autre API qui avant de check l'email va check si le user existe en base et si pas
+      // le cas on le crée avant de set l'email. Soit je continue ça ici et je le fais en un call (mieux) mais je dois envouer toutes les metadata du user dans la query.
+      // Ou encore je fais un call verif email qui si il reçoit une err "no profile existing" la je le crée et je rappelle "verif email"
+      // const newWorkerProfile = new Worker({
+      //   email: email,
+      //   status: 'pending',
+      //   name: data.name,
+      //   picture: data.image_url,
+      //   about: data.about,
+      //   skills: data.skills,
+      // });
+      //   const { _id } = await newWorkerProfile.save();
+    }
+
     return {
       message: 'Email verified successfully',
     };

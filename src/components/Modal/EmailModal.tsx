@@ -49,7 +49,7 @@ function EmailModal({
               </button>
             </div>
             <div className='p-6 space-y-6'>
-              <EmailForm callback={afterSubmit} />
+              <EmailForm callback={afterSubmit} user={user} />
             </div>
           </div>
         </div>

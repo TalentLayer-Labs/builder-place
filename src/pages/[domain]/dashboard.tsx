@@ -13,7 +13,10 @@ import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlace
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../hooks/useChainId';
-import { createMultiStepsTransactionToast } from '../../utils/toast';
+import {
+  createMultiStepsTransactionToast,
+  showMongoErrorTransactionToast,
+} from '../../utils/toast';
 import { verifyEmail } from '../../modules/BuilderPlace/request';
 import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
@@ -23,7 +26,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function Dashboard() {
-  const { account, user, talentLayerClient, workerData } = useContext(TalentLayerContext);
+  const { account, user, talentLayerClient, workerData, refreshWorkerData } =
+    useContext(TalentLayerContext);
   const router = useRouter();
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
@@ -40,10 +44,15 @@ function Dashboard() {
   };
 
   const onVerifyMail = async () => {
-    //TODO create API endpoint
-    if (workerData?.email && !workerData.emailVerified) {
-      const response = await verifyEmail(workerData.email);
-      console.log('response', response);
+    if (workerData?.email && !workerData.emailVerified && user?.id) {
+      try {
+        const response = await verifyEmail(workerData.email, user.id);
+        console.log('response', response);
+      } catch (e) {
+        console.log('Error', e);
+        showMongoErrorTransactionToast(e);
+      }
+      await refreshWorkerData();
     }
   };
 

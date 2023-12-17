@@ -14,6 +14,9 @@ const TalentLayerContext = createContext<iTalentLayerContext>({
   refreshData: async () => {
     return false;
   },
+  refreshWorkerData: async () => {
+    return false;
+  },
 });
 
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
@@ -63,6 +66,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       currentUser.isAdmin = platform?.address === currentUser?.address;
 
       setUser(currentUser);
+
       setIsActiveDelegate(
         process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
           userResponse.data.data.users[0].delegates &&
@@ -76,7 +80,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       // eslint-disable-next-line no-console
       console.error(err);
-      toast.error(`An error happened while loading you account: ${err.message}.`, {
+      toast.error(`An error happened while loading your account: ${err.message}.`, {
         position: 'bottom-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -94,23 +98,41 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     fetchData();
   }, [chainId, account.address, talentLayerClient]);
 
+  const getWorkerData = async (userId: string) => {
+    const response = await getWorkerProfileByOwnerId(userId);
+    const data = await response.json();
+    if (data) {
+      setWorkerData({
+        email: data.email,
+        emailVerified: data.emailVerified,
+      });
+    }
+  };
+
+  const refreshWorkerData = async () => {
+    try {
+      setLoading(true);
+      if (user?.id) {
+        console.log('refreshing worker data');
+        await getWorkerData(user.id);
+      }
+      return true;
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
     const completionScores = getCompletionScores(user);
     setCompletionScores(completionScores);
 
     if (user?.id) {
-      const getWorkerData = async () => {
-        const response = await getWorkerProfileByOwnerId(user?.id);
-        const data = await response.json();
-        if (data) {
-          setWorkerData({
-            email: data.email,
-            emailVerified: data.emailVerified,
-          });
-        }
-      };
-      getWorkerData();
+      getWorkerData(user.id);
     }
   }, [user]);
 
@@ -121,6 +143,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       workerData,
       isActiveDelegate,
       refreshData: fetchData,
+      refreshWorkerData: refreshWorkerData,
       loading,
       completionScores,
       talentLayerClient,

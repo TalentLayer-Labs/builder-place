@@ -62,6 +62,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         image_url: values.image_url,
         about: values.about,
         skills: values.skills,
+        status: 'pending',
       });
 
       if (response?.id) {

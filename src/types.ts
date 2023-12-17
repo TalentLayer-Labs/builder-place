@@ -333,6 +333,7 @@ export type iTalentLayerContext = {
   loading: boolean;
   isActiveDelegate: boolean;
   refreshData: () => Promise<boolean>;
+  refreshWorkerData: () => Promise<boolean>;
   user?: IUser;
   account?: IAccount;
   workerData?: IWorkerData;

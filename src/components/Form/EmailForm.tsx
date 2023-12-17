@@ -2,6 +2,11 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { verifyEmail } from '../../modules/BuilderPlace/request';
 import SubmitButton from './SubmitButton';
+import { showMongoErrorTransactionToast } from '../../utils/toast';
+import { IUser } from '../../types';
+import { useCreateWorkerProfileMutation } from '../../modules/BuilderPlace/hooks/UseCreateWorkerProfileMutation';
+import { useContext } from 'react';
+import TalentLayerContext from '../../context/talentLayer';
 
 interface IFormValues {
   email: string;
@@ -11,7 +16,10 @@ const validationSchema = Yup.object({
   email: Yup.string().required('Please provide an email'),
 });
 
-function EmailForm({ callback }: { callback?: () => void }) {
+function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
+  const { refreshWorkerData } = useContext(TalentLayerContext);
+  const { mutateAsync: createWorkerProfileAsync } = useCreateWorkerProfileMutation();
+
   const initialValues: IFormValues = {
     email: '',
   };
@@ -23,12 +31,36 @@ function EmailForm({ callback }: { callback?: () => void }) {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     setSubmitting(true);
-    const response = await verifyEmail(values.email);
-    console.log('response', response);
-    setSubmitting(false);
-    resetForm();
-    if (callback) {
-      callback();
+    try {
+      await createWorkerProfileAsync({
+        email: values.email,
+        name: user.handle,
+        image_url: user?.description?.image_url,
+        about: user?.description?.about,
+        skills: user?.description?.skills_raw,
+        talentLayerId: user.id,
+        status: 'validated',
+      });
+
+      const response: any = await verifyEmail(values.email, user.id);
+
+      await refreshWorkerData();
+
+      if (response.status !== 200) {
+        showMongoErrorTransactionToast(response.statusText);
+        return;
+      }
+
+      if (response.status === 200) {
+        resetForm();
+        if (callback) {
+          callback();
+        }
+      }
+    } catch (error: any) {
+      showMongoErrorTransactionToast(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -38,7 +70,7 @@ function EmailForm({ callback }: { callback?: () => void }) {
       enableReinitialize={true}
       onSubmit={onSubmit}
       validationSchema={validationSchema}>
-      {({ isSubmitting, errors }) => (
+      {({ isSubmitting }) => (
         <Form>
           <div className='border border-info rounded-xl p-6 bg-base-100'>
             <label className='block'>

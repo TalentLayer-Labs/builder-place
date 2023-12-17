@@ -58,6 +58,7 @@ export interface SetWorkerProfileOwner {
 
 export interface VerifyEmail {
   email: string;
+  userId: string;
 }
 
 export enum DomainVerificationStatusProps {
@@ -82,6 +83,8 @@ export interface CreateWorkerProfileAction {
   image_url?: string;
   about?: string;
   skills?: string;
+  status?: string;
+  talentLayerId?: string;
 }
 
 export interface CreateBuilderPlaceProps {
@@ -98,6 +101,8 @@ export interface CreateWorkerProfileProps {
   image_url?: string;
   about?: string;
   skills?: string;
+  status?: string;
+  talentLayerId?: string;
 }
 
 export type IBuilderPlace = {
