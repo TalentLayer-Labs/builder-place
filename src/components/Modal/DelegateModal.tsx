@@ -58,7 +58,7 @@ function DelegateModal() {
           className='block text-info bg-error hover:bg-info hover:text-base-content rounded-xl px-5 py-2.5 text-center'
           type='button'
           data-modal-toggle='defaultModal'>
-          Activate Delegation
+          {hasPlatformAsDelegate ? 'Activate ' : 'Deactivate '} delegation
         </button>
       )}
 
@@ -95,7 +95,7 @@ function DelegateModal() {
               <div className='flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-base-200 space-y-6 text-base-content'>
                 <div className='flex flex-row'>
                   <h3 className='font-semibold text-base-content'>Delegation state: </h3>
-                  {hasPlatformAsDelegate == true ? (
+                  {hasPlatformAsDelegate ? (
                     <p className='text-alone-success pl-2'> is active</p>
                   ) : (
                     <p className='text-alone-error pl-2'> is inactive</p>
