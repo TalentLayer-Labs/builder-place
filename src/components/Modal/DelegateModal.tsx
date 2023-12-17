@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { toggleDelegation } from '../../contracts/toggleDelegation';
 import TalentLayerContext from '../../context/talentLayer';
-import { getUserByAddress } from '../../queries/users';
 import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 
@@ -15,16 +14,14 @@ function DelegateModal() {
   const publicClient = usePublicClient({ chainId });
   const { user } = useContext(TalentLayerContext);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
+  console.log(user);
 
   if (!user) {
     return null;
   }
 
   const checkDelegateState = async () => {
-    const getUser = await getUserByAddress(chainId, user.address);
-    const delegateAddresses = getUser.data?.data?.users[0].delegates;
-
-    if (delegateAddresses && delegateAddresses.indexOf(delegateAddress.toLowerCase()) != -1) {
+    if (user?.delegates?.indexOf(delegateAddress.toLowerCase()) != -1) {
       setHasPlatformAsDelegate(true);
     } else {
       setHasPlatformAsDelegate(false);
@@ -58,7 +55,7 @@ function DelegateModal() {
           className='block text-info bg-error hover:bg-info hover:text-base-content rounded-xl px-5 py-2.5 text-center'
           type='button'
           data-modal-toggle='defaultModal'>
-          {hasPlatformAsDelegate ? 'Activate ' : 'Deactivate '} delegation
+          {hasPlatformAsDelegate ? 'Deactivate ' : 'Activate '} delegation
         </button>
       )}
 
