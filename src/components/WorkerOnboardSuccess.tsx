@@ -9,9 +9,15 @@ function WorkerOnboardSuccess() {
   const workerProfile = useGetWorkerProfileByOwnerId(user?.id);
   const router = useRouter();
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
+
   const openService = () => {
     router.push(`/work/${serviceId}/proposal`);
   };
+
+  const openDasboard = () => {
+    router.push(`/dashboard`);
+  };
+
   return (
     <>
       <div className='bg-base-100'>
@@ -41,8 +47,8 @@ function WorkerOnboardSuccess() {
               </p>
               <button
                 className='bg-pink-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
-                onClick={openService}>
-                Go back to proposal form
+                onClick={serviceId ? openService : openDasboard}>
+                {serviceId ? 'Go back to proposal form' : 'Go to dashboard'}
               </button>
             </div>
           </div>

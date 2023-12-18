@@ -103,8 +103,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     const data = await response.json();
     if (data) {
       setWorkerData({
-        email: data.email,
-        emailVerified: data.emailVerified,
+        ...data,
       });
     }
   };
