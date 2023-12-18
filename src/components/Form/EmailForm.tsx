@@ -51,11 +51,10 @@ function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
         return;
       }
 
-      if (response.status === 200) {
-        resetForm();
-        if (callback) {
-          callback();
-        }
+      resetForm();
+
+      if (callback) {
+        callback();
       }
     } catch (error: any) {
       showMongoErrorTransactionToast(error.message);
