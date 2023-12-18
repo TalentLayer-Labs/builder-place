@@ -23,10 +23,11 @@ function workerOnboardingStep2() {
             id,
             talentLayerId: user.id,
           });
+          // If user tries to update a profile which already has an owner, he's prompted to create his profile.
           if (response?.error === 'Profile already has an owner.') {
             setProfileAlreadyHasOwner(true);
           } else if (response?.id || response?.error) {
-            //If id successfully created or already have a profile redirect to step 3
+            //If "id" successfully created or already have a profile redirect to step 3
             router.push({
               pathname: `/worker-onboarding/step3`,
               query: { serviceId: serviceId },

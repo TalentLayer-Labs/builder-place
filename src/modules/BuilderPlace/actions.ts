@@ -12,6 +12,7 @@ import { Worker } from './models/Worker';
 import {
   CreateBuilderPlaceAction,
   CreateWorkerProfileAction,
+  IWorkerMongooseSchema,
   UpdateBuilderPlace,
   UpdateBuilderPlaceDomain,
 } from './types';
@@ -280,7 +281,10 @@ export const getWorkerProfileById = async (id: string) => {
   }
 };
 
-export const getWorkerProfileByTalentLayerId = async (id: string) => {
+export const getWorkerProfileByTalentLayerId = async (
+  id: string,
+  res: NextApiResponse,
+): Promise<IWorkerMongooseSchema | null> => {
   try {
     await connection();
     console.log('Getting Worker Profile with TalentLayer id:', id);
@@ -288,61 +292,36 @@ export const getWorkerProfileByTalentLayerId = async (id: string) => {
     console.log('Fetched Worker Profile, ', workerProfile);
     if (workerProfile) {
       return workerProfile;
+    } else {
+      throw new Error('worker not found');
     }
-
-    return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
-  }
-};
-
-export const getWorkerProfileByEmail = async (email: string) => {
-  try {
-    await connection();
-    console.log('Getting Worker Profile with email:', email);
-    const workerProfile = await Worker.findOne({ email: email });
-    console.log('Fetched Worker Profile, ', workerProfile);
-    if (workerProfile) {
-      return workerProfile;
-    }
-
+    res.status(500).json({ error: error.message });
     return null;
-  } catch (error: any) {
-    return {
-      error: error.message,
-    };
   }
 };
 
 export async function checkUserEmailVerificationStatus(
-  userId: string,
+  worker: IWorkerMongooseSchema,
   res: NextApiResponse,
-): Promise<any> {
+): Promise<void> {
   try {
     await connection();
-    const worker = await Worker.findOne({ talentLayerId: userId });
-    if (!worker) {
-      console.error('Worker not found');
-      throw new Error('Worker not found');
-    }
 
-    if (worker.emailVerified === false) {
+    if (!worker.emailVerified) {
       console.log('Email not verified');
       throw new Error('Email not verified');
     }
     console.log('Email verified');
-    return worker;
   } catch (error) {
     res.status(500).json({ error: error });
   }
 }
 
 export async function checkOrResetTransactionCounter(
-  worker: any,
+  worker: IWorkerMongooseSchema,
   res: NextApiResponse,
-): Promise<any> {
+): Promise<void> {
   try {
     await connection();
 
@@ -363,14 +342,13 @@ export async function checkOrResetTransactionCounter(
       await worker.save();
     }
     console.log('Delegating transaction');
-    return worker;
   } catch (error) {
     res.status(500).json({ error: error });
   }
 }
 
 export async function incrementWeeklyTransactionCounter(
-  worker: any,
+  worker: IWorkerMongooseSchema,
   res: NextApiResponse,
 ): Promise<void> {
   try {
@@ -400,20 +378,10 @@ export const validateWorkerProfileEmail = async (userId: string, email: string) 
       }
       console.log('Updated worker profile email', resp);
     } else {
-      //TODO soit je crée une autre API qui avant de check l'email va check si le user existe en base et si pas
-      // le cas on le crée avant de set l'email. Soit je continue ça ici et je le fais en un call (mieux) mais je dois envouer toutes les metadata du user dans la query.
-      // Ou encore je fais un call verif email qui si il reçoit une err "no profile existing" la je le crée et je rappelle "verif email"
-      // const newWorkerProfile = new Worker({
-      //   email: email,
-      //   status: 'pending',
-      //   name: data.name,
-      //   picture: data.image_url,
-      //   about: data.about,
-      //   skills: data.skills,
-      // });
-      //   const { _id } = await newWorkerProfile.save();
+      return {
+        error: 'Error while validating email',
+      };
     }
-
     return {
       message: 'Email verified successfully',
     };

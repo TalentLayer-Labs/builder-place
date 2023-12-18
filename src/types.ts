@@ -1,6 +1,7 @@
 import { TalentLayerClient } from '@talentlayer/client';
 import { Connector } from 'wagmi';
 import { ICompletionScores } from './utils/profile';
+import { IWorkerProfile } from './modules/BuilderPlace/types';
 
 export type IUser = {
   id: string;
@@ -24,19 +25,6 @@ export type IUserDetails = {
   skills_raw?: string;
   user: IUser;
   web3mailPreferences?: IWeb3mailPreferences;
-};
-
-export type IWorkerData = {
-  email: string;
-  emailVerified: boolean;
-  status: 'pending' | 'validated';
-  talentLayerId: string;
-  name: string;
-  picture: string;
-  about: string;
-  skills: string;
-  weeklyTransactionCounter: string;
-  counterStartDate: string;
 };
 
 export type IWeb3mailPreferences = {
@@ -344,7 +332,7 @@ export type iTalentLayerContext = {
   refreshWorkerData: () => Promise<boolean>;
   user?: IUser;
   account?: IAccount;
-  workerData?: IWorkerData;
+  workerData?: IWorkerProfile;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
 };

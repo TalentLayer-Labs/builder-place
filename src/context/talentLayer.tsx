@@ -4,9 +4,10 @@ import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
 import { getUserByAddress } from '../queries/users';
-import { iTalentLayerContext, IUser, IWorkerData } from '../types';
+import { iTalentLayerContext, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
 import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
+import { IWorkerProfile } from '../modules/BuilderPlace/types';
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
@@ -22,7 +23,7 @@ const TalentLayerContext = createContext<iTalentLayerContext>({
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
   const [user, setUser] = useState<IUser | undefined>();
-  const [workerData, setWorkerData] = useState<IWorkerData | undefined>();
+  const [workerData, setWorkerData] = useState<IWorkerProfile | undefined>();
   const account = useAccount();
   const [isActiveDelegate, setIsActiveDelegate] = useState(false);
   const [loading, setLoading] = useState(true);

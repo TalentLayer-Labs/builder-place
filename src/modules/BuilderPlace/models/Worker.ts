@@ -1,6 +1,7 @@
 import { model, models, Schema } from 'mongoose';
+import { IWorkerProfile } from '../types';
 
-const worker = new Schema({
+const worker = new Schema<IWorkerProfile>({
   email: {
     type: String,
     required: true,

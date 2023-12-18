@@ -1,4 +1,5 @@
 import { PreferredWorkTypes } from '../../types';
+import { Document } from 'mongoose';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -128,13 +129,29 @@ export type IWorkerProfile = {
   _id: string;
   email: string;
   emailVerified: boolean;
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+};
+
+export interface IWorkerMongooseSchema extends Document {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
   status: 'Validated' | 'Pending';
   talentLayerId?: string;
   name: string;
   picture?: string;
   about?: string;
-  skills?: string;
-};
+  skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+}
 
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain
 export interface DomainResponse {

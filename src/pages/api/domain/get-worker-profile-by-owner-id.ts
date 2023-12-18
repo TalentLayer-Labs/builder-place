@@ -9,7 +9,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     return res.status(500).json({ error: 'No id.' });
   }
 
-  const result = await getWorkerProfileByTalentLayerId(body.id);
-
+  const result = await getWorkerProfileByTalentLayerId(body.id, res);
   return res.json(result);
 }
