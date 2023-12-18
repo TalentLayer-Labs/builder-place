@@ -76,8 +76,6 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
       if (callback) {
         callback();
       }
-
-      setSubmitting(false);
     } catch (error) {
       console.log(error);
       showErrorTransactionToast(error);
