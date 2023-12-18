@@ -96,7 +96,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
             <label className='block'>
               <span className='text-xl font-bold '>email</span>
               <Field
-                type='text'
+                type='email'
                 id='email'
                 name='email'
                 className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'

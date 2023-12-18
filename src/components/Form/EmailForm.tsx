@@ -75,7 +75,7 @@ function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
             <label className='block'>
               <span className='text-base-content'>Email: </span>
               <Field
-                type='text'
+                type='email'
                 id='email'
                 name='email'
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
