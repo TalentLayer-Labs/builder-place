@@ -316,7 +316,7 @@ export const getWorkerProfileByEmail = async (email: string) => {
   }
 };
 
-export async function checkOrResetTransactionCounter(
+export async function checkUserEmailVerificationStatus(
   userId: string,
   res: NextApiResponse,
 ): Promise<any> {
@@ -327,6 +327,24 @@ export async function checkOrResetTransactionCounter(
       console.error('Worker not found');
       throw new Error('Worker not found');
     }
+
+    if (worker.emailVerified === false) {
+      console.log('Email not verified');
+      throw new Error('Email not verified');
+    }
+    console.log('Email verified');
+    return worker;
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+}
+
+export async function checkOrResetTransactionCounter(
+  worker: any,
+  res: NextApiResponse,
+): Promise<any> {
+  try {
+    await connection();
 
     const nowMilliseconds = new Date().getTime();
     const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago

@@ -6,6 +6,7 @@ import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/deleg
 import { getConfig } from '../../../config';
 import {
   checkOrResetTransactionCounter,
+  checkUserEmailVerificationStatus,
   incrementWeeklyTransactionCounter,
 } from '../../../modules/BuilderPlace/actions';
 
@@ -13,9 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { userId, userAddress, cid, chainId } = req.body;
   const config = getConfig(chainId);
 
-  // @dev : you can add here all the check you need to confirm the delagation for a user
+  // @dev : you can add here all the check you need to confirm the delegation for a user
 
-  const worker = await checkOrResetTransactionCounter(userId, res);
+  const worker = await checkUserEmailVerificationStatus(userId, res);
+
+  await checkOrResetTransactionCounter(worker, res);
 
   await isPlatformAllowedToDelegate(chainId, userAddress, res);
 
