@@ -10,7 +10,7 @@ import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/Us
 function workerOnboardingStep2() {
   const { account, loading, user } = useContext(TalentLayerContext);
   const { mutateAsync: updateWorkerProfileAsync } = useSetWorkerProfileOwner();
-  const [profileAlreadyHasOwner, setProfileAlreadyHasOwner] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   const id = new URL(window.location.href).searchParams.get('id');
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
@@ -23,10 +23,15 @@ function workerOnboardingStep2() {
             id,
             talentLayerId: user.id,
           });
-          if (response?.error === 'Profile already has an owner.') {
-            setProfileAlreadyHasOwner(true);
-          } else if (response?.id || response?.error) {
-            //If id successfully created or already have a profile redirect to step 3
+          /* If user tries to update a profile which already has an owner or if
+          the profile does not exist, he's prompted to create his profile. */
+          if (
+            response?.error === 'Profile already has an owner.' ||
+            response?.error === "Profile doesn't exist."
+          ) {
+            setError(response?.error);
+          } else if (response?.id || response?.error === 'You already have a profile') {
+            // If "id" successfully created or already has a profile redirect to step 3
             router.push({
               pathname: `/worker-onboarding/step3`,
               query: { serviceId: serviceId },
@@ -47,7 +52,7 @@ function workerOnboardingStep2() {
   return (
     <>
       <OnboardingSteps currentStep={2} type='worker' />
-      {!profileAlreadyHasOwner ? (
+      {!error ? (
         <>
           <CreateWorkerId />
           <div className='flex flex-col items-center justify-center gap-10'>
@@ -60,7 +65,7 @@ function workerOnboardingStep2() {
             <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
               <div className='flex flex-col items-center justify-center gap-10'>
                 <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
-                  This profile already has an owner.
+                  {error}
                 </p>
                 <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
                   You can create your own profile here

@@ -283,7 +283,7 @@ export const getWorkerProfileById = async (id: string) => {
 
 export const getWorkerProfileByTalentLayerId = async (
   id: string,
-  res: NextApiResponse,
+  res?: NextApiResponse,
 ): Promise<IWorkerMongooseSchema | null> => {
   try {
     await connection();
@@ -296,7 +296,11 @@ export const getWorkerProfileByTalentLayerId = async (
       throw new Error('worker not found');
     }
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    if (res) {
+      res.status(500).json({ error: error.message });
+    } else {
+      console.log(error.message);
+    }
     return null;
   }
 };
