@@ -31,6 +31,7 @@ function Dashboard() {
   const router = useRouter();
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
+  const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
   const isComingFromOnboarding = router.asPath.includes('onboarding') && isBuilderPlaceOwner;
 
   const [show, setShow] = useState(false);
@@ -57,10 +58,10 @@ function Dashboard() {
   };
 
   const onActivateDelegation = async () => {
-    if (talentLayerClient && walletClient) {
+    if (talentLayerClient && walletClient && talentLayerClientConfig) {
       const { request } = await publicClient.simulateContract({
-        address: talentLayerClient.config.contracts.talentLayerId.address,
-        abi: talentLayerClient.config.contracts.talentLayerId.abi,
+        address: talentLayerClientConfig.contracts.talentLayerId.address,
+        abi: talentLayerClientConfig.contracts.talentLayerId.abi,
         functionName: 'addDelegate',
         args: [user?.id, delegateAddress],
         account: account?.address,
