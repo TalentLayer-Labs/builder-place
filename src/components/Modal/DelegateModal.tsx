@@ -49,13 +49,13 @@ function DelegateModal() {
 
   return (
     <>
-      {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && (
+      {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && hasPlatformAsDelegate && (
         <button
           onClick={() => setShow(true)}
           className='block text-info bg-error hover:bg-info hover:text-base-content rounded-xl px-5 py-2.5 text-center'
           type='button'
           data-modal-toggle='defaultModal'>
-          {hasPlatformAsDelegate ? 'Deactivate ' : 'Activate '} delegation
+          Deactivate delegation
         </button>
       )}
 
