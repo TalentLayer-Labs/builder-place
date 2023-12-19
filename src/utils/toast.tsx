@@ -85,8 +85,11 @@ export const createMultiStepsTransactionToast = async (
 
 export const showErrorTransactionToast = (error: any) => {
   console.error(error);
-  let errorMessage = getParsedErrorMessage(error);
-  if (error.response && error.response.status === 500) {
+  let errorMessage = '';
+  if (error.name === 'AxiosError') {
+    errorMessage = error.response.data.error;
+  } else if (error.response && error.response.status === 500) {
+    errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
   }
   toast.error(errorMessage);
