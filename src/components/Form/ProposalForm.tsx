@@ -181,7 +181,11 @@ function ProposalForm({
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+      enableReinitialize={true}>
       {({ isSubmitting }) => (
         <Form>
           <h2 className='mb-2 text-base-content font-bold'>the mission</h2>
