@@ -48,7 +48,7 @@ function ProposalForm({
   const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { isActiveDelegate } = useContext(TalentLayerContext);
+  const { canUseDelegation } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const talentLayerClient = useTalentLayerClient();
 
@@ -117,7 +117,7 @@ function ProposalForm({
 
         cid = await talentLayerClient?.proposal?.upload(proposal);
 
-        if (isActiveDelegate) {
+        if (canUseDelegation) {
           const proposalResponse = await delegateCreateOrUpdateProposal(
             chainId,
             user.id,

@@ -13,13 +13,13 @@ export const executePayment = async (
   transactionId: string,
   amount: bigint,
   isBuyer: boolean,
-  isActiveDelegate: boolean,
+  canUseDelegation: boolean,
   talentLayerClient: TalentLayerClient,
   serviceId: string,
 ): Promise<void> => {
   try {
     let tx: Address;
-    if (isActiveDelegate) {
+    if (canUseDelegation) {
       const response = await delegateReleaseOrReimburse(
         chainId,
         userAddress,

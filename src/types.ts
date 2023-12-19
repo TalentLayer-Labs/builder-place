@@ -327,7 +327,7 @@ export enum PreferredWorkTypes {
 
 export type iTalentLayerContext = {
   loading: boolean;
-  isActiveDelegate: boolean;
+  canUseDelegation: boolean;
   refreshData: () => Promise<boolean>;
   refreshWorkerData: () => Promise<boolean>;
   user?: IUser;

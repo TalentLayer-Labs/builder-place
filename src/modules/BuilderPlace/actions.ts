@@ -17,8 +17,7 @@ import {
   UpdateBuilderPlaceDomain,
 } from './types';
 import { NextApiResponse } from 'next';
-
-const MAX_TRANSACTION_AMOUNT = 50;
+import { MAX_TRANSACTION_AMOUNT } from '../../config';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();

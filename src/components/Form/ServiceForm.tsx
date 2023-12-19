@@ -19,7 +19,6 @@ import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
-import { InformationCircle } from 'heroicons-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 interface IFormValues {
@@ -49,7 +48,7 @@ function ServiceForm() {
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-  const { isActiveDelegate } = useContext(TalentLayerContext);
+  const { canUseDelegation } = useContext(TalentLayerContext);
   const talentLayerClient = useTalentLayerClient();
 
   const currentChain = chains.find(chain => chain.id === chainId);
@@ -123,7 +122,7 @@ function ServiceForm() {
           rateAmount: parsedRateAmountString,
         });
 
-        if (isActiveDelegate) {
+        if (canUseDelegation) {
           const response = await delegateCreateService(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {

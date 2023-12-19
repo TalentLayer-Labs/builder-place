@@ -28,10 +28,9 @@ function ReleaseForm({
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, isActiveDelegate } = useContext(TalentLayerContext);
+  const { user, canUseDelegation } = useContext(TalentLayerContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
-
   const [percent, setPercentage] = useState(0);
 
   const handleSubmit = async () => {
@@ -49,7 +48,7 @@ function ReleaseForm({
         service.transaction.id,
         percentToToken,
         isBuyer,
-        isActiveDelegate,
+        canUseDelegation,
         talentLayerClient,
         service.id,
       );

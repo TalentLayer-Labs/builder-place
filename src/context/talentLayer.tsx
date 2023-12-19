@@ -8,10 +8,11 @@ import { iTalentLayerContext, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
 import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
 import { IWorkerProfile } from '../modules/BuilderPlace/types';
+import { MAX_TRANSACTION_AMOUNT } from '../config';
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
-  isActiveDelegate: false,
+  canUseDelegation: false,
   refreshData: async () => {
     return false;
   },
@@ -25,7 +26,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | undefined>();
   const [workerData, setWorkerData] = useState<IWorkerProfile | undefined>();
   const account = useAccount();
-  const [isActiveDelegate, setIsActiveDelegate] = useState(false);
+  const [canUseDelegation, setCanUseDelegation] = useState(false);
   const [loading, setLoading] = useState(true);
   const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
@@ -68,12 +69,14 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(currentUser);
 
-      setIsActiveDelegate(
+      setCanUseDelegation(
         process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
           userResponse.data.data.users[0].delegates &&
           userResponse.data.data.users[0].delegates.indexOf(
             (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
-          ) !== -1,
+          ) !== -1 &&
+          !!workerData?.weeklyTransactionCounter &&
+          workerData?.weeklyTransactionCounter <= MAX_TRANSACTION_AMOUNT,
       );
       setLoading(false);
       return true;
@@ -141,7 +144,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       user,
       account: account ? account : undefined,
       workerData,
-      isActiveDelegate,
+      canUseDelegation,
       refreshData: fetchData,
       refreshWorkerData: refreshWorkerData,
       loading,
@@ -151,7 +154,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   }, [
     account.address,
     user?.id,
-    isActiveDelegate,
+    canUseDelegation,
     workerData,
     loading,
     completionScores,
