@@ -78,7 +78,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
           //TODO should be ZERO by default, line 79 should not be needed
           !workerData?.weeklyTransactionCounter) ||
           (!!workerData?.weeklyTransactionCounter &&
-            workerData?.weeklyTransactionCounter <= MAX_TRANSACTION_AMOUNT),
+            workerData?.weeklyTransactionCounter < MAX_TRANSACTION_AMOUNT),
       );
       setLoading(false);
       return true;
