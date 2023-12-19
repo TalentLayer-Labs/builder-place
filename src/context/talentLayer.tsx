@@ -70,13 +70,15 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
 
       setCanUseDelegation(
-        process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
+        (process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' &&
           userResponse.data.data.users[0].delegates &&
           userResponse.data.data.users[0].delegates.indexOf(
             (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string).toLowerCase(),
           ) !== -1 &&
-          !!workerData?.weeklyTransactionCounter &&
-          workerData?.weeklyTransactionCounter <= MAX_TRANSACTION_AMOUNT,
+          //TODO should be ZERO by default, line 79 should not be needed
+          !workerData?.weeklyTransactionCounter) ||
+          (!!workerData?.weeklyTransactionCounter &&
+            workerData?.weeklyTransactionCounter <= MAX_TRANSACTION_AMOUNT),
       );
       setLoading(false);
       return true;
@@ -108,6 +110,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     if (data) {
       setWorkerData({
         ...data,
+        weeklyTransactionCounter: data.weeklyTransactionCounter ?? 0,
       });
     }
   };

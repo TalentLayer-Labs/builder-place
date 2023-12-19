@@ -16,6 +16,7 @@ export const executePayment = async (
   canUseDelegation: boolean,
   talentLayerClient: TalentLayerClient,
   serviceId: string,
+  refreshWorkerData: () => Promise<boolean>,
 ): Promise<void> => {
   try {
     let tx: Address;
@@ -55,5 +56,7 @@ export const executePayment = async (
     }
   } catch (error: any) {
     showErrorTransactionToast(error);
+  } finally {
+    if (canUseDelegation) await refreshWorkerData();
   }
 };

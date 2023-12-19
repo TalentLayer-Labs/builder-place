@@ -14,7 +14,6 @@ function DelegateModal() {
   const publicClient = usePublicClient({ chainId });
   const { user, refreshData } = useContext(TalentLayerContext);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
-  console.log(user);
 
   if (!user) {
     return null;

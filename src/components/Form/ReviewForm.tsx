@@ -29,7 +29,7 @@ const initialValues: IFormValues = {
 function ReviewForm({ serviceId }: { serviceId: string }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user } = useContext(TalentLayerContext);
+  const { user, refreshWorkerData } = useContext(TalentLayerContext);
   const { canUseDelegation } = useContext(TalentLayerContext);
   const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -92,6 +92,8 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
         resetForm();
       } catch (error) {
         showErrorTransactionToast(error);
+      } finally {
+        if (canUseDelegation) await refreshWorkerData();
       }
     } else {
       openConnectModal();
@@ -104,7 +106,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       enableReinitialize={true}
       onSubmit={onSubmit}
       validationSchema={validationSchema}>
-      {({ isSubmitting, errors }) => (
+      {({ isSubmitting }) => (
         <Form>
           {/* {Object.keys(errors).map(errorKey => (
             <div key={errorKey}>{errors[errorKey]}</div>

@@ -41,7 +41,7 @@ function ServiceForm() {
   const chainId = useChainId();
 
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, account } = useContext(TalentLayerContext);
+  const { user, account, refreshWorkerData } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const publiClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -168,6 +168,8 @@ function ServiceForm() {
         }
       } catch (error) {
         showErrorTransactionToast(error);
+      } finally {
+        if (canUseDelegation) await refreshWorkerData();
       }
     } else {
       openConnectModal();
