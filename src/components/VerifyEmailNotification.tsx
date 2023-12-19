@@ -5,11 +5,10 @@ import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 
 type VerifyEmailNotificationProps = {
-  displayCondition: boolean;
   callback?: () => void | Promise<void>;
 };
 
-const VerifyEmailNotification = ({ displayCondition, callback }: VerifyEmailNotificationProps) => {
+const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
   const { user, workerData, refreshWorkerData } = useContext(TalentLayerContext);
 
   const onVerifyMail = async () => {
@@ -30,7 +29,7 @@ const VerifyEmailNotification = ({ displayCondition, callback }: VerifyEmailNoti
 
   return (
     <div>
-      {displayCondition && (
+      {!!workerData?.email && !workerData?.emailVerified && (
         <Notification
           title='Verify your email !'
           text='Tired of paying gas fees ? Verify your email and get gassless transactions !'

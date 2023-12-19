@@ -12,7 +12,7 @@ function DelegateModal() {
   const [hasPlatformAsDelegate, setHasPlatformAsDelegate] = useState(false);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { user } = useContext(TalentLayerContext);
+  const { user, refreshData } = useContext(TalentLayerContext);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
   console.log(user);
 
@@ -45,6 +45,7 @@ function DelegateModal() {
       );
     }
     setShow(false);
+    await refreshData();
   };
 
   return (

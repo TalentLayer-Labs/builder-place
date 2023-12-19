@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
 import UserDetail from '../../components/UserDetail';
@@ -11,53 +11,20 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-import { usePublicClient, useWalletClient } from 'wagmi';
-import { useChainId } from '../../hooks/useChainId';
-import { createMultiStepsTransactionToast } from '../../utils/toast';
 import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
+import DelegationNotification from '../../components/DelegationNotification';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user, talentLayerClient, workerData, refreshWorkerData } =
-    useContext(TalentLayerContext);
+  const { account, user, workerData } = useContext(TalentLayerContext);
   const router = useRouter();
   const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
-  const chainId = useChainId();
-  const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
   const isComingFromOnboarding = router.asPath.includes('onboarding') && isBuilderPlaceOwner;
-  const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
-  const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
-
-  const onActivateDelegation = async () => {
-    if (talentLayerClient && walletClient && talentLayerClientConfig) {
-      const { request } = await publicClient.simulateContract({
-        address: talentLayerClientConfig.contracts.talentLayerId.address,
-        abi: talentLayerClientConfig.contracts.talentLayerId.abi,
-        functionName: 'addDelegate',
-        args: [user?.id, delegateAddress],
-        account: account?.address,
-      });
-      const tx = await walletClient.writeContract(request);
-      const toastMessages = {
-        pending: 'Submitting the delegation...',
-        success: 'Congrats! the delegation is active',
-        error: 'An error occurred while delegation process',
-      };
-      await createMultiStepsTransactionToast(
-        chainId,
-        toastMessages,
-        publicClient,
-        tx,
-        'Delegation',
-      );
-    }
-  };
 
   if (!user) {
     return (
@@ -109,7 +76,6 @@ function Dashboard() {
                 <h2 className='pb-4 text-base-content break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
-
                 <Notification
                   title='personalize your space!'
                   text='customize your BuilderPlace to match your brand'
@@ -128,21 +94,8 @@ function Dashboard() {
           {!isBuilderPlaceOwner && (
             <>
               <EmailModal />
-              <VerifyEmailNotification
-                displayCondition={!!workerData?.email && !workerData?.emailVerified}
-              />
-              {workerData?.emailVerified &&
-                !user.delegates?.includes(delegateAddress.toLowerCase()) && (
-                  <Notification
-                    title='Activate Gasless Transactions'
-                    text='You can now activate gassless transactions'
-                    link=''
-                    linkText='Activate Gassless'
-                    color='success'
-                    imageUrl={user?.description?.image_url}
-                    callback={onActivateDelegation}
-                  />
-                )}
+              <VerifyEmailNotification />
+              <DelegationNotification />
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>
