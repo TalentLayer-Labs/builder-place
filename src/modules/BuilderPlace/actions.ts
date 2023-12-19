@@ -318,8 +318,8 @@ export async function checkUserEmailVerificationStatus(
       throw new Error('Email not verified');
     }
     console.log('Email verified');
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 }
 
@@ -347,8 +347,8 @@ export async function checkOrResetTransactionCounter(
       await worker.save();
     }
     console.log('Delegating transaction');
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 }
 
@@ -362,8 +362,8 @@ export async function incrementWeeklyTransactionCounter(
     worker.weeklyTransactionCounter = (worker.weeklyTransactionCounter || 0) + 1;
     console.log('Transaction counter incremented', worker.weeklyTransactionCounter);
     await worker.save();
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 }
 
