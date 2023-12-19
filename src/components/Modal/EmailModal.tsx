@@ -1,26 +1,34 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext, useState } from 'react';
 import TalentLayerContext from '../../context/talentLayer';
 import EmailForm from '../Form/EmailForm';
+import Notification from '../Notification';
 
-function EmailModal({
-  show,
-  setShow,
-}: {
-  show: boolean;
-  setShow: Dispatch<SetStateAction<boolean>>;
-}) {
+function EmailModal() {
   const { user } = useContext(TalentLayerContext);
+  const [show, setShow] = useState(false);
 
   if (!user) {
     return null;
   }
 
+  const onAddMail = async () => {
+    setShow(true);
+  };
   const afterSubmit = (): void => {
     setShow(false);
   };
 
   return (
     <>
+      <Notification
+        title='Verify your email !'
+        text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
+        link=''
+        linkText={'Add my email'}
+        color='success'
+        imageUrl={user?.description?.image_url}
+        callback={onAddMail}
+      />
       <div
         className={`${
           !show ? 'hidden' : ''

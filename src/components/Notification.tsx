@@ -9,7 +9,7 @@ type NotificationProps = {
   linkText: string;
   imageUrl?: string;
   color: string;
-  callback?: () => void;
+  callback?: () => void | Promise<void>;
 };
 
 function Notification({

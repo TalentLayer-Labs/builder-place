@@ -13,13 +13,10 @@ import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlace
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../hooks/useChainId';
-import {
-  createMultiStepsTransactionToast,
-  showMongoErrorTransactionToast,
-} from '../../utils/toast';
-import { verifyEmail } from '../../modules/BuilderPlace/request';
+import { createMultiStepsTransactionToast } from '../../utils/toast';
 import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
+import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -33,29 +30,9 @@ function Dashboard() {
   const chainId = useChainId();
   const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
   const isComingFromOnboarding = router.asPath.includes('onboarding') && isBuilderPlaceOwner;
-
-  const [show, setShow] = useState(false);
-
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
-
-  const onAddMail = async () => {
-    setShow(true);
-  };
-
-  const onVerifyMail = async () => {
-    if (workerData?.email && !workerData.emailVerified && user?.id) {
-      try {
-        const response = await verifyEmail(workerData.email, user.id);
-        console.log('response', response);
-      } catch (e) {
-        console.log('Error', e);
-        showMongoErrorTransactionToast(e);
-      }
-      await refreshWorkerData();
-    }
-  };
 
   const onActivateDelegation = async () => {
     if (talentLayerClient && walletClient && talentLayerClientConfig) {
@@ -150,18 +127,10 @@ function Dashboard() {
           )}
           {!isBuilderPlaceOwner && (
             <>
-              <EmailModal show={show} setShow={setShow} />
-              {!workerData?.emailVerified && (
-                <Notification
-                  title='Verify your email !'
-                  text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
-                  link=''
-                  linkText={workerData?.email ? 'Verify my email' : 'Add my email'}
-                  color='success'
-                  imageUrl={user?.description?.image_url}
-                  callback={workerData?.email ? onVerifyMail : onAddMail}
-                />
-              )}
+              <EmailModal />
+              <VerifyEmailNotification
+                displayCondition={!!workerData?.email && !workerData?.emailVerified}
+              />
               {workerData?.emailVerified &&
                 !user.delegates?.includes(delegateAddress.toLowerCase()) && (
                   <Notification
