@@ -18,6 +18,8 @@ import {
 } from './types';
 import { NextApiResponse } from 'next';
 
+const MAX_TRANSACTION_AMOUNT = 50;
+
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
   const builderPlace = await BuilderPlace.deleteOne({ _id: _id });
@@ -334,7 +336,7 @@ export async function checkOrResetTransactionCounter(
 
     if (worker.counterStartDate > oneWeekAgoMilliseconds) {
       // Less than one week since counterStartDate
-      if (worker.weeklyTransactionCounter >= 50) {
+      if (worker.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
         // If the counter is already 50, stop the function
         console.log('Transaction limit reached for the week');
         throw new Error('Transaction limit reached for the week');
