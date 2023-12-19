@@ -106,7 +106,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       enableReinitialize={true}
       onSubmit={onSubmit}
       validationSchema={validationSchema}>
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors }) => (
         <Form>
           {/* {Object.keys(errors).map(errorKey => (
             <div key={errorKey}>{errors[errorKey]}</div>
