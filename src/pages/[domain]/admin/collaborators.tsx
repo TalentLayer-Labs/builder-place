@@ -14,6 +14,7 @@ import { usePublicClient, useWalletClient } from 'wagmi';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import Loading from '../../../components/Loading';
 import RemoveButton from '../../../components/Form/RemoveButton';
+import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -91,24 +92,25 @@ export default function Collaborators() {
 
   return (
     <div>
-      <h1>Add / Remove collaborators</h1>
-      <div className={'flex flex-col'}>
-        <CollaboratorForm />
-        {!!delegates && (
-          <div className={'flew flex-row mt-2'}>
-            {delegates.map(delegate => (
-              <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
-                <span className='mr-4 font-mono text-gray-800'>{delegate}</span>
-                <RemoveButton
-                  isSubmitting={submitting}
-                  onClick={() => onRemove(delegate)}
-                  index={delegate}
-                />
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+      <AdminSettingsLayout title={'Add / Remove Collaborators'}>
+        <div className={'flex flex-col'}>
+          <CollaboratorForm />
+          {!!delegates && (
+            <div className={'flew flex-row mt-2'}>
+              {delegates.map(delegate => (
+                <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
+                  <span className='mr-4 font-mono text-gray-800'>{delegate}</span>
+                  <RemoveButton
+                    isSubmitting={submitting}
+                    onClick={() => onRemove(delegate)}
+                    index={delegate}
+                  />
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </AdminSettingsLayout>
     </div>
   );
 }

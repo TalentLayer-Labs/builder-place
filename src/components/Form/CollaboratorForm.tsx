@@ -106,7 +106,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
         <Form>
           <div className='grid grid-cols-1 gap-6'>
             <label className='block'>
-              <span className='text-base-content'>Collaborator</span>
+              <span className='text-base-content font-bold'>Collaborator</span>
               <Field
                 type='text'
                 id='collaborator'
