@@ -15,7 +15,6 @@ import Link from 'next/link';
 function SideMenu() {
   const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
-  console.log(isBuilderPlaceOwner);
   return (
     <>
       <div className='sm:mt-8 flex flex-1 flex-col justify-between'>
