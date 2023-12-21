@@ -34,9 +34,12 @@ export const hirerAdminNavigation = [
     icon: CodeBracketSquareIcon,
     current: false,
   },
+];
+
+export const ownerAdminNavigation = [
   {
     name: 'add collaborators',
-    href: '/admin/add-collaborators',
+    href: '/admin/collaborators',
     icon: UserPlusIcon,
     current: false,
   },

@@ -43,7 +43,7 @@ const validationSchema = Yup.object({
 
 function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { account, loading } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: updateBuilderPlaceAsync } = useUpdateBuilderPlace();
@@ -114,7 +114,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     );
   }
 
-  if (!isBuilderPlaceOwner) {
+  if (!isBuilderPlaceCollaborator) {
     return <AccessDenied />;
   }
 

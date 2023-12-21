@@ -19,10 +19,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
-export default function AddCollaborators() {
+export default function Collaborators() {
   const { user, account, refreshData } = useContext(TalentLayerContext);
   const delegates = user?.delegates;
-  console.log('user', user);
   const { mutateAsync: removeBuilderPlaceCollaboratorAsync } = useRemoveBuilderPlaceOwnerMutation();
   const chainId = useChainId();
   const config = useConfig();
@@ -62,20 +61,12 @@ export default function AddCollaborators() {
           signature,
         });
 
-        console.log(
-          'user.delegates?.indexOf(address) !== -1',
-          user.delegates?.indexOf(address) !== -1,
-        );
-
         if (response?.error) {
-          console.log('response.error');
-          console.log(response.error);
           showErrorTransactionToast(response.error);
         } else if (user.delegates?.indexOf(address) !== -1) {
           /**
            * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
            */
-          console.log('toggleDelegation');
           await toggleDelegation(
             chainId,
             user.id,

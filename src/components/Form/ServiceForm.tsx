@@ -43,7 +43,8 @@ function ServiceForm() {
 
   const { open: openConnectModal } = useWeb3Modal();
   const { user, account, isActiveDelegate } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceOwner, isBuilderPlaceCollaborator, builderPlace } =
+    useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const publiClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -58,7 +59,6 @@ function ServiceForm() {
   const servicePostingFeeFormat = servicePostingFee
     ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
     : 0;
-  const isCollaborator = isBuilderPlaceOwner && user?.id !== builderPlace?.ownerTalentLayerId;
 
   const validationSchema = Yup.object({
     title: Yup.string().required('Please provide a title for your mission'),
@@ -132,7 +132,7 @@ function ServiceForm() {
           if (
             // Collaborator executes a gassless function on behalf of the Builderplace's owner
             isActiveDelegate &&
-            isCollaborator &&
+            !isBuilderPlaceOwner &&
             builderPlace?.ownerTalentLayerId &&
             account.address
           ) {
@@ -153,7 +153,7 @@ function ServiceForm() {
                   rateToken: values.rateToken,
                   rateAmount: parsedRateAmountString,
                 },
-                isCollaborator && builderPlace?.ownerTalentLayerId
+                !isBuilderPlaceOwner && builderPlace?.ownerTalentLayerId
                   ? builderPlace.ownerTalentLayerId
                   : user.id,
                 parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
