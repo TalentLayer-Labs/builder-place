@@ -16,6 +16,7 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   title?: string;
@@ -35,6 +36,8 @@ function ProfileForm({ callback }: { callback?: () => void }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const { user, isActiveDelegate, refreshData } = useContext(TalentLayerContext);
+  const { isBuilderPlaceOwner, isBuilderPlaceCollaborator, builderPlace } =
+    useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
@@ -66,11 +69,23 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     setAiLoading(false);
   };
 
+  /**
+   * @dev If the user is a Collaborator, use the owner's TalentLayerId & don't update the web3mailPreferences field
+   * @param values
+   * @param setSubmitting
+   * @param resetForm
+   */
   const onSubmit = async (
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && walletClient && publicClient && talentLayerClient) {
+    if (
+      user &&
+      walletClient &&
+      publicClient &&
+      talentLayerClient &&
+      builderPlace?.ownerTalentLayerId
+    ) {
       try {
         const profile = {
           title: values.title,
@@ -80,17 +95,29 @@ function ProfileForm({ callback }: { callback?: () => void }) {
           name: values.name,
           about: values.about,
           skills: values.skills,
-          web3mailPreferences: user.description?.web3mailPreferences,
+          // Don't update this field if User is Collaborator => Needs to be Owner
+          web3mailPreferences:
+            isBuilderPlaceCollaborator && !isBuilderPlaceOwner
+              ? ''
+              : user.description?.web3mailPreferences,
         };
 
         let cid = await talentLayerClient.profile.upload(profile);
 
         let tx;
         if (isActiveDelegate) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
+          const response = await delegateUpdateProfileData(
+            chainId,
+            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+            user.address,
+            cid,
+          );
           tx = response.data.transaction;
         } else {
-          const res = await talentLayerClient?.profile.update(profile, user.id);
+          const res = await talentLayerClient?.profile.update(
+            profile,
+            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+          );
 
           tx = res.tx;
           cid = res.cid;

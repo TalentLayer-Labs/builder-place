@@ -1,26 +1,24 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { QuestionMarkCircle } from 'heroicons-react';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { formatUnits } from 'viem';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
 import { useChainId } from '../../hooks/useChainId';
-import { postOpenAiRequest } from '../../modules/OpenAi/utils';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import { IProposal, IService, IUser } from '../../types';
 import { parseRateAmount } from '../../utils/currency';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
-import Loading from '../Loading';
 import ServiceItem from '../ServiceItem';
 import { delegateCreateOrUpdateProposal } from '../request';
 import SubmitButton from './SubmitButton';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   about: string;
@@ -52,8 +50,8 @@ function ProposalForm({
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const { isActiveDelegate } = useContext(TalentLayerContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
-  const [aiLoading, setAiLoading] = useState(false);
   const talentLayerClient = useTalentLayerClient();
 
   const currentChain = chains.find(chain => chain.id === chainId);
@@ -91,6 +89,12 @@ function ProposalForm({
     video_url: existingProposal?.description?.video_url || '',
   };
 
+  /**
+   * @dev If the user is a Collaborator, use the owner's TalentLayerId
+   * @param values
+   * @param setSubmitting
+   * @param resetForm
+   */
   const onSubmit = async (
     values: IFormValues,
     {
@@ -99,7 +103,7 @@ function ProposalForm({
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (publicClient && token && walletClient) {
+    if (publicClient && token && walletClient && builderPlace?.ownerTalentLayerId) {
       try {
         const parsedRateAmount = await parseRateAmount(
           values.rateAmount.toString(),
@@ -124,7 +128,7 @@ function ProposalForm({
         if (isActiveDelegate) {
           const proposalResponse = await delegateCreateOrUpdateProposal(
             chainId,
-            user.id,
+            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
             user.address,
             service.id,
             values.rateToken,
@@ -138,7 +142,7 @@ function ProposalForm({
           if (existingProposal) {
             proposalResponse = await talentLayerClient?.proposal.update(
               proposal,
-              user.id,
+              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
               service.id,
               values.rateToken,
               parsedRateAmountString,
@@ -147,7 +151,7 @@ function ProposalForm({
           } else {
             proposalResponse = await talentLayerClient?.proposal.create(
               proposal,
-              user.id,
+              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
               service.id,
               values.rateToken,
               parsedRateAmountString,
@@ -184,7 +188,7 @@ function ProposalForm({
 
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
-      {({ isSubmitting, values, setFieldValue }) => (
+      {({ isSubmitting }) => (
         <Form>
           <h2 className='mb-2 text-base-content font-bold'>the mission</h2>
           <ServiceItem service={service} />

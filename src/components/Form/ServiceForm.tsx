@@ -43,8 +43,7 @@ function ServiceForm() {
 
   const { open: openConnectModal } = useWeb3Modal();
   const { user, account, isActiveDelegate } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner, isBuilderPlaceCollaborator, builderPlace } =
-    useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const publiClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -90,6 +89,12 @@ function ServiceForm() {
       }),
   });
 
+  /**
+   * @dev If the user is a Collaborator, use the owner's TalentLayerId
+   * @param values
+   * @param setSubmitting
+   * @param resetForm
+   */
   const onSubmit = async (
     values: IFormValues,
     {
@@ -104,7 +109,8 @@ function ServiceForm() {
       walletClient &&
       token &&
       user &&
-      talentLayerClient
+      talentLayerClient &&
+      builderPlace?.ownerTalentLayerId
     ) {
       try {
         const parsedRateAmount = await parseRateAmount(
@@ -125,45 +131,31 @@ function ServiceForm() {
         });
 
         if (isActiveDelegate) {
-          // Use gassless delegation for User
-          const response = await delegateCreateService(chainId, user.id, user.address, cid);
+          const response = await delegateCreateService(
+            chainId,
+            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+            user.address,
+            cid,
+          );
           tx = response.data.transaction;
         } else {
-          if (
-            // Collaborator executes a gassless function on behalf of the Builderplace's owner
-            isActiveDelegate &&
-            !isBuilderPlaceOwner &&
-            builderPlace?.ownerTalentLayerId &&
-            account.address
-          ) {
-            const response = await delegateCreateService(
-              chainId,
-              builderPlace.ownerTalentLayerId,
-              account.address,
-              cid,
+          if (talentLayerClient) {
+            const serviceResponse = await talentLayerClient.service.create(
+              {
+                title: values.title,
+                about: values.about,
+                keywords: values.keywords,
+                rateToken: values.rateToken,
+                rateAmount: parsedRateAmountString,
+              },
+              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+              parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
             );
-            tx = response.data.transaction;
-          } else {
-            if (talentLayerClient) {
-              const serviceResponse = await talentLayerClient.service.create(
-                {
-                  title: values.title,
-                  about: values.about,
-                  keywords: values.keywords,
-                  rateToken: values.rateToken,
-                  rateAmount: parsedRateAmountString,
-                },
-                !isBuilderPlaceOwner && builderPlace?.ownerTalentLayerId
-                  ? builderPlace.ownerTalentLayerId
-                  : user.id,
-                parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-              );
 
-              cid = serviceResponse.cid;
-              tx = serviceResponse.tx;
-            } else {
-              throw new Error('TL client not initialised');
-            }
+            cid = serviceResponse.cid;
+            tx = serviceResponse.tx;
+          } else {
+            throw new Error('TL client not initialised');
           }
         }
 
