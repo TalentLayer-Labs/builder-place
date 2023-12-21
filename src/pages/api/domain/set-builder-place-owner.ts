@@ -10,7 +10,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const body: SetBuilderPlaceOwner = req.body;
     console.log('Received data:', body);
 
-    if (!body.id || !body.ownerAddress || !body.ownerTalentLayerId) {
+    if (!body.id || !body.collaboratorAddress || !body.ownerTalentLayerId) {
       return res.status(500).json({ error: 'Missing data.' });
     }
 
@@ -23,14 +23,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     if (!builderSpace) {
       return res.status(500).json({ error: "Domain doesn't exist." });
     }
-    if (builderSpace.owners.length !== 0 || !!builderSpace.ownerTalentLayerId) {
+    if (builderSpace.collaborators.length !== 0 || !!builderSpace.ownerTalentLayerId) {
       return res.status(500).json({ error: 'Domain already taken.' });
     }
 
     try {
       builderSpace.ownerTalentLayerId = body.ownerTalentLayerId;
-      builderSpace.ownerAddress = body.ownerAddress;
-      builderSpace.owners = [body.ownerAddress];
+      builderSpace.ownerAddress = body.collaboratorAddress;
+      builderSpace.collaborators = [body.collaboratorAddress];
       builderSpace.save();
       res
         .status(200)

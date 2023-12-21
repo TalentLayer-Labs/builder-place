@@ -23,7 +23,6 @@ const validationSchema = Yup.object({
 const initialValues: IFormValues = {
   collaborator: '',
 };
-//TODO renommer Owners => Collaborators | ajouter champ address du Onwer
 export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
   const chainId = useChainId();
   const config = useConfig();

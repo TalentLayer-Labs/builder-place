@@ -21,7 +21,7 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   useEffect(() => {
     if (!data) return;
 
-    const isBuilderPlaceCollaborator = data?.owners?.some(
+    const isBuilderPlaceCollaborator = data?.collaborators?.some(
       owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
     );
 

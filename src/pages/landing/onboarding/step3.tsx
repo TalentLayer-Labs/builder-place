@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import CustomDomain from '../../../components/CustomDomain';
@@ -77,7 +77,7 @@ function onboardingStep3() {
           name: builderPlaceData.name,
           ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
           palette: themes[values.palette],
-          owners: builderPlaceData.owners,
+          collaborators: builderPlaceData.collaborators,
           status: 'validated',
           signature,
         });

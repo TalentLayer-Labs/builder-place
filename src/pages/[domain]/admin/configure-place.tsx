@@ -16,7 +16,7 @@ import UploadImage from '../../../components/UploadImage';
 import TalentLayerContext from '../../../context/talentLayer';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
-import { IBuilderPlace, iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { slugify } from '../../../modules/BuilderPlace/utils';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { themes } from '../../../utils/themes';
@@ -146,7 +146,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           cover: values.cover,
           ownerTalentLayerId: builderPlace.ownerTalentLayerId,
           palette,
-          owners: builderPlace.owners,
+          collaborators: builderPlace.collaborators,
           status: 'validated',
           signature,
         });

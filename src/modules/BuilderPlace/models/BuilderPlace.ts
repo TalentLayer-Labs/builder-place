@@ -101,7 +101,7 @@ const builderPlace = new Schema({
     unique: true,
     sparse: true,
   },
-  owners: {
+  collaborators: {
     type: Array,
   },
   status: {

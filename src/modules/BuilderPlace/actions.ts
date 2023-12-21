@@ -55,7 +55,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
       { _id: body.builderPlaceId },
       {
         $push: {
-          owners: body.newCollaborator,
+          collaborators: body.newCollaborator,
         },
       },
     ).exec();
@@ -78,7 +78,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
       { _id: body.builderPlaceId },
       {
         $pull: {
-          owners: body.newCollaborator,
+          collaborators: body.newCollaborator,
         },
       },
     ).exec();
@@ -191,7 +191,7 @@ export const getBuilderPlaceByOwnerAddressAndId = async (address: string, _id: s
     await connection();
     console.log("getting builderPlace with owner's address & mongo _id:", address, _id);
     const builderPlaceSubdomain = await BuilderPlace.findOne({
-      owners: address,
+      collaborators: address,
       _id: _id,
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
