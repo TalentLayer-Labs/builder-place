@@ -29,7 +29,7 @@ export default function Collaborators() {
   const { open: openConnectModal } = useWeb3Modal();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState('');
 
   if (user?.id !== builderPlace?.ownerTalentLayerId) {
     return <AccessDenied />;
@@ -42,7 +42,7 @@ export default function Collaborators() {
   const onRemove = async (address: string): Promise<void> => {
     try {
       if (walletClient && account?.address && builderPlace?._id) {
-        setSubmitting(true);
+        setSubmitting(address);
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -85,7 +85,7 @@ export default function Collaborators() {
       showErrorTransactionToast(error);
     } finally {
       refreshData();
-      setSubmitting(false);
+      setSubmitting('');
     }
   };
 
@@ -99,7 +99,11 @@ export default function Collaborators() {
             {delegates.map(delegate => (
               <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
                 <span className='mr-4 font-mono text-gray-800'>{delegate}</span>
-                <RemoveButton isSubmitting={submitting} onClick={() => onRemove(delegate)} />
+                <RemoveButton
+                  isSubmitting={submitting}
+                  onClick={() => onRemove(delegate)}
+                  index={delegate}
+                />
               </span>
             ))}
           </div>

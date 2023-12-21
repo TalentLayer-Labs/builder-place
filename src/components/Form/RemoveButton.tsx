@@ -3,15 +3,19 @@ function RemoveButton({
   label = 'Remove',
   loadingLabel = 'Removing...',
   onClick,
+  index,
 }: {
-  isSubmitting: boolean;
+  isSubmitting: boolean | string;
   label?: string;
   loadingLabel?: string;
   onClick?: () => void | Promise<void>;
+  index?: string;
 }) {
+  const submitting = index ? isSubmitting === index : !!isSubmitting;
+
   return (
     <div className='flex flex-row justify-between items-center'>
-      {isSubmitting ? (
+      {submitting ? (
         <button
           disabled
           type='submit'
@@ -37,7 +41,10 @@ function RemoveButton({
         <button
           type='submit'
           onClick={onClick}
-          className='px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none'>
+          disabled={!!isSubmitting}
+          className={`${
+            !!isSubmitting && `opacity-50`
+          } px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none`}>
           {label}
         </button>
       )}
