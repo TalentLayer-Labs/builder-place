@@ -164,7 +164,7 @@ function getParsedErrorMessage(error: any) {
 
 function getParsedMongoErrorMessage(error: string) {
   if (error.includes(MONGO_ERROR_CODES.DUPLICATE_KEY.toString())) {
-    return `Aalready exists`;
+    return `Already exists`;
   } else {
     return `${error}`;
   }
