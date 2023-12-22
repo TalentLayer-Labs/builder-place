@@ -111,7 +111,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                 id='collaborator'
                 name='collaborator'
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                placeholder=''
+                placeholder='0x...'
               />
             </label>
             <span className='text-alone-error'>
