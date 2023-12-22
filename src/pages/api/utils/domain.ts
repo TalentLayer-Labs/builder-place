@@ -25,7 +25,7 @@ export const checkSignature = async (
 };
 
 /**
- * Checks if the signature is from a collaborator
+ * Checks if the signature is from the BuilderPlace owner
  * @param builderPlaceId
  * @param ownerId
  * @param signature
