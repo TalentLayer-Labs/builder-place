@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { useAccount } from 'wagmi';
+import useUserById from '../../../hooks/useUserById';
 
 const BuilderPlaceContext = createContext<{
   builderPlace?: IBuilderPlace;
@@ -19,14 +20,16 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || !data.ownerTalentLayerId) return;
 
-    const isBuilderPlaceCollaborator = data?.collaborators?.some(
+    const isBuilderPlaceCollaborator = data?.owners?.some(
       owner => owner.toLocaleLowerCase() === account?.address?.toLocaleLowerCase(),
     );
 
+    const builderPlaceOwner = useUserById(data.ownerTalentLayerId);
+
     const isBuilderPlaceOwner =
-      account.address?.toLocaleLowerCase() === builderPlace?.ownerAddress?.toLocaleLowerCase();
+      account.address?.toLocaleLowerCase() === builderPlaceOwner?.address?.toLocaleLowerCase();
 
     setIsBuilderPlaceCollaborator(isBuilderPlaceCollaborator || false);
     setIsBuilderPlaceOwner(isBuilderPlaceOwner || false);

@@ -16,7 +16,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     );
 
     // Checks if the user is already a collaborator
-    if (response?.builderPlace?.collaborators?.includes(body.newCollaborator)) {
+    if (response?.builderPlace?.owners?.includes(body.newCollaborator)) {
       res.status(400).json({ error: 'Already a Collaborator' });
     } else {
       const result = await addBuilderPlaceCollaborator(body);

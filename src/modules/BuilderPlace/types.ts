@@ -26,7 +26,7 @@ export interface UpdateBuilderPlace {
   aboutTech?: string;
   palette?: iBuilderPlacePalette;
   ownerTalentLayerId: string | undefined;
-  collaborators: string[] | undefined;
+  owners: string[] | undefined;
   status: string | undefined;
   logo?: string;
   cover?: string;
@@ -61,7 +61,7 @@ export interface RemoveBuilderPlaceCollaborator {
 
 export interface SetBuilderPlaceOwner {
   id: string;
-  collaboratorAddress: string;
+  owners: string[];
   ownerTalentLayerId: string;
 }
 
@@ -102,9 +102,8 @@ export type IBuilderPlace = {
   about?: string;
   aboutTech?: string;
   baseline?: string;
-  collaborators?: string[];
+  owners?: string[];
   ownerTalentLayerId?: string;
-  ownerAddress?: string;
   status: 'Validated' | 'Pending';
   preferredWorkTypes: PreferredWorkTypes[];
 };

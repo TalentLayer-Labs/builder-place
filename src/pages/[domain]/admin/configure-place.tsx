@@ -146,7 +146,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           cover: values.cover,
           ownerTalentLayerId: builderPlace.ownerTalentLayerId,
           palette,
-          collaborators: builderPlace.collaborators,
+          owners: builderPlace.owners,
           status: 'validated',
           signature,
         });

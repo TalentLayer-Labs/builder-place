@@ -77,7 +77,7 @@ function onboardingStep3() {
           name: builderPlaceData.name,
           ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
           palette: themes[values.palette],
-          collaborators: builderPlaceData.collaborators,
+          owners: builderPlaceData.owners,
           status: 'validated',
           signature,
         });
