@@ -43,7 +43,7 @@ function ServiceForm() {
 
   const { open: openConnectModal } = useWeb3Modal();
   const { user, account, isActiveDelegate } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const publiClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -90,7 +90,7 @@ function ServiceForm() {
   });
 
   /**
-   * @dev If the user is a Collaborator, use the owner's TalentLayerId
+   * @dev Only the owner's TalentLayerId is used here (by owners of delegates)
    * @param values
    * @param setSubmitting
    * @param resetForm
@@ -133,7 +133,7 @@ function ServiceForm() {
         if (isActiveDelegate) {
           const response = await delegateCreateService(
             chainId,
-            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+            builderPlace.ownerTalentLayerId,
             user.address,
             cid,
           );
@@ -148,7 +148,7 @@ function ServiceForm() {
                 rateToken: values.rateToken,
                 rateAmount: parsedRateAmountString,
               },
-              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+              builderPlace.ownerTalentLayerId,
               parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
             );
 

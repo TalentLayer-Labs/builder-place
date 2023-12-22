@@ -18,7 +18,6 @@ import SubmitButton from './SubmitButton';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   about: string;
@@ -50,7 +49,6 @@ function ProposalForm({
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const { isActiveDelegate } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const talentLayerClient = useTalentLayerClient();
 
@@ -89,12 +87,6 @@ function ProposalForm({
     video_url: existingProposal?.description?.video_url || '',
   };
 
-  /**
-   * @dev If the user is a Collaborator, use the owner's TalentLayerId
-   * @param values
-   * @param setSubmitting
-   * @param resetForm
-   */
   const onSubmit = async (
     values: IFormValues,
     {
@@ -103,7 +95,7 @@ function ProposalForm({
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (publicClient && token && walletClient && builderPlace?.ownerTalentLayerId) {
+    if (publicClient && token && walletClient) {
       try {
         const parsedRateAmount = await parseRateAmount(
           values.rateAmount.toString(),
@@ -128,7 +120,7 @@ function ProposalForm({
         if (isActiveDelegate) {
           const proposalResponse = await delegateCreateOrUpdateProposal(
             chainId,
-            isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+            user.id,
             user.address,
             service.id,
             values.rateToken,
@@ -142,7 +134,7 @@ function ProposalForm({
           if (existingProposal) {
             proposalResponse = await talentLayerClient?.proposal.update(
               proposal,
-              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+              user.id,
               service.id,
               values.rateToken,
               parsedRateAmountString,
@@ -151,7 +143,7 @@ function ProposalForm({
           } else {
             proposalResponse = await talentLayerClient?.proposal.create(
               proposal,
-              isBuilderPlaceCollaborator ? builderPlace.ownerTalentLayerId : user.id,
+              user.id,
               service.id,
               values.rateToken,
               parsedRateAmountString,
