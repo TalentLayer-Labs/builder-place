@@ -72,6 +72,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             String(handlePrice),
             account.address,
             signature,
+            Boolean(process.env.NEXT_PUBLIC_ADD_DELEGATE_MINT_ADDRESS) ?? '',
           );
 
           tx = response.data.transaction;

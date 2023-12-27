@@ -120,6 +120,7 @@ export const delegateMintID = async (
   handlePrice: string,
   userAddress: string,
   signature?: string,
+  addDelegateAndTransferId?: boolean,
 ): Promise<any> => {
   try {
     return await axios.post('/api/delegate/mint-id', {
@@ -128,6 +129,7 @@ export const delegateMintID = async (
       handlePrice,
       userAddress,
       signature,
+      addDelegateAndTransferId,
     });
   } catch (err) {
     console.error(err);
