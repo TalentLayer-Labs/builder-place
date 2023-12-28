@@ -41,6 +41,10 @@ function ServiceDetail({ service }: { service: IService }) {
     return proposal.status === ProposalStatusEnum.Validated;
   });
 
+  const closeEditMode = () => {
+    setEditMode(false);
+  };
+
   return (
     <>
       {!editMode ? (
@@ -149,7 +153,7 @@ function ServiceDetail({ service }: { service: IService }) {
           </div>
         </div>
       ) : (
-        <ServiceForm existingService={service} />
+        <ServiceForm existingService={service} callback={closeEditMode} />
       )}
       {(isBuyerOrDelegate || isSeller) && reviews.length > 0 && (
         <div className='flex flex-col gap-4 mt-4'>

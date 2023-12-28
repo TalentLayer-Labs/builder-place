@@ -29,7 +29,13 @@ interface IFormValues {
   rateAmount: number;
 }
 
-function ServiceForm({ existingService }: { existingService?: IService }) {
+function ServiceForm({
+  existingService,
+  callback,
+}: {
+  existingService?: IService;
+  callback?: () => void;
+}) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const { user, account } = useContext(TalentLayerContext);
@@ -190,6 +196,11 @@ function ServiceForm({ existingService }: { existingService?: IService }) {
           'service',
           cid,
         );
+
+        if (callback) {
+          callback();
+        }
+
         setSubmitting(false);
         resetForm();
         if (newId) {
