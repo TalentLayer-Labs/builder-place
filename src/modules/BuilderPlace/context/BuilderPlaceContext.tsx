@@ -1,9 +1,8 @@
-import { createContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { useAccount } from 'wagmi';
-import { getUserById } from '../../../queries/users';
-import { toast } from 'react-toastify';
 import { useChainId } from '../../../hooks/useChainId';
+import TalentLayerContext from '../../../context/talentLayer';
 
 const BuilderPlaceContext = createContext<{
   builderPlace?: IBuilderPlace;
@@ -18,6 +17,7 @@ const BuilderPlaceContext = createContext<{
 const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; children: ReactNode }) => {
   const account = useAccount();
   const chainId = useChainId();
+  const { user } = useContext(TalentLayerContext);
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceCollaborator, setIsBuilderPlaceCollaborator] = useState<boolean>(false);
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
@@ -26,38 +26,13 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
     if (!data?.ownerTalentLayerId) {
       return;
     }
-
-    try {
-      const response = await getUserById(chainId, data.ownerTalentLayerId);
-      if (!response?.data?.data?.user) {
-        return;
-      }
-
-      const builderPlaceOwner = response.data.data.user;
-
-      const isUserBuilderPlaceOwner =
-        account.address?.toLocaleLowerCase() === builderPlaceOwner?.address?.toLocaleLowerCase();
-      setIsBuilderPlaceOwner(isUserBuilderPlaceOwner || false);
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      toast.error(`An error happened while loading your account: ${err.message}.`, {
-        position: 'bottom-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-      return false;
-    }
+    const isUserBuilderPlaceOwner = user?.id === data.ownerTalentLayerId;
+    setIsBuilderPlaceOwner(isUserBuilderPlaceOwner || false);
   };
 
   useEffect(() => {
     fetchBuilderPlaceOwner();
-  }, [chainId, data?.ownerTalentLayerId]);
+  }, [chainId, data?.ownerTalentLayerId, user?.id]);
 
   useEffect(() => {
     if (!data || !data.ownerTalentLayerId) return;
