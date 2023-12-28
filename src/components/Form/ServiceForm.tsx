@@ -12,7 +12,7 @@ import SubmitButton from './SubmitButton';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
 import { IService, IToken } from '../../types';
 import { SkillsInput } from './skills-input';
-import { delegateCreateService } from '../request';
+import { delegateCreateOrUpdateService } from '../request';
 import { useChainId } from '../../hooks/useChainId';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
@@ -124,7 +124,6 @@ function ServiceForm({ existingService }: { existingService?: IService }) {
         const parsedRateAmountString = parsedRateAmount.toString();
 
         let tx, cid;
-
         if (isActiveDelegate) {
           cid = await talentLayerClient.service.updloadServiceDataToIpfs({
             title: values.title,
@@ -133,7 +132,13 @@ function ServiceForm({ existingService }: { existingService?: IService }) {
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
           });
-          const response = await delegateCreateService(chainId, user.id, user.address, cid);
+          const response = await delegateCreateOrUpdateService(
+            chainId,
+            existingService?.buyer.id ? existingService.buyer.id : user.id,
+            user.address.toLowerCase(),
+            cid,
+            !!existingService,
+          );
           tx = response.data.transaction;
         } else {
           if (talentLayerClient) {
@@ -153,7 +158,6 @@ function ServiceForm({ existingService }: { existingService?: IService }) {
               cid = serviceResponse.cid;
               tx = serviceResponse.tx;
             } else {
-              console.log('existingService', existingService);
               cid = await talentLayerClient.service.updloadServiceDataToIpfs({
                 title: values.title,
                 about: values.about,

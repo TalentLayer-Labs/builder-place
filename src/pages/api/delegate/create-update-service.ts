@@ -6,7 +6,7 @@ import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/deleg
 import { getConfig } from '../../../config';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { userId, userAddress, cid, chainId } = req.body;
+  const { userId, userAddress, cid, chainId, existingService } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delagation for a user
@@ -18,13 +18,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    const signature = await getServiceSignature({ profileId: Number(userId), cid });
-    const transaction = await walletClient.writeContract({
-      address: config.contracts.serviceRegistry,
-      abi: TalentLayerService.abi,
-      functionName: 'createService',
-      args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
-    });
+    let transaction;
+
+    if (existingService) {
+      transaction = await walletClient.writeContract({
+        address: config.contracts.serviceRegistry,
+        abi: TalentLayerService.abi,
+        functionName: 'updateServiceData',
+        args: [userId, existingService.id, cid],
+      });
+    } else {
+      const signature = await getServiceSignature({ profileId: Number(userId), cid });
+      transaction = await walletClient.writeContract({
+        address: config.contracts.serviceRegistry,
+        abi: TalentLayerService.abi,
+        functionName: 'createService',
+        args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
+      });
+    }
 
     res.status(200).json({ transaction: transaction });
   } catch (error) {
