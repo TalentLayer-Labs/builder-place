@@ -17,6 +17,7 @@ import ServiceStatus from './ServiceStatus';
 import TokenAmount from './TokenAmount';
 import ServiceForm from './Form/ServiceForm';
 import useUserById from '../hooks/useUserById';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 function ServiceDetail({ service }: { service: IService }) {
   const { account, user } = useContext(TalentLayerContext);
@@ -153,7 +154,14 @@ function ServiceDetail({ service }: { service: IService }) {
           </div>
         </div>
       ) : (
-        <ServiceForm existingService={service} callback={closeEditMode} />
+        <div className='relative'>
+          <ServiceForm existingService={service} callback={closeEditMode} />
+          <button
+            onClick={() => setEditMode(false)}
+            className='absolute top-[-10px] right-[-10px] z-10 rounded-full p-1 text-lg text-primary-content shadow-lg ml-2 cursor-pointer bg-info text-center'>
+            <XMarkIcon width={18} />
+          </button>
+        </div>
       )}
       {(isBuyerOrDelegate || isSeller) && reviews.length > 0 && (
         <div className='flex flex-col gap-4 mt-4'>

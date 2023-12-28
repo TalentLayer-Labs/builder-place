@@ -1,7 +1,6 @@
 import {
   BriefcaseIcon,
   ChatBubbleBottomCenterIcon,
-  UserGroupIcon,
   UserIcon,
   PresentationChartLineIcon,
   ExclamationCircleIcon,
