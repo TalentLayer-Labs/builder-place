@@ -10,7 +10,7 @@ import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../
 import { parseRateAmount } from '../../utils/currency';
 import SubmitButton from './SubmitButton';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { IToken } from '../../types';
+import { IService, IToken } from '../../types';
 import { SkillsInput } from './skills-input';
 import { delegateCreateService } from '../request';
 import { useChainId } from '../../hooks/useChainId';
@@ -19,7 +19,6 @@ import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
-import { InformationCircle } from 'heroicons-react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 interface IFormValues {
@@ -30,21 +29,12 @@ interface IFormValues {
   rateAmount: number;
 }
 
-const initialValues: IFormValues = {
-  title: '',
-  about: '',
-  keywords: '',
-  rateToken: '',
-  rateAmount: 0,
-};
-
-function ServiceForm() {
+function ServiceForm({ existingService }: { existingService?: IService }) {
   const chainId = useChainId();
-
   const { open: openConnectModal } = useWeb3Modal();
   const { user, account } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
-  const publiClient = usePublicClient({ chainId });
+  const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
@@ -58,6 +48,26 @@ function ServiceForm() {
   const servicePostingFeeFormat = servicePostingFee
     ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
     : 0;
+
+  const getFormattedTokenAmount = () => {
+    const token = allowedTokenList.find(
+      token => token.address === existingService?.description?.rateToken,
+    );
+    if (!token || !existingService?.description?.rateAmount) {
+      return 0;
+    }
+    return Number(
+      formatUnits(BigInt(existingService.description?.rateAmount), Number(token?.decimals)),
+    );
+  };
+
+  const initialValues: IFormValues = {
+    title: existingService?.description?.title || '',
+    about: existingService?.description?.about || '',
+    keywords: existingService?.description?.keywords_raw || '',
+    rateToken: existingService?.description?.rateToken || '',
+    rateAmount: getFormattedTokenAmount() || 0,
+  };
 
   const validationSchema = Yup.object({
     title: Yup.string().required('Please provide a title for your mission'),
@@ -99,7 +109,7 @@ function ServiceForm() {
     const token = allowedTokenList.find(token => token.address === values.rateToken);
     if (
       account?.isConnected === true &&
-      publiClient &&
+      publicClient &&
       walletClient &&
       token &&
       user &&
@@ -115,33 +125,50 @@ function ServiceForm() {
 
         let tx, cid;
 
-        cid = await talentLayerClient.service.updloadServiceDataToIpfs({
-          title: values.title,
-          about: values.about,
-          keywords: values.keywords,
-          rateToken: values.rateToken,
-          rateAmount: parsedRateAmountString,
-        });
-
         if (isActiveDelegate) {
+          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
+            title: values.title,
+            about: values.about,
+            keywords: values.keywords,
+            rateToken: values.rateToken,
+            rateAmount: parsedRateAmountString,
+          });
           const response = await delegateCreateService(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {
           if (talentLayerClient) {
-            const serviceResponse = await talentLayerClient.service.create(
-              {
+            let serviceResponse;
+            if (!existingService) {
+              serviceResponse = await talentLayerClient.service.create(
+                {
+                  title: values.title,
+                  about: values.about,
+                  keywords: values.keywords,
+                  rateToken: values.rateToken,
+                  rateAmount: parsedRateAmountString,
+                },
+                user.id,
+                parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+              );
+              cid = serviceResponse.cid;
+              tx = serviceResponse.tx;
+            } else {
+              console.log('existingService', existingService);
+              cid = await talentLayerClient.service.updloadServiceDataToIpfs({
                 title: values.title,
                 about: values.about,
                 keywords: values.keywords,
                 rateToken: values.rateToken,
                 rateAmount: parsedRateAmountString,
-              },
-              user.id,
-              parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-            );
+              });
 
-            cid = serviceResponse.cid;
-            tx = serviceResponse.tx;
+              //TODO: Replace by SDK function when implemented
+              tx = await talentLayerClient.viemClient.writeContract(
+                'talentLayerService',
+                'updateServiceData',
+                [existingService.buyer.id, existingService.id, cid],
+              );
+            }
           } else {
             throw new Error('TL client not initialised');
           }
@@ -154,7 +181,7 @@ function ServiceForm() {
             success: 'Congrats! Your open-source post has been created',
             error: 'An error occurred while creating your post',
           },
-          publiClient,
+          publicClient,
           tx,
           'service',
           cid,
@@ -176,7 +203,11 @@ function ServiceForm() {
   };
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}
+      enableReinitialize={true}>
       {({ isSubmitting, setFieldValue }) => (
         <Form>
           <div className='grid grid-cols-1 gap-6 border border-info rounded-xl p-6 bg-base-100'>
@@ -234,7 +265,10 @@ function ServiceForm() {
             <label className='block'>
               <span className='text-base-content'>Keywords</span>
 
-              <SkillsInput entityId={'keywords'} />
+              <SkillsInput
+                initialValues={existingService?.description?.keywords_raw}
+                entityId={'keywords'}
+              />
 
               <Field type='hidden' id='keywords' name='keywords' />
             </label>
@@ -285,7 +319,7 @@ function ServiceForm() {
               </label>
             </div>
 
-            <SubmitButton isSubmitting={isSubmitting} label='Post' />
+            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Edit' : 'Post'} />
           </div>
         </Form>
       )}
