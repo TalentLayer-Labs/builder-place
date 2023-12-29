@@ -10,7 +10,6 @@ import UserAccount from '../components/UserAccount';
 import TalentLayerContext from '../context/talentLayer';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import Loading from '../components/Loading';
-import Image from 'next/image';
 
 interface ContainerProps {
   children: ReactNode;
@@ -19,7 +18,7 @@ interface ContainerProps {
 
 function Layout({ children, className }: ContainerProps) {
   const router = useRouter();
-  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { account } = useContext(TalentLayerContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);

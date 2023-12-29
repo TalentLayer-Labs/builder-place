@@ -23,7 +23,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Dashboard() {
   const { account, user, workerData } = useContext(TalentLayerContext);
   const router = useRouter();
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceOwner, isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const isComingFromOnboarding = router.asPath.includes('onboarding') && isBuilderPlaceOwner;
 
   if (!user) {
@@ -70,12 +70,13 @@ function Dashboard() {
 
       {account?.isConnected && user && (
         <div>
-          {isBuilderPlaceOwner && (!builderPlace?.logo || !builderPlace?.icon) && (
+          {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
                 <h2 className='pb-4 text-base-content break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
+
                 <Notification
                   title='personalize your space!'
                   text='customize your BuilderPlace to match your brand'
@@ -91,7 +92,7 @@ function Dashboard() {
               </div>
             </>
           )}
-          {!isBuilderPlaceOwner && (
+          {!isBuilderPlaceCollaborator && (
             <>
               <EmailModal />
               <VerifyEmailNotification />
