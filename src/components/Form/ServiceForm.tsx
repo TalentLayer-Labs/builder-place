@@ -20,6 +20,7 @@ import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   title: string;
@@ -38,14 +39,14 @@ function ServiceForm({
 }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, account } = useContext(TalentLayerContext);
+  const { user, account, refreshWorkerProfile, canUseDelegation } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-  const { isActiveDelegate } = useContext(TalentLayerContext);
   const talentLayerClient = useTalentLayerClient();
 
   const currentChain = chains.find(chain => chain.id === chainId);
@@ -105,6 +106,12 @@ function ServiceForm({
       }),
   });
 
+  /**
+   * @dev Only the owner's TalentLayerId is used here (by owners of delegates)
+   * @param values
+   * @param setSubmitting
+   * @param resetForm
+   */
   const onSubmit = async (
     values: IFormValues,
     {
@@ -119,7 +126,8 @@ function ServiceForm({
       walletClient &&
       token &&
       user &&
-      talentLayerClient
+      talentLayerClient &&
+      builderPlace?.ownerTalentLayerId
     ) {
       try {
         const parsedRateAmount = await parseRateAmount(
@@ -130,7 +138,7 @@ function ServiceForm({
         const parsedRateAmountString = parsedRateAmount.toString();
 
         let tx, cid;
-        if (isActiveDelegate) {
+        if (canUseDelegation) {
           cid = await talentLayerClient.service.updloadServiceDataToIpfs({
             title: values.title,
             about: values.about,
@@ -140,7 +148,7 @@ function ServiceForm({
           });
           const response = await delegateCreateOrUpdateService(
             chainId,
-            existingService?.buyer.id ? existingService.buyer.id : user.id,
+            existingService?.buyer.id ? existingService.buyer.id : builderPlace.ownerTalentLayerId,
             user.address.toLowerCase(),
             cid,
             !!existingService,
@@ -158,7 +166,7 @@ function ServiceForm({
                   rateToken: values.rateToken,
                   rateAmount: parsedRateAmountString,
                 },
-                user.id,
+                  builderPlace.ownerTalentLayerId,
                 parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
               );
               cid = serviceResponse.cid;
@@ -211,6 +219,8 @@ function ServiceForm({
         }
       } catch (error) {
         showErrorTransactionToast(error);
+      } finally {
+        if (canUseDelegation) await refreshWorkerProfile();
       }
     } else {
       openConnectModal();

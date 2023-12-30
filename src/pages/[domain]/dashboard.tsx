@@ -11,22 +11,25 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
+import VerifyEmailNotification from '../../components/VerifyEmailNotification';
+import DelegationNotification from '../../components/DelegationNotification';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
+  const { account, user, workerProfile } = useContext(TalentLayerContext);
   const router = useRouter();
-  const { account, user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
-  const isComingFromOnboarding = router.asPath.includes('onboarding');
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+  const isComingFromHirerOnboarding = router.asPath.includes('hireronboarding');
 
   if (!user) {
     return (
       <>
-        {isComingFromOnboarding ? (
+        {isComingFromHirerOnboarding ? (
           <div className='max-w-7xl mx-auto text-base-content text-center'>
             <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
               <div className='py-2 px-6 sm:px-0 w-full mb-8'>
@@ -67,10 +70,10 @@ function Dashboard() {
 
       {account?.isConnected && user && (
         <div>
-          {isBuilderPlaceOwner && (!builderPlace?.logo || !builderPlace?.icon) && (
+          {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
-                <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
+                <h2 className='pb-4 text-base-content break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
@@ -89,9 +92,12 @@ function Dashboard() {
               </div>
             </>
           )}
-          {!isBuilderPlaceOwner && (
+          {!isBuilderPlaceCollaborator && (
             <>
-              <div className='mb-12'>
+              <EmailModal />
+              {/* <VerifyEmailNotification /> */}
+              <DelegationNotification />
+              <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>
                   <Link

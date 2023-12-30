@@ -1,5 +1,5 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { QuestionMarkCircle } from 'heroicons-react';
 import { useContext, useState } from 'react';
 import { usePublicClient, useWalletClient } from 'wagmi';
@@ -34,7 +34,8 @@ const validationSchema = Yup.object({
 function ProfileForm({ callback }: { callback?: () => void }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, isActiveDelegate, refreshData } = useContext(TalentLayerContext);
+  const { user, canUseDelegation, refreshData, refreshWorkerProfile } =
+    useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
@@ -86,7 +87,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
         let cid = await talentLayerClient.profile.upload(profile);
 
         let tx;
-        if (isActiveDelegate) {
+        if (canUseDelegation) {
           const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {
@@ -121,6 +122,8 @@ function ProfileForm({ callback }: { callback?: () => void }) {
       } catch (error) {
         console.log(error);
         showErrorTransactionToast(error);
+      } finally {
+        if (canUseDelegation) await refreshWorkerProfile();
       }
     } else {
       openConnectModal();
@@ -145,6 +148,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
+              <span className='text-alone-error'>
+                <ErrorMessage name='title' />
+              </span>
             </label>
             <label className='block'>
               <span className='text-base-content'>name</span>
@@ -155,6 +161,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
+              <span className='text-alone-error'>
+                <ErrorMessage name='name' />
+              </span>
             </label>
             <label className='block'>
               <span className='text-base-content'>role</span>
@@ -169,6 +178,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 <option value='seller'>hirer</option>
                 <option value='buyer-seller'>both</option>
               </Field>
+              <span className='text-alone-error'>
+                <ErrorMessage name='role' />
+              </span>
             </label>
 
             <label className='block'>
@@ -208,6 +220,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                   </div>
                 )}
               </div>
+              <span className='text-alone-error'>
+                <ErrorMessage name='image_url' />
+              </span>
             </label>
 
             <label className='block'>
@@ -220,6 +235,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
+              <span className='text-alone-error'>
+                <ErrorMessage name='about' />
+              </span>
             </label>
 
             <label className='block'>
@@ -228,6 +246,9 @@ function ProfileForm({ callback }: { callback?: () => void }) {
               <SkillsInput initialValues={userDescription?.skills_raw} entityId={'skills'} />
 
               <Field type='hidden' id='skills' name='skills' />
+              <span className='text-alone-error'>
+                <ErrorMessage name='skills' />
+              </span>
             </label>
 
             <SubmitButton isSubmitting={isSubmitting} label='Update' />

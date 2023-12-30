@@ -73,7 +73,7 @@ export const delegateCreateOrUpdateProposal = async (
 export const delegateReleaseOrReimburse = async (
   chainId: number,
   userAddress: string,
-  profileId: string,
+  userId: string,
   transactionId: number,
   amount: string,
   isBuyer: boolean,
@@ -82,7 +82,7 @@ export const delegateReleaseOrReimburse = async (
     return await axios.post('/api/delegate/release-reimburse', {
       chainId,
       userAddress,
-      profileId,
+      userId,
       transactionId,
       amount,
       isBuyer,

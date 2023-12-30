@@ -7,6 +7,7 @@ import { IService, IToken, ServiceStatusEnum } from '../../types';
 import { renderTokenAmount } from '../../utils/conversion';
 import { useChainId } from '../../hooks/useChainId';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   percentField: string;
@@ -28,12 +29,16 @@ function ReleaseForm({
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, isActiveDelegate } = useContext(TalentLayerContext);
+  const { user, canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
   const [percent, setPercentage] = useState(0);
 
+  /**
+   * @dev If the user is a Collaborator, use the owner's TalentLayerId
+   */
   const handleSubmit = async () => {
     if (!user || !publicClient) {
       return;
@@ -49,9 +54,10 @@ function ReleaseForm({
         service.transaction.id,
         percentToToken,
         isBuyer,
-        isActiveDelegate,
+        canUseDelegation,
         talentLayerClient,
         service.id,
+        refreshWorkerProfile,
       );
     }
 

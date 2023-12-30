@@ -20,7 +20,7 @@ import useUserById from '../hooks/useUserById';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 function ServiceDetail({ service }: { service: IService }) {
-  const { account, user } = useContext(TalentLayerContext);
+  const { account, user, workerProfile } = useContext(TalentLayerContext);
   const { reviews } = useReviewsByService(service.id);
   const proposals = useProposalsByService(service.id);
   const payments = usePaymentsByService(service.id);
@@ -115,14 +115,14 @@ function ServiceDetail({ service }: { service: IService }) {
               </div>
             </div>
 
-            <div className='flex flex-row gap-4 items-center pt-4'>
+            <div className='flex flex-row gap-4 items-center border-t border-info pt-4'>
               {!isBuyerOrDelegate && service.status == ServiceStatusEnum.Opened && (
                 <>
                   {!userProposal && (
                     <Link
                       className='text-primary bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md relative'
                       href={
-                        account?.isConnected
+                        workerProfile
                           ? `/work/${service.id}/proposal`
                           : `/worker-onboarding?serviceId=${service.id}`
                       }>
@@ -148,7 +148,7 @@ function ServiceDetail({ service }: { service: IService }) {
               {account &&
                 (isBuyerOrDelegate || isSeller) &&
                 service.status !== ServiceStatusEnum.Opened && (
-                  <PaymentModal service={service} payments={payments} isBuyer={isBuyer} />
+                  <PaymentModal service={service} payments={payments} isBuyer={isBuyerOrDelegate} />
                 )}
             </div>
           </div>

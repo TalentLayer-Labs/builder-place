@@ -8,7 +8,18 @@ import {
   validDomainRegex,
 } from './domains';
 import { BuilderPlace } from './models/BuilderPlace';
-import { CreateBuilderPlaceAction, UpdateBuilderPlace, UpdateBuilderPlaceDomain } from './types';
+import { Worker } from './models/Worker';
+import {
+  CreateBuilderPlaceAction,
+  CreateWorkerProfileAction,
+  IWorkerMongooseSchema,
+  UpdateBuilderPlace,
+  UpdateBuilderPlaceDomain,
+  AddBuilderPlaceCollaborator,
+  RemoveBuilderPlaceCollaborator,
+} from './types';
+import { NextApiResponse } from 'next';
+import { MAX_TRANSACTION_AMOUNT } from '../../config';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
@@ -34,6 +45,52 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
     return {
       message: 'BuilderPlace updated successfully',
       id: builderPlace._id,
+    };
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollaborator) => {
+  try {
+    await connection();
+    await BuilderPlace.updateOne(
+      { _id: body.builderPlaceId },
+      {
+        $push: {
+          owners: body.newCollaborator,
+        },
+      },
+    ).exec();
+    console.log('Collaborator added successfully', body.newCollaborator);
+    return {
+      message: 'Collaborator added successfully',
+      collaborator: body.newCollaborator,
+    };
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
+  try {
+    await connection();
+    await BuilderPlace.updateOne(
+      { _id: body.builderPlaceId },
+      {
+        $pull: {
+          owners: body.newCollaborator,
+        },
+      },
+    ).exec();
+    console.log('Collaborator removed successfully', body.newCollaborator);
+    return {
+      message: 'Collaborator removed successfully',
+      collaborator: body.newCollaborator,
     };
   } catch (error: any) {
     return {
@@ -155,6 +212,27 @@ export const getBuilderPlaceByOwnerAddressAndId = async (address: string, _id: s
   }
 };
 
+export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, _id: string) => {
+  try {
+    await connection();
+    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerId, _id);
+    const builderPlaceSubdomain = await BuilderPlace.findOne({
+      ownerTalentLayerId: ownerId,
+      _id: _id,
+    });
+    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    if (builderPlaceSubdomain) {
+      return builderPlaceSubdomain;
+    }
+
+    return null;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
 // TODO! createBuilderPlace, can be used for the onboarding workflow maybe for the creating the subdomain & deleteBuilderPlace
 export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
   try {
@@ -222,6 +300,165 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     }
 
     return response;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
+  try {
+    await connection();
+
+    const newWorkerProfile = new Worker({
+      email: data.email,
+      status: data.status,
+      name: data.name,
+      picture: data.picture,
+      about: data.about,
+      skills: data.skills,
+      talentLayerId: data.talentLayerId,
+    });
+    const { _id } = await newWorkerProfile.save();
+    return {
+      message: 'Worker Profile created successfully',
+      _id: _id,
+    };
+  } catch (error: any) {
+    console.log('Error creating new Worker Profile:', error);
+    return {
+      error: error.message!,
+    };
+  }
+};
+
+export const getWorkerProfileById = async (id: string) => {
+  try {
+    await connection();
+    console.log('Getting Worker Profile with id:', id);
+    const workerProfile = await Worker.findOne({ _id: id });
+    console.log('Fetched Worker Profile, ', workerProfile);
+    if (workerProfile) {
+      return workerProfile;
+    }
+
+    return null;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const getWorkerProfileByTalentLayerId = async (
+  id: string,
+  res?: NextApiResponse,
+): Promise<IWorkerMongooseSchema | null> => {
+  try {
+    await connection();
+    console.log('Getting Worker Profile with TalentLayer id:', id);
+    const workerProfile = await Worker.findOne({ talentLayerId: id });
+    console.log('Fetched Worker Profile, ', workerProfile);
+    if (!workerProfile) {
+      return null;
+    }
+
+    return workerProfile;
+  } catch (error: any) {
+    if (res) {
+      res.status(500).json({ error: error.message });
+    } else {
+      console.log(error.message);
+    }
+    return null;
+  }
+};
+
+export async function checkUserEmailVerificationStatus(
+  worker: IWorkerMongooseSchema,
+  res: NextApiResponse,
+): Promise<void> {
+  try {
+    await connection();
+
+    if (!worker.emailVerified) {
+      console.log('Email not verified');
+      throw new Error('Email not verified');
+    }
+    console.log('Email verified');
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function checkOrResetTransactionCounter(
+  worker: IWorkerMongooseSchema,
+  res: NextApiResponse,
+): Promise<void> {
+  try {
+    await connection();
+
+    const nowMilliseconds = new Date().getTime();
+    const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
+
+    if (worker.counterStartDate > oneWeekAgoMilliseconds) {
+      // Less than one week since counterStartDate
+      if (worker.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
+        // If the counter is already 50, stop the function
+        console.log('Transaction limit reached for the week');
+        throw new Error('Transaction limit reached for the week');
+      }
+    } else {
+      console.log('More than a week since the start date, reset counter');
+      worker.counterStartDate = nowMilliseconds;
+      worker.weeklyTransactionCounter = 0;
+      await worker.save();
+    }
+    console.log('Delegating transaction');
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function incrementWeeklyTransactionCounter(
+  worker: IWorkerMongooseSchema,
+  res: NextApiResponse,
+): Promise<void> {
+  try {
+    await connection();
+    // Increment the counter
+    worker.weeklyTransactionCounter = (worker.weeklyTransactionCounter || 0) + 1;
+    console.log('Transaction counter incremented', worker.weeklyTransactionCounter);
+    await worker.save();
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export const validateWorkerProfileEmail = async (userId: string, email: string) => {
+  try {
+    await connection();
+    const existingWorker = await Worker.findOne({ email: email, talentLayerId: userId });
+    if (existingWorker) {
+      const resp = await Worker.updateOne(
+        { email: email, talentLayerId: userId },
+        { emailVerified: true },
+      ).exec();
+      if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
+        return {
+          error: 'Email already validated',
+        };
+      }
+      console.log('Updated worker profile email', resp);
+    } else {
+      return {
+        error: 'Error while validating email',
+      };
+    }
+    return {
+      message: 'Email verified successfully',
+    };
   } catch (error: any) {
     return {
       error: error.message,

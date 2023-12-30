@@ -1,4 +1,5 @@
 import { PreferredWorkTypes } from '../../types';
+import { Document } from 'mongoose';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -45,10 +46,34 @@ export interface UpdateBuilderPlaceDomain {
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface AddBuilderPlaceCollaborator {
+  ownerId: string;
+  builderPlaceId: string;
+  newCollaborator: string;
+  signature: `0x${string}` | Uint8Array;
+}
+
+export interface RemoveBuilderPlaceCollaborator {
+  ownerId: string;
+  builderPlaceId: string;
+  newCollaborator: string;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface SetBuilderPlaceOwner {
   id: string;
   owners: string[];
   ownerTalentLayerId: string;
+}
+
+export interface SetWorkerProfileOwner {
+  id: string;
+  talentLayerId: string;
+}
+
+export interface VerifyEmail {
+  email: string;
+  userId: string;
 }
 
 export enum DomainVerificationStatusProps {
@@ -67,12 +92,32 @@ export interface CreateBuilderPlaceAction {
   profilePicture?: string;
 }
 
+export interface CreateWorkerProfileAction {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: PreferredWorkTypes[];
   profilePicture?: string;
+}
+
+export interface CreateWorkerProfileProps {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string;
+  status?: string;
+  talentLayerId?: string;
 }
 
 export type IBuilderPlace = {
@@ -93,6 +138,34 @@ export type IBuilderPlace = {
   status: 'Validated' | 'Pending';
   preferredWorkTypes: PreferredWorkTypes[];
 };
+
+export type IWorkerProfile = {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+};
+
+export interface IWorkerMongooseSchema extends Document {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
+  status: 'Validated' | 'Pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+}
 
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain
 export interface DomainResponse {

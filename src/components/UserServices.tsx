@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import useServices from '../hooks/useServices';
 import { IUser } from '../types';
-import UserServiceItem from './UserServiceItem';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import Notification from './Notification';
 import Loading from './Loading';
@@ -13,7 +12,7 @@ interface IProps {
 }
 
 function UserServices({ user, type }: IProps) {
-  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
 
   const { services, loading } = useServices(
     undefined,
@@ -26,7 +25,7 @@ function UserServices({ user, type }: IProps) {
   }
 
   if (services.length === 0) {
-    if (isBuilderPlaceOwner && type == 'buyer') {
+    if (isBuilderPlaceCollaborator && type == 'buyer') {
       return (
         <>
           <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>

@@ -2,14 +2,25 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import OnboardingSteps from './OnboardingSteps';
+import { useGetWorkerProfileByOwnerId } from '../modules/BuilderPlace/hooks/UseGetWorkerProfileByOwnerId';
 
 function WorkerOnboardSuccess() {
-  const { user } = useContext(TalentLayerContext);
+  const { user, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const workerProfile = useGetWorkerProfileByOwnerId(user?.id);
   const router = useRouter();
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
-  const openService = () => {
+
+  const openService = async () => {
+    await refreshWorkerProfile();
     router.push(`/work/${serviceId}/proposal`);
   };
+
+  const openDasboard = async () => {
+    await refreshWorkerProfile();
+    // TODO: redirect to BP missions page
+    router.push(`/`);
+  };
+
   return (
     <>
       <div className='bg-base-100'>
@@ -26,22 +37,23 @@ function WorkerOnboardSuccess() {
               Your profile looks great - you are all set to apply for open-source missions.
             </p>
             <div className='flex flex-col items-center gap-8'>
-              <div className='w-48 h-48 rounded-full overflow-hidden'>
-                <img
-                  src={user?.description?.image_url}
-                  alt='Profile Photo'
-                  className='object-cover w-full h-full'
-                />
-              </div>
-              <p className='text-4xl text-base-content font-medium '>{user?.description?.name}</p>
-              <p className='text-2xl text-base-content font-medium '>{user?.description?.title}</p>
+              {workerProfile?.picture && (
+                <div className='w-48 h-48 rounded-full overflow-hidden'>
+                  <img
+                    src={workerProfile.picture}
+                    alt='Profile Photo'
+                    className='object-cover w-full h-full'
+                  />
+                </div>
+              )}
+              <p className='text-4xl text-base-content font-medium '>{workerProfile?.name}</p>
               <p className='text-2xl text-base-content text-center max-w-lg font-medium '>
-                {user?.description?.about}
+                {workerProfile?.about}
               </p>
               <button
                 className='bg-pink-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
-                onClick={openService}>
-                Go back to proposal form
+                onClick={serviceId ? openService : openDasboard}>
+                {serviceId ? 'Go back to proposal form' : 'Go to dashboard'}
               </button>
             </div>
           </div>

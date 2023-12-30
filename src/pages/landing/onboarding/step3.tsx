@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import CustomDomain from '../../../components/CustomDomain';
@@ -82,7 +82,7 @@ function onboardingStep3() {
           signature,
         });
         if (res?.id) {
-          router.push(`${window.location.protocol}//${subdomain}/dashboard?onboarding=1`);
+          router.push(`${window.location.protocol}//${subdomain}/dashboard?hireronboarding=1`);
         }
       } catch (e: any) {
         console.error(e);
