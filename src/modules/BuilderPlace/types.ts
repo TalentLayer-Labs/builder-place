@@ -21,6 +21,7 @@ export interface UpdateBuilderPlace {
   _id: string;
   subdomain: string;
   name: string;
+  email: string;
   baseline?: string;
   about?: string;
   aboutTech?: string;
@@ -85,6 +86,7 @@ export type IBuilderPlace = {
   _id: string;
   name: string;
   subdomain?: string;
+  email?: string;
   customDomain?: string | null;
   logo?: string;
   icon?: string;

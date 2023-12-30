@@ -15,7 +15,6 @@ export const sendNormalMessage = async (
     return
   }
 
-
   try {
     await sgMail.send({ from: SENDERS_EMAIL, to: to, subject: subject, html: html });
     console.log('Email sent successfully.');

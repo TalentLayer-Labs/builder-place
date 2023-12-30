@@ -27,6 +27,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 interface IFormValues {
   subdomain: string;
+  email: string;
   palette?: iBuilderPlacePalette;
   logo?: string;
   name: string;
@@ -59,6 +60,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
       builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
       (builderPlace?.name && slugify(builderPlace.name)) ||
       '',
+    email: builderPlace?.email || '',
     logo: builderPlace?.logo || '',
     palette,
     name: builderPlace?.name || '',
@@ -149,6 +151,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           owners: builderPlace.owners,
           status: 'validated',
           signature,
+          email: values.email,
         });
         router.push(`${window.location.protocol}//${fullSubdomain}/dashboard`);
       } catch (e: any) {
@@ -189,6 +192,9 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                 <div>
                   <label className='block'>
                     <span className='font-bold text-md'>your email</span>
+                    <p className='italic text-xs'>
+                      For notifications, when updated we send you a link to verifiy the new email!
+                    </p>
                     <Field
                       type='email'
                       id='email'

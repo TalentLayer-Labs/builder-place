@@ -9,6 +9,7 @@ import {
 } from './domains';
 import { BuilderPlace } from './models/BuilderPlace';
 import { CreateBuilderPlaceAction, UpdateBuilderPlace, UpdateBuilderPlaceDomain, ValidateEmailProps } from './types';
+import { sendTransactionalEmailValidation } from './sendgrid';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
@@ -27,6 +28,15 @@ export const deleteBuilderPlace = async (_id: string) => {
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   try {
     await connection();
+
+    const builderPlaceToUpdate = await BuilderPlace.findOne({ ownerTalentLayerId: builderPlace.ownerTalentLayerId });
+    if (builderPlaceToUpdate.email != builderPlace.email) {
+      builderPlaceToUpdate.emailValidated = false;
+      console.log("TEST, saving and sending mail")
+      const builderPlaceEmailUpdateResult = await builderPlaceToUpdate.save();
+      sendTransactionalEmailValidation(builderPlace.email, "Verifiy your updated mail for BuilderPlace", "Verifiy your updated mail for BuilderPlace.", builderPlaceEmailUpdateResult._id)
+    };
+
     await BuilderPlace.updateOne(
       { ownerTalentLayerId: builderPlace.ownerTalentLayerId },
       builderPlace,
