@@ -166,7 +166,7 @@ function ServiceForm({
                   rateToken: values.rateToken,
                   rateAmount: parsedRateAmountString,
                 },
-                  builderPlace.ownerTalentLayerId,
+                builderPlace.ownerTalentLayerId,
                 parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
               );
               cid = serviceResponse.cid;
@@ -344,7 +344,7 @@ function ServiceForm({
               </label>
             </div>
 
-            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Edit' : 'Post'} />
+            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Update' : 'Post'} />
           </div>
         </Form>
       )}
