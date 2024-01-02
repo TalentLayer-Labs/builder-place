@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import { getUserByAddress } from '../../../queries/users';
 import { mnemonicToAccount } from 'viem/accounts';
-import { createWalletClient, http } from 'viem';
+import { createPublicClient, createWalletClient, http, PublicClient } from 'viem';
 import { polygonMumbai } from '../../../chains';
 import { WalletClient } from 'wagmi';
 
@@ -39,4 +39,11 @@ export async function getDelegationSigner(res: NextApiResponse): Promise<WalletC
     res.status(500).json('Delegate seed phrase is not set');
     return null;
   }
+}
+
+export function getPublicClient(): PublicClient {
+  return createPublicClient({
+    chain: polygonMumbai,
+    transport: http(),
+  });
 }
