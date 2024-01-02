@@ -74,7 +74,9 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             String(handlePrice),
             account.address,
             signature,
-            submittedValues.activateGassless,
+            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true'
+              ? submittedValues.activateGassless
+              : false,
           );
 
           tx = response.data.transaction;
@@ -198,19 +200,21 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
                 </div>
               </div>
             </div>
-            <div className='flex items-center justify-center w-full mt-4'>
-              <Field
-                type='checkbox'
-                id='activateGassless'
-                name='activateGassless'
-                className='checked:bg-info h-4 w-4 text-info border-gray-300 rounded focus:ring-info'
-              />
-              <label
-                htmlFor='activateGassless'
-                className='ml-2 text-sm font-medium text-base-content'>
-                Activate Gasless Experience !
-              </label>
-            </div>
+            {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE_MINT === 'true' && (
+              <div className='flex items-center justify-center w-full mt-4'>
+                <Field
+                  type='checkbox'
+                  id='activateGassless'
+                  name='activateGassless'
+                  className='checked:bg-info h-4 w-4 text-info border-gray-300 rounded focus:ring-info'
+                />
+                <label
+                  htmlFor='activateGassless'
+                  className='ml-2 text-sm font-medium text-base-content'>
+                  Activate Gasless Experience !
+                </label>
+              </div>
+            )}
           </div>
           <span className='label-text text-alone-error mt-2'>
             <ErrorMessage name='handle' />

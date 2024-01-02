@@ -36,15 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
      * If addDelegateAndTransferId is true, we mint the TlId for the user, add the delegator address as delegate, then transfer it to them.
      * @dev: This requires the delegator address not to have an existing TlId.
      */
-    if (!addDelegateAndTransferId) {
-      transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'mintForAddress',
-        args: [userAddress, process.env.NEXT_PUBLIC_PLATFORM_ID, handle],
-        value: BigInt(handlePrice),
-      });
-    } else if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true') {
+    if (addDelegateAndTransferId) {
       const publicClient = getPublicClient();
       if (!publicClient) {
         return;
@@ -57,6 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         args: [process.env.NEXT_PUBLIC_PLATFORM_ID, handle],
         value: BigInt(handlePrice),
       });
+
+      console.log(`Minted TalentLayer Id for address ${userAddress}`);
 
       // Wait for transaction to be mined
       const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
@@ -92,6 +86,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       console.log(`Transferred TalentLayer Id ${userId} to address ${userAddress}`);
+    } else {
+      transaction = await walletClient.writeContract({
+        address: config.contracts.talentLayerId,
+        abi: TalentLayerID.abi,
+        functionName: 'mintForAddress',
+        args: [userAddress, process.env.NEXT_PUBLIC_PLATFORM_ID, handle],
+        value: BigInt(handlePrice),
+      });
     }
 
     res.status(200).json({ transaction: transaction });
