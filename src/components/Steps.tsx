@@ -4,7 +4,7 @@ import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
 import TalentLayerIdForm from './Form/TalentLayerIdForm';
 
-function Steps({ handle }: { handle?: string }) {
+function Steps() {
   const { account, loading, user } = useContext(TalentLayerContext);
 
   if (loading) {
@@ -19,7 +19,7 @@ function Steps({ handle }: { handle?: string }) {
             <ConnectBlock />
           </div>
         )}
-        {account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}
+        {account?.isConnected && !user && <TalentLayerIdForm />}
       </div>
     </div>
   );

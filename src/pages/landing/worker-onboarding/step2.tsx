@@ -6,8 +6,6 @@ import OnboardingSteps from '../../../components/OnboardingSteps';
 import CreateWorkerId from '../../../components/Home/CreateWorkerId';
 import Steps from '../../../components/Steps';
 import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/UseSetWorkerProfileOwner';
-import { slugify } from '../../../modules/BuilderPlace/utils';
-import { useGetWorkerById } from '../../../modules/BuilderPlace/hooks/UseGetWorkerById';
 
 function workerOnboardingStep2() {
   const { account, loading, user } = useContext(TalentLayerContext);
@@ -15,7 +13,6 @@ function workerOnboardingStep2() {
   const [error, setError] = useState('');
   const router = useRouter();
   const id = new URL(window.location.href).searchParams.get('id');
-  const worker = useGetWorkerById(id as string);
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
 
   useEffect(() => {
@@ -59,7 +56,7 @@ function workerOnboardingStep2() {
         <>
           <CreateWorkerId />
           <div className='flex flex-col items-center justify-center gap-10'>
-            <Steps handle={slugify(worker?.name)} />
+            <Steps />
           </div>
         </>
       ) : (
