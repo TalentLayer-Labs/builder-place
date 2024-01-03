@@ -2,8 +2,9 @@ import { NextApiResponse } from 'next';
 import { getUserByAddress } from '../../../queries/users';
 import { mnemonicToAccount } from 'viem/accounts';
 import { createPublicClient, createWalletClient, http, PublicClient } from 'viem';
-import { polygonMumbai } from '../../../chains';
+import { getViemFormattedChain } from '../../../chains';
 import { WalletClient } from 'wagmi';
+import { NetworkEnum } from '../../../types';
 
 export async function isPlatformAllowedToDelegate(
   chainId: number,
@@ -32,7 +33,9 @@ export async function getDelegationSigner(res: NextApiResponse): Promise<WalletC
     const account = mnemonicToAccount(delegateSeedPhrase);
     return createWalletClient({
       account,
-      chain: polygonMumbai,
+      chain: getViemFormattedChain(
+        process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum,
+      ),
       transport: http(),
     });
   } else {
@@ -43,7 +46,9 @@ export async function getDelegationSigner(res: NextApiResponse): Promise<WalletC
 
 export function getPublicClient(): PublicClient {
   return createPublicClient({
-    chain: polygonMumbai,
+    chain: getViemFormattedChain(
+      process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum,
+    ),
     transport: http(),
   });
 }
