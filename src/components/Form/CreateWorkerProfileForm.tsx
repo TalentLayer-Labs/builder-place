@@ -8,6 +8,7 @@ import { showErrorTransactionToast } from '../../utils/toast';
 import UploadImage from '../UploadImage';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
+import { sendTransactionalEmailValidation } from '../../modules/BuilderPlace/sendgrid';
 
 interface IFormValues {
   email: string;
@@ -42,6 +43,11 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
   ) => {
     try {
       setSubmitting(true);
+
+      /**
+       * @dev: send email to user to validate email
+       */
+      sendTransactionalEmailValidation(values.email);
 
       const response = await createWorkerProfileAsync({
         email: values.email,
