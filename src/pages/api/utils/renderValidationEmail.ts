@@ -1,11 +1,4 @@
-export const renderValidationMail = (
-  title: string,
-  body: string,
-  name?: string,
-  link?: string,
-  linkText?: string,
-  domain?: string,
-): string => {
+export const renderValidationMail = (name: string, userId: string, domain: string): string => {
   return `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -214,7 +207,7 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
       <td style="overflow-wrap:break-word;word-break:break-word;padding:30px 10px;font-family:'Lato',sans-serif;" align="left">
         
   <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 140%; text-align: center;"><span style="font-size: 28px; line-height: 39.2px; color: #ffffff; font-family: Lato, sans-serif;">${title}</span></p>
+    <p style="font-size: 14px; line-height: 140%; text-align: center;"><span style="font-size: 28px; line-height: 39.2px; color: #ffffff; font-family: Lato, sans-serif;">Validate your email !</span></p>
   </div>
 
       </td>
@@ -258,28 +251,14 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
   }
    
 <p style="font-size: 14px; line-height: 140%;">&nbsp;</p>
-<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">${body}</span></p>
+<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">Please click the following link to validate your email and access free gassless transactions !</span></p>
   </div>
 
       </td>
     </tr>
   </tbody>
 </table>
-${link && linkText ? renderLink(link, linkText) : ''}
-
-<table style="font-family:'Lato',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-  <tbody>
-    <tr>
-      <td style="overflow-wrap:break-word;word-break:break-word;padding:40px 40px 30px;font-family:'Lato',sans-serif;" align="left">
-        
-  <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-   ${renderEditProfileLink(domain)}
-  </div>
-
-      </td>
-    </tr>
-  </tbody>
-</table>
+${renderLink(generateUrl(userId, domain))}
 
   <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
   </div>
@@ -310,11 +289,13 @@ ${link && linkText ? renderLink(link, linkText) : ''}
       <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Lato',sans-serif;" align="left">
         
   <div style="font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
-    <p style="line-height: 140%;"><span style="color: #ecf0f1; line-height: 19.6px;"><a href="https://${
-      domain ? domain : 'builder.place'
-    }" style="color: #ecf0f1;">${domain}</a></span></p>
+    <p style="line-height: 140%;">
+    <span style="color: #ecf0f1; line-height: 19.6px;">
+    <a href="${generateUrl(userId, domain)}" style="color: #ecf0f1;">${domain}</a>
+    </span>
+    </p>
   </div>
-
+   
       </td>
     </tr>
   </tbody>
@@ -390,17 +371,19 @@ ${link && linkText ? renderLink(link, linkText) : ''}
 `;
 };
 
-const renderLink = (link: string, linkText: string) => {
+const renderLink = (link: string) => {
   return `<table style="font-family:'Lato',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>
       <td style="overflow-wrap:break-word;word-break:break-word;padding:0px 40px;font-family:'Lato',sans-serif;" align="left">
 
-    <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
   <div align="center">
-    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://bellecour.builderplace.work/...." style="height:52px; v-text-anchor:middle; width:191px;" arcsize="2%"  stroke="f" fillcolor="#f4dabe"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
-  <a href=${link} target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f4dabe; border-radius: 1px;-webkit-border-radius: 1px; -moz-border-radius: 1px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-  <span style="display:block;padding:15px 40px;line-height:120%;"><span style="font-size: 18px; line-height: 21.6px;">${linkText}</span></span>
+  <a href="${link}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f4dabe; border-radius: 1px;-webkit-border-radius: 1px; -moz-border-radius: 1px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
+  <span style="display:block;padding:15px 40px;line-height:120%;">
+  <span style="font-size: 18px; line-height: 21.6px;">
+Validate my email
+  </span>
+  </span>
   </a>
     <!--[if mso]></center></v:roundrect><![endif]-->
   </div>
@@ -411,8 +394,6 @@ const renderLink = (link: string, linkText: string) => {
   </table>`;
 };
 
-const renderEditProfileLink = (domain?: string) => {
-  return domain
-    ? `<p style="font-size: 14px; line-height: 140%;"><span style="color: #888888; font-size: 14px; line-height: 19.6px;"><em><span style="font-size: 16px; line-height: 22.4px;">This email has been sent with iExec web3mail, <a rel="noopener" href="https://${domain}/profiles/edit/privacy" target="_blank"><span style="text-decoration: underline; line-height: 19.6px;">go here</span></a> to update your preferences</span></em></span></p>`
-    : `<p style="font-size: 14px; line-height: 140%;"><span style="color: #888888; font-size: 14px; line-height: 19.6px;"><em><span style="font-size: 16px; line-height: 22.4px;">This email has been sent with iExec web3mail</p>`;
+export const generateUrl = (userId: string, domain: string) => {
+  return `http://${domain}/validate-email?id=${userId}`;
 };

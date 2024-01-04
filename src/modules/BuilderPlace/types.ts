@@ -77,6 +77,13 @@ export interface VerifyEmail {
   userId: string;
 }
 
+export interface SendVerificationEmail {
+  to: string;
+  userId: string;
+  name: string;
+  domain: string;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',
