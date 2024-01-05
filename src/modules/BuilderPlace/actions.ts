@@ -20,6 +20,11 @@ import {
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
+import {
+  EMAIL_ALREADY_VERIFIED,
+  EMAIL_VERIFIED_SUCCESSFULLY,
+  ERROR_VERIFYING_EMAIL,
+} from './apiResponses';
 
 export const deleteBuilderPlace = async (_id: string) => {
   await connection();
@@ -444,17 +449,17 @@ export const validateWorkerProfileEmail = async (id: string) => {
       const resp = await Worker.updateOne({ _id: id }, { emailVerified: true }).exec();
       if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
         return {
-          error: 'Email already verified',
+          error: EMAIL_ALREADY_VERIFIED,
         };
       }
       console.log('Updated worker profile email', resp);
     } else {
       return {
-        error: 'Error while verifying email',
+        error: ERROR_VERIFYING_EMAIL,
       };
     }
     return {
-      message: 'Email verified successfully',
+      message: EMAIL_VERIFIED_SUCCESSFULLY,
       email: existingWorker.email,
     };
   } catch (error: any) {
