@@ -1,21 +1,31 @@
 import Notification from './Notification';
-import { verifyEmail } from '../modules/BuilderPlace/request';
+import { sendVerificationEmail } from '../modules/BuilderPlace/request';
 import { showMongoErrorTransactionToast } from '../utils/toast';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
+import { useRouter } from 'next/router';
 
 type VerifyEmailNotificationProps = {
   callback?: () => void | Promise<void>;
 };
 
 const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
-  const { user, workerProfile, refreshWorkerProfile } = useContext(TalentLayerContext);
-
+  const { user, workerProfile } = useContext(TalentLayerContext);
+  const router = useRouter();
+  //TODO deactivate after send to avoid ddos ?
   const onVerifyMail = async () => {
-    if (workerProfile?.email && !workerProfile.emailVerified && user?.id) {
+    const domain =
+      typeof router.query.domain === 'object' && !!router.query.domain
+        ? router.query.domain[0]
+        : router.query.domain;
+    if (workerProfile?.email && !workerProfile.emailVerified && user?.id && domain) {
       try {
-        const response = await verifyEmail(workerProfile.email, user.id);
-        console.log('response', response);
+        await sendVerificationEmail(
+          workerProfile.email,
+          workerProfile._id,
+          workerProfile.name,
+          domain,
+        );
       } catch (e) {
         console.log('Error', e);
         showMongoErrorTransactionToast(e);
@@ -23,7 +33,6 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
       if (callback) {
         await callback();
       }
-      await refreshWorkerProfile();
     }
   };
 
