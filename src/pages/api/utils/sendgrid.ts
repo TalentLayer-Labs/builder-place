@@ -1,5 +1,4 @@
 import * as sgMail from '@sendgrid/mail';
-import { NextApiResponse } from 'next';
 import { renderValidationMail } from './renderValidationEmail';
 
 const SENDERS_EMAIL = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;

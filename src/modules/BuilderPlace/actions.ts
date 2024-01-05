@@ -436,28 +436,26 @@ export async function incrementWeeklyTransactionCounter(
   }
 }
 
-export const validateWorkerProfileEmail = async (userId: string, email: string) => {
+export const validateWorkerProfileEmail = async (id: string) => {
   try {
     await connection();
-    const existingWorker = await Worker.findOne({ email: email, talentLayerId: userId });
+    const existingWorker = await Worker.findOne({ _id: id });
     if (existingWorker) {
-      const resp = await Worker.updateOne(
-        { email: email, talentLayerId: userId },
-        { emailVerified: true },
-      ).exec();
+      const resp = await Worker.updateOne({ _id: id }, { emailVerified: true }).exec();
       if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
         return {
-          error: 'Email already validated',
+          error: 'Email already verified',
         };
       }
       console.log('Updated worker profile email', resp);
     } else {
       return {
-        error: 'Error while validating email',
+        error: 'Error while verifying email',
       };
     }
     return {
       message: 'Email verified successfully',
+      email: existingWorker.email,
     };
   } catch (error: any) {
     return {

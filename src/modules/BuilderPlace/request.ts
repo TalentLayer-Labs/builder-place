@@ -67,7 +67,7 @@ export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
 
 export const verifyEmail = async (email: string, userId: string): Promise<any> => {
   try {
-    return await fetch('/api/domain/verify-email', {
+    return await fetch('/api/domain/validate-email', {
       method: 'PUT',
       body: JSON.stringify({
         email: email,

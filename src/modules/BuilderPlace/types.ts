@@ -72,8 +72,11 @@ export interface SetWorkerProfileOwner {
   talentLayerId: string;
 }
 
-export interface VerifyEmail {
-  email: string;
+export interface ValidateEmail {
+  userId: string;
+}
+
+export interface ValidateEmailProps {
   userId: string;
 }
 
