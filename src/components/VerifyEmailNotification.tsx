@@ -1,7 +1,7 @@
 import Notification from './Notification';
 import { sendVerificationEmail } from '../modules/BuilderPlace/request';
 import { showMongoErrorTransactionToast } from '../utils/toast';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import { useRouter } from 'next/router';
 
@@ -26,6 +26,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
           workerProfile.name,
           domain,
         );
+        setShowNotification(false);
       } catch (e) {
         console.log('Error', e);
         showMongoErrorTransactionToast(e);
@@ -38,7 +39,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
 
   return (
     <div>
-      {!!workerProfile?.email && !workerProfile?.emailVerified && (
+      {!!workerProfile?.email && !workerProfile?.emailVerified && showNotification && (
         <Notification
           title='Verify your email !'
           text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
