@@ -1,6 +1,4 @@
-import { ArrowSmallRightIcon } from '@heroicons/react/24/outline';
-
-function VerificationEmailToast() {
+const VerificationEmailToast = () => {
   return (
     <div className='flex flex-row items-center rounded-2xl p-4 bg-light-blue-100'>
       <div className='mt-6 grow sm:mt-0'>
@@ -19,5 +17,5 @@ function VerificationEmailToast() {
       </div>
     </div>
   );
-}
+};
 export default VerificationEmailToast;
