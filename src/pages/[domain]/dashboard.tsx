@@ -15,6 +15,7 @@ import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import DelegationNotification from '../../components/DelegationNotification';
+import { toast } from 'react-toastify';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -95,7 +96,11 @@ function Dashboard() {
           {!isBuilderPlaceCollaborator && (
             <>
               <EmailModal />
-              {/* <VerifyEmailNotification /> */}
+              <VerifyEmailNotification
+                callback={() => {
+                  toast.success('Verification email sent!');
+                }}
+              />
               <DelegationNotification />
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
