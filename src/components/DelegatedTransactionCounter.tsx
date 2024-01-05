@@ -11,12 +11,12 @@ const renderTxNumber = (sentTransactionsNumber: number) => {
     return <span className='text-xs text-red-500'>{sentTransactionsNumber}</span>;
 };
 
-function getWaitingPeriodInDays(lastTxTime: number) {
+const getWaitingPeriodInDays = (lastTxTime: number) => {
   const oneWeekAgoMilliseconds = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000).getTime();
   const differenceInMilliseconds = lastTxTime - oneWeekAgoMilliseconds;
 
   return Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
-}
+};
 
 const renderWaitPeriod = (lastTxTime: number) => {
   const days = getWaitingPeriodInDays(lastTxTime);
@@ -25,7 +25,7 @@ const renderWaitPeriod = (lastTxTime: number) => {
 };
 
 const DelegatedTransactionCounter = () => {
-  const { workerProfile, canUseDelegation, user } = useContext(TalentLayerContext);
+  const { workerProfile, user } = useContext(TalentLayerContext);
 
   /**
    * @dev: Checks whether next transaction will reset the counter if max free tx amount reached.
@@ -34,7 +34,6 @@ const DelegatedTransactionCounter = () => {
     (workerProfile?.weeklyTransactionCounter || 0) === MAX_TRANSACTION_AMOUNT &&
     !!workerProfile?.counterStartDate &&
     getWaitingPeriodInDays(workerProfile.counterStartDate) < 0;
-  console.log('reset', resetTxAmount);
 
   const userHasDelegatedToPlatform =
     user?.delegates &&
@@ -47,6 +46,7 @@ const DelegatedTransactionCounter = () => {
         <>
           <p className='text-base-content mt-2'>
             <span className='text-xs'>Free Weekly Tx : </span>
+            {/*If next transaction will reset counter, display zero*/}
             {renderTxNumber(resetTxAmount ? 0 : workerProfile?.weeklyTransactionCounter || 0)}
             <span className='text-xs'>/{MAX_TRANSACTION_AMOUNT}</span>
           </p>
