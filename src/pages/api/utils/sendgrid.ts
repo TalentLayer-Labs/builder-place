@@ -23,8 +23,6 @@ export const sendTransactionalEmailValidation = async (
   const htmlBody = renderValidationMail(name, userId, domain);
   const subject = 'Validate your email';
 
-  // htmlBody += `<a href="${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/validate-email?id=${emailValidationId}">Validate my email.</a>`;
-
   try {
     console.log('Sending email...');
     await sgMail.send({ from: SENDERS_EMAIL, to: to, subject: subject, html: htmlBody });
