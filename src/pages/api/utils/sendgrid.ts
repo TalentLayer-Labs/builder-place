@@ -12,12 +12,8 @@ export const sendTransactionalEmailValidation = async (
   name: string,
   domain: string,
 ) => {
-  console.log(SENDERS_EMAIL, APIKEY);
-  console.log(process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER);
-  let errorMessage = '';
   if (!APIKEY || !SENDERS_EMAIL) {
-    errorMessage = 'No APIKEY or SENDERS_EMAIL, skipping email.';
-    throw new Error(errorMessage);
+    throw new Error('No APIKEY or SENDERS_EMAIL, skipping email.');
   }
   console.log('Sending email with variables: ', to, userId, name, domain);
   const htmlBody = renderValidationMail(name, userId, domain);
