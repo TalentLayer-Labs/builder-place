@@ -12,6 +12,7 @@ type VerifyEmailNotificationProps = {
 const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
   const { user, workerProfile } = useContext(TalentLayerContext);
   const router = useRouter();
+  const [showNotification, setShowNotification] = useState(true);
   //TODO deactivate after send to avoid ddos ?
   const onVerifyMail = async () => {
     const domain =
