@@ -151,7 +151,7 @@ export type IBuilderPlace = {
   preferredWorkTypes: PreferredWorkTypes[];
 };
 
-export type IWorkerProfile = {
+export interface IUserProfile {
   _id: string;
   email: string;
   emailVerified: boolean;
@@ -160,10 +160,15 @@ export type IWorkerProfile = {
   name: string;
   picture?: string;
   about?: string;
-  skills?: string[];
   weeklyTransactionCounter: number;
   counterStartDate: number;
-};
+}
+
+export interface IWorkerProfile extends IUserProfile {
+  skills?: string[];
+}
+
+export interface IAdminProfile extends IUserProfile {}
 
 export interface IWorkerMongooseSchema extends Document {
   _id: string;
