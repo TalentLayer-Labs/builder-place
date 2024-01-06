@@ -1,4 +1,9 @@
-export const renderValidationMail = (name: string, userId: string, domain: string): string => {
+export const renderValidationMail = (
+  name: string,
+  userId: string,
+  domain: string,
+  logoUrl?: string,
+): string => {
   return `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -164,9 +169,9 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
   <tr>
     <td style="padding-right: 0px;padding-left: 0px;" align="center">
       
-      <img align="center" border="0" src="https://${
-        domain ? domain : 'builder.place'
-      }/logo-text-white.png" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 29%;max-width: 168.2px;" width="168.2"/>
+      <img align="center" border="0" src="${
+        logoUrl ? logoUrl : 'https://logo-text-white.png'
+      }" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 29%;max-width: 168.2px;" width="168.2"/>
 
       
     </td>
@@ -377,7 +382,7 @@ const renderLink = (link: string) => {
     <tr>
       <td style="overflow-wrap:break-word;word-break:break-word;padding:0px 40px;font-family:'Lato',sans-serif;" align="left">
 
-  <div align="center">
+  <div align="center" style=";margin-bottom:25px">
   <a href="${link}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f4dabe; border-radius: 1px;-webkit-border-radius: 1px; -moz-border-radius: 1px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
   <span style="display:block;padding:15px 40px;line-height:120%;">
   <span style="font-size: 18px; line-height: 21.6px;">
