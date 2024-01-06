@@ -7,13 +7,15 @@ import { slugify } from '../../../modules/BuilderPlace/utils';
 import Loading from '../../../components/Loading';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
+import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/UseSetWorkerProfileOwner';
 
 function onboardingStep2() {
-  const { account, user, loading } = useContext(TalentLayerContext);
+  const { account, user, refreshWorkerProfile, loading } = useContext(TalentLayerContext);
   const router = useRouter();
-  const { id } = router.query;
-  const builderPlaceData = useGetBuilderPlaceById(id as string);
-  const { mutateAsync: setOwner } = useSetBuilderPlaceOwner();
+  const { builderPlaceId, userId } = router.query;
+  const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
+  const { mutateAsync: setBuilderPlaceOwner } = useSetBuilderPlaceOwner();
+  const { mutateAsync: updateWorkerProfileAsync } = useSetWorkerProfileOwner();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!account?.isConnected || !user) {
@@ -53,21 +55,29 @@ function onboardingStep2() {
   }
 
   const handleSubmit = async () => {
-    if (account.address && id && user.id) {
+    if (account.address && builderPlaceId && user.id && userId) {
       setIsSubmitting(true);
       try {
-        const response = await setOwner({
-          id: id as string,
+        const builderPlaceResponse = await setBuilderPlaceOwner({
+          id: builderPlaceId as string,
           owners: [account.address],
           ownerAddress: account.address,
           ownerTalentLayerId: user.id,
         });
-        if (response?.id) {
-          router.push('/onboarding/step3');
+        const userResponse = await updateWorkerProfileAsync({
+          id: userId as string,
+          talentLayerId: user.id,
+        });
+        if (builderPlaceResponse?.id && userResponse?.id) {
+          router.push({
+            pathname: '/onboarding/step3',
+            query: { userId: userResponse.id },
+          });
         }
       } catch (error) {
         console.error('Error updating domain:', error);
       } finally {
+        refreshWorkerProfile();
         setIsSubmitting(false);
       }
     }
