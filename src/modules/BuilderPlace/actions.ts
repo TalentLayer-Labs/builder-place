@@ -448,12 +448,14 @@ export const validateWorkerProfileEmail = async (id: string) => {
     if (existingWorker) {
       const resp = await Worker.updateOne({ _id: id }, { emailVerified: true }).exec();
       if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
+        console.log(EMAIL_ALREADY_VERIFIED);
         return {
           error: EMAIL_ALREADY_VERIFIED,
         };
       }
       console.log('Updated worker profile email', resp);
     } else {
+      console.log(ERROR_VERIFYING_EMAIL);
       return {
         error: ERROR_VERIFYING_EMAIL,
       };
@@ -463,6 +465,7 @@ export const validateWorkerProfileEmail = async (id: string) => {
       email: existingWorker.email,
     };
   } catch (error: any) {
+    console.log(error.message);
     return {
       error: error.message,
     };
