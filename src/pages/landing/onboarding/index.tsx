@@ -6,7 +6,7 @@ import UploadImage from '../../../components/UploadImage';
 import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hooks/UseCreateBuilderPlaceMutation';
 import { PreferredWorkTypes } from '../../../types';
 import { themes } from '../../../utils/themes';
-import { showErrorTransactionToast } from '../../../utils/toast';
+import { showMongoErrorTransactionToast } from '../../../utils/toast';
 import { useCreateWorkerProfileMutation } from '../../../modules/BuilderPlace/hooks/UseCreateWorkerProfileMutation';
 
 interface IFormValues {
@@ -45,6 +45,20 @@ function onboardingStep1() {
   ) => {
     try {
       setSubmitting(true);
+      /**
+       * @dev: Create User first so that it will revert if email already exists & not create the BuilderPlace
+       */
+      const userResponse = await createWorkerProfileAsync({
+        email: values.email,
+        name: values.name,
+        picture: values.profilePicture || undefined,
+        about: values.about,
+        status: 'pending',
+      });
+
+      if (userResponse.error) {
+        throw new Error(userResponse.error);
+      }
 
       const builderPlaceResponse = await createBuilderPlaceAsync({
         name: values.name,
@@ -54,14 +68,6 @@ function onboardingStep1() {
         profilePicture: values.profilePicture || undefined,
       });
 
-      const userResponse = await createWorkerProfileAsync({
-        email: values.email,
-        name: values.name,
-        picture: values.profilePicture || undefined,
-        about: values.about,
-        status: 'pending',
-      });
-
       router.query.builderPlaceId = builderPlaceResponse.id;
       router.query.userId = userResponse.id;
       router.push({
@@ -69,7 +75,7 @@ function onboardingStep1() {
         query: { builderPlaceId: builderPlaceResponse.id, userId: userResponse.id },
       });
     } catch (error: any) {
-      showErrorTransactionToast(error);
+      showMongoErrorTransactionToast(error.message);
     } finally {
       setTimeout(() => {
         setSubmitting(false);
