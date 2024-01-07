@@ -2,21 +2,19 @@ import React, { useContext, useState } from 'react';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useRouter } from 'next/router';
 import Steps from '../../../modules/BuilderPlace/components/Steps';
-import { useSetBuilderPlaceOwner } from '../../../modules/BuilderPlace/hooks/UseSetBuilderPlaceOwner';
 import { slugify } from '../../../modules/BuilderPlace/utils';
 import Loading from '../../../components/Loading';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
-import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/UseSetWorkerProfileOwner';
 import { showMongoErrorTransactionToast } from '../../../utils/toast';
+import { useSetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/hooks/UseSetBuilderPlaceAndHirerOwner';
 
 function onboardingStep2() {
   const { account, user, refreshWorkerProfile, loading } = useContext(TalentLayerContext);
   const router = useRouter();
   const { builderPlaceId, userId } = router.query;
   const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
-  const { mutateAsync: setBuilderPlaceOwner } = useSetBuilderPlaceOwner();
-  const { mutateAsync: updateWorkerProfileAsync } = useSetWorkerProfileOwner();
+  const { mutateAsync: setBuilderPlaceAndHirerOwner } = useSetBuilderPlaceAndHirerOwner();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!account?.isConnected || !user) {
@@ -59,28 +57,22 @@ function onboardingStep2() {
     if (account.address && builderPlaceId && user.id && userId) {
       setIsSubmitting(true);
       try {
-        /**
-         * @dev: Update BuilderPlace first so the function will revert in case the user already owns a domain
-         */
-        const builderPlaceResponse = await setBuilderPlaceOwner({
-          id: builderPlaceId as string,
+        const response = await setBuilderPlaceAndHirerOwner({
+          builderPlaceId: builderPlaceId as string,
+          hirerId: userId as string,
           owners: [account.address],
           ownerAddress: account.address,
           ownerTalentLayerId: user.id,
         });
 
-        if (builderPlaceResponse.error) {
-          throw new Error(builderPlaceResponse.error);
+        if (response.error) {
+          throw new Error(response.error);
         }
 
-        const userResponse = await updateWorkerProfileAsync({
-          id: userId as string,
-          talentLayerId: user.id,
-        });
-        if (builderPlaceResponse?.id && userResponse?.id) {
+        if (response?.hirerId && response?.builderPlaceId) {
           router.push({
             pathname: '/onboarding/step3',
-            query: { userId: userResponse.id },
+            query: { userId: response.builderPlaceId },
           });
         }
       } catch (error: any) {

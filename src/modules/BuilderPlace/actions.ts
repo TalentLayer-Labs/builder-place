@@ -19,6 +19,7 @@ import {
   AddBuilderPlaceCollaborator,
   RemoveBuilderPlaceCollaborator,
   CreateHirerProfileAction,
+  IHirerMongooseSchema,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -397,6 +398,48 @@ export const getWorkerProfileByTalentLayerId = async (
     }
 
     return workerProfile;
+  } catch (error: any) {
+    if (res) {
+      res.status(500).json({ error: error.message });
+    } else {
+      console.log(error.message);
+    }
+    return null;
+  }
+};
+
+export const getHirerProfileById = async (id: string) => {
+  try {
+    await connection();
+    console.log('Getting Hirer Profile with id:', id);
+    const hirerProfile = await Hirer.findOne({ _id: id });
+    console.log('Fetched Hirer Profile, ', hirerProfile);
+    if (hirerProfile) {
+      return hirerProfile;
+    }
+
+    return null;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const getHirerProfileByTalentLayerId = async (
+  id: string,
+  res?: NextApiResponse,
+): Promise<IHirerMongooseSchema | null> => {
+  try {
+    await connection();
+    console.log('Getting Hirer Profile with TalentLayer id:', id);
+    const hirerProfile = await Hirer.findOne({ talentLayerId: id });
+    console.log('Fetched Hirer Profile, ', hirerProfile);
+    if (!hirerProfile) {
+      return null;
+    }
+
+    return hirerProfile;
   } catch (error: any) {
     if (res) {
       res.status(500).json({ error: error.message });

@@ -72,6 +72,14 @@ export interface SetWorkerProfileOwner {
   talentLayerId: string;
 }
 
+export interface SetBuilderPlaceAndHirerOwner {
+  builderPlaceId: string;
+  hirerId: string;
+  owners: string[];
+  ownerAddress: string;
+  ownerTalentLayerId: string;
+}
+
 export interface ValidateEmail {
   userId: string;
 }
@@ -191,12 +199,24 @@ export interface IWorkerMongooseSchema extends Document {
   _id: string;
   email: string;
   emailVerified: boolean;
-  status: 'Validated' | 'Pending';
+  status: 'validated' | 'pending';
   talentLayerId?: string;
   name: string;
   picture?: string;
   about?: string;
   skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+}
+export interface IHirerMongooseSchema extends Document {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
   weeklyTransactionCounter: number;
   counterStartDate: number;
 }
