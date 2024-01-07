@@ -8,6 +8,7 @@ import Loading from '../../../components/Loading';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
 import { useSetWorkerProfileOwner } from '../../../modules/BuilderPlace/hooks/UseSetWorkerProfileOwner';
+import { showMongoErrorTransactionToast } from '../../../utils/toast';
 
 function onboardingStep2() {
   const { account, user, refreshWorkerProfile, loading } = useContext(TalentLayerContext);
@@ -58,12 +59,20 @@ function onboardingStep2() {
     if (account.address && builderPlaceId && user.id && userId) {
       setIsSubmitting(true);
       try {
+        /**
+         * @dev: Update BuilderPlace first so the function will revert in case the user already owns a domain
+         */
         const builderPlaceResponse = await setBuilderPlaceOwner({
           id: builderPlaceId as string,
           owners: [account.address],
           ownerAddress: account.address,
           ownerTalentLayerId: user.id,
         });
+
+        if (builderPlaceResponse.error) {
+          throw new Error(builderPlaceResponse.error);
+        }
+
         const userResponse = await updateWorkerProfileAsync({
           id: userId as string,
           talentLayerId: user.id,
@@ -74,8 +83,8 @@ function onboardingStep2() {
             query: { userId: userResponse.id },
           });
         }
-      } catch (error) {
-        console.error('Error updating domain:', error);
+      } catch (error: any) {
+        showMongoErrorTransactionToast(error.message);
       } finally {
         refreshWorkerProfile();
         setIsSubmitting(false);
