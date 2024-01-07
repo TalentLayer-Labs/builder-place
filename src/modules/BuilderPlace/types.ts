@@ -168,7 +168,7 @@ export interface IWorkerProfile extends IUserProfile {
   skills?: string[];
 }
 
-export interface IAdminProfile extends IUserProfile {}
+export interface IHirerProfile extends IUserProfile {}
 
 export interface IWorkerMongooseSchema extends Document {
   _id: string;
