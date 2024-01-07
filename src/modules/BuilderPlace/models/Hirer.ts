@@ -41,4 +41,4 @@ const hirer = new Schema<IHirerProfile>({
   },
 });
 
-export const Worker = models.Hirer || model('Hirer', hirer);
+export const Hirer = models.Hirer || model('Hirer', hirer);

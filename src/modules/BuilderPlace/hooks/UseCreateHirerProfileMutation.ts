@@ -1,16 +1,16 @@
-import { CreateWorkerProfileProps } from '../types';
+import { CreateHirerProfileProps } from '../types';
 import { useMutation, useQueryClient } from 'react-query';
 
-export function useCreateWorkerProfileMutation() {
+export function useCreateHirerProfileMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
     { message: string; id: string; error?: string },
     Error,
-    CreateWorkerProfileProps
+    CreateHirerProfileProps
   >(
     createWorkerProfile =>
-      fetch('/api/domain/create-worker-profile', {
+      fetch('/api/domain/create-hirer-profile', {
         method: 'POST',
         body: JSON.stringify(createWorkerProfile),
         headers: {
@@ -22,10 +22,10 @@ export function useCreateWorkerProfileMutation() {
 
     {
       onError: error => {
-        throw new Error('Failed to create worker profile', error);
+        throw new Error('Failed to create hirer profile', error);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries('createWorkerProfile');
+        queryClient.invalidateQueries('createHirerProfile');
       },
     },
   );

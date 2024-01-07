@@ -8,6 +8,7 @@ import {
   validDomainRegex,
 } from './domains';
 import { BuilderPlace } from './models/BuilderPlace';
+import { Hirer } from './models/Hirer';
 import { Worker } from './models/Worker';
 import {
   CreateBuilderPlaceAction,
@@ -17,6 +18,7 @@ import {
   UpdateBuilderPlaceDomain,
   AddBuilderPlaceCollaborator,
   RemoveBuilderPlaceCollaborator,
+  CreateHirerProfileAction,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -332,6 +334,31 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
     };
   } catch (error: any) {
     console.log('Error creating new Worker Profile:', error);
+    return {
+      error: error.message!,
+    };
+  }
+};
+
+export const createHirerProfile = async (data: CreateHirerProfileAction) => {
+  try {
+    await connection();
+
+    const newHirerProfile = new Hirer({
+      email: data.email,
+      status: data.status,
+      name: data.name,
+      picture: data.picture,
+      about: data.about,
+      talentLayerId: data.talentLayerId,
+    });
+    const { _id } = await newHirerProfile.save();
+    return {
+      message: 'Hirer Profile created successfully',
+      _id: _id,
+    };
+  } catch (error: any) {
+    console.log('Error creating new Hirer Profile:', error);
     return {
       error: error.message!,
     };

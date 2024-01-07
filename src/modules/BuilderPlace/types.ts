@@ -113,6 +113,15 @@ export interface CreateWorkerProfileAction {
   talentLayerId?: string;
 }
 
+export interface CreateHirerProfileAction {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
@@ -127,6 +136,14 @@ export interface CreateWorkerProfileProps {
   picture?: string;
   about?: string;
   skills?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+export interface CreateHirerProfileProps {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
   status?: string;
   talentLayerId?: string;
 }
