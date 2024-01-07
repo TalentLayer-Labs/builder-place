@@ -80,11 +80,11 @@ export interface SetBuilderPlaceAndHirerOwner {
   ownerTalentLayerId: string;
 }
 
-export interface ValidateEmail {
+export interface VerifyEmail {
   userId: string;
 }
 
-export interface ValidateEmailProps {
+export interface VerifyEmailProps {
   userId: string;
 }
 

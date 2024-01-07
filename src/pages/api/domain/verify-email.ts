@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { validateWorkerProfileEmail } from '../../../modules/BuilderPlace/actions';
-import { ValidateEmail } from '../../../modules/BuilderPlace/types';
+import { verifyWorkerProfileEmail } from '../../../modules/BuilderPlace/actions';
+import { VerifyEmail } from '../../../modules/BuilderPlace/types';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
-    const body: ValidateEmail = req.body;
+    const body: VerifyEmail = req.body;
     console.log('Received data:', body);
 
     try {
-      const result = await validateWorkerProfileEmail(body.userId);
+      const result = await verifyWorkerProfileEmail(body.userId);
       if (result?.error) {
         res.status(400).json({ error: result.error });
       } else {

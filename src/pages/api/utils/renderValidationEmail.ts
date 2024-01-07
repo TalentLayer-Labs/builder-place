@@ -400,5 +400,5 @@ Validate my email
 };
 
 export const generateUrl = (userId: string, domain: string) => {
-  return `http://${domain}/validate-email?id=${userId}`;
+  return `http://${domain}/verify-email?id=${userId}`;
 };

@@ -56,7 +56,7 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
 
       if (response?.id) {
         /**
-         * @dev: send valitadion email to user to validate email
+         * @dev: send verification email to user to verify email
          */
         const domain =
           typeof router.query.domain === 'object' && !!router.query.domain

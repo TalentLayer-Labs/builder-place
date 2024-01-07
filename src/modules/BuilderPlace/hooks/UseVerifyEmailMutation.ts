@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { ValidateEmailProps } from '../types';
+import { VerifyEmailProps } from '../types';
 
-export function useValidateEmailMutation() {
+export function useVerifyEmailMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<{ message: string; id: string; error?: string }, Error, ValidateEmailProps>(
-    validateEmail =>
-      fetch('/api/domain/validate-email', {
+  return useMutation<{ message: string; id: string; error?: string }, Error, VerifyEmailProps>(
+    verifyEmail =>
+      fetch('/api/domain/verify-email', {
         method: 'PUT',
-        body: JSON.stringify(validateEmail),
+        body: JSON.stringify(verifyEmail),
         headers: {
           'Content-type': 'application/json',
         },
@@ -17,7 +17,7 @@ export function useValidateEmailMutation() {
       }),
     {
       onError: error => {
-        throw new Error('Failed to verify builderPlace', error);
+        throw new Error('Failed to verify email', error);
       },
       onSuccess: () => {
         queryClient.invalidateQueries('verifyEmail');

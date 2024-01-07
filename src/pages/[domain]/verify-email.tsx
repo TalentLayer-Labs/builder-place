@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useValidateEmailMutation } from '../../modules/BuilderPlace/hooks/UseValidateEmailMutation';
+import { useVerifyEmailMutation } from '../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
 import { showMongoErrorTransactionToast } from '../../utils/toast';
 import Loading from '../../components/Loading';
 import {
@@ -8,8 +8,8 @@ import {
   EMAIL_VERIFIED_SUCCESSFULLY,
 } from '../../modules/BuilderPlace/apiResponses';
 
-const validateEmail = () => {
-  const { mutateAsync: verifyEmailAsync } = useValidateEmailMutation();
+const verifyEmail = () => {
+  const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
@@ -125,4 +125,4 @@ const validateEmail = () => {
   );
 };
 
-export default validateEmail;
+export default verifyEmail;

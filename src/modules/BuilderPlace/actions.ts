@@ -516,7 +516,7 @@ export async function incrementWeeklyTransactionCounter(
   }
 }
 
-export const validateWorkerProfileEmail = async (id: string) => {
+export const verifyWorkerProfileEmail = async (id: string) => {
   try {
     await connection();
     const existingWorker = await Worker.findOne({ _id: id });
