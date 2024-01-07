@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   getBuilderPlaceById,
   getBuilderPlaceByOwnerId,
-  getHirerProfileById,
-  getHirerProfileByTalentLayerId,
+  getWorkerProfileById,
+  getWorkerProfileByTalentLayerId,
 } from '../../../modules/BuilderPlace/actions';
 import { SetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/types';
 
@@ -36,12 +36,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     /**
      * @dev: Checks on the Hirer
      */
-    const existingProfile = await getHirerProfileByTalentLayerId(body.ownerTalentLayerId);
+    const existingProfile = await getWorkerProfileByTalentLayerId(body.ownerTalentLayerId);
     if (existingProfile) {
       return res.status(401).json({ error: 'You already have a profile' });
     }
 
-    const hirerProfile = await getHirerProfileById(body.hirerId as string);
+    const hirerProfile = await getWorkerProfileById(body.hirerId as string);
     if (!hirerProfile) {
       return res.status(400).json({ error: "Profile doesn't exist." });
     }

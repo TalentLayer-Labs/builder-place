@@ -7,7 +7,7 @@ import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hoo
 import { PreferredWorkTypes } from '../../../types';
 import { themes } from '../../../utils/themes';
 import { showMongoErrorTransactionToast } from '../../../utils/toast';
-import { useCreateHirerProfileMutation } from '../../../modules/BuilderPlace/hooks/UseCreateHirerProfileMutation';
+import { useCreateWorkerProfileMutation } from '../../../modules/BuilderPlace/hooks/UseCreateWorkerProfileMutation';
 
 interface IFormValues {
   name: string;
@@ -18,7 +18,7 @@ interface IFormValues {
 }
 function onboardingStep1() {
   const { mutateAsync: createBuilderPlaceAsync } = useCreateBuilderPlaceMutation();
-  const { mutateAsync: createHirerProfileAsync } = useCreateHirerProfileMutation();
+  const { mutateAsync: createUserProfileAsync } = useCreateWorkerProfileMutation();
   const router = useRouter();
 
   const initialValues: IFormValues = {
@@ -48,7 +48,7 @@ function onboardingStep1() {
       /**
        * @dev: Create User first so that it will revert if email already exists & not create the BuilderPlace
        */
-      const userResponse = await createHirerProfileAsync({
+      const userResponse = await createUserProfileAsync({
         email: values.email,
         name: values.name,
         picture: values.profilePicture || undefined,
