@@ -87,18 +87,23 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
 export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
   try {
     await connection();
+    const builderPlace = await BuilderPlace.findOne({ _id: body.builderPlaceId });
+    if (body.collaborator === builderPlace.ownerTalentLayerId) {
+      console.log('Cannot remove the owner of the BuilderPlace');
+      throw new Error('Cannot remove the owner of the BuilderPlace');
+    }
     await BuilderPlace.updateOne(
       { _id: body.builderPlaceId },
       {
         $pull: {
-          owners: body.newCollaborator,
+          owners: body.collaborator,
         },
       },
     ).exec();
-    console.log('Collaborator removed successfully', body.newCollaborator);
+    console.log('Collaborator removed successfully', body.collaborator);
     return {
       message: 'Collaborator removed successfully',
-      collaborator: body.newCollaborator,
+      collaborator: body.collaborator,
     };
   } catch (error: any) {
     return {

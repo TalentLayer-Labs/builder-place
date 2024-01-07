@@ -56,7 +56,7 @@ export interface AddBuilderPlaceCollaborator {
 export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
-  newCollaborator: string;
+  collaborator: string;
   signature: `0x${string}` | Uint8Array;
 }
 
