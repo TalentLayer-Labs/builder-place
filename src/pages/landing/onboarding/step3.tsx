@@ -66,7 +66,7 @@ function onboardingStep3() {
         const subdomain = generateDomainName(values.subdomain);
 
         /**
-         * @dev: send valitadion email to owner to validate email
+         * @dev: send validadion email to owner to validate email
          */
         if (workerProfile && userId) {
           await sendVerificationEmail(
