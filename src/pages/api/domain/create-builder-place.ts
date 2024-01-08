@@ -12,7 +12,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     });
 
     if (result.message) {
-      res.status(200).json({ message: result.message, id: result._id });
+      res.status(200).json({ message: result.message, id: result.id });
     } else {
       res.status(400).json({ error: result.error });
     }

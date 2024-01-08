@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { validateWorkerProfileEmail } from '../../../modules/BuilderPlace/actions';
+import { validateUserEmail } from '../../../modules/BuilderPlace/actions';
 import { VerifyEmail } from '../../../modules/BuilderPlace/types';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
@@ -8,7 +8,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log('Received data:', body);
 
     //TODO call verify email API service
-    const result = await validateWorkerProfileEmail(body.userId, body.email);
+    const result = await validateUserEmail(body.userId, body.email);
 
     if (result?.error) {
       res.status(400).json({ error: result.error });

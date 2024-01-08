@@ -1,6 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import 'react-color-palette/css';
@@ -47,7 +46,6 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: updateBuilderPlaceAsync } = useUpdateBuilderPlace();
-  const router = useRouter();
   const [palette, setPalette] = useState<iBuilderPlacePalette | undefined>(builderPlace?.palette);
   const [colorName, setColorName] = useState('primary');
   const [color, setColor] = useColor(
@@ -122,7 +120,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && account?.address && builderPlace) {
+    if (walletClient && account?.address && builderPlace && builderPlace.ownerTalentLayerId) {
       setSubmitting(true);
       try {
         /**
@@ -135,7 +133,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
         const fullSubdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 
         await updateBuilderPlaceAsync({
-          _id: builderPlace._id,
+          builderPlaceId: builderPlace._id,
           subdomain: fullSubdomain,
           logo: values.logo,
           name: values.name,

@@ -6,19 +6,19 @@ import {
 import { NextApiResponse } from 'next';
 
 export const checkSignature = async (
-  _id: string,
+  id: string,
   signature: `0x${string}` | Uint8Array,
   res: NextApiResponse,
 ) => {
   const address = await recoverMessageAddress({
-    message: _id,
+    message: id,
     signature: signature,
   });
 
-  const builderPlace = await getBuilderPlaceByOwnerAddressAndId(address, _id);
+  const builderPlace = await getBuilderPlaceByOwnerAddressAndId(address, id);
 
   if (!builderPlace) {
-    return res.status(500).json({ error: 'Not the owner.' });
+    return res.status(400).json({ error: 'No BuilderPlace found.' });
   }
 
   return { builderPlace, address };

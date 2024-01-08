@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import {
-  getWorkerProfileById,
+  getUserProfileById,
   getWorkerProfileByTalentLayerId,
 } from '../../../modules/BuilderPlace/actions';
-import { SetWorkerProfileOwner } from '../../../modules/BuilderPlace/types';
+import { SetUserProfileOwner } from '../../../modules/BuilderPlace/types';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
-    const body: SetWorkerProfileOwner = req.body;
+    const body: SetUserProfileOwner = req.body;
     console.log('Received data:', body);
 
     if (!body.id || !body.talentLayerId) {
@@ -19,21 +19,19 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(401).json({ error: 'You already have a profile' });
     }
 
-    const workerProfile = await getWorkerProfileById(body.id as string);
-    if (!workerProfile) {
+    const userProfile = await getUserProfileById(body.id as string);
+    if (!userProfile) {
       return res.status(500).json({ error: "Profile doesn't exist." });
     }
-    if (!!workerProfile.talentLayerId) {
+    if (!!userProfile.talentLayerId) {
       return res.status(500).json({ error: 'Profile already has an owner.' });
     }
 
     try {
-      workerProfile.talentLayerId = body.talentLayerId;
-      workerProfile.status = 'validated';
-      workerProfile.save();
-      res
-        .status(200)
-        .json({ message: 'Worker Profile updated successfully', id: workerProfile._id });
+      userProfile.talentLayerId = body.talentLayerId;
+      userProfile.status = 'validated';
+      userProfile.save();
+      res.status(200).json({ message: 'Worker Profile updated successfully', id: userProfile._id });
     } catch (error: any) {
       res.status(400).json({ error: error });
     }

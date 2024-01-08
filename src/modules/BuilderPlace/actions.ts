@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
 import { connection } from '../../mongo/mongodb';
+import { $Enums, EntityStatus, PrismaClient, User } from '@prisma/client';
+const prisma = new PrismaClient();
 import {
   addDomainToVercel,
   getApexDomain,
@@ -7,12 +8,9 @@ import {
   removeDomainFromVercelTeam,
   validDomainRegex,
 } from './domains';
-import { BuilderPlace } from './models/BuilderPlace';
-import { Worker } from './models/Worker';
 import {
   CreateBuilderPlaceAction,
   CreateWorkerProfileAction,
-  IWorkerMongooseSchema,
   UpdateBuilderPlace,
   UpdateBuilderPlaceDomain,
   AddBuilderPlaceCollaborator,
@@ -20,31 +18,41 @@ import {
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
+import UserType = $Enums.UserType;
 
-export const deleteBuilderPlace = async (_id: string) => {
-  await connection();
-  const builderPlace = await BuilderPlace.deleteOne({ _id: _id });
-  console.log(builderPlace, 'builderPlace deleted');
-  if (builderPlace.deletedCount === 0) {
+export const deleteBuilderPlace = async (id: string) => {
+  try {
+    const builderPlace = await prisma.builderPlace.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    console.log(builderPlace, 'builderPlace deleted');
     return {
-      error: 'BuilderPlace not found',
+      message: 'BuilderPlace deleted successfully',
+    };
+  } catch (error: any) {
+    return {
+      error: error.message,
     };
   }
-  return {
-    message: 'BuilderPlace deleted successfully',
-  };
 };
 
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   try {
-    await connection();
-    await BuilderPlace.updateOne(
-      { ownerTalentLayerId: builderPlace.ownerTalentLayerId },
-      builderPlace,
-    ).exec();
+    const updatedBuilderPlace = await prisma.builderPlace.update({
+      where: {
+        ownerId: Number(builderPlace.ownerTalentLayerId),
+      },
+      data: {
+        ...builderPlace,
+        palette: { ...builderPlace.palette },
+        status: (builderPlace.status as EntityStatus) || EntityStatus.VALIDATED,
+      },
+    });
     return {
       message: 'BuilderPlace updated successfully',
-      id: builderPlace._id,
+      id: updatedBuilderPlace.id,
     };
   } catch (error: any) {
     return {
@@ -101,65 +109,58 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
 
 export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
   try {
-    await connection();
-
-    const newBuilderPlace = new BuilderPlace({
-      _id: new mongoose.Types.ObjectId(),
-      name: data.name,
-      about: data.about,
-      preferredWorkTypes: data.preferredWorkTypes,
-      profilePicture: data.profilePicture,
-      palette: {
-        primary: '#FF71A2',
-        primaryFocus: '#FFC2D1',
-        primaryContent: '#ffffff',
-        base100: '#ffffff',
-        base200: '#fefcfa',
-        base300: '#fae4ce',
-        baseContent: '#000000',
-        info: '#f4dabe',
-        infoContent: '#000000',
-        success: '#C5F1A4',
-        successContent: '#000000',
-        warning: '#FFE768',
-        warningContent: '#000000',
-        error: '#FFC2D1',
-        errorContent: '#000000',
+    const newBuilderPlace = await prisma.builderPlace.create({
+      data: {
+        name: data.name,
+        about: data.about,
+        preferredWorkTypes: data.preferredWorkTypes,
+        palette: { ...data.palette },
+        profilePicture: data.profilePicture,
+        status: EntityStatus.PENDING,
       },
-      status: 'pending',
     });
-    const { _id } = await newBuilderPlace.save();
+
+    const { id } = newBuilderPlace;
     return {
       message: 'BuilderPlace created successfully',
-      _id: _id,
+      id: id,
     };
   } catch (error: any) {
     console.log('Error creating new builderPlace:', error);
     return {
-      error: error.message!,
+      error: error.message,
     };
   }
 };
 
 export const getBuilderPlaceByDomain = async (domain: string) => {
-  await connection();
-  console.log('getting builderPlace ', domain);
-  let builderPlace;
-  if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
-    builderPlace = await BuilderPlace.findOne({ subdomain: domain });
-  } else {
-    builderPlace = await BuilderPlace.findOne({ customDomain: domain });
-  }
-  console.log('fetched builderPlaces, ', builderPlace);
+  try {
+    console.log('getting builderPlace ', domain);
+    if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
+      const builderPlace = await prisma.builderPlace.findFirst({
+        where: {
+          OR: [{ subdomain: domain }, { customDomain: domain }],
+        },
+      });
+      console.log('fetched builderPlaces, ', builderPlace);
 
-  return builderPlace;
+      return builderPlace;
+    }
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
 };
 
 export const getBuilderPlaceById = async (id: string) => {
   try {
-    await connection();
     console.log('getting builderPlace with id:', id);
-    const builderPlaceSubdomain = await BuilderPlace.findOne({ _id: id });
+    const builderPlaceSubdomain = await prisma.builderPlace.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
@@ -175,29 +176,13 @@ export const getBuilderPlaceById = async (id: string) => {
 
 export const getBuilderPlaceByOwnerId = async (id: string) => {
   try {
-    await connection();
     console.log("getting builderPlace with owner's id:", id);
-    const builderPlaceSubdomain = await BuilderPlace.findOne({ ownerTalentLayerId: id });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
-    if (builderPlaceSubdomain) {
-      return builderPlaceSubdomain;
-    }
-
-    return null;
-  } catch (error: any) {
-    return {
-      error: error.message,
-    };
-  }
-};
-
-export const getBuilderPlaceByOwnerAddressAndId = async (address: string, _id: string) => {
-  try {
-    await connection();
-    console.log("getting builderPlace with owner's address & mongo _id:", address, _id);
-    const builderPlaceSubdomain = await BuilderPlace.findOne({
-      owners: address,
-      _id: _id,
+    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
+      where: {
+        owner: {
+          id: Number(id),
+        },
+      },
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {
@@ -212,13 +197,46 @@ export const getBuilderPlaceByOwnerAddressAndId = async (address: string, _id: s
   }
 };
 
-export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, _id: string) => {
+export const getBuilderPlaceByOwnerAddressAndId = async (
+  address: string,
+  builderPlaceId: string,
+) => {
   try {
-    await connection();
-    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerId, _id);
-    const builderPlaceSubdomain = await BuilderPlace.findOne({
-      ownerTalentLayerId: ownerId,
-      _id: _id,
+    console.log('getting builderPlace with admin address & id:', address, builderPlaceId);
+    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
+      where: {
+        id: Number(builderPlaceId),
+        collaborators: {
+          some: {
+            address: address,
+          },
+        },
+      },
+      // select: {
+      //   subdomain: true, // assuming you only want the subdomain field
+      // },
+    });
+
+    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    if (builderPlaceSubdomain) {
+      return builderPlaceSubdomain;
+    }
+
+    return null;
+  } catch (error: any) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
+export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, id: string) => {
+  try {
+    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerId, id);
+    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
+      where: {
+        AND: [{ ownerId: Number(ownerId) }, { id: Number(id) }],
+      },
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {
@@ -237,7 +255,6 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, _id: stri
 export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
   try {
     console.log('Update Domain invoke, ', builderPlace);
-    await connection();
     let response;
 
     if (builderPlace.customDomain.includes('builder.place')) {
@@ -252,10 +269,15 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
       // Update the MongoDB document with the new custom domain
       // await BuilderPlace.updateOne({ _id: new mongoose.Types.ObjectId(builderPlace.id) }, { customDomain: builderPlace.customDomain }).exec();
       console.log('Searching subdomain, ', builderPlace.subdomain);
-      const entity = await BuilderPlace.findOne({ subdomain: builderPlace.subdomain });
-      console.log('Search result', builderPlace.subdomain);
-      entity.customDomain = builderPlace.customDomain;
-      entity.save();
+      const updatedEntity = await prisma.builderPlace.update({
+        where: {
+          subdomain: builderPlace.subdomain,
+        },
+        data: {
+          customDomain: builderPlace.customDomain,
+        },
+      });
+      console.log('Updated entity with custom domain: ', updatedEntity.customDomain);
 
       // Add the custom domain to Vercel
       console.log('Adding domain to vercel');
@@ -268,25 +290,41 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
       console.log('Removing custom domain from MongoDB document');
       // await BuilderPlace.updateOne({ _id: new mongoose.Types.ObjectId(builderPlace.id) }, { customDomain: "asd.de" }).exec();
 
-      const entity = await BuilderPlace.findOne({ subdomain: builderPlace.subdomain });
-      entity.customDomain = '';
-      entity.save();
+      await prisma.builderPlace.updateMany({
+        where: {
+          subdomain: builderPlace.subdomain,
+        },
+        data: {
+          customDomain: '',
+        },
+      });
     }
 
     // Get the current custom domain from the MongoDB document
     // const currentBuilderPlace = await BuilderPlace.findById(new mongoose.Types.ObjectId(builderPlace.id)).exec();
-    const currentBuilderPlace = await BuilderPlace.findOne({ subdomain: builderPlace.subdomain });
+    const currentBuilderPlace = await prisma.builderPlace.findFirst({
+      where: {
+        subdomain: builderPlace.subdomain,
+      },
+    });
+
     const currentDomain = currentBuilderPlace?.customDomain || '';
 
     // If the site had a different customDomain before, we need to remove it from Vercel
     if (builderPlace.customDomain !== currentDomain) {
       response = await removeDomainFromVercelProject(builderPlace.customDomain!);
 
+      //TODO check if this works => No Regex in Prisma
       // Check if the apex domain is being used by other sites
       const apexDomain = getApexDomain(`https://${builderPlace.customDomain}`);
-      const domainsWithApexDomain = await BuilderPlace.find({
-        customDomain: new RegExp(`.${apexDomain}$`),
-      }).exec();
+      const domainsWithApexDomain = await prisma.builderPlace.findMany({
+        where: {
+          customDomain: {
+            endsWith: `.${apexDomain}`,
+          },
+        },
+      });
+
       const domainCount = domainsWithApexDomain.length;
 
       // we should only remove it from our Vercel project
@@ -309,21 +347,29 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
 
 export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   try {
-    await connection();
-
-    const newWorkerProfile = new Worker({
-      email: data.email,
-      status: data.status,
-      name: data.name,
-      picture: data.picture,
-      about: data.about,
-      skills: data.skills,
-      talentLayerId: data.talentLayerId,
+    // Step 1: Create the User
+    const user = await prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        picture: data.picture,
+        about: data.about,
+        type: UserType.WORKER,
+      },
     });
-    const { _id } = await newWorkerProfile.save();
+
+    //TODO add here the creation of the hirer profile if any
+    // Step 2: Create the WorkerProfile with the same ID as the User
+    await prisma.workerProfile.create({
+      data: {
+        id: user.id,
+        skills: data?.skills?.split(','),
+      },
+    });
+
     return {
       message: 'Worker Profile created successfully',
-      _id: _id,
+      id: user.id,
     };
   } catch (error: any) {
     console.log('Error creating new Worker Profile:', error);
@@ -333,14 +379,24 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   }
 };
 
-export const getWorkerProfileById = async (id: string) => {
+export const getUserProfileById = async (id: string) => {
   try {
     await connection();
     console.log('Getting Worker Profile with id:', id);
-    const workerProfile = await Worker.findOne({ _id: id });
-    console.log('Fetched Worker Profile, ', workerProfile);
-    if (workerProfile) {
-      return workerProfile;
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        workerProfile: true,
+        hirerProfile: true,
+        ownedBuilderPlace: true,
+        managingPlaces: true,
+      },
+    });
+    console.log('Fetched Worker Profile, ', userProfile);
+    if (userProfile) {
+      return userProfile;
     }
 
     return null;
@@ -352,19 +408,29 @@ export const getWorkerProfileById = async (id: string) => {
 };
 
 export const getWorkerProfileByTalentLayerId = async (
-  id: string,
+  talentLayerId: string,
   res?: NextApiResponse,
-): Promise<IWorkerMongooseSchema | null> => {
+): Promise<User | null> => {
   try {
     await connection();
-    console.log('Getting Worker Profile with TalentLayer id:', id);
-    const workerProfile = await Worker.findOne({ talentLayerId: id });
-    console.log('Fetched Worker Profile, ', workerProfile);
-    if (!workerProfile) {
+    console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        talentLayerId: Number(talentLayerId),
+      },
+      include: {
+        workerProfile: true,
+        hirerProfile: true,
+        ownedBuilderPlace: true,
+        managingPlaces: true,
+      },
+    });
+    console.log(userProfile);
+    if (!userProfile) {
       return null;
     }
 
-    return workerProfile;
+    return userProfile;
   } catch (error: any) {
     if (res) {
       res.status(500).json({ error: error.message });
@@ -376,44 +442,41 @@ export const getWorkerProfileByTalentLayerId = async (
 };
 
 export async function checkUserEmailVerificationStatus(
-  worker: IWorkerMongooseSchema,
+  user: User,
   res: NextApiResponse,
 ): Promise<void> {
-  try {
-    await connection();
-
-    if (!worker.emailVerified) {
-      console.log('Email not verified');
-      throw new Error('Email not verified');
-    }
-    console.log('Email verified');
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  if (!user.isEmailVerified) {
+    console.log('Email not verified');
+    res.status(401).json({ error: 'Email not verified' });
   }
 }
 
 export async function checkOrResetTransactionCounter(
-  worker: IWorkerMongooseSchema,
+  user: User,
   res: NextApiResponse,
 ): Promise<void> {
   try {
-    await connection();
-
     const nowMilliseconds = new Date().getTime();
     const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
 
-    if (worker.counterStartDate > oneWeekAgoMilliseconds) {
+    if (user.counterStartDate > oneWeekAgoMilliseconds) {
       // Less than one week since counterStartDate
-      if (worker.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
+      if (user.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
         // If the counter is already 50, stop the function
         console.log('Transaction limit reached for the week');
         throw new Error('Transaction limit reached for the week');
       }
     } else {
       console.log('More than a week since the start date, reset counter');
-      worker.counterStartDate = nowMilliseconds;
-      worker.weeklyTransactionCounter = 0;
-      await worker.save();
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          counterStartDate: nowMilliseconds,
+          weeklyTransactionCounter: 0,
+        },
+      });
     }
     console.log('Delegating transaction');
   } catch (error: any) {
@@ -422,40 +485,38 @@ export async function checkOrResetTransactionCounter(
 }
 
 export async function incrementWeeklyTransactionCounter(
-  worker: IWorkerMongooseSchema,
+  user: User,
   res: NextApiResponse,
 ): Promise<void> {
   try {
-    await connection();
     // Increment the counter
-    worker.weeklyTransactionCounter = (worker.weeklyTransactionCounter || 0) + 1;
-    console.log('Transaction counter incremented', worker.weeklyTransactionCounter);
-    await worker.save();
+    const newWeeklyTransactionCounter = (user.weeklyTransactionCounter || 0) + 1;
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        weeklyTransactionCounter: newWeeklyTransactionCounter,
+      },
+    });
+    console.log('Transaction counter incremented', newWeeklyTransactionCounter);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 }
 
-export const validateWorkerProfileEmail = async (userId: string, email: string) => {
+export const validateUserEmail = async (userId: string, email: string) => {
   try {
-    await connection();
-    const existingWorker = await Worker.findOne({ email: email, talentLayerId: userId });
-    if (existingWorker) {
-      const resp = await Worker.updateOne(
-        { email: email, talentLayerId: userId },
-        { emailVerified: true },
-      ).exec();
-      if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
-        return {
-          error: 'Email already validated',
-        };
-      }
-      console.log('Updated worker profile email', resp);
-    } else {
-      return {
-        error: 'Error while validating email',
-      };
-    }
+    const resp = await prisma.user.update({
+      where: {
+        email: email,
+        talentLayerId: Number(userId),
+      },
+      data: {
+        isEmailVerified: true,
+      },
+    });
+    console.log('Updated worker profile email', resp.id, resp.name, resp.email);
     return {
       message: 'Email verified successfully',
     };

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getBuilderPlaceByDomain, updateBuilderPlace } from '../../../modules/BuilderPlace/actions';
+import { updateBuilderPlace } from '../../../modules/BuilderPlace/actions';
 import { UpdateBuilderPlace } from '../../../modules/BuilderPlace/types';
 import { checkSignature } from '../utils/domain';
 
@@ -8,18 +8,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const body: UpdateBuilderPlace = req.body;
     console.log('Received data:', body);
 
-    // Check whether the address which provided the signature is an owner of the domain
-    const response = await checkSignature(body._id, body.signature, res);
+    //TODO faire ces deux opérations en 1 call
 
-    const currentBuilderPlace = response?.builderPlace;
-    const existingSubdomain = await getBuilderPlaceByDomain(body.subdomain);
-
-    if (
-      existingSubdomain &&
-      existingSubdomain._id.toString() !== currentBuilderPlace._id.toString()
-    ) {
-      return res.status(500).json({ error: 'Domain already taken.' });
-    }
+    // Check whether the address which provided the signature is an admin of the domain
+    await checkSignature(body.builderPlaceId, body.signature, res);
 
     const result = await updateBuilderPlace(body);
 

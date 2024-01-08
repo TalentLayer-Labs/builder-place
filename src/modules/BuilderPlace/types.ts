@@ -19,14 +19,14 @@ export interface iBuilderPlacePalette {
   errorContent: string;
 }
 export interface UpdateBuilderPlace {
-  _id: string;
+  builderPlaceId: string;
   subdomain: string;
   name: string;
   baseline?: string;
   about?: string;
   aboutTech?: string;
   palette?: iBuilderPlacePalette;
-  ownerTalentLayerId: string | undefined;
+  ownerTalentLayerId: string;
   owners: string[] | undefined;
   status: string | undefined;
   logo?: string;
@@ -67,7 +67,7 @@ export interface SetBuilderPlaceOwner {
   ownerTalentLayerId: string;
 }
 
-export interface SetWorkerProfileOwner {
+export interface SetUserProfileOwner {
   id: string;
   talentLayerId: string;
 }
@@ -99,8 +99,6 @@ export interface CreateWorkerProfileAction {
   picture?: string;
   about?: string;
   skills?: string;
-  status?: string;
-  talentLayerId?: string;
 }
 
 export interface CreateBuilderPlaceProps {

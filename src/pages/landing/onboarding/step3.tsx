@@ -71,7 +71,7 @@ function onboardingStep3() {
         const subdomain = generateDomainName(values.subdomain);
 
         const res = await updateBuilderPlaceAsync({
-          _id: builderPlaceData._id,
+          builderPlaceId: builderPlaceData._id,
           subdomain: subdomain,
           logo: values.logo,
           name: builderPlaceData.name,
