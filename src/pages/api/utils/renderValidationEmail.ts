@@ -170,7 +170,7 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
     <td style="padding-right: 0px;padding-left: 0px;" align="center">
       
       <img align="center" border="0" src="${
-        logoUrl ? logoUrl : 'https://logo-text-white.png'
+        logoUrl ? logoUrl : 'https://builder.place/logo-text-white.png'
       }" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 29%;max-width: 168.2px;" width="168.2"/>
 
       
