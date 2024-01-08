@@ -13,7 +13,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
   const { user, workerProfile } = useContext(TalentLayerContext);
   const router = useRouter();
   const [showNotification, setShowNotification] = useState(true);
-  //TODO deactivate after send to avoid ddos ?
+
   const onVerifyMail = async () => {
     const domain =
       typeof router.query.domain === 'object' && !!router.query.domain
@@ -38,20 +38,20 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
     }
   };
 
+  if (!workerProfile?.email || workerProfile?.emailVerified || !showNotification) {
+    return null;
+  }
+
   return (
-    <div>
-      {!!workerProfile?.email && !workerProfile?.emailVerified && showNotification && (
-        <Notification
-          title='Verify your email !'
-          text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
-          link=''
-          linkText={'Verify my email'}
-          color='success'
-          imageUrl={user?.description?.image_url}
-          callback={onVerifyMail}
-        />
-      )}
-    </div>
+    <Notification
+      title='Verify your email!'
+      text='Tired of paying gas fees? Verify your email and get gassless transactions!'
+      link=''
+      linkText={'Verify my email'}
+      color='success'
+      imageUrl={user?.description?.image_url}
+      callback={onVerifyMail}
+    />
   );
 };
 
