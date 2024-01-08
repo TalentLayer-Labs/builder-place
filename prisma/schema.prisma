@@ -6,3 +6,80 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model BuilderplacesPalette {
+  id             Int            @id @default(autoincrement())
+  base100        String
+  base200        String
+  base300        String
+  baseContent    String
+  error          String
+  errorContent   String
+  info           String
+  infoContent    String
+  primary        String
+  primaryContent String
+  primaryFocus   String
+  success        String
+  successContent String
+  warning        String
+  warningContent String
+  // Builderplace   Builderplace[]
+}
+
+model Builderplace {
+  id                 Int                  @id @default(autoincrement())
+  about              String?
+  aboutTech          String?
+  baseline           String?
+  cover              String?
+  customDomain       String?              @unique
+  logo               String?
+  name               String
+  ownerAddress       String?              @unique
+  ownerTalentLayerId String?              @unique
+  owners             String[]
+  palette            Json
+  // palette            BuilderplacesPalette @relation(fields: [paletteId], references: [id])
+  // paletteId          Int                  @unique
+  preferredWorkTypes String[]
+  presentation       String?
+  profilePicture     String?
+  status             String
+  subdomain          String?              @unique
+}
+
+model User {
+  id                       Int            @id @default(autoincrement())
+  about                    String
+  address                  String         @unique
+  counterStartDate         Int?
+  email                    String         @unique
+  isEmailVerified          Boolean        @default(false)
+  name                     String
+  picture                  String?
+  status                   String
+  talentLayerId            String?        @unique
+  type                     UserType
+  weeklyTransactionCounter Int?
+  workerProfile            WorkerProfile?
+  hirerProfile             HirerProfile?
+}
+
+model WorkerProfile {
+  id     Int      @id @default(autoincrement())
+  user   User     @relation(fields: [userId], references: [id])
+  userId Int      @unique
+  skills String[]
+}
+
+model HirerProfile {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+}
+
+enum UserType {
+  HIRER
+  WORKER
+}
