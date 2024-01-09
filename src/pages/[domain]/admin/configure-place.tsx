@@ -128,12 +128,12 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
          */
         const signature = await walletClient.signMessage({
           account: account.address,
-          message: builderPlace._id,
+          message: builderPlace.id,
         });
         const fullSubdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 
         await updateBuilderPlaceAsync({
-          builderPlaceId: builderPlace._id,
+          builderPlaceId: builderPlace.id,
           subdomain: fullSubdomain,
           logo: values.logo,
           name: values.name,

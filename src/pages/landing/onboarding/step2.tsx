@@ -62,7 +62,7 @@ function onboardingStep2() {
           ownerAddress: account.address,
           ownerTalentLayerId: user.id,
         });
-        if (response?.id) {
+        if (response?.ownerTlId) {
           router.push('/onboarding/step3');
         }
       } catch (error) {

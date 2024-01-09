@@ -13,7 +13,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
       res.status(200).json({ message: result.message, id: result.id });
     } catch (error: any) {
-      res.status(400).json({ error: error });
+      //TODO check error sending, as of now we receive an empty object
+      console.log('error in controller', error);
+      res.status(400).json({ error: { ...error } });
     }
   } else {
     res.status(405).json({ message: 'Method not allowed' });

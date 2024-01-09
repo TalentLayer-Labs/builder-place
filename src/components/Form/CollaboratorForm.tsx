@@ -45,7 +45,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      if (walletClient && account?.address && builderPlace?._id) {
+      if (walletClient && account?.address && builderPlace?.id) {
         setSubmitting(true);
         /**
          * @dev Sign message to prove ownership of the address
@@ -60,7 +60,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
          */
         const response = await addBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
-          builderPlaceId: builderPlace._id,
+          builderPlaceId: builderPlace.id,
           newCollaboratorAddress: values.collaborator,
           signature,
         });

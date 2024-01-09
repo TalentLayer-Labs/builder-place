@@ -42,7 +42,7 @@ export default function Collaborators() {
 
   const onRemove = async (address: string): Promise<void> => {
     try {
-      if (walletClient && account?.address && builderPlace?._id) {
+      if (walletClient && account?.address && builderPlace?.id) {
         setSubmitting(address);
         /**
          * @dev Sign message to prove ownership of the address
@@ -57,7 +57,7 @@ export default function Collaborators() {
          */
         const response = await removeBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
-          builderPlaceId: builderPlace._id,
+          builderPlaceId: builderPlace.id,
           newCollaboratorAddress: address,
           signature,
         });

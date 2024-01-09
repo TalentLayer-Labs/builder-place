@@ -65,13 +65,13 @@ function onboardingStep3() {
          */
         const signature = await walletClient.signMessage({
           account: account.address,
-          message: builderPlaceData._id,
+          message: builderPlaceData.id,
         });
 
         const subdomain = generateDomainName(values.subdomain);
 
         const res = await updateBuilderPlaceAsync({
-          builderPlaceId: builderPlaceData._id,
+          builderPlaceId: builderPlaceData.id,
           subdomain: subdomain,
           logo: values.logo,
           name: builderPlaceData.name,
