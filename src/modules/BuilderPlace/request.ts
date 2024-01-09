@@ -31,6 +31,7 @@ export const getBuilderPlaceFromOwner = async (talentLayerId: string): Promise<a
   }
 };
 
+//TODO change post to get with query params
 export const getBuilderPlaceById = async (id: string): Promise<any> => {
   try {
     return await fetch('/api/domain/get-builder-place-by-id', {
