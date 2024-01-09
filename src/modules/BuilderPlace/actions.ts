@@ -379,7 +379,8 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
       },
     });
 
-    //TODO add here the creation of the hirer profile if any
+    //TODO add here the creation of the hirer profile or WorkerProfile if any
+
     // Step 2: Create the WorkerProfile with the same ID as the User
     await prisma.workerProfile.create({
       data: {
@@ -394,9 +395,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
     };
   } catch (error: any) {
     console.log('Error creating new Worker Profile:', error);
-    return {
-      error: error.message!,
-    };
+    throw new Error(error.message);
   }
 };
 
