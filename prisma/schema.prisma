@@ -34,12 +34,13 @@ model BuilderPlace {
   baseline           String?
   cover              String?
   customDomain       String?      @unique
+  icon               String?
   logo               String?
   name               String
   // ownerAddress       String?  @unique
   // ownerTalentLayerId String?  @unique
   owner              User?        @relation(fields: [ownerId], references: [id])
-  ownerId            Int          @unique
+  ownerId            Int?         @unique
   collaborators      User[]       @relation("BuilderPlaceSubAdmins")
   palette            Json
   // palette            BuilderplacesPalette @relation(fields: [paletteId], references: [id])
