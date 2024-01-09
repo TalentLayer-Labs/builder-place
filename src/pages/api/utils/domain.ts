@@ -5,6 +5,13 @@ import {
 } from '../../../modules/BuilderPlace/actions';
 import { NextApiResponse } from 'next';
 
+/**
+ * Checks if the signature is from the BuilderPlace owner by getting the BuilderPlace
+ * by the owner address & BuilderPlace Database id
+ * @param id: Database BuilderPlace id
+ * @param signature
+ * @param res
+ */
 export const checkSignature = async (
   id: string,
   signature: `0x${string}` | Uint8Array,
@@ -25,11 +32,13 @@ export const checkSignature = async (
 };
 
 /**
- * Checks if the signature is from the BuilderPlace owner
- * @param builderPlaceId
- * @param ownerId
+ * Checks if the signature is from the BuilderPlace owner by getting the BuilderPlace
+ * by the owner DataBase id & BuilderPlace Database id
+ * @param builderPlaceId: Database BuilderPlace id
+ * @param ownerId: Database BuilderPlace owner id
  * @param signature
  * @param res
+ * @throws 401 if the signature is not from the BuilderPlace owner
  */
 export const checkOwnerSignature = async (
   builderPlaceId: string,
@@ -44,8 +53,8 @@ export const checkOwnerSignature = async (
 
   const builderPlace = await getBuilderPlaceByOwnerTlIdAndId(ownerId, builderPlaceId);
 
-  if (address !== builderPlace?.ownerAddress) {
-    return res.status(500).json({ error: 'Not BuilderPlace owner' });
+  if (builderPlace && address !== builderPlace?.owner?.address) {
+    return res.status(401).json({ error: 'Not BuilderPlace owner' });
   }
 
   return { builderPlace, address };

@@ -86,12 +86,12 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     console.log('Collaborator added successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator added successfully',
-      collaborator: body.newCollaboratorAddress,
+      address: newCollaborator.address,
+      id: newCollaborator.id,
     };
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error adding collaborator:', error);
+    throw new Error(error.message);
   }
 };
 
@@ -259,6 +259,10 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, id: strin
       where: {
         AND: [{ ownerId: Number(ownerId) }, { id: Number(id) }],
       },
+      include: {
+        owner: true,
+        collaborators: true,
+      },
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {
@@ -267,9 +271,7 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, id: strin
 
     return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    throw new Error(error.message);
   }
 };
 
