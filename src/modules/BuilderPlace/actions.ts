@@ -374,6 +374,29 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
   }
 };
 
+export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
+  try {
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        ownerId: Number(data.ownerTalentLayerId),
+        collaborators: {
+          set: { id: Number(data.ownerTalentLayerId) },
+        },
+      },
+    });
+    return {
+      message: 'BuilderPlace owner set successfully',
+      id: data.ownerTalentLayerId,
+    };
+  } catch (error: any) {
+    console.log('Error setting builderPlace owner:', error);
+    throw new Error(error.message);
+  }
+};
+
 export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   try {
     // Step 1: Create the User

@@ -5,7 +5,11 @@ import { showMongoErrorTransactionToast } from '../../../utils/toast';
 export function useSetBuilderPlaceOwner() {
   const queryClient = useQueryClient();
 
-  return useMutation<{ message: string; id: string; error?: string }, Error, SetBuilderPlaceOwner>(
+  return useMutation<
+    { message: string; ownerTlId: string; error?: string },
+    Error,
+    SetBuilderPlaceOwner
+  >(
     (updateBuilderPlaceData: SetBuilderPlaceOwner) =>
       fetch('/api/domain/set-builder-place-owner', {
         method: 'PUT',
