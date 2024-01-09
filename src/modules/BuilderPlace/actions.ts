@@ -120,12 +120,12 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
     console.log('Collaborator removed successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
-      collaborator: body.newCollaboratorAddress,
+      address: collaborator.address,
+      id: collaborator.id,
     };
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error adding collaborator:', error);
+    throw new Error(error.message);
   }
 };
 
