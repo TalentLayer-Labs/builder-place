@@ -19,6 +19,11 @@ import {
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
 import UserType = $Enums.UserType;
+import {
+  EMAIL_ALREADY_VERIFIED,
+  EMAIL_VERIFIED_SUCCESSFULLY,
+  ERROR_VERIFYING_EMAIL,
+} from './apiResponses';
 
 export const deleteBuilderPlace = async (id: string) => {
   try {
@@ -554,24 +559,55 @@ export async function incrementWeeklyTransactionCounter(
   }
 }
 
-export const validateUserEmail = async (userId: string, email: string) => {
+export const verifyWorkerProfileEmail = async (id: string) => {
   try {
-    const resp = await prisma.user.update({
-      where: {
-        email: email,
-        talentLayerId: Number(userId),
-      },
-      data: {
-        isEmailVerified: true,
-      },
-    });
-    console.log('Updated worker profile email', resp.id, resp.name, resp.email);
+    await connection();
+    const existingWorker = await Worker.findOne({ _id: id });
+    if (existingWorker) {
+      const resp = await Worker.updateOne({ _id: id }, { emailVerified: true }).exec();
+      if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
+        console.log(EMAIL_ALREADY_VERIFIED);
+        return {
+          error: EMAIL_ALREADY_VERIFIED,
+        };
+      }
+      console.log('Updated worker profile email', resp);
+    } else {
+      console.log(ERROR_VERIFYING_EMAIL);
+      return {
+        error: ERROR_VERIFYING_EMAIL,
+      };
+    }
     return {
-      message: 'Email verified successfully',
+      message: EMAIL_VERIFIED_SUCCESSFULLY,
+      email: existingWorker.email,
     };
   } catch (error: any) {
+    console.log(error.message);
     return {
       error: error.message,
     };
   }
 };
+
+// export const validateUserEmail = async (userId: string, email: string) => {
+//   try {
+//     const resp = await prisma.user.update({
+//       where: {
+//         email: email,
+//         talentLayerId: Number(userId),
+//       },
+//       data: {
+//         isEmailVerified: true,
+//       },
+//     });
+//     console.log('Updated worker profile email', resp.id, resp.name, resp.email);
+//     return {
+//       message: 'Email verified successfully',
+//     };
+//   } catch (error: any) {
+//     return {
+//       error: error.message,
+//     };
+//   }
+// };

@@ -73,9 +73,27 @@ export interface SetUserProfileOwner {
   talentLayerId: string;
 }
 
+export interface SetBuilderPlaceAndHirerOwner {
+  builderPlaceId: string;
+  hirerId: string;
+  owners: string[];
+  ownerAddress: string;
+  ownerTalentLayerId: string;
+}
+
 export interface VerifyEmail {
-  email: string;
   userId: string;
+}
+
+export interface VerifyEmailProps {
+  userId: string;
+}
+
+export interface SendVerificationEmail {
+  to: string;
+  userId: string;
+  name: string;
+  domain: string;
 }
 
 export enum DomainVerificationStatusProps {
@@ -102,6 +120,15 @@ export interface CreateWorkerProfileAction {
   skills?: string;
 }
 
+export interface CreateHirerProfileAction {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
@@ -116,6 +143,14 @@ export interface CreateWorkerProfileProps {
   picture?: string;
   about?: string;
   skills?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+export interface CreateHirerProfileProps {
+  email: string;
+  name: string;
+  picture?: string;
+  about?: string;
   status?: string;
   talentLayerId?: string;
 }
@@ -155,18 +190,50 @@ export type IWorkerProfile = {
   status: 'validated' | 'pending';
   talentLayerId?: string;
   weeklyTransactionCounter: number;
+  counterStartDate: number;
 };
+
+export interface IUserProfile {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+}
+
+export interface IWorkerProfile extends IUserProfile {
+  skills?: string[];
+}
+
+export interface IHirerProfile extends IUserProfile {}
 
 export interface IWorkerMongooseSchema extends Document {
   _id: string;
   email: string;
   emailVerified: boolean;
-  status: 'Validated' | 'Pending';
+  status: 'validated' | 'pending';
   talentLayerId?: string;
   name: string;
   picture?: string;
   about?: string;
   skills?: string[];
+  weeklyTransactionCounter: number;
+  counterStartDate: number;
+}
+export interface IHirerMongooseSchema extends Document {
+  _id: string;
+  email: string;
+  emailVerified: boolean;
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
+  name: string;
+  picture?: string;
+  about?: string;
   weeklyTransactionCounter: number;
   counterStartDate: number;
 }
