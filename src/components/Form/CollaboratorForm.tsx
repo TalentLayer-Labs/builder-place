@@ -61,7 +61,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
         const response = await addBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
           builderPlaceId: builderPlace._id,
-          newCollaborator: values.collaborator,
+          newCollaboratorAddress: values.collaborator,
           signature,
         });
 

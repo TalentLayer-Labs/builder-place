@@ -49,14 +49,14 @@ export interface UpdateBuilderPlaceDomain {
 export interface AddBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
-  newCollaborator: string;
+  newCollaboratorAddress: string;
   signature: `0x${string}` | Uint8Array;
 }
 
 export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
-  newCollaborator: string;
+  newCollaboratorAddress: string;
   signature: `0x${string}` | Uint8Array;
 }
 

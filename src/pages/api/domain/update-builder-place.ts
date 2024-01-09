@@ -8,8 +8,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const body: UpdateBuilderPlace = req.body;
     console.log('Received data:', body);
 
-    //TODO faire ces deux opérations en 1 call
-
     // Check whether the address which provided the signature is an admin of the domain
     await checkSignature(body.builderPlaceId, body.signature, res);
 
