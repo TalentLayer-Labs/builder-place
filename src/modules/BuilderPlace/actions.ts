@@ -1,4 +1,3 @@
-import { connection } from '../../mongo/mongodb';
 import { $Enums, EntityStatus, PrismaClient, User } from '@prisma/client';
 const prisma = new PrismaClient();
 import {
@@ -63,19 +62,31 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
 
 export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollaborator) => {
   try {
-    await connection();
-    await BuilderPlace.updateOne(
-      { _id: body.builderPlaceId },
-      {
-        $push: {
-          owners: body.newCollaborator,
+    const newCollaborator = await prisma.user.findUnique({
+      where: {
+        address: body.newCollaboratorAddress,
+      },
+    });
+
+    if (!newCollaborator) {
+      throw new Error('Collaborator not found');
+    }
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(body.builderPlaceId),
+      },
+      data: {
+        collaborators: {
+          connect: [{ id: newCollaborator.id }],
         },
       },
-    ).exec();
-    console.log('Collaborator added successfully', body.newCollaborator);
+    });
+
+    console.log('Collaborator added successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator added successfully',
-      collaborator: body.newCollaborator,
+      collaborator: body.newCollaboratorAddress,
     };
   } catch (error: any) {
     return {
@@ -86,19 +97,30 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
 
 export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
   try {
-    await connection();
-    await BuilderPlace.updateOne(
-      { _id: body.builderPlaceId },
-      {
-        $pull: {
-          owners: body.newCollaborator,
+    const collaborator = await prisma.user.findUnique({
+      where: {
+        address: body.newCollaboratorAddress,
+      },
+    });
+
+    if (!collaborator) {
+      throw new Error('Collaborator not found');
+    }
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(body.builderPlaceId),
+      },
+      data: {
+        collaborators: {
+          disconnect: [{ id: collaborator.id }],
         },
       },
-    ).exec();
-    console.log('Collaborator removed successfully', body.newCollaborator);
+    });
+    console.log('Collaborator removed successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
-      collaborator: body.newCollaborator,
+      collaborator: body.newCollaboratorAddress,
     };
   } catch (error: any) {
     return {
@@ -381,7 +403,6 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
 
 export const getUserProfileById = async (id: string) => {
   try {
-    await connection();
     console.log('Getting Worker Profile with id:', id);
     const userProfile = await prisma.user.findUnique({
       where: {
@@ -412,7 +433,6 @@ export const getWorkerProfileByTalentLayerId = async (
   res?: NextApiResponse,
 ): Promise<User | null> => {
   try {
-    await connection();
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
     const userProfile = await prisma.user.findUnique({
       where: {
