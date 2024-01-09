@@ -26,14 +26,15 @@ export const deleteBuilderPlace = async (id: string) => {
         id: Number(id),
       },
     });
+
     console.log(builderPlace, 'builderPlace deleted');
     return {
       message: 'BuilderPlace deleted successfully',
+      id: builderPlace.id,
     };
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error deleting the BuilderPlace:', error);
+    throw new Error(error.message);
   }
 };
 
@@ -216,7 +217,7 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
   }
 };
 
-export const getBuilderPlaceByOwnerAddressAndId = async (
+export const getBuilderPlaceByCollaboratorAddressAndId = async (
   address: string,
   builderPlaceId: string,
 ) => {

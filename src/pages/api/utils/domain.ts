@@ -1,13 +1,13 @@
 import { recoverMessageAddress } from 'viem';
 import {
-  getBuilderPlaceByOwnerAddressAndId,
+  getBuilderPlaceByCollaboratorAddressAndId,
   getBuilderPlaceByOwnerTlIdAndId,
 } from '../../../modules/BuilderPlace/actions';
 import { NextApiResponse } from 'next';
 
 /**
- * Checks if the signature is from the BuilderPlace owner by getting the BuilderPlace
- * by the owner address & BuilderPlace Database id
+ * Checks if the signature is from a BuilderPlace collaborator by getting the BuilderPlace
+ * by the collaborator address & BuilderPlace Database id
  * @param id: Database BuilderPlace id
  * @param signature
  * @param res
@@ -22,7 +22,7 @@ export const checkSignature = async (
     signature: signature,
   });
 
-  const builderPlace = await getBuilderPlaceByOwnerAddressAndId(address, id);
+  const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(address, id);
 
   if (!builderPlace) {
     return res.status(400).json({ error: 'No BuilderPlace found.' });
