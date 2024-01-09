@@ -1,5 +1,6 @@
 import { PreferredWorkTypes } from '../../types';
 import { Document } from 'mongoose';
+import { User } from '@prisma/client';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -120,37 +121,40 @@ export interface CreateWorkerProfileProps {
 }
 
 export type IBuilderPlace = {
-  _id: string;
-  name: string;
-  subdomain?: string;
-  customDomain?: string | null;
-  logo?: string;
-  icon?: string;
-  cover?: string;
-  profilePicture?: string;
-  palette?: iBuilderPlacePalette;
+  id: string;
   about?: string;
   aboutTech?: string;
   baseline?: string;
-  owners?: string[];
-  ownerAddress?: string;
-  ownerTalentLayerId?: string;
-  status: 'Validated' | 'Pending';
+  cover?: string;
+  customDomain?: string | null;
+  icon?: string;
+  logo?: string;
+  name: string;
+  owner: User;
+  collaborators?: User[];
+  palette?: iBuilderPlacePalette;
   preferredWorkTypes: PreferredWorkTypes[];
+  presentation?: string;
+  profilePicture?: string;
+  status: 'Validated' | 'Pending';
+  // ownerAddress?: string;
+  // ownerTalentLayerId?: string;
+  subdomain?: string;
 };
 
 export type IWorkerProfile = {
-  _id: string;
+  id: string;
+  about?: string;
+  address?: string;
+  counterStartDate: number;
   email: string;
   emailVerified: boolean;
-  status: 'validated' | 'pending';
-  talentLayerId?: string;
   name: string;
   picture?: string;
-  about?: string;
   skills?: string[];
+  status: 'validated' | 'pending';
+  talentLayerId?: string;
   weeklyTransactionCounter: number;
-  counterStartDate: number;
 };
 
 export interface IWorkerMongooseSchema extends Document {
