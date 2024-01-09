@@ -142,16 +142,13 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
       },
     });
 
-    const { id } = newBuilderPlace;
     return {
       message: 'BuilderPlace created successfully',
-      id: id,
+      id: newBuilderPlace.id,
     };
   } catch (error: any) {
     console.log('Error creating new builderPlace:', error);
-    return {
-      error: error.message,
-    };
+    throw new Error(error.message);
   }
 };
 
