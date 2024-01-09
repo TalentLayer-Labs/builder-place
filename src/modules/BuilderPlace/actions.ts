@@ -14,6 +14,7 @@ import {
   UpdateBuilderPlaceDomain,
   AddBuilderPlaceCollaborator,
   RemoveBuilderPlaceCollaborator,
+  SetBuilderPlaceOwner,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -161,36 +162,43 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
         where: {
           OR: [{ subdomain: domain }, { customDomain: domain }],
         },
+        //TODO check is this still throws an error
+
+        // include: {
+        //   owner: true,
+        //   collaborators: true,
+        // },
       });
+
       console.log('fetched builderPlaces, ', builderPlace);
 
       return builderPlace;
     }
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error fetching the builderPlace:', error);
+    throw new Error(error.message);
   }
 };
 
 export const getBuilderPlaceById = async (id: string) => {
   try {
-    console.log('getting builderPlace with id:', id);
+    console.log('Getting builderPlace with id:', id);
     const builderPlaceSubdomain = await prisma.builderPlace.findUnique({
       where: {
         id: Number(id),
       },
+      include: {
+        owner: true,
+        collaborators: true,
+      },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('Fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
-
-    return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error fetching the builderPlace:', error);
+    throw new Error(error.message);
   }
 };
 
@@ -211,9 +219,8 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error fetching the builderPlace owner:', error);
+    throw new Error(error.message);
   }
 };
 
