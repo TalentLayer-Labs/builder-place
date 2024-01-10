@@ -65,21 +65,21 @@ model User {
   talentLayerId            Int?           @unique
   type                     UserType
   weeklyTransactionCounter Int            @default(0)
-  workerProfile            WorkerProfile? @relation("UserWorkerProfile")
-  hirerProfile             HirerProfile?  @relation("UserHirerProfile")
+  workerProfile            WorkerProfile? @relation("WorkerProfile")
+  hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
   managingPlaces           BuilderPlace[] @relation("BuilderPlaceSubAdmins")
 }
 
 model WorkerProfile {
   id     Int      @id
-  user   User     @relation("UserWorkerProfile", fields: [id], references: [id])
+  user   User     @relation("WorkerProfile", fields: [id], references: [id])
   skills String[]
 }
 
 model HirerProfile {
   id   Int  @id
-  user User @relation("UserHirerProfile", fields: [id], references: [id])
+  user User @relation("HirerProfile", fields: [id], references: [id])
 }
 
 enum UserType {
