@@ -15,6 +15,10 @@ import {
   AddBuilderPlaceCollaborator,
   RemoveBuilderPlaceCollaborator,
   SetBuilderPlaceOwner,
+  CreateHirerProfileAction,
+  SetBuilderPlaceAndHirerOwner,
+  SetUserProfileOwner,
+  SetHirerProfileOwner,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -229,6 +233,28 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
   }
 };
 
+export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
+  try {
+    console.log("getting builderPlace with owner's id:", id);
+    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
+      where: {
+        owner: {
+          talentLayerId: Number(id),
+        },
+      },
+    });
+    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    if (builderPlaceSubdomain) {
+      return builderPlaceSubdomain;
+    }
+
+    return null;
+  } catch (error: any) {
+    console.log('Error fetching the builderPlace owner:', error);
+    throw new Error(error.message);
+  }
+};
+
 export const getBuilderPlaceByCollaboratorAddressAndId = async (
   address: string,
   builderPlaceId: string,
@@ -386,18 +412,41 @@ export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
         id: Number(data.id),
       },
       data: {
-        ownerId: Number(data.ownerTalentLayerId),
+        ownerId: Number(data.ownerId),
         collaborators: {
-          set: { id: Number(data.ownerTalentLayerId) },
+          set: { id: Number(data.ownerId) },
         },
       },
     });
     return {
       message: 'BuilderPlace owner set successfully',
-      id: data.ownerTalentLayerId,
+      id: data.ownerId,
     };
   } catch (error: any) {
     console.log('Error setting builderPlace owner:', error);
+    throw new Error(error.message);
+  }
+};
+
+export const setUserOwner = async (data: SetHirerProfileOwner) => {
+  try {
+    await prisma.user.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        talentLayerId: Number(data.talentLayerId),
+        address: data.hirerAddress,
+        //TODO set validated without signature to prove address ? ===> Set it next step
+        // status: EntityStatus.VALIDATED,
+      },
+    });
+    return {
+      message: 'User owner set successfully',
+      id: data.talentLayerId,
+    };
+  } catch (error: any) {
+    console.log('Error setting User owner:', error);
     throw new Error(error.message);
   }
 };
@@ -435,9 +484,42 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   }
 };
 
-export const getUserProfileById = async (id: string) => {
+//TODO factoriser quand on décide comment on fait
+export const createHirerProfile = async (data: CreateHirerProfileAction) => {
   try {
-    console.log('Getting Worker Profile with id:', id);
+    // Step 1: Create the User
+    const user = await prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        picture: data.picture,
+        about: data.about,
+        type: UserType.HIRER,
+      },
+    });
+
+    //TODO add here the creation of the hirer profile or WorkerProfile if any
+
+    // Step 2: Create the WorkerProfile with the same ID as the User
+    await prisma.hirerProfile.create({
+      data: {
+        id: user.id,
+      },
+    });
+
+    return {
+      message: 'Hirer Profile created successfully',
+      id: user.id,
+    };
+  } catch (error: any) {
+    console.log('Error creating new Hirer Profile:', error);
+    throw new Error(error.message);
+  }
+};
+
+export const getUserById = async (id: string) => {
+  try {
+    console.log('Getting User Profile with id:', id);
     const userProfile = await prisma.user.findUnique({
       where: {
         id: Number(id),
@@ -456,21 +538,47 @@ export const getUserProfileById = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    console.log('Error fetching User: ', error);
+    throw new Error(error.message);
   }
 };
 
-export const getWorkerProfileByTalentLayerId = async (
-  talentLayerId: string,
-  res?: NextApiResponse,
-): Promise<User | null> => {
+export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextApiResponse) => {
   try {
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
     const userProfile = await prisma.user.findUnique({
       where: {
         talentLayerId: Number(talentLayerId),
+      },
+      include: {
+        workerProfile: true,
+        hirerProfile: true,
+        ownedBuilderPlace: true,
+        managingPlaces: true,
+      },
+    });
+    console.log(userProfile);
+    if (!userProfile) {
+      return null;
+    }
+
+    return userProfile;
+  } catch (error: any) {
+    if (res) {
+      res.status(500).json({ error: error.message });
+    } else {
+      console.log(error.message);
+    }
+    return null;
+  }
+};
+
+export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
+  try {
+    console.log('Getting Worker Profile with address:', userAddress);
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        address: userAddress,
       },
       include: {
         workerProfile: true,

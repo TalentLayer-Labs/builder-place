@@ -6,18 +6,19 @@ import {
 } from '../../../modules/BuilderPlace/actions';
 import { SetBuilderPlaceOwner } from '../../../modules/BuilderPlace/types';
 
+// TODO only if user already exists, or it will break
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
     const body: SetBuilderPlaceOwner = req.body;
     console.log('Received data:', body);
-    if (!body.id || !body.owners || !body.ownerTalentLayerId) {
+    if (!body.id || !body.owners || !body.ownerId) {
       return res.status(400).json({ error: 'Missing data.' });
     }
 
     /**
      * @dev: Check whether the user already owns a domain
      */
-    const existingSpace = await getBuilderPlaceByOwnerId(body.ownerTalentLayerId);
+    const existingSpace = await getBuilderPlaceByOwnerId(body.ownerId);
     if (existingSpace) {
       return res.status(401).json({ error: 'You already own a domain' });
     }
@@ -37,6 +38,8 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       /**
        * @dev: Set domain's owner
        */
+
+      //TODO now this breaks is user not in database. Need to use the optimized function "SetBuilderPlaceAndHirerOwner"
       const { message, id } = await setBuilderPlaceOwner(body);
       res.status(200).json({ message: message, ownerTlId: id });
     } catch (error: any) {

@@ -1,6 +1,6 @@
 import { PreferredWorkTypes } from '../../types';
 import { Document } from 'mongoose';
-import { User } from '@prisma/client';
+import { EntityStatus, User } from '@prisma/client';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -63,9 +63,8 @@ export interface RemoveBuilderPlaceCollaborator {
 
 export interface SetBuilderPlaceOwner {
   id: string;
-  owners: string[];
-  ownerAddress: string;
-  ownerTalentLayerId: string;
+  // ownerAddress: string;
+  ownerId: string;
 }
 
 export interface SetUserProfileOwner {
@@ -73,10 +72,15 @@ export interface SetUserProfileOwner {
   talentLayerId: string;
 }
 
+export interface SetHirerProfileOwner {
+  id: string;
+  hirerAddress: string;
+  talentLayerId: string;
+}
+
 export interface SetBuilderPlaceAndHirerOwner {
   builderPlaceId: string;
   hirerId: string;
-  owners: string[];
   ownerAddress: string;
   ownerTalentLayerId: string;
 }
@@ -177,7 +181,7 @@ export type IBuilderPlace = {
   subdomain?: string;
 };
 
-export type IWorkerProfile = {
+export interface IUserProfile {
   id: string;
   about?: string;
   address?: string;
@@ -186,24 +190,9 @@ export type IWorkerProfile = {
   emailVerified: boolean;
   name: string;
   picture?: string;
-  skills?: string[];
-  status: 'validated' | 'pending';
+  status: EntityStatus;
   talentLayerId?: string;
   weeklyTransactionCounter: number;
-  counterStartDate: number;
-};
-
-export interface IUserProfile {
-  _id: string;
-  email: string;
-  emailVerified: boolean;
-  status: 'validated' | 'pending';
-  talentLayerId?: string;
-  name: string;
-  picture?: string;
-  about?: string;
-  weeklyTransactionCounter: number;
-  counterStartDate: number;
 }
 
 export interface IWorkerProfile extends IUserProfile {

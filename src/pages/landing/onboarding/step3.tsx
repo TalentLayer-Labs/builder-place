@@ -28,10 +28,10 @@ function onboardingStep3() {
   const { account, user, workerProfile, loading } = useContext(TalentLayerContext);
   const chainId = useChainId();
   const router = useRouter();
-  const { userId } = router.query;
+  const { userId, builderPlaceId } = router.query;
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: updateBuilderPlaceAsync } = useUpdateBuilderPlace();
-  const builderPlaceData = useGetBuilderPlaceFromOwner(user?.id as string);
+  const builderPlaceData = useGetBuilderPlaceFromOwner(userId as string);
 
   const initialValues: IFormValues = {
     subdomain: (builderPlaceData?.name && slugify(builderPlaceData.name)) || '',
@@ -66,7 +66,7 @@ function onboardingStep3() {
         const subdomain = generateDomainName(values.subdomain);
 
         /**
-         * @dev: send validadion email to owner to validate email
+         * @dev: send validation email to owner to validate email
          */
         if (workerProfile && userId) {
           await sendVerificationEmail(
@@ -85,6 +85,8 @@ function onboardingStep3() {
           account: account.address,
           message: builderPlaceData.id,
         });
+
+        //TODO here we need to validate the address of the builderplace AND user.
 
         const res = await updateBuilderPlaceAsync({
           builderPlaceId: builderPlaceData.id,

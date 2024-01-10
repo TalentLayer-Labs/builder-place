@@ -7,7 +7,7 @@ import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/deleg
 import {
   checkOrResetTransactionCounter,
   checkUserEmailVerificationStatus,
-  getWorkerProfileByTalentLayerId,
+  getUserByTalentLayerId,
   incrementWeeklyTransactionCounter,
 } from '../../../modules/BuilderPlace/actions';
 
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const worker = await getWorkerProfileByTalentLayerId(userId, res);
+    const worker = await getUserByTalentLayerId(userId, res);
 
     if (worker) {
       await checkUserEmailVerificationStatus(worker, res);

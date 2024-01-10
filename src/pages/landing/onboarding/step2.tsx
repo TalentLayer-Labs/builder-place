@@ -60,7 +60,6 @@ function onboardingStep2() {
         const response = await setBuilderPlaceAndHirerOwner({
           builderPlaceId: builderPlaceId as string,
           hirerId: userId as string,
-          owners: [account.address],
           ownerAddress: account.address,
           ownerTalentLayerId: user.id,
         });
@@ -68,11 +67,11 @@ function onboardingStep2() {
         if (response.error) {
           throw new Error(response.error);
         }
-//TODO check ici les variables
+        //TODO check ici les variables
         if (response?.hirerId && response?.builderPlaceId) {
           router.push({
             pathname: '/onboarding/step3',
-            query: { userId: response.builderPlaceId },
+            query: { builderPlaceId: response.builderPlaceId, userId: response.hirerId },
           });
         }
       } catch (error: any) {

@@ -1,8 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  getUserProfileById,
-  getWorkerProfileByTalentLayerId,
-} from '../../../modules/BuilderPlace/actions';
+import { getUserById, getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions';
 import { SetUserProfileOwner } from '../../../modules/BuilderPlace/types';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
@@ -14,12 +11,13 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(500).json({ error: 'Missing data.' });
     }
 
-    const existingProfile = await getWorkerProfileByTalentLayerId(body.talentLayerId);
+    //TODO make this by address, anyone can set any id they want => No since this would require a user signature. And we want no signature.
+    const existingProfile = await getUserByTalentLayerId(body.talentLayerId);
     if (existingProfile) {
       return res.status(401).json({ error: 'You already have a profile' });
     }
 
-    const userProfile = await getUserProfileById(body.id as string);
+    const userProfile = await getUserById(body.id as string);
     if (!userProfile) {
       return res.status(400).json({ error: "Profile doesn't exist." });
     }
