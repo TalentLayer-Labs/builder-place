@@ -53,7 +53,6 @@ function onboardingStep1() {
         name: values.name,
         picture: values.profilePicture || undefined,
         about: values.about,
-        status: 'pending',
       });
 
       if (userResponse.error) {

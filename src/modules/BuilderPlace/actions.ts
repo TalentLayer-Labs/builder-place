@@ -16,6 +16,7 @@ import {
   SetBuilderPlaceOwner,
   CreateHirerProfileAction,
   SetHirerProfileOwner,
+  UpdateHirerProfileAction,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -562,6 +563,35 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
   }
 };
 
+//TODO factoriser quand on décide comment on fait
+export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
+  try {
+    // Step 1: Create the User
+    const user = await prisma.user.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        name: data.name,
+        email: data.email,
+        picture: data.picture,
+        about: data.about,
+        type: UserType.HIRER,
+      },
+    });
+
+    //TODO update here hirerProfile entity when needed
+
+    return {
+      message: 'Hirer Profile updated successfully',
+      id: user.id,
+    };
+  } catch (error: any) {
+    console.log('Error updating Hirer Profile:', error);
+    throw new Error(error.message);
+  }
+};
+
 export const getUserById = async (id: string) => {
   try {
     console.log('Getting User Profile with id:', id);
@@ -632,11 +662,37 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
         managingPlaces: true,
       },
     });
-    console.log(userProfile);
+
     if (!userProfile) {
       return null;
     }
 
+    console.log('Fetched user profile with id: ', userProfile?.id);
+    return userProfile;
+  } catch (error: any) {
+    if (res) {
+      res.status(500).json({ error: error.message });
+    } else {
+      console.log(error.message);
+    }
+    return null;
+  }
+};
+
+export const getUserByEmail = async (userEmail: string, res?: NextApiResponse) => {
+  try {
+    console.log('Getting User Profile with email:', userEmail);
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        email: userEmail,
+      },
+    });
+
+    if (!userProfile) {
+      return null;
+    }
+
+    console.log('Fetched user profile with id: ', userProfile?.id);
     return userProfile;
   } catch (error: any) {
     if (res) {

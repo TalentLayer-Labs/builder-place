@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { CreateHirerProfileProps } from '../../../modules/BuilderPlace/types';
-import { createHirerProfile } from '../../../modules/BuilderPlace/actions';
+import {
+  createHirerProfile,
+  getUserByEmail,
+  updateHirerProfile,
+} from '../../../modules/BuilderPlace/actions';
 
 //TODO make it one API to create either worker or hirer ? Or update an existing User when declaring him collaborator ?
 // Or pass as param if the guy is a hirer or worker ?
@@ -10,9 +14,24 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log('Received data:', body);
 
     try {
-      const result = await createHirerProfile({
-        ...body,
-      });
+      const existingProfile = await getUserByEmail(body.email);
+
+      if (existingProfile && existingProfile.status === 'VALIDATED') {
+        res.status(400).json({ error: 'A profile with this email already exists' });
+        return;
+      }
+
+      let result;
+      if (!existingProfile) {
+        result = await createHirerProfile({
+          ...body,
+        });
+      } else {
+        result = await updateHirerProfile({
+          id: Number(existingProfile.id),
+          ...body,
+        });
+      }
 
       res.status(200).json({ message: result.message, id: result.id });
     } catch (error: any) {

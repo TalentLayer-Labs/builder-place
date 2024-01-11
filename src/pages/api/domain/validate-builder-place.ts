@@ -25,7 +25,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     });
 
     /**
-     * @dev: Checks whether the user exists in the database & is the owner of the address
+     * @dev: Check whether the user exists in the database & is the owner of the address
      */
     const owner = await getUserById(body.ownerId);
 
@@ -38,15 +38,19 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     }
 
     /**
-     * @dev: Check whether the BuilderPlace exists in the database & is has no owner
+     * @dev: Check whether the BuilderPlace exists in the database & has no owner
      */
     const builderSpace = await getBuilderPlaceById(body.builderPlaceId);
     if (!builderSpace) {
       return res.status(400).json({ error: "Domain doesn't exist" });
     }
 
+    if (builderSpace.ownerId !== owner.id) {
+      return res.status(401).json({ error: 'Wrong BuilderPlace' });
+    }
+
     if (builderSpace.status === EntityStatus.VALIDATED) {
-      return res.status(400).json({ error: 'Domain already has an owner' });
+      return res.status(401).json({ error: 'Domain already has an owner' });
     }
 
     try {

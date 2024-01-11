@@ -44,7 +44,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     // **** Checks on the Hirer ****
 
     /**
-     * Check whether the address provided owns a TalentLayer Id
+     * Check whether the provided address owns a TalentLayer Id
      */
     const response = await getTalentLayerUserByAddress(
       Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID),

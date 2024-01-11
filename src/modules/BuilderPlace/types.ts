@@ -146,6 +146,16 @@ export interface CreateHirerProfileAction {
   talentLayerId?: string;
 }
 
+export interface UpdateHirerProfileAction {
+  id: number;
+  email: string;
+  name?: string;
+  picture?: string;
+  about?: string;
+  status?: string;
+  talentLayerId?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;

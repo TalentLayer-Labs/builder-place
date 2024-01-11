@@ -89,7 +89,7 @@ function onboardingStep3() {
         });
 
         /**
-         * @dev: validate builderPlace and owner with signtaure
+         * @dev: validate builderPlace and owner with signature
          */
         const res = await validate({
           builderPlaceId: builderPlaceData.id,
