@@ -9,12 +9,12 @@ import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import Loading from '../../../components/Loading';
 import UploadImage from '../../../components/UploadImage';
 import TalentLayerContext from '../../../context/talentLayer';
-import { useGetBuilderPlaceFromOwner } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceFromOwner';
-import { useUpdateBuilderPlace } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlace';
 import { themes } from '../../../utils/themes';
 import { generateDomainName, slugify } from '../../../modules/BuilderPlace/utils';
 import { sendVerificationEmail } from '../../../modules/BuilderPlace/request';
 import { createVerificationEmailToast } from '../../../modules/BuilderPlace/utils/toast';
+import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
+import { useValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/hooks/UseValidateBuilderPlaceAndOwner';
 interface IFormValues {
   subdomain: string;
   palette: keyof typeof themes;
@@ -30,9 +30,8 @@ function onboardingStep3() {
   const router = useRouter();
   const { userId, builderPlaceId } = router.query;
   const { data: walletClient } = useWalletClient({ chainId });
-  const { mutateAsync: updateBuilderPlaceAsync } = useUpdateBuilderPlace();
-  const builderPlaceData = useGetBuilderPlaceFromOwner(userId as string);
-
+  const { mutateAsync: validate } = useValidateBuilderPlaceAndOwner();
+  const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
   const initialValues: IFormValues = {
     subdomain: (builderPlaceData?.name && slugify(builderPlaceData.name)) || '',
     logo: builderPlaceData?.logo || '',
@@ -60,7 +59,7 @@ function onboardingStep3() {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && account?.address) {
+    if (walletClient && account?.address && userId && user?.id) {
       setSubmitting(true);
       try {
         const subdomain = generateDomainName(values.subdomain);
@@ -68,7 +67,7 @@ function onboardingStep3() {
         /**
          * @dev: send validation email to owner to validate email
          */
-        if (workerProfile && userId) {
+        if (workerProfile) {
           await sendVerificationEmail(
             workerProfile.email,
             userId as string,
@@ -86,21 +85,22 @@ function onboardingStep3() {
           message: builderPlaceData.id,
         });
 
-        //TODO here we need to validate the address of the builderplace AND user.
-
-        const res = await updateBuilderPlaceAsync({
+        /**
+         * @dev: validate builderPlace and owner with signtaure
+         */
+        const res = await validate({
           builderPlaceId: builderPlaceData.id,
+          ownerId: typeof userId === 'string' ? userId : userId[0],
+          ownerAddress: account.address,
           subdomain: subdomain,
           logo: values.logo,
           name: builderPlaceData.name,
-          ownerTalentLayerId: builderPlaceData.ownerTalentLayerId,
+          ownerTalentLayerId: user.id,
           palette: themes[values.palette],
-          owners: builderPlaceData.owners,
-          status: 'validated',
           signature,
         });
 
-        if (res?.id) {
+        if (res?.message) {
           router.push(`${window.location.protocol}//${subdomain}/dashboard?hireronboarding=1`);
         }
       } catch (e: any) {

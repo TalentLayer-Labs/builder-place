@@ -1,6 +1,6 @@
 import { PreferredWorkTypes } from '../../types';
 import { Document } from 'mongoose';
-import { EntityStatus, User } from '@prisma/client';
+import { EntityStatus, User } from '.prisma/client';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -30,6 +30,23 @@ export interface UpdateBuilderPlace {
   ownerTalentLayerId: string;
   owners: string[] | undefined;
   status: string | undefined;
+  logo?: string;
+  cover?: string;
+  profilePicture?: string;
+  signature: `0x${string}` | Uint8Array;
+}
+export interface ValidateBuilderPlaceAndOwner {
+  builderPlaceId: string;
+  ownerId: string;
+  ownerAddress: string;
+  subdomain: string;
+  name: string;
+  ownerTalentLayerId: string;
+  owners?: string[];
+  baseline?: string;
+  about?: string;
+  aboutTech?: string;
+  palette?: iBuilderPlacePalette;
   logo?: string;
   cover?: string;
   profilePicture?: string;
