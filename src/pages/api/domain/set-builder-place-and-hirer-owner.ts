@@ -8,7 +8,8 @@ import {
   setUserOwner,
 } from '../../../modules/BuilderPlace/actions';
 import { SetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/types';
-import { EntityStatus } from '@prisma/client';
+import { EntityStatus } from '.prisma/client';
+import { getUserByAddress as getTalentLayerUserByAddress } from '../../../queries/users';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -17,6 +18,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     if (!body.builderPlaceId || !body.hirerId || !body.ownerAddress || !body.ownerTalentLayerId) {
       return res.status(400).json({ error: 'Missing data.' });
+    }
+
+    if (!process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID) {
+      return res.status(500).json({ error: 'Missing default chain config.' });
     }
 
     /**
@@ -36,8 +41,24 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(401).json({ error: 'Domain already taken.' });
     }
 
+    // **** Checks on the Hirer ****
+
     /**
-     * Checks on the Hirer
+     * Check whether the address provided owns a TalentLayer Id
+     */
+    const response = await getTalentLayerUserByAddress(
+      Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID),
+      body.ownerAddress,
+    );
+
+    const talentLayerUser = response?.data?.data?.users[0];
+
+    if (!talentLayerUser) {
+      return res.status(401).json({ error: 'Your address does not own a TalentLayer Id' });
+    }
+
+    /**
+     * @notice: Check whether the user already owns a profile
      * @dev: We check by address and status as it's the only proof that a user signed a message
      * with this address to validate this profile. If the status is not validated we create a new profile.
      */
@@ -50,11 +71,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(401).json({ error: 'You already have a profile' });
     }
 
+    /**
+     * @dev: Checks whether the user exists in the database
+     */
     const userProfile = await getUserById(body.hirerId as string);
     if (!userProfile) {
       return res.status(400).json({ error: "Profile doesn't exist." });
     }
-    if (!!userProfile.talentLayerId) {
+    if (!!userProfile.talentLayerId || userProfile.status === EntityStatus.VALIDATED) {
       return res.status(401).json({ error: 'Profile already has an owner.' });
     }
 
@@ -62,22 +86,21 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       /**
        * @dev: Update BuilderPlace & Hirer profile
        */
-      const builderPlaceResponse = await setBuilderPlaceOwner({
-        id: body.builderPlaceId,
-        // ownerAddress: body.ownerAddress,
-        ownerId: body.hirerId,
-      });
-
-      const userResponse = await setUserOwner({
+      await setUserOwner({
         id: body.hirerId,
         hirerAddress: body.ownerAddress,
-        talentLayerId: body.ownerTalentLayerId,
+        hirerTalentLayerId: talentLayerUser.id,
+      });
+
+      await setBuilderPlaceOwner({
+        id: body.builderPlaceId,
+        ownerId: body.hirerId,
       });
 
       res.status(200).json({
         message: 'BuilderPlace domain & Hirer profile updated successfully',
-        builderPlaceId: builderPlaceResponse.id,
-        hirerId: userResponse.id,
+        builderPlaceId: body.builderPlaceId,
+        hirerId: body.hirerId,
       });
     } catch (error: any) {
       res.status(400).json({ error: error });

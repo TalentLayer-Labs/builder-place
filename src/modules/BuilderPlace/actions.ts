@@ -1,5 +1,4 @@
-import { $Enums, EntityStatus, PrismaClient, User } from '@prisma/client';
-const prisma = new PrismaClient();
+import { $Enums, EntityStatus, PrismaClient, User } from '.prisma/client';
 import {
   addDomainToVercel,
   getApexDomain,
@@ -16,8 +15,6 @@ import {
   RemoveBuilderPlaceCollaborator,
   SetBuilderPlaceOwner,
   CreateHirerProfileAction,
-  SetBuilderPlaceAndHirerOwner,
-  SetUserProfileOwner,
   SetHirerProfileOwner,
 } from './types';
 import { NextApiResponse } from 'next';
@@ -28,6 +25,8 @@ import {
   EMAIL_VERIFIED_SUCCESSFULLY,
   ERROR_VERIFYING_EMAIL,
 } from './apiResponses';
+
+const prisma = new PrismaClient();
 
 export const deleteBuilderPlace = async (id: string) => {
   try {
@@ -52,12 +51,11 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   try {
     const updatedBuilderPlace = await prisma.builderPlace.update({
       where: {
-        ownerId: Number(builderPlace.ownerTalentLayerId),
+        id: Number(builderPlace.builderPlaceId),
       },
       data: {
         ...builderPlace,
         palette: { ...builderPlace.palette },
-        status: (builderPlace.status as EntityStatus) || EntityStatus.VALIDATED,
       },
     });
     return {
@@ -270,8 +268,9 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
           },
         },
       },
+      // If only want subdomain
       // select: {
-      //   subdomain: true, // assuming you only want the subdomain field
+      //   subdomain: true,
       // },
     });
 
@@ -428,6 +427,54 @@ export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
   }
 };
 
+/**
+ * @dev: Only this function can set the BuilderPlace status to VALIDATED
+ * @param builderPlaceId
+ */
+export const validateBuilderPlace = async (builderPlaceId: string) => {
+  try {
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(builderPlaceId),
+      },
+      data: {
+        status: EntityStatus.VALIDATED,
+      },
+    });
+    return {
+      message: 'BuilderPlace validated successfully',
+      id: builderPlaceId,
+    };
+  } catch (error: any) {
+    console.log('Error validating BuilderPlace :', error);
+    throw new Error(error.message);
+  }
+};
+
+/**
+ * @dev: Only this function can set the User status to VALIDATED
+ * @param userId
+ */
+export const validateUser = async (userId: string) => {
+  try {
+    await prisma.user.update({
+      where: {
+        id: Number(userId),
+      },
+      data: {
+        status: EntityStatus.VALIDATED,
+      },
+    });
+    return {
+      message: 'User validated successfully',
+      id: userId,
+    };
+  } catch (error: any) {
+    console.log('Error validating User :', error);
+    throw new Error(error.message);
+  }
+};
+
 export const setUserOwner = async (data: SetHirerProfileOwner) => {
   try {
     await prisma.user.update({
@@ -435,15 +482,13 @@ export const setUserOwner = async (data: SetHirerProfileOwner) => {
         id: Number(data.id),
       },
       data: {
-        talentLayerId: Number(data.talentLayerId),
+        talentLayerId: Number(data.hirerTalentLayerId),
         address: data.hirerAddress,
-        //TODO set validated without signature to prove address ? ===> Set it next step
-        // status: EntityStatus.VALIDATED,
       },
     });
     return {
       message: 'User owner set successfully',
-      id: data.talentLayerId,
+      id: data.hirerTalentLayerId,
     };
   } catch (error: any) {
     console.log('Error setting User owner:', error);
@@ -575,7 +620,7 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   try {
-    console.log('Getting Worker Profile with address:', userAddress);
+    console.log('Getting User Profile with address:', userAddress);
     const userProfile = await prisma.user.findUnique({
       where: {
         address: userAddress,

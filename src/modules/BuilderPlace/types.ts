@@ -21,15 +21,13 @@ export interface iBuilderPlacePalette {
 }
 export interface UpdateBuilderPlace {
   builderPlaceId: string;
-  subdomain: string;
-  name: string;
+  subdomain?: string;
+  name?: string;
   baseline?: string;
   about?: string;
   aboutTech?: string;
   palette?: iBuilderPlacePalette;
-  ownerTalentLayerId: string;
-  owners: string[] | undefined;
-  status: string | undefined;
+  owners?: string[];
   logo?: string;
   cover?: string;
   profilePicture?: string;
@@ -41,7 +39,6 @@ export interface ValidateBuilderPlaceAndOwner {
   ownerAddress: string;
   subdomain: string;
   name: string;
-  ownerTalentLayerId: string;
   owners?: string[];
   baseline?: string;
   about?: string;
@@ -80,7 +77,6 @@ export interface RemoveBuilderPlaceCollaborator {
 
 export interface SetBuilderPlaceOwner {
   id: string;
-  // ownerAddress: string;
   ownerId: string;
 }
 
@@ -92,7 +88,7 @@ export interface SetUserProfileOwner {
 export interface SetHirerProfileOwner {
   id: string;
   hirerAddress: string;
-  talentLayerId: string;
+  hirerTalentLayerId: string;
 }
 
 export interface SetBuilderPlaceAndHirerOwner {

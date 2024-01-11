@@ -31,7 +31,10 @@ function onboardingStep3() {
   const { userId, builderPlaceId } = router.query;
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: validate } = useValidateBuilderPlaceAndOwner();
-  const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
+  // const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
+  const builderPlaceData = useGetBuilderPlaceById(
+    !!builderPlaceId && typeof builderPlaceId === 'string' ? builderPlaceId : builderPlaceId[0],
+  );
   const initialValues: IFormValues = {
     subdomain: (builderPlaceData?.name && slugify(builderPlaceData.name)) || '',
     logo: builderPlaceData?.logo || '',
@@ -92,11 +95,10 @@ function onboardingStep3() {
           builderPlaceId: builderPlaceData.id,
           ownerId: typeof userId === 'string' ? userId : userId[0],
           ownerAddress: account.address,
-          subdomain: subdomain,
-          logo: values.logo,
           name: builderPlaceData.name,
-          ownerTalentLayerId: user.id,
+          subdomain: subdomain,
           palette: themes[values.palette],
+          logo: values.logo,
           signature,
         });
 

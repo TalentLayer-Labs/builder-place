@@ -6,7 +6,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   console.log('Received data:', body);
 
   if (!body.id) {
-    return res.status(500).json({ error: 'No id.' });
+    return res.status(400).json({ error: 'No id.' });
   }
 
   const result = await getBuilderPlaceByOwnerId(body.id);
