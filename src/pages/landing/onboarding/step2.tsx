@@ -6,8 +6,8 @@ import { slugify } from '../../../modules/BuilderPlace/utils';
 import Loading from '../../../components/Loading';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
-import { showMongoErrorTransactionToast } from '../../../utils/toast';
 import { useSetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/hooks/UseSetBuilderPlaceAndHirerOwner';
+import { toast } from 'react-toastify';
 
 function onboardingStep2() {
   const { account, user, refreshWorkerProfile, loading } = useContext(TalentLayerContext);
@@ -75,7 +75,8 @@ function onboardingStep2() {
           });
         }
       } catch (error: any) {
-        showMongoErrorTransactionToast(error.message);
+        //TODO clean Prisma error rendering
+        toast.error(error.message);
       } finally {
         refreshWorkerProfile();
         setIsSubmitting(false);

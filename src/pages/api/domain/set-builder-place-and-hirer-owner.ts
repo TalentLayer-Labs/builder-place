@@ -4,6 +4,7 @@ import {
   getBuilderPlaceByOwnerTalentLayerId,
   getUserByAddress,
   getUserById,
+  removeBuilderPlaceOwner,
   setBuilderPlaceOwner,
   setUserOwner,
 } from '../../../modules/BuilderPlace/actions';
@@ -28,7 +29,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
      * @dev: Checks on the domain
      */
     const existingSpace = await getBuilderPlaceByOwnerTalentLayerId(body.ownerTalentLayerId);
-    if (existingSpace) {
+    if (existingSpace && existingSpace.status === EntityStatus.VALIDATED) {
       return res.status(401).json({ error: 'You already own a domain' });
     }
 
@@ -78,7 +79,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     if (!userProfile) {
       return res.status(400).json({ error: "Profile doesn't exist." });
     }
-    if (!!userProfile.talentLayerId || userProfile.status === EntityStatus.VALIDATED) {
+    if (!!userProfile.talentLayerId && userProfile.status === EntityStatus.VALIDATED) {
       return res.status(401).json({ error: 'Profile already has an owner.' });
     }
 
@@ -92,6 +93,16 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         hirerTalentLayerId: talentLayerUser.id,
       });
 
+      /**
+       * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint
+       */
+      if (existingSpace && existingSpace.ownerId && existingSpace.status === EntityStatus.PENDING) {
+        await removeBuilderPlaceOwner({
+          id: existingSpace.id,
+          ownerId: existingSpace.ownerId,
+        });
+      }
+
       await setBuilderPlaceOwner({
         id: body.builderPlaceId,
         ownerId: body.hirerId,
@@ -103,7 +114,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         hirerId: body.hirerId,
       });
     } catch (error: any) {
-      res.status(400).json({ error: error });
+      res.status(400).json({ error: error.message });
     }
   } else {
     res.status(405).json({ message: 'Method not allowed' });

@@ -17,6 +17,7 @@ import {
   CreateHirerProfileAction,
   SetHirerProfileOwner,
   UpdateHirerProfileAction,
+  RemoveBuilderPlaceOwner,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -237,6 +238,7 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
     console.log("getting builderPlace with owner's id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
+        //TODO: add AND Status Validated
         owner: {
           talentLayerId: Number(id),
         },
@@ -424,7 +426,31 @@ export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
     };
   } catch (error: any) {
     console.log('Error setting builderPlace owner:', error);
-    throw new Error(error.message);
+    throw new Error(error.code);
+  }
+};
+
+export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => {
+  try {
+    console.log('Removing owner from pending domain:', data.id);
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        ownerId: null,
+        collaborators: {
+          disconnect: [{ id: Number(data.ownerId) }],
+        },
+      },
+    });
+    return {
+      message: 'BuilderPlace owner removed successfully',
+      id: data.ownerId,
+    };
+  } catch (error: any) {
+    console.log('Error removing builderPlace owner:', error);
+    throw new Error(error.code);
   }
 };
 

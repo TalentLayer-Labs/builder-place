@@ -20,7 +20,7 @@ export const sendTransactionalEmailValidation = async (
   const builderPlace = await getBuilderPlaceByDomain(domain);
 
   console.log('Sending email with variables: ', to, userId, name, domain);
-  const htmlBody = renderValidationMail(name, userId, domain, builderPlace.logo);
+  const htmlBody = renderValidationMail(name, userId, domain, builderPlace?.logo);
   const subject = 'Validate your email';
 
   try {

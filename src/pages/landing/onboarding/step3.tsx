@@ -6,7 +6,6 @@ import * as Yup from 'yup';
 import CustomDomain from '../../../components/CustomDomain';
 import DefaultPalettes from '../../../components/DefaultPalettes';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
-import Loading from '../../../components/Loading';
 import UploadImage from '../../../components/UploadImage';
 import TalentLayerContext from '../../../context/talentLayer';
 import { themes } from '../../../utils/themes';
@@ -15,6 +14,7 @@ import { sendVerificationEmail } from '../../../modules/BuilderPlace/request';
 import { createVerificationEmailToast } from '../../../modules/BuilderPlace/utils/toast';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
 import { useValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/hooks/UseValidateBuilderPlaceAndOwner';
+import ConnectBlock from '../../../components/ConnectBlock';
 interface IFormValues {
   subdomain: string;
   palette: keyof typeof themes;
@@ -31,10 +31,7 @@ function onboardingStep3() {
   const { userId, builderPlaceId } = router.query;
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: validate } = useValidateBuilderPlaceAndOwner();
-  // const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
-  const builderPlaceData = useGetBuilderPlaceById(
-    !!builderPlaceId && typeof builderPlaceId === 'string' ? builderPlaceId : builderPlaceId[0],
-  );
+  const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
   const initialValues: IFormValues = {
     subdomain: (builderPlaceData?.name && slugify(builderPlaceData.name)) || '',
     logo: builderPlaceData?.logo || '',
@@ -44,9 +41,21 @@ function onboardingStep3() {
   if (loading) {
     console.log('no data');
     return (
-      <div className='flex flex-col mt-5 pb-8'>
-        <Loading />
-      </div>
+      <HirerProfileLayout step={3}>
+        <div className='p-8 flex flex-col items-center'>
+          <ConnectBlock />
+        </div>
+      </HirerProfileLayout>
+    );
+  }
+
+  if (!account?.isConnected) {
+    return (
+      <HirerProfileLayout step={3}>
+        <div className='p-8 flex flex-col items-center'>
+          <ConnectBlock />
+        </div>
+      </HirerProfileLayout>
     );
   }
 

@@ -80,6 +80,11 @@ export interface SetBuilderPlaceOwner {
   ownerId: string;
 }
 
+export interface RemoveBuilderPlaceOwner {
+  id: number;
+  ownerId: number;
+}
+
 export interface SetUserProfileOwner {
   id: string;
   talentLayerId: string;
