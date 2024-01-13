@@ -41,7 +41,7 @@ model BuilderPlace {
   // ownerTalentLayerId String?  @unique
   owner              User?        @relation(fields: [ownerId], references: [id])
   ownerId            Int?         @unique
-  collaborators      User[]       @relation("BuilderPlaceSubAdmins")
+  collaborators      User[]       @relation("BuilderPlaceCollaborators")
   palette            Json
   // palette            BuilderplacesPalette @relation(fields: [paletteId], references: [id])
   // paletteId          Int                  @unique
@@ -63,12 +63,11 @@ model User {
   picture                  String?
   status                   EntityStatus   @default(PENDING)
   talentLayerId            Int?           @unique
-  type                     UserType
   weeklyTransactionCounter Int            @default(0)
   workerProfile            WorkerProfile? @relation("WorkerProfile")
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
-  managingPlaces           BuilderPlace[] @relation("BuilderPlaceSubAdmins")
+  managedPlaces            BuilderPlace[] @relation("BuilderPlaceCollaborators")
 }
 
 model WorkerProfile {
@@ -80,11 +79,6 @@ model WorkerProfile {
 model HirerProfile {
   id   Int  @id
   user User @relation("HirerProfile", fields: [id], references: [id])
-}
-
-enum UserType {
-  HIRER
-  WORKER
 }
 
 enum EntityStatus {

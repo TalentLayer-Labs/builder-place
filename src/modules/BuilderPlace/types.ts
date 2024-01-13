@@ -177,7 +177,6 @@ export interface CreateWorkerProfileProps {
   picture?: string;
   about?: string;
   skills?: string;
-  status?: string;
   talentLayerId?: string;
 }
 export interface CreateHirerProfileProps {
