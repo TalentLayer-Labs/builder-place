@@ -21,7 +21,6 @@ import {
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
-import UserType = $Enums.UserType;
 import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
@@ -541,11 +540,8 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
         name: data.name,
         picture: data.picture,
         about: data.about,
-        type: UserType.WORKER,
       },
     });
-
-    //TODO add here the creation of the hirer profile or WorkerProfile if any
 
     // Step 2: Create the WorkerProfile with the same ID as the User
     await prisma.workerProfile.create({
@@ -575,7 +571,6 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
         name: data.name,
         picture: data.picture,
         about: data.about,
-        type: UserType.HIRER,
       },
     });
 
@@ -611,7 +606,6 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
         email: data.email,
         picture: data.picture,
         about: data.about,
-        type: UserType.HIRER,
       },
     });
 
@@ -638,7 +632,7 @@ export const getUserById = async (id: string) => {
         workerProfile: true,
         hirerProfile: true,
         ownedBuilderPlace: true,
-        managingPlaces: true,
+        managedPlaces: true,
       },
     });
     console.log('Fetched Worker Profile, ', userProfile);
@@ -664,7 +658,7 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
         workerProfile: true,
         hirerProfile: true,
         ownedBuilderPlace: true,
-        managingPlaces: true,
+        managedPlaces: true,
       },
     });
     console.log(userProfile);
@@ -694,7 +688,7 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
         workerProfile: true,
         hirerProfile: true,
         ownedBuilderPlace: true,
-        managingPlaces: true,
+        managedPlaces: true,
       },
     });
 
