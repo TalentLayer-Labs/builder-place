@@ -56,8 +56,19 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         id: Number(builderPlace.builderPlaceId),
       },
       data: {
-        ...builderPlace,
+        about: builderPlace.about,
+        aboutTech: builderPlace.aboutTech,
+        baseline: builderPlace.baseline,
+        cover: builderPlace.cover,
+        // subdomain: builderPlace.subdomain,
+        // customDomain: builderPlace.customDomain,
+        icon: builderPlace.icon,
+        logo: builderPlace.logo,
+        name: builderPlace.name,
         palette: { ...builderPlace.palette },
+        preferredWorkTypes: builderPlace.preferredWorkTypes,
+        presentation: builderPlace.presentation,
+        profilePicture: builderPlace.profilePicture,
       },
     });
     return {
@@ -171,12 +182,10 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
         where: {
           OR: [{ subdomain: domain }, { customDomain: domain }],
         },
-        //TODO check is this still throws an error
-
-        // include: {
-        //   owner: true,
-        //   collaborators: true,
-        // },
+        include: {
+          owner: true,
+          collaborators: true,
+        },
       });
 
       console.log('fetched builderPlaces, ', builderPlace);

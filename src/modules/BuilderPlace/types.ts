@@ -23,6 +23,9 @@ export interface UpdateBuilderPlace {
   builderPlaceId: string;
   subdomain?: string;
   name?: string;
+  icon?: string;
+  presentation?: string;
+  preferredWorkTypes?: PreferredWorkTypes[];
   baseline?: string;
   about?: string;
   aboutTech?: string;
@@ -38,7 +41,6 @@ export interface ValidateBuilderPlaceAndOwner {
   ownerId: string;
   ownerAddress: string;
   subdomain: string;
-  name: string;
   owners?: string[];
   baseline?: string;
   about?: string;
@@ -203,7 +205,8 @@ export type IBuilderPlace = {
   preferredWorkTypes: PreferredWorkTypes[];
   presentation?: string;
   profilePicture?: string;
-  status: 'Validated' | 'Pending';
+  status: EntityStatus;
+  ownerId?: string;
   // ownerAddress?: string;
   // ownerTalentLayerId?: string;
   subdomain?: string;

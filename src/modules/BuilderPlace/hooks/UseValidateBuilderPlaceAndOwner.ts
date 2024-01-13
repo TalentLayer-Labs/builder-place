@@ -12,19 +12,19 @@ export function useValidateBuilderPlaceAndOwner() {
           'Content-type': 'application/json',
         },
       }).then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          res
-            .json()
-            .then((data: any) => {
-              showMongoErrorTransactionToast(data.error);
-              return data;
-            })
-            .catch(err => {
-              throw new Error('Failed to validate builderPlace', err.fileName);
-            });
-        }
+        // if (res.status === 200) {
+        return res.json();
+        // } else {
+        //   res
+        //     .json()
+        //     .then((data: any) => {
+        //       showMongoErrorTransactionToast(data.error);
+        //       return data;
+        //     })
+        //     .catch(err => {
+        //       throw new Error('Failed to validate builderPlace', err.fileName);
+        //     });
+        // }
       }),
     {
       // onSuccess: (e) => {
