@@ -763,6 +763,7 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
     if (res) {
       res.status(500).json({ error: error.message });
     } else {
+      //TODO only log here not throw ?
       console.log(error.message);
     }
     return null;
@@ -858,55 +859,43 @@ export async function incrementWeeklyTransactionCounter(
   }
 }
 
-export const verifyWorkerProfileEmail = async (id: string) => {
+export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
+  let errorMessage;
   try {
-    await connection();
-    const existingWorker = await Worker.findOne({ _id: id });
-    if (existingWorker) {
-      const resp = await Worker.updateOne({ _id: id }, { emailVerified: true }).exec();
-      if (resp.modifiedCount === 0 && resp.matchedCount === 1) {
-        console.log(EMAIL_ALREADY_VERIFIED);
-        return {
-          error: EMAIL_ALREADY_VERIFIED,
-        };
-      }
-      console.log('Updated worker profile email', resp);
-    } else {
-      console.log(ERROR_VERIFYING_EMAIL);
-      return {
-        error: ERROR_VERIFYING_EMAIL,
-      };
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+    if (existingUser?.isEmailVerified === true) {
+      console.log(EMAIL_ALREADY_VERIFIED);
+      throw new Error(EMAIL_ALREADY_VERIFIED);
     }
+    const resp = await prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        isEmailVerified: true,
+      },
+    });
+    console.log('Validated user email', resp.id, resp.name, resp.email);
     return {
       message: EMAIL_VERIFIED_SUCCESSFULLY,
-      email: existingWorker.email,
+      email: resp.email,
     };
   } catch (error: any) {
-    console.log(error.message);
-    return {
-      error: error.message,
-    };
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_VERIFYING_EMAIL;
+    } else {
+      errorMessage = error.message;
+    }
+    if (res) {
+      console.log(error.message);
+      res.status(500).json({ error: errorMessage });
+    } else {
+      console.log(error.message);
+      throw new Error(ERROR_VERIFYING_EMAIL);
+    }
   }
 };
-
-// export const validateUserEmail = async (userId: string, email: string) => {
-//   try {
-//     const resp = await prisma.user.update({
-//       where: {
-//         email: email,
-//         talentLayerId: Number(userId),
-//       },
-//       data: {
-//         isEmailVerified: true,
-//       },
-//     });
-//     console.log('Updated worker profile email', resp.id, resp.name, resp.email);
-//     return {
-//       message: 'Email verified successfully',
-//     };
-//   } catch (error: any) {
-//     return {
-//       error: error.message,
-//     };
-//   }
-// };
