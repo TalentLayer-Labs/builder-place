@@ -19,11 +19,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(400).json({ error: 'Missing data.' });
     }
 
-    // const ownerAddress = await recoverMessageAddress({
-    //   message: body.ownerAddress,
-    //   signature: body.signature,
-    // });
-    const ownerAddress = body.ownerAddress;
+    const ownerAddress = await recoverMessageAddress({
+      message: body.ownerAddress,
+      signature: body.signature,
+    });
 
     /**
      * @dev: Check whether the user exists in the database & is the owner of the address
@@ -34,10 +33,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(401).json({ error: 'Restricted access' });
     }
 
-    //TODO not needed ?
-    // if (owner.status === EntityStatus.VALIDATED) {
-    //   return res.status(401).json({ error: 'Profile already has an owner' });
-    // }
+    if (owner.status === EntityStatus.VALIDATED) {
+      return res.status(400).json({ error: 'Profile already validated' });
+    }
 
     /**
      * @dev: Check whether the BuilderPlace exists in the database & has no owner

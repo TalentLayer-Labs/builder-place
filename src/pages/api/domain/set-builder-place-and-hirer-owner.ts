@@ -94,7 +94,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         existingProfileWithSameAddress.status === EntityStatus.PENDING
       ) {
         //TODO carrément suppr le user ?
-        await removeOwnerFromUser(existingProfileWithSameAddress.id);
+        await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
       }
 
       /**

@@ -23,7 +23,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
       try {
         await sendVerificationEmail(
           workerProfile.email,
-          workerProfile._id,
+          workerProfile.id,
           workerProfile.name,
           domain,
         );
