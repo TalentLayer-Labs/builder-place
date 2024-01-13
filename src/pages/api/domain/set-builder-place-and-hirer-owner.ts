@@ -4,6 +4,7 @@ import {
   getBuilderPlaceByOwnerTalentLayerId,
   getUserByAddress,
   getUserById,
+  removeAddressFromUser,
   removeBuilderPlaceOwner,
   setBuilderPlaceOwner,
   setUserOwner,
@@ -85,12 +86,27 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     try {
       /**
+       * @dev: If existing pending with same address,
+       * remove address from pending profile to avoid conflicts on field "unique" constraint
+       */
+      if (
+        existingProfile &&
+        existingProfile.address === body.ownerAddress &&
+        existingProfile.status === EntityStatus.PENDING
+      ) {
+        await removeAddressFromUser({
+          id: existingProfile.id,
+          userAddress: existingProfile.address,
+        });
+      }
+
+      /**
        * @dev: Update BuilderPlace & Hirer profile
        */
       await setUserOwner({
         id: body.hirerId,
-        hirerAddress: body.ownerAddress,
-        hirerTalentLayerId: talentLayerUser.id,
+        userAddress: body.ownerAddress,
+        talentLayerId: talentLayerUser.id,
       });
 
       /**

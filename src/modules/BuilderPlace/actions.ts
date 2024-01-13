@@ -1,4 +1,4 @@
-import { $Enums, EntityStatus, PrismaClient, User } from '.prisma/client';
+import { EntityStatus, PrismaClient, User } from '.prisma/client';
 import {
   addDomainToVercel,
   getApexDomain,
@@ -15,9 +15,10 @@ import {
   RemoveBuilderPlaceCollaborator,
   SetBuilderPlaceOwner,
   CreateHirerProfileAction,
-  SetHirerProfileOwner,
   UpdateHirerProfileAction,
   RemoveBuilderPlaceOwner,
+  SetUserProfileOwner,
+  RemoveUserAddress,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -462,6 +463,27 @@ export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => 
   }
 };
 
+export const removeAddressFromUser = async (data: RemoveUserAddress) => {
+  try {
+    console.log('Removing address from pending User:', data.userAddress, data.id);
+    await prisma.user.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        address: null,
+      },
+    });
+    return {
+      message: 'User address removed successfully',
+      id: data.id,
+    };
+  } catch (error: any) {
+    console.log('Error removing builderPlace owner:', error);
+    throw new Error(error.code);
+  }
+};
+
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
  * @param builderPlaceId
@@ -510,20 +532,20 @@ export const validateUser = async (userId: string) => {
   }
 };
 
-export const setUserOwner = async (data: SetHirerProfileOwner) => {
+export const setUserOwner = async (data: SetUserProfileOwner) => {
   try {
     await prisma.user.update({
       where: {
         id: Number(data.id),
       },
       data: {
-        talentLayerId: Number(data.hirerTalentLayerId),
-        address: data.hirerAddress,
+        talentLayerId: Number(data.talentLayerId),
+        address: data.userAddress,
       },
     });
     return {
       message: 'User owner set successfully',
-      id: data.hirerTalentLayerId,
+      id: data.talentLayerId,
     };
   } catch (error: any) {
     console.log('Error setting User owner:', error);

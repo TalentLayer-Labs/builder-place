@@ -87,15 +87,15 @@ export interface RemoveBuilderPlaceOwner {
   ownerId: number;
 }
 
-export interface SetUserProfileOwner {
-  id: string;
-  talentLayerId: string;
+export interface RemoveUserAddress {
+  id: number;
+  userAddress: string;
 }
 
-export interface SetHirerProfileOwner {
+export interface SetUserProfileOwner {
   id: string;
-  hirerAddress: string;
-  hirerTalentLayerId: string;
+  userAddress: string;
+  talentLayerId: string;
 }
 
 export interface SetBuilderPlaceAndHirerOwner {
