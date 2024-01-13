@@ -20,10 +20,11 @@ function workerOnboardingStep2() {
 
   useEffect(() => {
     const setOwner = async () => {
-      if (account?.isConnected && user?.id && id) {
+      if (account?.isConnected && account.address && user?.id && id) {
         try {
           const response = await updateWorkerProfileAsync({
             id,
+            userAddress: account.address,
             talentLayerId: user.id,
           });
           /* If user tries to update a profile which already has an owner or if
