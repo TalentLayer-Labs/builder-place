@@ -18,7 +18,7 @@ import {
   UpdateHirerProfileAction,
   RemoveBuilderPlaceOwner,
   SetUserProfileOwner,
-  RemoveUserAddress,
+  UpdateWorkerProfileAction,
 } from './types';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
@@ -27,6 +27,7 @@ import {
   EMAIL_VERIFIED_SUCCESSFULLY,
   ERROR_VERIFYING_EMAIL,
 } from './apiResponses';
+// import prisma from '../../postgre/postgreClient';
 
 const prisma = new PrismaClient();
 
@@ -463,20 +464,21 @@ export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => 
   }
 };
 
-export const removeAddressFromUser = async (data: RemoveUserAddress) => {
+export const removeOwnerFromUser = async (userId: string) => {
   try {
-    console.log('Removing address from pending User:', data.userAddress, data.id);
+    console.log('Removing address from pending User:', userId);
     await prisma.user.update({
       where: {
-        id: Number(data.id),
+        id: Number(userId),
       },
       data: {
         address: null,
+        talentLayerId: null,
       },
     });
     return {
       message: 'User address removed successfully',
-      id: data.id,
+      id: userId,
     };
   } catch (error: any) {
     console.log('Error removing builderPlace owner:', error);
@@ -618,7 +620,7 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
 //TODO factoriser quand on décide comment on fait
 export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
   try {
-    // Step 1: Create the User
+    // Step 1: Update the User
     const user = await prisma.user.update({
       where: {
         id: data.id,
@@ -639,6 +641,43 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
     };
   } catch (error: any) {
     console.log('Error updating Hirer Profile:', error);
+    throw new Error(error.message);
+  }
+};
+
+//TODO factoriser quand on décide comment on fait
+export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
+  try {
+    // Step 1: Update the User
+    const user = await prisma.user.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        name: data.name,
+        email: data.email,
+        picture: data.picture,
+        about: data.about,
+      },
+    });
+
+    // Step 2: Update the WorkerProfile with the same ID as the User
+    await prisma.workerProfile.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        id: user.id,
+        skills: data?.skills?.split(',').map(skill => skill.trim()),
+      },
+    });
+
+    return {
+      message: 'Worker Profile updated successfully',
+      id: user.id,
+    };
+  } catch (error: any) {
+    console.log('Error updating Worker Profile:', error);
     throw new Error(error.message);
   }
 };

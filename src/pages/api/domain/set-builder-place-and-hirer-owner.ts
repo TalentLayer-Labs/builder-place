@@ -4,7 +4,7 @@ import {
   getBuilderPlaceByOwnerTalentLayerId,
   getUserByAddress,
   getUserById,
-  removeAddressFromUser,
+  removeOwnerFromUser,
   removeBuilderPlaceOwner,
   setBuilderPlaceOwner,
   setUserOwner,
@@ -61,14 +61,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     /**
      * @notice: Check whether the user already owns a profile
-     * @dev: We check by address and status as it's the only proof that a user signed a message
-     * with this address to validate this profile. If the status is not validated we create a new profile.
+     * @dev: If PENDING profiles with the same address and / or TalentLayerId, remove address & ID
+     * from pending profile to avoid conflicts on "unique" constraints
      */
-    const existingProfile = await getUserByAddress(body.ownerAddress);
+    const existingProfileWithSameAddress = await getUserByAddress(body.ownerAddress);
     if (
-      existingProfile &&
-      existingProfile.status === EntityStatus.VALIDATED &&
-      !!existingProfile.ownedBuilderPlace
+      existingProfileWithSameAddress &&
+      existingProfileWithSameAddress.status === EntityStatus.VALIDATED &&
+      !!existingProfileWithSameAddress.ownedBuilderPlace
     ) {
       return res.status(401).json({ error: 'You already have a profile' });
     }
@@ -90,14 +90,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
        * remove address from pending profile to avoid conflicts on field "unique" constraint
        */
       if (
-        existingProfile &&
-        existingProfile.address === body.ownerAddress &&
-        existingProfile.status === EntityStatus.PENDING
+        existingProfileWithSameAddress &&
+        existingProfileWithSameAddress.status === EntityStatus.PENDING
       ) {
-        await removeAddressFromUser({
-          id: existingProfile.id,
-          userAddress: existingProfile.address,
-        });
+        //TODO carrément suppr le user ?
+        await removeOwnerFromUser(existingProfileWithSameAddress.id);
       }
 
       /**

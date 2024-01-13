@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import {
   getUserByAddress,
   getUserById,
-  removeAddressFromUser,
+  removeOwnerFromUser,
   setUserOwner,
 } from '../../../modules/BuilderPlace/actions';
 import { SetUserProfileOwner } from '../../../modules/BuilderPlace/types';
@@ -39,11 +39,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     /**
      * @notice: Check whether the user already owns a profile
-     * @dev: We check by address and status as it's the only proof that a user signed a message
-     * with this address to validate this profile. If the status is not validated we create a new profile.
+     * @dev: If PENDING profiles with the same address and / or TalentLayerId, remove address & ID
+     * from pending profile to avoid conflicts on "unique" constraints
      */
-    const existingProfile = await getUserByAddress(body.userAddress);
-    if (existingProfile && existingProfile.status === EntityStatus.VALIDATED) {
+    const existingProfileWithSameAddress = await getUserByAddress(body.userAddress);
+    if (
+      existingProfileWithSameAddress &&
+      existingProfileWithSameAddress.status === EntityStatus.VALIDATED
+    ) {
       return res.status(401).json({ error: ALREADY_HAVE_PROFILE });
     }
 
@@ -60,18 +63,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     try {
       /**
-       * @dev: If existing pending with same address,
+       * @dev: If existing pending User exists with same address,
        * remove address from pending profile to avoid conflicts on field "unique" constraint
        */
       if (
-        existingProfile &&
-        existingProfile.address === body.userAddress &&
-        existingProfile.status === EntityStatus.PENDING
+        existingProfileWithSameAddress &&
+        existingProfileWithSameAddress.status === EntityStatus.PENDING
       ) {
-        await removeAddressFromUser({
-          id: existingProfile.id,
-          userAddress: existingProfile.address,
-        });
+        await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
       }
 
       /**

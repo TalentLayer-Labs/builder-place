@@ -163,6 +163,17 @@ export interface UpdateHirerProfileAction {
   talentLayerId?: string;
 }
 
+export interface UpdateWorkerProfileAction {
+  id: number;
+  email: string;
+  name?: string;
+  picture?: string;
+  about?: string;
+  status?: string;
+  skills?: string;
+  talentLayerId?: string;
+}
+
 export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
@@ -177,6 +188,7 @@ export interface CreateWorkerProfileProps {
   picture?: string;
   about?: string;
   skills?: string;
+  //TODO this should not be here
   talentLayerId?: string;
 }
 export interface CreateHirerProfileProps {
@@ -185,6 +197,7 @@ export interface CreateHirerProfileProps {
   picture?: string;
   about?: string;
   status?: string;
+  //TODO this should not be here
   talentLayerId?: string;
 }
 

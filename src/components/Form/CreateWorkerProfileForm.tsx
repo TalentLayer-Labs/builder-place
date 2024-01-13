@@ -53,6 +53,10 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
         skills: values.skills,
       });
 
+      if (response?.error) {
+        throw new Error(response.error);
+      }
+
       if (response?.id) {
         /**
          * @dev: send verification email to user to verify email
@@ -76,9 +80,8 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
       if (callback) {
         callback();
       }
-    } catch (error) {
-      console.log(error);
-      showErrorTransactionToast(error);
+    } catch (error: any) {
+      showErrorTransactionToast(error.message);
     } finally {
       setSubmitting(false);
     }
