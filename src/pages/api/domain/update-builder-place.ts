@@ -1,25 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { updateBuilderPlace, updateDomain } from '../../../modules/BuilderPlace/actions';
+import { updateBuilderPlace } from '../../../modules/BuilderPlace/actions';
 import { UpdateBuilderPlace } from '../../../modules/BuilderPlace/types';
 import { checkSignature } from '../utils/domain';
-
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
     const body: UpdateBuilderPlace = req.body;
     console.log('Received data:', body);
 
     // Check whether the address which provided the signature is an admin of the domain
-    // await checkSignature(body.builderPlaceId, body.signature, res);
-
-    //TODO quelle logique ici ??
-    // if (body.subdomain) {
-    //   await updateDomain({
-    //     _id: body.builderPlaceId,
-    //     subdomain: body.subdomain,
-    //     customDomain: body.customDomain,
-    //     signature: body.signature,
-    //   });
-    // }
+    await checkSignature(body.builderPlaceId, body.signature, res);
 
     const result = await updateBuilderPlace(body);
 

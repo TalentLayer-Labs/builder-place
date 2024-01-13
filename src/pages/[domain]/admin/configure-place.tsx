@@ -121,7 +121,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && account?.address && builderPlace && builderPlace.ownerTalentLayerId) {
+    if (walletClient && account?.address && builderPlace) {
       setSubmitting(true);
       try {
         /**
@@ -131,6 +131,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           account: account.address,
           message: builderPlace.id,
         });
+
         const fullSubdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 
         await updateBuilderPlaceAsync({
@@ -143,10 +144,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           aboutTech: values.aboutTech,
           profilePicture: values.profilePicture,
           cover: values.cover,
-          ownerTalentLayerId: builderPlace.ownerTalentLayerId,
           palette,
-          owners: builderPlace.owners,
-          status: 'validated',
           signature,
         });
 
