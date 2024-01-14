@@ -94,14 +94,14 @@ function onboardingStep3() {
          */
         const signature = await walletClient.signMessage({
           account: account.address,
-          message: builderPlaceData.id,
+          message: builderPlaceData.id.toString(),
         });
 
         /**
          * @dev: validate builderPlace and owner with signature
          */
         const res = await validate({
-          builderPlaceId: builderPlaceData.id,
+          builderPlaceId: builderPlaceData.id.toString(),
           ownerId: typeof userId === 'string' ? userId : userId[0],
           ownerAddress: account.address,
           subdomain: subdomain,
