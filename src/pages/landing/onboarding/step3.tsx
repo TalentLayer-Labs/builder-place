@@ -92,11 +92,10 @@ function onboardingStep3() {
         /**
          * @dev Sign message to prove ownership of the address
          */
-        // const signature = await walletClient.signMessage({
-        //   account: account.address,
-        //   message: builderPlaceData.id,
-        // });
-        const signature = account.address;
+        const signature = await walletClient.signMessage({
+          account: account.address,
+          message: builderPlaceData.id,
+        });
 
         /**
          * @dev: validate builderPlace and owner with signature
