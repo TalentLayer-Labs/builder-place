@@ -55,7 +55,7 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
 
   return (
     <div>
-      {!!workerProfile?.isEmailVerified &&
+      {!!workerProfile?.emailVerified &&
         delegateAddress &&
         !user?.delegates?.includes(delegateAddress.toLowerCase()) && (
           <Notification
