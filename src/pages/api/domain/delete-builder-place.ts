@@ -10,9 +10,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     try {
       // Check whether the address which provided the signature is a collaborator of the domain
-      await checkSignature(body._id, body.signature, res);
+      await checkSignature(body.id, body.signature, res);
 
-      const result = await deleteBuilderPlace(body._id);
+      const result = await deleteBuilderPlace(body.id);
       res.status(200).json({ message: result.message });
     } catch (error: any) {
       res.status(400).json({ error: error });

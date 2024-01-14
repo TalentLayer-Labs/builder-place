@@ -52,12 +52,12 @@ export interface ValidateBuilderPlaceAndOwner {
   signature: `0x${string}` | Uint8Array;
 }
 export interface DeleteBuilderPlace {
-  _id: string;
+  id: string;
   signature: `0x${string}` | Uint8Array;
 }
 
 export interface UpdateBuilderPlaceDomain {
-  _id: string;
+  id: string;
   subdomain: string;
   customDomain: string;
   signature: `0x${string}` | Uint8Array;
@@ -107,6 +107,11 @@ export interface SetBuilderPlaceAndHirerOwner {
 
 export interface VerifyEmail {
   userId: string;
+}
+
+export interface VerifyAccount {
+  userId: string;
+  signature: `0x${string}` | Uint8Array;
 }
 
 export interface VerifyEmailProps {
