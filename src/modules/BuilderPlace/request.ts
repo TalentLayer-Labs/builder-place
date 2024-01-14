@@ -125,3 +125,23 @@ export const sendVerificationEmail = async (
     throw err;
   }
 };
+
+export const verifyAccount = async (userId: string, signature: string): Promise<any> => {
+  try {
+    const response = await fetch('/api/domain/verify-account', {
+      method: 'PUT',
+      body: JSON.stringify({
+        userId: userId,
+        signature: signature,
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+    return await response.json();
+  } catch (err) {
+    console.log('error here');
+    console.error(err);
+    throw err;
+  }
+};
