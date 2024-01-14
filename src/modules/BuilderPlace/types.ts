@@ -230,7 +230,7 @@ export interface IUserProfile {
   address?: string;
   counterStartDate: number;
   email: string;
-  emailVerified: boolean;
+  isEmailVerified: boolean;
   name: string;
   picture?: string;
   status: EntityStatus;

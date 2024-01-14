@@ -19,7 +19,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
       typeof router.query.domain === 'object' && !!router.query.domain
         ? router.query.domain[0]
         : router.query.domain;
-    if (workerProfile?.email && !workerProfile.emailVerified && user?.id && domain) {
+    if (workerProfile?.email && !workerProfile.isEmailVerified && user?.id && domain) {
       try {
         await sendVerificationEmail(
           workerProfile.email,
@@ -38,7 +38,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
     }
   };
 
-  if (!workerProfile?.email || workerProfile?.emailVerified || !showNotification) {
+  if (!workerProfile?.email || workerProfile?.isEmailVerified || !showNotification) {
     return null;
   }
 
