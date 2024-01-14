@@ -57,6 +57,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
 
         /**
          * @dev Add new collaborator to the BuilderPlace
+         * The collaborator must have a BuilderPlace profile & TalentLayer Id
          */
         const response = await addBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
@@ -91,9 +92,9 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-      showErrorTransactionToast(error);
+      showErrorTransactionToast(error.message);
     } finally {
       refreshData();
       setSubmitting(false);

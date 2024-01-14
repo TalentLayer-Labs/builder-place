@@ -37,14 +37,10 @@ model BuilderPlace {
   icon               String?
   logo               String?
   name               String
-  // ownerAddress       String?  @unique
-  // ownerTalentLayerId String?  @unique
   owner              User?        @relation(fields: [ownerId], references: [id])
   ownerId            Int?         @unique
   collaborators      User[]       @relation("BuilderPlaceCollaborators")
   palette            Json
-  // palette            BuilderplacesPalette @relation(fields: [paletteId], references: [id])
-  // paletteId          Int                  @unique
   preferredWorkTypes String[]
   presentation       String?
   profilePicture     String?

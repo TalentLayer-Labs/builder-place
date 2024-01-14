@@ -140,7 +140,6 @@ export const verifyAccount = async (userId: string, signature: string): Promise<
     });
     return await response.json();
   } catch (err) {
-    console.log('error here');
     console.error(err);
     throw err;
   }

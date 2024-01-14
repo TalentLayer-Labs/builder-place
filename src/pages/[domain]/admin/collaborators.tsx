@@ -32,7 +32,7 @@ export default function Collaborators() {
   const publicClient = usePublicClient({ chainId });
   const [submitting, setSubmitting] = useState('');
 
-  if (user?.id !== builderPlace?.ownerTalentLayerId) {
+  if (user?.id != builderPlace?.owner.talentLayerId) {
     return <AccessDenied />;
   }
 
@@ -92,7 +92,9 @@ export default function Collaborators() {
 
   return (
     <div>
-      <AdminSettingsLayout title={'Add / Remove Collaborators'}>
+      <AdminSettingsLayout
+        title={'Add / Remove Collaborators'}
+        subTitle={'Collaborators must have a Verified BuilderPlace account'}>
         <div className={'flex flex-col'}>
           <CollaboratorForm />
           {!!delegates && (

@@ -20,7 +20,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     }
 
     const ownerAddress = await recoverMessageAddress({
-      message: body.ownerAddress,
+      message: body.builderPlaceId.toString(),
       signature: body.signature,
     });
 

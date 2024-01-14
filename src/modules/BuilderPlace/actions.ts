@@ -83,6 +83,7 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
 };
 
 export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollaborator) => {
+  let errorMessage;
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
@@ -91,7 +92,8 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     });
 
     if (!newCollaborator) {
-      throw new Error('Collaborator not found');
+      errorMessage = COLLABORATOR_NOT_FOUND;
+      throw new Error(COLLABORATOR_NOT_FOUND);
     }
 
     await prisma.builderPlace.update({
@@ -112,8 +114,12 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
       id: newCollaborator.id,
     };
   } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      console.log('Error adding collaborator:', error);
+      errorMessage = error.message;
+    }
     console.log('Error adding collaborator:', error);
-    throw new Error(error.message);
+    throw new Error(errorMessage);
   }
 };
 
@@ -121,7 +127,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress,
+        address: body.newCollaboratorAddress.toLocaleLowerCase(),
       },
     });
 
@@ -146,7 +152,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
       id: collaborator.id,
     };
   } catch (error: any) {
-    console.log('Error adding collaborator:', error);
+    console.log('Error removing collaborator:', error);
     throw new Error(error.message);
   }
 };
@@ -299,12 +305,12 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
   }
 };
 
-export const getBuilderPlaceByOwnerTlIdAndId = async (ownerId: string, id: string) => {
+export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
   try {
-    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerId, id);
+    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerTalentLayerId, id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
-        AND: [{ ownerId: Number(ownerId) }, { id: Number(id) }],
+        AND: [{ owner: { talentLayerId: Number(ownerTalentLayerId) } }, { id: Number(id) }],
       },
       include: {
         owner: true,
