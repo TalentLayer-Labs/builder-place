@@ -38,11 +38,11 @@ export default function CustomDomain(
        */
       const signature = await walletClient.signMessage({
         account: account.address,
-        message: builderPlace.id,
+        message: builderPlace.id.toString(),
       });
 
       updateBuilderPlaceDomainMutation.mutate({
-        _id: builderPlace?.id!,
+        id: builderPlace?.id!.toString(),
         customDomain: customDomain,
         subdomain: builderPlace?.subdomain!,
         signature: signature,
