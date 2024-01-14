@@ -20,7 +20,7 @@ function DelegateModal() {
   }
 
   const checkDelegateState = async () => {
-    if (user?.delegates?.indexOf(delegateAddress.toLowerCase()) != -1) {
+    if (delegateAddress && user?.delegates?.indexOf(delegateAddress.toLowerCase()) != -1) {
       setHasPlatformAsDelegate(true);
     } else {
       setHasPlatformAsDelegate(false);
