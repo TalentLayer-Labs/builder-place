@@ -27,13 +27,15 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
           workerProfile.name,
           domain,
         );
+
         setShowNotification(false);
+
+        if (callback) {
+          await callback();
+        }
       } catch (e) {
         console.log('Error', e);
         showMongoErrorTransactionToast(e);
-      }
-      if (callback) {
-        await callback();
       }
     }
   };
