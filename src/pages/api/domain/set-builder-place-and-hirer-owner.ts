@@ -102,7 +102,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
        */
       await setUserOwner({
         id: body.hirerId,
-        userAddress: body.ownerAddress,
+        userAddress: body.ownerAddress.toLocaleLowerCase(),
         talentLayerId: talentLayerUser.id,
       });
 

@@ -155,7 +155,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
     console.log('Collaborator removed successfully', body.collaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
-      address: collaborator.address,
+      address: collaborator.address.toLocaleLowerCase(),
       id: collaborator.id,
     };
   } catch (error: any) {
@@ -289,7 +289,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
         id: Number(builderPlaceId),
         collaborators: {
           some: {
-            address: address,
+            address: address.toLocaleLowerCase(),
           },
         },
       },
@@ -755,7 +755,7 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
     console.log('Getting User Profile with address:', userAddress);
     const userProfile = await prisma.user.findUnique({
       where: {
-        address: userAddress,
+        address: userAddress.toLocaleLowerCase(),
       },
       include: {
         workerProfile: true,
