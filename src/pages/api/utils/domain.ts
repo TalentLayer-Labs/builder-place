@@ -22,7 +22,10 @@ export const checkSignature = async (
     signature: signature,
   });
 
-  const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(address, id);
+  const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(
+    address.toLocaleLowerCase(),
+    id,
+  );
 
   if (!builderPlace) {
     return res.status(400).json({ error: 'No BuilderPlace found.' });

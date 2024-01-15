@@ -20,6 +20,7 @@ import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { slugify } from '../../../modules/BuilderPlace/utils';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { themes } from '../../../utils/themes';
+import { showErrorTransactionToast } from '../../../utils/toast';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -134,7 +135,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
 
         const fullSubdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 
-        await updateBuilderPlaceAsync({
+        const response = await updateBuilderPlaceAsync({
           builderPlaceId: builderPlace.id.toString(),
           subdomain: fullSubdomain,
           logo: values.logo,
@@ -148,9 +149,14 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           signature,
         });
 
+        if (response?.error) {
+          throw new Error(response.error);
+        }
+
         toast.success('Configuration updated!');
-      } catch (e: any) {
-        console.error(e);
+      } catch (error: any) {
+        console.error(error);
+        showErrorTransactionToast(error.message);
       } finally {
         setSubmitting(false);
       }
