@@ -23,7 +23,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
      */
     const owner = await getUserById(body.userId);
 
-    if (owner?.address !== ownerAddress) {
+    if (owner?.address.toLocaleLowerCase() !== ownerAddress.toLocaleLowerCase()) {
       return res.status(401).json({ error: 'Restricted access' });
     }
 

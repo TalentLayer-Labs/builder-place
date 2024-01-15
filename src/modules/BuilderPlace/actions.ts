@@ -27,6 +27,7 @@ import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
   ERROR_VERIFYING_EMAIL,
+  USER_PROFILE_NOT_VERIFIED,
 } from './apiResponses';
 // import prisma from '../../postgre/postgreClient';
 
@@ -95,6 +96,11 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     if (!newCollaborator) {
       errorMessage = COLLABORATOR_NOT_FOUND;
       throw new Error(COLLABORATOR_NOT_FOUND);
+    }
+
+    if (newCollaborator?.status === EntityStatus.PENDING) {
+      errorMessage = USER_PROFILE_NOT_VERIFIED;
+      throw new Error(USER_PROFILE_NOT_VERIFIED);
     }
 
     await prisma.builderPlace.update({
@@ -548,7 +554,7 @@ export const setUserOwner = async (data: SetUserProfileOwner) => {
       },
       data: {
         talentLayerId: Number(data.talentLayerId),
-        address: data.userAddress,
+        address: data.userAddress.toLocaleLowerCase(),
       },
     });
     return {

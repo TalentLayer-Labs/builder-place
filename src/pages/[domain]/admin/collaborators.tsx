@@ -43,6 +43,8 @@ export default function Collaborators() {
   const onRemove = async (address: string): Promise<void> => {
     try {
       if (walletClient && account?.address && builderPlace?.id) {
+        setSubmitting(address);
+
         if (user.delegates?.indexOf(address) !== -1) {
           /**
            * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
@@ -57,7 +59,7 @@ export default function Collaborators() {
             false,
           );
         }
-        setSubmitting(address);
+
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -101,7 +103,9 @@ export default function Collaborators() {
           {!!delegates && (
             <div className={'flew flex-row mt-2'}>
               {delegates.map(delegate => (
-                <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
+                <span
+                  key={delegate}
+                  className='flex items-center mt-2 mb-2 bg-gray-100 p-2 rounded'>
                   <span className='mr-4 font-mono text-gray-800'>{delegate}</span>
                   <RemoveButton
                     isSubmitting={submitting}
