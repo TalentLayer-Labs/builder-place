@@ -6,7 +6,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   if (req.method === 'PUT') {
     const body: UpdateBuilderPlace = req.body;
     console.log('Received data:', body);
-
     // Check whether the address which provided the signature is an admin of the domain
     await checkSignature(body.builderPlaceId, body.signature, res);
 
@@ -18,6 +17,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       res.status(200).json({ message: 'BuilderPlace domain updated successfully', id: result.id });
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }

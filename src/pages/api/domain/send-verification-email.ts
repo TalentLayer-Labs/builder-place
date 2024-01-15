@@ -22,6 +22,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return;
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
