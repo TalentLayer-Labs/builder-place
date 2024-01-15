@@ -43,6 +43,20 @@ export default function Collaborators() {
   const onRemove = async (address: string): Promise<void> => {
     try {
       if (walletClient && account?.address && builderPlace?.id) {
+        if (user.delegates?.indexOf(address) !== -1) {
+          /**
+           * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
+           */
+          await toggleDelegation(
+            chainId,
+            user.id,
+            config,
+            address,
+            publicClient,
+            walletClient,
+            false,
+          );
+        }
         setSubmitting(address);
         /**
          * @dev Sign message to prove ownership of the address
@@ -58,25 +72,12 @@ export default function Collaborators() {
         const response = await removeBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
           builderPlaceId: builderPlace.id,
-          newCollaboratorAddress: address,
+          collaboratorAddress: address.toLocaleLowerCase(),
           signature,
         });
 
         if (response?.error) {
           showErrorTransactionToast(response.error);
-        } else if (user.delegates?.indexOf(address) !== -1) {
-          /**
-           * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
-           */
-          await toggleDelegation(
-            chainId,
-            user.id,
-            config,
-            address,
-            publicClient,
-            walletClient,
-            false,
-          );
         }
       } else {
         openConnectModal();

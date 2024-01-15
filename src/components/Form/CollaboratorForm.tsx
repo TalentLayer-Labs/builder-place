@@ -28,7 +28,6 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
   const config = useConfig();
   const { mutateAsync: addBuilderPlaceCollaboratorAsync } = useAddBuilderPlaceCollaborator();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { open: openConnectModal } = useWeb3Modal();
   const { user, account, refreshData } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
@@ -47,6 +46,13 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
     try {
       if (walletClient && account?.address && builderPlace?.id) {
         setSubmitting(true);
+
+        if (
+          values.collaborator.toLocaleLowerCase() ===
+          builderPlace?.owner?.address?.toLocaleLowerCase()
+        ) {
+          throw new Error('Already owner');
+        }
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -70,7 +76,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
           throw new Error(response.error);
         }
 
-        // if address is not a delegated yet on chain
+        // if address is not delegated yet on chain
         if (user.delegates?.indexOf(values.collaborator) === -1) {
           /**
            * @dev Add the new collaborator as a delegate to the BuilderPlace owner
