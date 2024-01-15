@@ -26,6 +26,11 @@ import {
   COLLABORATOR_NOT_FOUND,
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
+  ERROR_ADDING_COLLABORATOR,
+  ERROR_CHECKING_TRANSACTION_COUNTER,
+  ERROR_DELETING_BUILDERPLACE,
+  ERROR_REMOVING_COLLABORATOR,
+  ERROR_UPDATING_BUILDERPLACE,
   ERROR_VERIFYING_EMAIL,
   USER_PROFILE_NOT_VERIFIED,
 } from './apiResponses';
@@ -34,6 +39,7 @@ import {
 const prisma = new PrismaClient();
 
 export const deleteBuilderPlace = async (id: string) => {
+  let errorMessage;
   try {
     const builderPlace = await prisma.builderPlace.delete({
       where: {
@@ -47,12 +53,18 @@ export const deleteBuilderPlace = async (id: string) => {
       id: builderPlace.id,
     };
   } catch (error: any) {
-    console.log('Error deleting the BuilderPlace:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
+  let errorMessage;
   try {
     const updatedBuilderPlace = await prisma.builderPlace.update({
       where: {
@@ -78,9 +90,13 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
       id: updatedBuilderPlace.id,
     };
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_UPDATING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
@@ -122,15 +138,18 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     };
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_ADDING_COLLABORATOR;
+    } else {
       errorMessage = error.message;
     }
-    console.log('Error adding collaborator:', error);
+    console.log(error.message);
     throw new Error(errorMessage);
   }
 };
 
 export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
   console.log('Removing collaborator', body.collaboratorAddress);
+  let errorMessage;
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
@@ -159,12 +178,18 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
       id: collaborator.id,
     };
   } catch (error: any) {
-    console.log('Error removing collaborator:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_REMOVING_COLLABORATOR;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
+  let errorMessage;
   try {
     const newBuilderPlace = await prisma.builderPlace.create({
       data: {
@@ -182,12 +207,18 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
       id: newBuilderPlace.id,
     };
   } catch (error: any) {
-    console.log('Error creating new builderPlace:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getBuilderPlaceByDomain = async (domain: string) => {
+  let errorMessage;
   try {
     console.log('getting builderPlace ', domain);
     if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
@@ -206,12 +237,18 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
       return builderPlace;
     }
   } catch (error: any) {
-    console.log('Error fetching the builderPlace:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getBuilderPlaceById = async (id: string) => {
+  let errorMessage;
   try {
     console.log('Getting builderPlace with id:', id);
     const builderPlaceSubdomain = await prisma.builderPlace.findUnique({
@@ -228,12 +265,18 @@ export const getBuilderPlaceById = async (id: string) => {
       return builderPlaceSubdomain;
     }
   } catch (error: any) {
-    console.log('Error fetching the builderPlace:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getBuilderPlaceByOwnerId = async (id: string) => {
+  let errorMessage;
   try {
     console.log("getting builderPlace with owner's id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -250,12 +293,18 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    console.log('Error fetching the builderPlace owner:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
+  let errorMessage;
   try {
     console.log("getting builderPlace with owner's id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -273,8 +322,13 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    console.log('Error fetching the builderPlace owner:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
@@ -282,6 +336,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
   address: string,
   builderPlaceId: string,
 ) => {
+  let errorMessage;
   try {
     console.log('getting builderPlace with admin address & id:', address, builderPlaceId);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -293,7 +348,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
           },
         },
       },
-      // If only want subdomain
+      //TODO If only want subdomain
       // select: {
       //   subdomain: true,
       // },
@@ -306,13 +361,18 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
 
     return null;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
+  let errorMessage;
   try {
     console.log("getting builderPlace with owner's TlId & mongo _id:", ownerTalentLayerId, id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -331,21 +391,26 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string
 
     return null;
   } catch (error: any) {
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 // TODO! createBuilderPlace, can be used for the onboarding workflow maybe for the creating the subdomain & deleteBuilderPlace
 export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
+  let errorMessage;
   try {
     console.log('Update Domain invoke, ', builderPlace);
     let response;
 
     if (builderPlace.customDomain.includes('builder.place')) {
       console.log('Domain contains builder.place');
-      return {
-        error: 'Cannot use builder.place subdomain as your custom domain',
-      };
+      throw new Error('Domain contains builder.place');
 
       // if the custom domain is valid, we need to store it and add it to Vercel
     } else if (validDomainRegex.test(builderPlace.customDomain!)) {
@@ -423,13 +488,18 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
 
     return response;
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
+  let errorMessage;
   try {
     await prisma.builderPlace.update({
       where: {
@@ -447,12 +517,18 @@ export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
       id: data.ownerId,
     };
   } catch (error: any) {
-    console.log('Error setting builderPlace owner:', error);
-    throw new Error(error.code);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => {
+  let errorMessage;
   try {
     console.log('Removing owner from pending domain:', data.id);
     await prisma.builderPlace.update({
@@ -471,12 +547,18 @@ export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => 
       id: data.ownerId,
     };
   } catch (error: any) {
-    console.log('Error removing builderPlace owner:', error);
-    throw new Error(error.code);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const removeOwnerFromUser = async (userId: string) => {
+  let errorMessage;
   try {
     console.log('Removing address from pending User:', userId);
     await prisma.user.update({
@@ -493,8 +575,13 @@ export const removeOwnerFromUser = async (userId: string) => {
       id: userId,
     };
   } catch (error: any) {
-    console.log('Error removing builderPlace owner:', error);
-    throw new Error(error.code);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
@@ -503,6 +590,7 @@ export const removeOwnerFromUser = async (userId: string) => {
  * @param builderPlaceId
  */
 export const validateBuilderPlace = async (builderPlaceId: string) => {
+  let errorMessage;
   try {
     await prisma.builderPlace.update({
       where: {
@@ -517,8 +605,13 @@ export const validateBuilderPlace = async (builderPlaceId: string) => {
       id: builderPlaceId,
     };
   } catch (error: any) {
-    console.log('Error validating BuilderPlace :', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
@@ -527,6 +620,7 @@ export const validateBuilderPlace = async (builderPlaceId: string) => {
  * @param userId
  */
 export const validateUser = async (userId: string) => {
+  let errorMessage;
   try {
     await prisma.user.update({
       where: {
@@ -541,12 +635,18 @@ export const validateUser = async (userId: string) => {
       id: userId,
     };
   } catch (error: any) {
-    console.log('Error validating User :', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const setUserOwner = async (data: SetUserProfileOwner) => {
+  let errorMessage;
   try {
     await prisma.user.update({
       where: {
@@ -562,12 +662,18 @@ export const setUserOwner = async (data: SetUserProfileOwner) => {
       id: data.talentLayerId,
     };
   } catch (error: any) {
-    console.log('Error setting User owner:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
+  let errorMessage;
   try {
     // Step 1: Create the User
     const user = await prisma.user.create({
@@ -592,13 +698,19 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    console.log('Error creating new Worker Profile:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 //TODO factoriser quand on décide comment on fait
 export const createHirerProfile = async (data: CreateHirerProfileAction) => {
+  let errorMessage;
   try {
     // Step 1: Create the User
     const user = await prisma.user.create({
@@ -624,13 +736,19 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    console.log('Error creating new Hirer Profile:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 //TODO factoriser quand on décide comment on fait
 export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
+  let errorMessage;
   try {
     // Step 1: Update the User
     const user = await prisma.user.update({
@@ -652,13 +770,19 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    console.log('Error updating Hirer Profile:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 //TODO factoriser quand on décide comment on fait
 export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
+  let errorMessage;
   try {
     // Step 1: Update the User
     const user = await prisma.user.update({
@@ -689,12 +813,18 @@ export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    console.log('Error updating Worker Profile:', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getUserById = async (id: string) => {
+  let errorMessage;
   try {
     console.log('Getting User Profile with id:', id);
     const userProfile = await prisma.user.findUnique({
@@ -715,12 +845,18 @@ export const getUserById = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    console.log('Error fetching User: ', error);
-    throw new Error(error.message);
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_DELETING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
   }
 };
 
 export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextApiResponse) => {
+  let errorMessage;
   try {
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
     const userProfile = await prisma.user.findUnique({
@@ -741,16 +877,23 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
 
     return userProfile;
   } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
+    } else {
+      errorMessage = error.message;
+    }
     if (res) {
-      res.status(500).json({ error: error.message });
+      console.log(error.message);
+      res.status(500).json({ error: errorMessage });
     } else {
       console.log(error.message);
+      throw new Error(errorMessage);
     }
-    return null;
   }
 };
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
+  let errorMessage;
   try {
     console.log('Getting User Profile with address:', userAddress);
     const userProfile = await prisma.user.findUnique({
@@ -772,17 +915,23 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
     console.log('Fetched user profile with id: ', userProfile?.id);
     return userProfile;
   } catch (error: any) {
-    if (res) {
-      res.status(500).json({ error: error.message });
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
     } else {
-      //TODO only log here not throw ?
-      console.log(error.message);
+      errorMessage = error.message;
     }
-    return null;
+    if (res) {
+      console.log(error.message);
+      res.status(500).json({ error: errorMessage });
+    } else {
+      console.log(error.message);
+      throw new Error(errorMessage);
+    }
   }
 };
 
 export const getUserByEmail = async (userEmail: string, res?: NextApiResponse) => {
+  let errorMessage;
   try {
     console.log('Getting User Profile with email:', userEmail);
     const userProfile = await prisma.user.findUnique({
@@ -798,12 +947,18 @@ export const getUserByEmail = async (userEmail: string, res?: NextApiResponse) =
     console.log('Fetched user profile with id: ', userProfile?.id);
     return userProfile;
   } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
+    } else {
+      errorMessage = error.message;
+    }
     if (res) {
-      res.status(500).json({ error: error.message });
+      console.log(error.message);
+      res.status(500).json({ error: errorMessage });
     } else {
       console.log(error.message);
+      throw new Error(errorMessage);
     }
-    return null;
   }
 };
 
@@ -898,7 +1053,7 @@ export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
     };
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_VERIFYING_EMAIL;
+      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
     } else {
       errorMessage = error.message;
     }
@@ -907,7 +1062,7 @@ export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
       res.status(500).json({ error: errorMessage });
     } else {
       console.log(error.message);
-      throw new Error(ERROR_VERIFYING_EMAIL);
+      throw new Error(errorMessage);
     }
   }
 };
