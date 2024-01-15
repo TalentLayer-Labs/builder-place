@@ -117,7 +117,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     console.log('Collaborator added successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator added successfully',
-      address: newCollaborator.address.toLocaleLowerCase(),
+      address: newCollaborator?.address?.toLocaleLowerCase(),
       id: newCollaborator.id,
     };
   } catch (error: any) {
@@ -155,7 +155,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
     console.log('Collaborator removed successfully', body.collaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
-      address: collaborator.address.toLocaleLowerCase(),
+      address: collaborator?.address?.toLocaleLowerCase(),
       id: collaborator.id,
     };
   } catch (error: any) {
