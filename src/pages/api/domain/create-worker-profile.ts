@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { CreateWorkerProfileProps } from '../../../modules/BuilderPlace/types';
 import {
-  createHirerProfile,
+  createWorkerProfile,
   getUserByEmail,
   updateWorkerProfile,
 } from '../../../modules/BuilderPlace/actions';
@@ -25,7 +25,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
       let result;
       if (!existingProfile) {
-        result = await createHirerProfile({
+        result = await createWorkerProfile({
           ...body,
         });
       } else {
@@ -40,6 +40,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       res.status(400).json({ error: error });
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
