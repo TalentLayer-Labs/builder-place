@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { removeBuilderPlaceCollaborator } from '../../../modules/BuilderPlace/actions';
 import { RemoveBuilderPlaceCollaborator } from '../../../modules/BuilderPlace/types';
 import { checkOwnerSignature } from '../utils/domain';
 import { User } from '.prisma/client';
+import { removeBuilderPlaceCollaborator } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {

@@ -1,14 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  getBuilderPlaceById,
-  getUserById,
-  updateBuilderPlace,
-  validateBuilderPlace,
-  validateUser,
-} from '../../../modules/BuilderPlace/actions';
 import { ValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/types';
 import { recoverMessageAddress } from 'viem';
 import { EntityStatus } from '.prisma/client';
+import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions/user';
+import {
+  getBuilderPlaceById,
+  updateBuilderPlace,
+  validateBuilderPlace,
+} from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -29,7 +28,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
      */
     const owner = await getUserById(body.ownerId);
 
-    if (owner?.address.toLocaleLowerCase() !== ownerAddress.toLocaleLowerCase()) {
+    if (owner?.address?.toLocaleLowerCase() !== ownerAddress.toLocaleLowerCase()) {
       return res.status(401).json({ error: 'Restricted access' });
     }
 
@@ -77,7 +76,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         hirerId: body.ownerId,
       });
     } catch (error: any) {
-      res.status(400).json({ error: error });
+      res.status(400).json({ error: error.message });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });

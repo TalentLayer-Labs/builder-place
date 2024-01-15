@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getBuilderPlaceById } from '../../../modules/BuilderPlace/actions';
+import { getBuilderPlaceById } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   //TODO whby this?
@@ -16,7 +16,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const result = await getBuilderPlaceById(body.id);
     res.status(200).json({ result: result });
   } catch (error: any) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ error: error.message });
   }
   // } else {
   //   res.status(405).json({ error: 'Method not allowed' });

@@ -4,12 +4,12 @@ import TalentLayerService from '../../../contracts/ABI/TalentLayerService.json';
 import { getServiceSignature } from '../../../utils/signature';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
 import { getConfig } from '../../../config';
+import { getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions/user';
+import { checkUserEmailVerificationStatus } from '../../../modules/BuilderPlace/actions/email';
 import {
   checkOrResetTransactionCounter,
-  checkUserEmailVerificationStatus,
-  getUserByTalentLayerId,
   incrementWeeklyTransactionCounter,
-} from '../../../modules/BuilderPlace/actions';
+} from '../../../modules/BuilderPlace/actions/transactionCounter';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, cid, chainId, existingService } = req.body;

@@ -1,17 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  getBuilderPlaceById,
-  getBuilderPlaceByOwnerTalentLayerId,
-  getUserByAddress,
-  getUserById,
-  removeOwnerFromUser,
-  removeBuilderPlaceOwner,
-  setBuilderPlaceOwner,
-  setUserOwner,
-} from '../../../modules/BuilderPlace/actions';
 import { SetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/types';
 import { EntityStatus } from '.prisma/client';
 import { getUserByAddress as getTalentLayerUserByAddress } from '../../../queries/users';
+import {
+  getBuilderPlaceById,
+  getBuilderPlaceByOwnerTalentLayerId,
+  removeBuilderPlaceOwner,
+  setBuilderPlaceOwner,
+} from '../../../modules/BuilderPlace/actions/builderPlace';
+import {
+  getUserByAddress,
+  getUserById,
+  removeOwnerFromUser,
+  setUserOwner,
+} from '../../../modules/BuilderPlace/actions/user';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {

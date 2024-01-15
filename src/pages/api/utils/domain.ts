@@ -1,9 +1,9 @@
 import { recoverMessageAddress } from 'viem';
+import { NextApiResponse } from 'next';
 import {
   getBuilderPlaceByCollaboratorAddressAndId,
   getBuilderPlaceByOwnerTlIdAndId,
-} from '../../../modules/BuilderPlace/actions';
-import { NextApiResponse } from 'next';
+} from '../../../modules/BuilderPlace/actions/builderPlace';
 
 /**
  * Checks if the signature is from a BuilderPlace collaborator by getting the BuilderPlace
@@ -58,7 +58,7 @@ export const checkOwnerSignature = async (
 
   if (
     builderPlace &&
-    address.toLocaleLowerCase() !== builderPlace.owner?.address.toLocaleLowerCase()
+    address.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()
   ) {
     return res.status(401).json({ error: 'Not BuilderPlace owner' });
   }

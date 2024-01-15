@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { VerifyAccount } from '../../../modules/BuilderPlace/types';
-import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions';
 import { recoverMessageAddress } from 'viem';
 import { EntityStatus } from '.prisma/client';
+import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions/user';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -23,7 +23,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
      */
     const owner = await getUserById(body.userId);
 
-    if (owner?.address.toLocaleLowerCase() !== ownerAddress.toLocaleLowerCase()) {
+    if (owner?.address?.toLocaleLowerCase() !== ownerAddress.toLocaleLowerCase()) {
       return res.status(401).json({ error: 'Restricted access' });
     }
 

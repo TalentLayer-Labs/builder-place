@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { VerifyEmail } from '../../../modules/BuilderPlace/types';
-import { verifyUserEmail } from '../../../modules/BuilderPlace/actions';
+import { verifyUserEmail } from '../../../modules/BuilderPlace/actions/email';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {

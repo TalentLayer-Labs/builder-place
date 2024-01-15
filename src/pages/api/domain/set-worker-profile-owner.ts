@@ -1,10 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  getUserByAddress,
-  getUserById,
-  removeOwnerFromUser,
-  setUserOwner,
-} from '../../../modules/BuilderPlace/actions';
 import { SetUserProfileOwner } from '../../../modules/BuilderPlace/types';
 import { EntityStatus } from '.prisma/client';
 import { getUserByAddress as getTalentLayerUserByAddress } from '../../../queries/users';
@@ -13,6 +7,12 @@ import {
   PROFILE_ALREADY_HAS_OWNER,
   PROFILE_DOES_NOT_EXIST,
 } from '../../../modules/BuilderPlace/apiResponses';
+import {
+  getUserByAddress,
+  getUserById,
+  removeOwnerFromUser,
+  setUserOwner,
+} from '../../../modules/BuilderPlace/actions/user';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -83,7 +83,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       });
       res.status(200).json({ message: 'Worker Profile updated successfully', id: userProfile.id });
     } catch (error: any) {
-      res.status(400).json({ error: error });
+      res.status(400).json({ error: error.message });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });

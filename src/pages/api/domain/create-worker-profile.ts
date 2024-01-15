@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { CreateWorkerProfileProps } from '../../../modules/BuilderPlace/types';
+import { getUserByEmail } from '../../../modules/BuilderPlace/actions/email';
 import {
   createWorkerProfile,
-  getUserByEmail,
   updateWorkerProfile,
-} from '../../../modules/BuilderPlace/actions';
+} from '../../../modules/BuilderPlace/actions/user';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -37,7 +37,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
       res.status(200).json({ message: result.message, id: result.id });
     } catch (error: any) {
-      res.status(400).json({ error: error });
+      res.status(400).json({ error: error.message });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });

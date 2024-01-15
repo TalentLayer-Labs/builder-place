@@ -18,7 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       res.status(200).json({ message: EMAIL_VERIFIED_SUCCESSFULLY, email: body.to });
     } catch (err: any) {
       console.error(err);
-      res.status(err.httpCode || 400).end(String(err));
+      res.status(err.httpCode || 400).end(String(err.message));
       return;
     }
   } else {

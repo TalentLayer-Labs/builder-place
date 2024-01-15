@@ -3,12 +3,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getConfig } from '../../../config';
 import TalentLayerID from '../../../contracts/ABI/TalentLayerID.json';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
+import { getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions/user';
+import { checkUserEmailVerificationStatus } from '../../../modules/BuilderPlace/actions/email';
 import {
   checkOrResetTransactionCounter,
-  checkUserEmailVerificationStatus,
-  getUserByTalentLayerId,
   incrementWeeklyTransactionCounter,
-} from '../../../modules/BuilderPlace/actions';
+} from '../../../modules/BuilderPlace/actions/transactionCounter';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, cid, chainId } = req.body;
