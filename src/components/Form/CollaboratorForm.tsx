@@ -8,18 +8,22 @@ import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { useAddBuilderPlaceCollaborator } from '../../modules/BuilderPlace/hooks/UseAddBuilderPlaceCollaborator';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { toggleDelegation } from '../../contracts/toggleDelegation';
 import { useConfig } from '../../hooks/useConfig';
+import { ETH_ADDRESS_LENGTH, ETH_ADDRESS_REGEX } from '../../utils';
 
 interface IFormValues {
   collaborator: string;
 }
 
 const validationSchema = Yup.object({
-  collaborator: Yup.string().required('Collaborator is required'),
+  collaborator: Yup.string()
+    .required('Collaborator is required')
+    .matches(ETH_ADDRESS_REGEX, 'Invalid Ethereum address format')
+    .length(ETH_ADDRESS_LENGTH, `Invalid Ethereum address format`),
 });
+
 const initialValues: IFormValues = {
   collaborator: '',
 };
