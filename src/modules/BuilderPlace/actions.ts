@@ -23,6 +23,7 @@ import {
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../config';
 import {
+  COLLABORATOR_NOT_FOUND,
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
   ERROR_VERIFYING_EMAIL,
@@ -87,7 +88,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress,
+        address: body.newCollaboratorAddress.toLocaleLowerCase(),
       },
     });
 
@@ -110,12 +111,11 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
     console.log('Collaborator added successfully', body.newCollaboratorAddress);
     return {
       message: 'Collaborator added successfully',
-      address: newCollaborator.address,
+      address: newCollaborator.address.toLocaleLowerCase(),
       id: newCollaborator.id,
     };
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
-      console.log('Error adding collaborator:', error);
       errorMessage = error.message;
     }
     console.log('Error adding collaborator:', error);
@@ -124,10 +124,11 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
 };
 
 export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
+  console.log('Removing collaborator', body.collaboratorAddress);
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress.toLocaleLowerCase(),
+        address: body.collaboratorAddress.toLocaleLowerCase(),
       },
     });
 
@@ -145,7 +146,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
         },
       },
     });
-    console.log('Collaborator removed successfully', body.newCollaboratorAddress);
+    console.log('Collaborator removed successfully', body.collaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
       address: collaborator.address,
