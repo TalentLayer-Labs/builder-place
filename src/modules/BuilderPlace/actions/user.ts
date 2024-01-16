@@ -130,7 +130,6 @@ export const getUserById = async (id: string) => {
   }
 };
 
-//TODO factoriser quand on décide comment on fait
 export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
   let errorMessage;
   try {
@@ -173,7 +172,6 @@ export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
   }
 };
 
-//TODO factoriser quand on décide comment on fait
 export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
   let errorMessage;
   try {
@@ -190,7 +188,9 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
       },
     });
 
-    //TODO update here hirerProfile entity when needed
+    /**
+     * @dev: update here hirerProfile entity when needed
+     */
 
     return {
       message: 'Hirer Profile updated successfully',
@@ -235,7 +235,6 @@ export const updateUserEmail = async (data: UpdateUserEmailAction) => {
   }
 };
 
-//TODO factoriser quand on décide comment on fait
 export const createHirerProfile = async (data: CreateHirerProfileAction) => {
   let errorMessage;
   try {
@@ -248,8 +247,6 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
         about: data.about,
       },
     });
-
-    //TODO add here the creation of the hirer profile or WorkerProfile if any
 
     // Step 2: Create the WorkerProfile with the same ID as the User
     await prisma.hirerProfile.create({

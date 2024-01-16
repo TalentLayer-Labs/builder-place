@@ -185,7 +185,7 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     if (builderPlace.customDomain !== currentDomain) {
       response = await removeDomainFromVercelProject(builderPlace.customDomain!);
 
-      //TODO check if this works => No Regex in Prisma
+      //TODO Prisma: check if this works => No Regex in Prisma
       // Check if the apex domain is being used by other sites
       const apexDomain = getApexDomain(`https://${builderPlace.customDomain}`);
       const domainsWithApexDomain = await prisma.builderPlace.findMany({
@@ -266,10 +266,6 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
           },
         },
       },
-      //TODO If only want subdomain
-      // select: {
-      //   subdomain: true,
-      // },
     });
 
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
@@ -295,7 +291,6 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
     console.log("getting builderPlace with owner's id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
-        //TODO: add AND Status Validated
         owner: {
           talentLayerId: id,
         },
