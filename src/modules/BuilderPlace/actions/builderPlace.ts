@@ -1,6 +1,7 @@
 import { EntityStatus, PrismaClient } from '.prisma/client';
 import {
   COLLABORATOR_NOT_FOUND,
+  DOMAIN_CONTAINS_BUILDER_PLACE,
   ERROR_ADDING_COLLABORATOR,
   ERROR_CREATING_BUILDERPLACE,
   ERROR_DELETING_BUILDERPLACE,
@@ -10,6 +11,7 @@ import {
   ERROR_UPDATING_BUILDERPLACE,
   ERROR_UPDATING_DOMAIN,
   ERROR_VALIDATING_BUILDERPLACE,
+  INVALID_CUSTOM_DOMAIN,
   USER_PROFILE_NOT_VERIFIED,
 } from '../apiResponses';
 import {
@@ -129,12 +131,12 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     let response;
 
     if (builderPlace.customDomain.includes('builder.place')) {
-      console.log('Domain contains builder.place');
-      throw new Error('Domain contains builder.place');
+      console.log(DOMAIN_CONTAINS_BUILDER_PLACE);
+      throw new Error(DOMAIN_CONTAINS_BUILDER_PLACE);
 
       // if the custom domain is valid, we need to store it and add it to Vercel
     } else if (validDomainRegex.test(builderPlace.customDomain!)) {
-      console.log('Custom Domain is valid');
+      console.log(INVALID_CUSTOM_DOMAIN);
       // Update the MongoDB document with the new custom domain
       // await BuilderPlace.updateOne({ _id: new mongoose.Types.ObjectId(builderPlace.id) }, { customDomain: builderPlace.customDomain }).exec();
       console.log('Searching subdomain, ', builderPlace.subdomain);

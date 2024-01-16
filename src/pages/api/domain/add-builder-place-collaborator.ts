@@ -3,6 +3,7 @@ import { AddBuilderPlaceCollaborator } from '../../../modules/BuilderPlace/types
 import { checkOwnerSignature } from '../utils/domain';
 import { User } from '.prisma/client';
 import { addBuilderPlaceCollaborator } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { COLLABORATOR_ALREADY_EXISTS } from '../../../modules/BuilderPlace/apiResponses';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -25,7 +26,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
             body.newCollaboratorAddress.toLocaleLowerCase(),
         )
       ) {
-        return res.status(400).json({ error: 'Already a collaborator' });
+        return res.status(400).json({ error: COLLABORATOR_ALREADY_EXISTS });
       }
 
       const result = await addBuilderPlaceCollaborator(body);

@@ -26,6 +26,7 @@ export const ERROR_CREATING_WORKER_PROFILE = 'Error creating new Worker Profile'
 export const ERROR_CREATING_HIRER_PROFILE = 'Error creating new Hirer Profile';
 export const ERROR_UPDATING_HIRER_PROFILE = 'Error updating Hirer Profile';
 export const ERROR_UPDATING_WORKER_PROFILE = 'Error updating Worker Profile';
+export const ERROR_UPDATING_USER_EMAIL = 'Error updating User email';
 export const ERROR_FETCHING_USER = 'Error fetching User';
 export const TRANSACTION_LIMIT_REACHED = 'Transaction limit reached for the week';
 export const ERROR_INCREMENTING_TRANSACTION_COUNTER = 'Error incrementing transaction counter';

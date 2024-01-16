@@ -7,6 +7,7 @@ import {
   ERROR_REMOVING_USER_OWNER,
   ERROR_SETTING_USER_OWNER,
   ERROR_UPDATING_HIRER_PROFILE,
+  ERROR_UPDATING_USER_EMAIL,
   ERROR_UPDATING_WORKER_PROFILE,
   ERROR_VALIDATING_USER,
 } from '../apiResponses';
@@ -15,6 +16,7 @@ import {
   CreateWorkerProfileAction,
   SetUserProfileOwner,
   UpdateHirerProfileAction,
+  UpdateUserEmailAction,
   UpdateWorkerProfileAction,
 } from '../types';
 // import prisma from '../../postgre/postgreClient';
@@ -197,6 +199,34 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
       errorMessage = ERROR_UPDATING_HIRER_PROFILE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+export const updateUserEmail = async (data: UpdateUserEmailAction) => {
+  let errorMessage;
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        email: data.email,
+        isEmailVerified: false,
+      },
+    });
+
+    return {
+      message: 'Email updated successfully',
+      id: user.id,
+    };
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_UPDATING_USER_EMAIL;
     } else {
       errorMessage = error.message;
     }

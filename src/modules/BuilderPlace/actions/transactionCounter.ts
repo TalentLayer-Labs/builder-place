@@ -4,6 +4,7 @@ import { MAX_TRANSACTION_AMOUNT } from '../../../config';
 import {
   ERROR_CHECKING_TRANSACTION_COUNTER,
   ERROR_INCREMENTING_TRANSACTION_COUNTER,
+  TRANSACTION_LIMIT_REACHED,
 } from '../apiResponses';
 // import prisma from '../../postgre/postgreClient';
 
@@ -21,8 +22,8 @@ export async function checkOrResetTransactionCounter(
       // Less than one week since counterStartDate
       if (user.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
         // If the counter is already 50, stop the function
-        console.log('Transaction limit reached for the week');
-        throw new Error('Transaction limit reached for the week');
+        console.log(TRANSACTION_LIMIT_REACHED);
+        throw new Error(TRANSACTION_LIMIT_REACHED);
       }
     } else {
       console.log('More than a week since the start date, reset counter');
