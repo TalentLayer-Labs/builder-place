@@ -1,6 +1,5 @@
 import { useMutation } from 'react-query';
 import { UpdateBuilderPlace } from '../types';
-import { showMongoErrorTransactionToast } from '../../../utils/toast';
 
 export function useUpdateBuilderPlace() {
   const updateBuilderPlaceDomainMutation = useMutation<

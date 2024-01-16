@@ -95,11 +95,6 @@ export const showErrorTransactionToast = (error: any) => {
   toast.error(errorMessage);
 };
 
-export const showMongoErrorTransactionToast = (error: any) => {
-  let errorMessage = getParsedMongoErrorMessage(error);
-  toast.error(errorMessage);
-};
-
 export const createTalentLayerIdTransactionToast = async (
   chainId: number,
   messages: IMessages,

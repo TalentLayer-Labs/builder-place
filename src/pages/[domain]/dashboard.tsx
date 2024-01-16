@@ -82,7 +82,11 @@ function Dashboard() {
                 </h2>
 
                 <EmailModal />
-
+                <VerifyEmailNotification
+                  callback={() => {
+                    toast.success('Verification email sent!');
+                  }}
+                />
                 <VerifyUserAccountNotification
                   callback={() => {
                     toast.success('Account verified!');

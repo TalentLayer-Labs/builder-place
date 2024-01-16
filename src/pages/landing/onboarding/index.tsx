@@ -6,7 +6,7 @@ import UploadImage from '../../../components/UploadImage';
 import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hooks/UseCreateBuilderPlaceMutation';
 import { PreferredWorkTypes } from '../../../types';
 import { themes } from '../../../utils/themes';
-import { showMongoErrorTransactionToast } from '../../../utils/toast';
+import { showErrorTransactionToast } from '../../../utils/toast';
 import { useCreateHirerProfileMutation } from '../../../modules/BuilderPlace/hooks/UseCreateHirerProfileMutation';
 
 interface IFormValues {
@@ -67,6 +67,10 @@ function onboardingStep1() {
         profilePicture: values.profilePicture || undefined,
       });
 
+      if (builderPlaceResponse.error) {
+        throw new Error(builderPlaceResponse.error);
+      }
+
       router.query.builderPlaceId = builderPlaceResponse.id;
       router.query.userId = userResponse.id;
       router.push({
@@ -74,7 +78,7 @@ function onboardingStep1() {
         query: { builderPlaceId: builderPlaceResponse.id, userId: userResponse.id },
       });
     } catch (error: any) {
-      showMongoErrorTransactionToast(error.message);
+      showErrorTransactionToast(error.message);
     } finally {
       setTimeout(() => {
         setSubmitting(false);

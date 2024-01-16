@@ -21,9 +21,6 @@ export function useCreateHirerProfileMutation() {
       }),
 
     {
-      onError: error => {
-        throw new Error('Failed to create hirer profile', error);
-      },
       onSuccess: () => {
         queryClient.invalidateQueries('createHirerProfile');
       },

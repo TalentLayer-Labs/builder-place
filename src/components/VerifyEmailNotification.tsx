@@ -1,6 +1,6 @@
 import Notification from './Notification';
 import { sendVerificationEmail } from '../modules/BuilderPlace/request';
-import { showMongoErrorTransactionToast } from '../utils/toast';
+import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import { useRouter } from 'next/router';
@@ -21,21 +21,24 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
         : router.query.domain;
     if (workerProfile?.email && !workerProfile.isEmailVerified && user?.id && domain) {
       try {
-        await sendVerificationEmail(
+        const response = await sendVerificationEmail(
           workerProfile.email,
           workerProfile.id,
           workerProfile.name,
           domain,
         );
 
+        if (response.status !== 200) {
+          throw new Error('Error sending verification email');
+        }
+
         setShowNotification(false);
 
         if (callback) {
           await callback();
         }
-      } catch (e) {
-        console.log('Error', e);
-        showMongoErrorTransactionToast(e);
+      } catch (err: any) {
+        showErrorTransactionToast(err.message);
       }
     }
   };
