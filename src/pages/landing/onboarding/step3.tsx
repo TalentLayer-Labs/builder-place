@@ -34,6 +34,7 @@ function onboardingStep3() {
   const { data: walletClient } = useWalletClient({ chainId });
   const { mutateAsync: validate } = useValidateBuilderPlaceAndOwner();
   const builderPlaceData = useGetBuilderPlaceById(builderPlaceId as string);
+
   const initialValues: IFormValues = {
     subdomain: (builderPlaceData?.name && slugify(builderPlaceData.name)) || '',
     logo: builderPlaceData?.logo || '',

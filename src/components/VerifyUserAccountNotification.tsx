@@ -29,6 +29,7 @@ const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationPr
         });
 
         const resp = await verifyAccount(workerProfile.id.toString(), signature);
+
         if (resp.error) {
           throw new Error(resp.error);
         }
