@@ -18,8 +18,7 @@ interface IFormValues {
 const validationSchema = Yup.object({
   email: Yup.string().required('Please provide an email'),
 });
-//TODO: Faire l'API email et l'ajouter au EmailForm
-//TODO Une fois fini, continuer de check la gestion d'erreur des call frontend
+
 function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
   const chainId = useChainId();
   const router = useRouter();
