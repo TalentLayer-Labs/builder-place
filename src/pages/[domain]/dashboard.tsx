@@ -81,6 +81,8 @@ function Dashboard() {
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
+                <EmailModal />
+
                 <VerifyUserAccountNotification
                   callback={() => {
                     toast.success('Account verified!');

@@ -109,6 +109,15 @@ export interface VerifyEmail {
   userId: string;
 }
 
+export interface UpdateUserEmail {
+  userId: string;
+  email: string;
+  userAddress: string;
+  name: string;
+  domain: string;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface VerifyAccount {
   userId: string;
   signature: `0x${string}` | Uint8Array;
@@ -177,6 +186,11 @@ export interface UpdateWorkerProfileAction {
   status?: string;
   skills?: string;
   talentLayerId?: string;
+}
+
+export interface UpdateUserEmailAction {
+  id: number;
+  email: string;
 }
 
 export interface CreateBuilderPlaceProps {

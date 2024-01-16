@@ -1,12 +1,15 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { verifyEmail } from '../../modules/BuilderPlace/request';
 import SubmitButton from './SubmitButton';
-import { showMongoErrorTransactionToast } from '../../utils/toast';
+import { showErrorTransactionToast } from '../../utils/toast';
 import { IUser } from '../../types';
-import { useCreateWorkerProfileMutation } from '../../modules/BuilderPlace/hooks/UseCreateWorkerProfileMutation';
 import { useContext } from 'react';
 import TalentLayerContext from '../../context/talentLayer';
+import { useChainId } from '../../hooks/useChainId';
+import { useWalletClient } from 'wagmi';
+import { useRouter } from 'next/router';
+import { useUpdateEmailMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailMutation';
+import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
 
 interface IFormValues {
   email: string;
@@ -15,14 +18,23 @@ interface IFormValues {
 const validationSchema = Yup.object({
   email: Yup.string().required('Please provide an email'),
 });
-
+//TODO: Faire l'API email et l'ajouter au EmailForm
+//TODO Une fois fini, continuer de check la gestion d'erreur des call frontend
 function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
-  const { refreshWorkerProfile } = useContext(TalentLayerContext);
-  const { mutateAsync: createWorkerProfileAsync } = useCreateWorkerProfileMutation();
+  const chainId = useChainId();
+  const router = useRouter();
+  const { data: walletClient } = useWalletClient({ chainId });
+  const { account, workerProfile, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { mutateAsync: updateUserEmailAsync } = useUpdateEmailMutation();
 
   const initialValues: IFormValues = {
     email: '',
   };
+
+  const domain =
+    typeof router.query.domain === 'object' && !!router.query.domain
+      ? router.query.domain[0]
+      : router.query.domain;
   const onSubmit = async (
     values: IFormValues,
     {
@@ -32,24 +44,43 @@ function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
   ) => {
     setSubmitting(true);
     try {
-      // TODO: update email in existing user
+      if (walletClient && account?.address && workerProfile?.name && domain) {
+        /**
+         * @dev Sign message to prove ownership of the address
+         */
+        const signature = await walletClient.signMessage({
+          account: account.address,
+          message: workerProfile.id.toString(),
+        });
 
-      const response: any = await verifyEmail(values.email, user.id);
+        /**
+         * @dev Update Email & send verification email to new email
+         */
+        const response = await updateUserEmailAsync({
+          userId: workerProfile.id.toString(),
+          email: values.email,
+          userAddress: account.address,
+          name: workerProfile.name,
+          domain,
+          signature,
+        });
 
-      await refreshWorkerProfile();
+        //TODO set condition here
+        if (true) {
+          createVerificationEmailToast();
+        }
 
-      if (response.status !== 200) {
-        showMongoErrorTransactionToast(response.statusText);
-        return;
-      }
+        await refreshWorkerProfile();
 
-      resetForm();
+        resetForm();
 
-      if (callback) {
-        callback();
+        if (callback) {
+          callback();
+        }
       }
     } catch (error: any) {
-      showMongoErrorTransactionToast(error.message);
+      console.log(error);
+      showErrorTransactionToast(error.message);
     } finally {
       setSubmitting(false);
     }
