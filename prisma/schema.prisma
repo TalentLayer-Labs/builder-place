@@ -58,7 +58,7 @@ model User {
   name                     String
   picture                  String?
   status                   EntityStatus   @default(PENDING)
-  talentLayerId            Int?           @unique
+  talentLayerId            String?        @unique
   weeklyTransactionCounter Int            @default(0)
   workerProfile            WorkerProfile? @relation("WorkerProfile")
   hirerProfile             HirerProfile?  @relation("HirerProfile")

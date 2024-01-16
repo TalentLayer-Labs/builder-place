@@ -226,7 +226,7 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string
     console.log("getting builderPlace with owner's TlId & mongo _id:", ownerTalentLayerId, id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
-        AND: [{ owner: { talentLayerId: Number(ownerTalentLayerId) } }, { id: Number(id) }],
+        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(id) }],
       },
       include: {
         owner: true,
@@ -297,7 +297,7 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
       where: {
         //TODO: add AND Status Validated
         owner: {
-          talentLayerId: Number(id),
+          talentLayerId: id,
         },
       },
     });

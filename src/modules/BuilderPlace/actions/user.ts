@@ -67,7 +67,7 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
     const userProfile = await prisma.user.findUnique({
       where: {
-        talentLayerId: Number(talentLayerId),
+        talentLayerId: talentLayerId,
       },
       include: {
         workerProfile: true,
@@ -317,7 +317,7 @@ export const setUserOwner = async (data: SetUserProfileOwner) => {
         id: Number(data.id),
       },
       data: {
-        talentLayerId: Number(data.talentLayerId),
+        talentLayerId: data.talentLayerId,
         address: data.userAddress.toLocaleLowerCase(),
       },
     });
