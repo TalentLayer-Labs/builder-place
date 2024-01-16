@@ -53,7 +53,7 @@ model User {
   about                    String?
   address                  String?        @unique
   counterStartDate         Int            @default(0)
-  email                    String         @unique
+  email                    String?        @unique
   isEmailVerified          Boolean        @default(false)
   name                     String
   picture                  String?
