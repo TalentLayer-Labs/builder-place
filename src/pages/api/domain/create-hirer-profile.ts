@@ -3,8 +3,6 @@ import { CreateHirerProfileProps } from '../../../modules/BuilderPlace/types';
 import { getUserByEmail } from '../../../modules/BuilderPlace/actions/email';
 import { createHirerProfile, updateHirerProfile } from '../../../modules/BuilderPlace/actions/user';
 
-//TODO make it one API to create either worker or hirer ? Or update an existing User when declaring him collaborator ?
-// Or pass as param if the guy is a hirer or worker ?
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const body: CreateHirerProfileProps = req.body;

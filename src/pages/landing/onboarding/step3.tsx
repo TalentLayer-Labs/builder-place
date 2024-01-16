@@ -15,6 +15,8 @@ import { createVerificationEmailToast } from '../../../modules/BuilderPlace/util
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
 import { useValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/hooks/UseValidateBuilderPlaceAndOwner';
 import ConnectBlock from '../../../components/ConnectBlock';
+import { showErrorTransactionToast } from '../../../utils/toast';
+
 interface IFormValues {
   subdomain: string;
   palette: keyof typeof themes;
@@ -110,11 +112,15 @@ function onboardingStep3() {
           signature,
         });
 
+        if (res?.error) {
+          throw new Error(res.error);
+        }
+
         if (res?.message) {
           router.push(`${window.location.protocol}//${subdomain}/dashboard?hireronboarding=1`);
         }
-      } catch (e: any) {
-        console.error(e);
+      } catch (error: any) {
+        showErrorTransactionToast(error.message);
       } finally {
         setTimeout(() => {
           setSubmitting(false);

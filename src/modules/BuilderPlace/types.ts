@@ -207,8 +207,6 @@ export interface CreateWorkerProfileProps {
   picture?: string;
   about?: string;
   skills?: string;
-  //TODO this should not be here
-  talentLayerId?: string;
 }
 export interface CreateHirerProfileProps {
   email: string;
@@ -216,8 +214,6 @@ export interface CreateHirerProfileProps {
   picture?: string;
   about?: string;
   status?: string;
-  //TODO this should not be here
-  talentLayerId?: string;
 }
 
 export type IBuilderPlace = {

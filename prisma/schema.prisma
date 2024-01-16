@@ -77,7 +77,6 @@ model HirerProfile {
   user User @relation("HirerProfile", fields: [id], references: [id])
 }
 
-//TODO Rename VERIFIED
 enum EntityStatus {
   PENDING
   VALIDATED

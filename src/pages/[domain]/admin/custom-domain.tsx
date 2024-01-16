@@ -27,7 +27,7 @@ export default function CustomDomain(
       setCustomDomain(builderPlace.customDomain);
     }
   }, [builderPlace]);
-
+  //TODO Prisma: test this
   const updateBuilderPlaceDomainMutation = useUpdateBuilderPlaceDomain();
 
   const handleUpdateDomainClick = async () => {

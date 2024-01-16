@@ -7,7 +7,7 @@ import Loading from '../../../components/Loading';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseGetBuilderPlaceById';
 import { useSetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/hooks/UseSetBuilderPlaceAndHirerOwner';
-import { toast } from 'react-toastify';
+import { showErrorTransactionToast } from '../../../utils/toast';
 
 function onboardingStep2() {
   const { account, user, refreshWorkerProfile, loading } = useContext(TalentLayerContext);
@@ -67,7 +67,7 @@ function onboardingStep2() {
         if (response.error) {
           throw new Error(response.error);
         }
-        //TODO check ici les variables
+
         if (response?.hirerId && response?.builderPlaceId) {
           router.push({
             pathname: '/onboarding/step3',
@@ -75,8 +75,7 @@ function onboardingStep2() {
           });
         }
       } catch (error: any) {
-        //TODO clean Prisma error rendering
-        toast.error(error.message);
+        showErrorTransactionToast(error.message);
       } finally {
         refreshWorkerProfile();
         setIsSubmitting(false);

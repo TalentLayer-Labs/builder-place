@@ -95,7 +95,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         existingProfileWithSameAddress &&
         existingProfileWithSameAddress.status === EntityStatus.PENDING
       ) {
-        //TODO carrément suppr le user ?
+        //TODO: Prisma carrément suppr le user ?
         await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
       }
 

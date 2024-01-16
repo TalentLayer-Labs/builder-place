@@ -64,10 +64,11 @@ function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
           signature,
         });
 
-        //TODO set condition here
-        if (true) {
-          createVerificationEmailToast();
+        if (response.error) {
+          throw new Error(response.error);
         }
+
+        createVerificationEmailToast();
 
         await refreshWorkerProfile();
 
