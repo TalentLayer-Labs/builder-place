@@ -132,6 +132,9 @@ export const getUserById = async (id: string) => {
 
 export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
   let errorMessage;
+  /**
+   * @dev: No Prisma nested update yet, so we need to update the User and WorkerProfile separately
+   */
   try {
     // Step 1: Update the User
     const user = await prisma.user.update({
@@ -174,6 +177,9 @@ export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
 
 export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
   let errorMessage;
+  /**
+   * @dev: No Prisma nested update yet, so we need to update the User and WorkerProfile separately
+   */
   try {
     // Step 1: Update the User
     const user = await prisma.user.update({
@@ -238,20 +244,15 @@ export const updateUserEmail = async (data: UpdateUserEmailAction) => {
 export const createHirerProfile = async (data: CreateHirerProfileAction) => {
   let errorMessage;
   try {
-    // Step 1: Create the User
     const user = await prisma.user.create({
       data: {
         email: data.email,
         name: data.name,
         picture: data.picture,
         about: data.about,
-      },
-    });
-
-    // Step 2: Create the WorkerProfile with the same ID as the User
-    await prisma.hirerProfile.create({
-      data: {
-        id: user.id,
+        hirerProfile: {
+          create: {},
+        },
       },
     });
 
@@ -273,21 +274,17 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
 export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   let errorMessage;
   try {
-    // Step 1: Create the User
     const user = await prisma.user.create({
       data: {
         email: data.email,
         name: data.name,
         picture: data.picture,
         about: data.about,
-      },
-    });
-
-    // Step 2: Create the WorkerProfile with the same ID as the User
-    await prisma.workerProfile.create({
-      data: {
-        id: user.id,
-        skills: data?.skills?.split(','),
+        workerProfile: {
+          create: {
+            skills: data?.skills?.split(','),
+          },
+        },
       },
     });
 
