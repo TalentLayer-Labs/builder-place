@@ -29,9 +29,11 @@ function onboardingStep2() {
 
   if (loading) {
     return (
-      <div className='flex flex-col mt-5 pb-8'>
-        <Loading />
-      </div>
+      <HirerProfileLayout step={2}>
+        <div className='flex flex-col mt-5 pb-8'>
+          <Loading />
+        </div>
+      </HirerProfileLayout>
     );
   }
 
