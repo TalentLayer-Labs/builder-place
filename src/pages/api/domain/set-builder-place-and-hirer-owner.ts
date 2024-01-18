@@ -41,7 +41,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(400).json({ error: "Domain doesn't exist." });
     }
 
-    if (!!builderSpace.ownerId || !!builderSpace.owner) {
+    if (builderSpace.status === EntityStatus.VALIDATED) {
       return res.status(401).json({ error: 'Domain already taken.' });
     }
 
@@ -62,8 +62,9 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     }
 
     /**
-     * @notice: Check whether the user already owns a profile
-     * @dev: If PENDING profiles with the same address and / or TalentLayerId, remove address & ID
+     * @notice: Check whether the user already owns a BuilderPlace
+     * @notice: (This check could be removed if we allow multiple ownerships)
+     * @dev: If PENDING profiles with the same address (and / or TalentLayerId), remove address & ID
      * from pending profile to avoid conflicts on "unique" constraints
      */
     const existingProfileWithSameAddress = await getUserByAddress(body.ownerAddress);
@@ -72,7 +73,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       existingProfileWithSameAddress.status === EntityStatus.VALIDATED &&
       !!existingProfileWithSameAddress.ownedBuilderPlace
     ) {
-      return res.status(401).json({ error: 'You already have a profile' });
+      return res.status(401).json({ error: 'You already own a BuilderPlace' });
     }
 
     /**
@@ -80,33 +81,39 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
      */
     const userProfile = await getUserById(body.hirerId as string);
     if (!userProfile) {
-      return res.status(400).json({ error: "Profile doesn't exist." });
-    }
-    if (!!userProfile.talentLayerId && userProfile.status === EntityStatus.VALIDATED) {
-      return res.status(401).json({ error: 'Profile already has an owner.' });
+      return res.status(400).json({ error: "Profile doesn't exist" });
     }
 
     try {
       /**
-       * @dev: If existing pending with same address,
-       * remove address from pending profile to avoid conflicts on field "unique" constraint
+       * @dev: If profile Validated and owner already set, skip the owner setting step
        */
       if (
-        existingProfileWithSameAddress &&
-        existingProfileWithSameAddress.status === EntityStatus.PENDING
+        userProfile.status !== EntityStatus.VALIDATED &&
+        userProfile.talentLayerId !== body.ownerTalentLayerId &&
+        userProfile.address?.toLocaleLowerCase() !== body.ownerAddress.toLocaleLowerCase()
       ) {
-        //TODO: Prisma carrément suppr le user ?
-        await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
-      }
+        /**
+         * @dev: If existing pending with same address,
+         * remove address from pending profile to avoid conflicts on field "unique" constraint
+         */
+        if (
+          existingProfileWithSameAddress &&
+          existingProfileWithSameAddress.status === EntityStatus.PENDING
+        ) {
+          //TODO: Prisma carrément suppr le user ?
+          await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
 
-      /**
-       * @dev: Update BuilderPlace & Hirer profile
-       */
-      await setUserOwner({
-        id: body.hirerId,
-        userAddress: body.ownerAddress.toLocaleLowerCase(),
-        talentLayerId: talentLayerUser.id,
-      });
+          /**
+           * @dev: Set Hirer profile owner
+           */
+          await setUserOwner({
+            id: body.hirerId,
+            userAddress: body.ownerAddress.toLocaleLowerCase(),
+            talentLayerId: talentLayerUser.id,
+          });
+        }
+      }
 
       /**
        * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint

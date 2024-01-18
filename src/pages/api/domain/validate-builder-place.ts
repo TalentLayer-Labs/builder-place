@@ -5,6 +5,8 @@ import { EntityStatus } from '.prisma/client';
 import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions/user';
 import {
   getBuilderPlaceById,
+  getBuilderPlaceBySubdomain,
+  removeBuilderSubdomain,
   updateBuilderPlace,
   validateBuilderPlace,
 } from '../../../modules/BuilderPlace/actions/builderPlace';
@@ -32,31 +34,46 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(401).json({ error: 'Restricted access' });
     }
 
-    if (owner.status === EntityStatus.VALIDATED) {
-      return res.status(400).json({ error: 'Profile already validated' });
-    }
-
     /**
      * @dev: Check whether the BuilderPlace exists in the database & has no owner
      */
-    const builderSpace = await getBuilderPlaceById(body.builderPlaceId);
-    if (!builderSpace) {
-      return res.status(400).json({ error: "Domain doesn't exist" });
+    const builderPlace = await getBuilderPlaceById(body.builderPlaceId);
+    if (!builderPlace) {
+      return res.status(400).json({ error: "BuilderPlace doesn't exist" });
     }
 
-    if (builderSpace.ownerId !== owner.id) {
-      return res.status(401).json({ error: 'Wrong BuilderPlace' });
+    if (builderPlace.ownerId !== owner.id) {
+      return res.status(401).json({ error: 'Restricted Access' });
     }
 
-    if (builderSpace.status === EntityStatus.VALIDATED) {
+    if (builderPlace.status === EntityStatus.VALIDATED) {
       return res.status(401).json({ error: 'Domain already has an owner' });
+    }
+
+    /**
+     * @dev: Check whether the subdomain is already taken
+     */
+    const existingSubDomain = await getBuilderPlaceBySubdomain(body.subdomain);
+
+    if (existingSubDomain && existingSubDomain.status === EntityStatus.VALIDATED) {
+      return res.status(401).json({ error: 'Subdomain already taken' });
     }
 
     try {
       /**
        * @dev: Validate & Update BuilderPlace & Hirer profile
        */
-      await validateUser(body.ownerId);
+      if (owner.status !== EntityStatus.VALIDATED) {
+        await validateUser(body.ownerId);
+      }
+
+      /**
+       * @dev: Remove existing subdomain if it exists in a PENDING BuilderPlace
+       */
+      if (existingSubDomain && existingSubDomain.status === EntityStatus.PENDING) {
+        await removeBuilderSubdomain(existingSubDomain.id);
+      }
+
       await validateBuilderPlace(body.builderPlaceId);
 
       /**

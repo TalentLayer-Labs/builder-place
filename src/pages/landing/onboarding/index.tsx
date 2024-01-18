@@ -7,7 +7,8 @@ import { useCreateBuilderPlaceMutation } from '../../../modules/BuilderPlace/hoo
 import { themes } from '../../../utils/themes';
 import { showErrorTransactionToast } from '../../../utils/toast';
 import { useCreateHirerProfileMutation } from '../../../modules/BuilderPlace/hooks/UseCreateHirerProfileMutation';
-import { WorkType } from '.prisma/client';
+import { EntityStatus, WorkType } from '.prisma/client';
+import { getUserByEmail } from '../../../modules/BuilderPlace/request';
 
 interface IFormValues {
   name: string;
@@ -45,18 +46,28 @@ function onboardingStep1() {
   ) => {
     try {
       setSubmitting(true);
-      /**
-       * @dev: Create User first so that it will revert if email already exists & not create the BuilderPlace
-       */
-      const userResponse = await createHirerProfileAsync({
-        email: values.email,
-        name: values.name,
-        picture: values.profilePicture || undefined,
-        about: values.about,
-      });
 
-      if (userResponse.error) {
-        throw new Error(userResponse.error);
+      /**
+       * @dev: Check if user already exists
+       */
+      let userId: string;
+      const existingUser = await getUserByEmail(values.email);
+
+      if (existingUser && existingUser.status === EntityStatus.VALIDATED) {
+        userId = existingUser.id;
+      } else {
+        const userResponse = await createHirerProfileAsync({
+          email: values.email,
+          name: values.name,
+          picture: values.profilePicture || undefined,
+          about: values.about,
+        });
+
+        userId = userResponse.id;
+
+        if (userResponse.error) {
+          throw new Error(userResponse.error);
+        }
       }
 
       const builderPlaceResponse = await createBuilderPlaceAsync({
@@ -72,10 +83,10 @@ function onboardingStep1() {
       }
 
       router.query.builderPlaceId = builderPlaceResponse.id;
-      router.query.userId = userResponse.id;
+      router.query.userId = userId;
       router.push({
         pathname: '/onboarding/step2',
-        query: { builderPlaceId: builderPlaceResponse.id, userId: userResponse.id },
+        query: { builderPlaceId: builderPlaceResponse.id, userId: userId },
       });
     } catch (error: any) {
       showErrorTransactionToast(error.message);
