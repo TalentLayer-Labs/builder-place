@@ -16,6 +16,7 @@ import { useGetBuilderPlaceById } from '../../../modules/BuilderPlace/hooks/UseG
 import { useValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/hooks/UseValidateBuilderPlaceAndOwner';
 import ConnectBlock from '../../../components/ConnectBlock';
 import { showErrorTransactionToast } from '../../../utils/toast';
+import Loading from '../../../components/Loading';
 
 interface IFormValues {
   subdomain: string;
@@ -42,11 +43,10 @@ function onboardingStep3() {
   };
 
   if (loading) {
-    console.log('no data');
     return (
       <HirerProfileLayout step={3}>
         <div className='p-8 flex flex-col items-center'>
-          <ConnectBlock />
+          <Loading />
         </div>
       </HirerProfileLayout>
     );
@@ -64,9 +64,19 @@ function onboardingStep3() {
 
   if (!builderPlaceData) {
     return (
-      <div className='flex flex-col mt-5 pb-8'>
-        <p>No builderPlace found associated to this wallet</p>
-      </div>
+      <HirerProfileLayout step={2}>
+        <div className={'flex items-center justify-center'}>
+          <span>
+            You first need to{' '}
+            <strong
+              className={`cursor-pointer text-pink-500`}
+              onClick={() => router.push(`/onboarding`)}>
+              {' '}
+              create a BuilderPlace
+            </strong>
+          </span>
+        </div>
+      </HirerProfileLayout>
     );
   }
 
@@ -106,7 +116,7 @@ function onboardingStep3() {
         const res = await validate({
           builderPlaceId: builderPlaceData.id.toString(),
           ownerId: typeof userId === 'string' ? userId : userId[0],
-          ownerAddress: account.address,
+          ownerAddress: account.address.toLocaleLowerCase(),
           subdomain: subdomain,
           palette: themes[values.palette],
           logo: values.logo,
