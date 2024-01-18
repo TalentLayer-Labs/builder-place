@@ -113,7 +113,33 @@ export const getUserById = async (id: string) => {
         managedPlaces: true,
       },
     });
-    console.log('Fetched Worker Profile, ', userProfile);
+    console.log('Fetched Worker Profile: ', userProfile);
+    if (userProfile) {
+      return userProfile;
+    }
+
+    return null;
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_USER;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+export const getUserByEmail = async (email: string) => {
+  let errorMessage;
+  try {
+    console.log('Getting User Profile with email:', email);
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    console.log('Fetched Worker Profile: ', userProfile);
     if (userProfile) {
       return userProfile;
     }
