@@ -138,6 +138,12 @@ export const getUserByEmail = async (email: string) => {
       where: {
         email: email,
       },
+      include: {
+        // workerProfile: true,
+        // hirerProfile: true,
+        ownedBuilderPlace: true,
+        // managedPlaces: true,
+      },
     });
     console.log('Fetched Worker Profile: ', userProfile);
     if (userProfile) {

@@ -52,6 +52,13 @@ function onboardingStep1() {
        */
       let userId: string;
       const existingUser = await getUserByEmail(values.email);
+      if (
+        existingUser &&
+        existingUser.status === EntityStatus.VALIDATED &&
+        !!existingUser.ownedBuilderPlace
+      ) {
+        throw new Error('A User with this email already owns a BuilderPlace');
+      }
 
       if (existingUser && existingUser.status === EntityStatus.VALIDATED) {
         userId = existingUser.id;
