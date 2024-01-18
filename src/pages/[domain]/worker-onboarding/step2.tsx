@@ -13,6 +13,7 @@ import {
   PROFILE_ALREADY_HAS_OWNER,
   PROFILE_DOES_NOT_EXIST,
 } from '../../../modules/BuilderPlace/apiResponses';
+import HirerProfileLayout from '../../../components/HirerProfileLayout';
 
 function workerOnboardingStep2() {
   const { account, loading, user } = useContext(TalentLayerContext);
@@ -55,7 +56,13 @@ function workerOnboardingStep2() {
   }, [user]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <HirerProfileLayout step={2}>
+        <div className='p-8 flex flex-col items-center'>
+          <Loading />
+        </div>
+      </HirerProfileLayout>
+    );
   }
 
   return (
