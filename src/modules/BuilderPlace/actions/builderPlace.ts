@@ -380,10 +380,10 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
         owner: {
           id: Number(id),
         },
-        include: {
-          owner: true,
-          collaborators: true,
-        },
+      },
+      include: {
+        owner: true,
+        collaborators: true,
       },
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);

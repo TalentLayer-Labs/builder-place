@@ -1,6 +1,5 @@
-import { PreferredWorkTypes } from '../../types';
 import { Document } from 'mongoose';
-import { EntityStatus, User } from '.prisma/client';
+import { EntityStatus, User, WorkType } from '.prisma/client';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -25,7 +24,7 @@ export interface UpdateBuilderPlace {
   name?: string;
   icon?: string;
   presentation?: string;
-  preferredWorkTypes?: PreferredWorkTypes[];
+  preferredWorkTypes?: WorkType[];
   baseline?: string;
   about?: string;
   aboutTech?: string;
@@ -146,7 +145,7 @@ export interface CreateBuilderPlaceAction {
   name: string;
   palette: iBuilderPlacePalette;
   about: string;
-  preferredWorkTypes: PreferredWorkTypes[];
+  preferredWorkTypes: WorkType[];
   profilePicture?: string;
 }
 
@@ -197,7 +196,7 @@ export interface CreateBuilderPlaceProps {
   name: string;
   palette: iBuilderPlacePalette;
   about: string;
-  preferredWorkTypes: PreferredWorkTypes[];
+  preferredWorkTypes: WorkType[];
   profilePicture?: string;
 }
 
@@ -229,7 +228,7 @@ export type IBuilderPlace = {
   owner: User;
   collaborators?: User[];
   palette?: iBuilderPlacePalette;
-  preferredWorkTypes: PreferredWorkTypes[];
+  preferredWorkTypes: WorkType[];
   presentation?: string;
   profilePicture?: string;
   status: EntityStatus;
@@ -340,7 +339,7 @@ export interface DomainVerificationResponse {
 export interface OrganizationProps {
   name: string;
   about: string;
-  jobType: PreferredWorkTypes;
+  jobType: WorkType;
   imageUrl: string;
 }
 

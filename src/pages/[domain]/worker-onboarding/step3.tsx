@@ -14,7 +14,6 @@ function onboardingStep3() {
   const [isSubmitting, setSubmitting] = useState(false);
 
   const handleSignMessage = async () => {
-    console.log('handleSignMessage', account?.address, workerProfile?.id, walletClient);
     if (walletClient && account?.address && workerProfile?.id) {
       try {
         setSubmitting(true);

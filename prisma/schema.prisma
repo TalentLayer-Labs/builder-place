@@ -21,7 +21,7 @@ model BuilderPlace {
   ownerId            Int?         @unique
   collaborators      User[]       @relation("BuilderPlaceCollaborators")
   palette            Json
-  preferredWorkTypes String[]
+  preferredWorkTypes WorkType[]
   presentation       String?
   profilePicture     String?
   status             EntityStatus @default(PENDING)
@@ -60,4 +60,11 @@ model HirerProfile {
 enum EntityStatus {
   PENDING
   VALIDATED
+}
+
+enum WorkType {
+  BOUNTIES
+  GRANTS
+  GIGS
+  JOBS
 }
