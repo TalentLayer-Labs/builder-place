@@ -4,6 +4,7 @@ import { EntityStatus } from '.prisma/client';
 import { getUserByAddress as getTalentLayerUserByAddress } from '../../../queries/users';
 import {
   ALREADY_HAVE_PROFILE,
+  MISSING_DATA,
   PROFILE_ALREADY_HAS_OWNER,
   PROFILE_DOES_NOT_EXIST,
 } from '../../../modules/BuilderPlace/apiResponses';
@@ -20,7 +21,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log('Received data:', body);
 
     if (!body.id || !body.talentLayerId) {
-      return res.status(500).json({ error: 'Missing data.' });
+      return res.status(400).json({ error: MISSING_DATA });
     }
 
     /**

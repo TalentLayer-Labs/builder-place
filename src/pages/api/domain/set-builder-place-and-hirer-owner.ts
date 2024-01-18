@@ -21,11 +21,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log('Received data:', body);
 
     if (!body.builderPlaceId || !body.hirerId || !body.ownerAddress || !body.ownerTalentLayerId) {
-      return res.status(400).json({ error: 'Missing data.' });
+      return res.status(400).json({ error: 'Missing data' });
     }
 
     if (!process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID) {
-      return res.status(500).json({ error: 'Missing default chain config.' });
+      return res.status(500).json({ error: 'Missing default chain config' });
     }
 
     /**
@@ -38,11 +38,11 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     const builderSpace = await getBuilderPlaceById(body.builderPlaceId as string);
     if (!builderSpace) {
-      return res.status(400).json({ error: "Domain doesn't exist." });
+      return res.status(400).json({ error: "Domain doesn't exist" });
     }
 
     if (builderSpace.status === EntityStatus.VALIDATED) {
-      return res.status(401).json({ error: 'Domain already taken.' });
+      return res.status(401).json({ error: 'BuilderPlace already has an owner' });
     }
 
     // **** Checks on the Hirer ****
@@ -63,7 +63,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     /**
      * @notice: Check whether the user already owns a BuilderPlace
-     * @notice: (This check could be removed if we allow multiple ownerships)
      * @dev: If PENDING profiles with the same address (and / or TalentLayerId), remove address & ID
      * from pending profile to avoid conflicts on "unique" constraints
      */
@@ -71,7 +70,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     if (
       existingProfileWithSameAddress &&
       existingProfileWithSameAddress.status === EntityStatus.VALIDATED &&
-      !!existingProfileWithSameAddress.ownedBuilderPlace
+      existingProfileWithSameAddress.ownedBuilderPlace?.status === EntityStatus.VALIDATED
     ) {
       return res.status(401).json({ error: 'You already own a BuilderPlace' });
     }
@@ -89,13 +88,32 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
        * @dev: If profile Validated and owner already set, skip the owner setting step
        */
       if (
-        userProfile.status !== EntityStatus.VALIDATED &&
-        userProfile.talentLayerId !== body.ownerTalentLayerId &&
-        userProfile.address?.toLocaleLowerCase() !== body.ownerAddress.toLocaleLowerCase()
+        userProfile.status === EntityStatus.VALIDATED &&
+        userProfile.talentLayerId === body.ownerTalentLayerId &&
+        userProfile.address?.toLocaleLowerCase() === body.ownerAddress.toLocaleLowerCase()
       ) {
         /**
-         * @dev: If existing pending with same address,
-         * remove address from pending profile to avoid conflicts on field "unique" constraint
+         * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint
+         */
+        if (
+          existingSpace &&
+          existingSpace.ownerId &&
+          existingSpace.status === EntityStatus.PENDING
+        ) {
+          await removeBuilderPlaceOwner({
+            id: existingSpace.id,
+            ownerId: existingSpace.ownerId,
+          });
+        }
+
+        await setBuilderPlaceOwner({
+          id: body.builderPlaceId,
+          ownerId: body.hirerId,
+        });
+      } else {
+        /**
+         * @dev: If existing pending profile with same address, remove address
+         * from pending profile to avoid conflicts on field "unique" constraint
          */
         if (
           existingProfileWithSameAddress &&
@@ -103,16 +121,16 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         ) {
           //TODO: Prisma carrément suppr le user ?
           await removeOwnerFromUser(existingProfileWithSameAddress.id.toString());
-
-          /**
-           * @dev: Set Hirer profile owner
-           */
-          await setUserOwner({
-            id: body.hirerId,
-            userAddress: body.ownerAddress.toLocaleLowerCase(),
-            talentLayerId: talentLayerUser.id,
-          });
         }
+
+        /**
+         * @dev: Set Hirer profile owner
+         */
+        await setUserOwner({
+          id: body.hirerId,
+          userAddress: body.ownerAddress.toLocaleLowerCase(),
+          talentLayerId: talentLayerUser.id,
+        });
       }
 
       /**
