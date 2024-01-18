@@ -143,3 +143,21 @@ export const verifyAccount = async (userId: string, signature: string): Promise<
     throw err;
   }
 };
+
+export const getUserByEmail = async (email: string): Promise<any> => {
+  try {
+    const response = await fetch('/api/domain/get-user-by-email', {
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
