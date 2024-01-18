@@ -7,6 +7,7 @@ import {
   ERROR_DELETING_BUILDERPLACE,
   ERROR_FETCHING_BUILDERPLACE,
   ERROR_REMOVING_BUILDERPLACE_OWNER,
+  ERROR_REMOVING_BUILDERPLACE_SUBDOMAIN,
   ERROR_SETTING_BUILDERPLACE_OWNER,
   ERROR_UPDATING_BUILDERPLACE,
   ERROR_UPDATING_DOMAIN,
@@ -86,6 +87,33 @@ export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => 
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
       errorMessage = ERROR_REMOVING_BUILDERPLACE_OWNER;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+export const removeBuilderSubdomain = async (builderPlaceId: number) => {
+  let errorMessage;
+  try {
+    console.log('Removing subdomain from pending BuilderPlace:', builderPlaceId);
+    await prisma.builderPlace.update({
+      where: {
+        id: builderPlaceId,
+      },
+      data: {
+        subdomain: null,
+      },
+    });
+    return {
+      message: 'BuilderPlace subdomain removed successfully',
+      id: builderPlaceId,
+    };
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_REMOVING_BUILDERPLACE_SUBDOMAIN;
     } else {
       errorMessage = error.message;
     }
@@ -385,6 +413,36 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
         owner: true,
         collaborators: true,
       },
+    });
+    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    if (builderPlaceSubdomain) {
+      return builderPlaceSubdomain;
+    }
+
+    return null;
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
+  let errorMessage;
+  try {
+    console.log('getting builderPlace with subdomain:', subdomain);
+    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
+      where: {
+        subdomain: subdomain,
+      },
+      // include: {
+      //   owner: true,
+      //   collaborators: true,
+      // },
     });
     console.log('fetched builderPlace, ', builderPlaceSubdomain);
     if (builderPlaceSubdomain) {

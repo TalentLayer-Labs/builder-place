@@ -1,6 +1,7 @@
 // Email verification
 export const EMAIL_VERIFIED_SUCCESSFULLY = 'Email verified successfully';
 export const EMAIL_ALREADY_VERIFIED = 'Email already verified';
+export const MISSING_DATA = 'Missing data';
 export const ERROR_VERIFYING_EMAIL = 'Error while verifying email';
 export const PROFILE_ALREADY_HAS_OWNER = 'Profile already has an owner';
 export const PROFILE_DOES_NOT_EXIST = "Profile doesn't exist";
@@ -19,6 +20,7 @@ export const ERROR_SETTING_BUILDERPLACE_OWNER = 'Error setting builderPlace owne
 export const ERROR_SETTING_USER_OWNER = 'Error setting User owner';
 export const ERROR_REMOVING_USER_OWNER = 'Error removing User owner';
 export const ERROR_REMOVING_BUILDERPLACE_OWNER = 'Error removing builderPlace owner';
+export const ERROR_REMOVING_BUILDERPLACE_SUBDOMAIN = 'Error removing builderPlace subdomain';
 export const ERROR_REMOVING_USER_ADDRESS = 'Error removing builderPlace owner';
 export const ERROR_VALIDATING_BUILDERPLACE = 'Error validating BuilderPlace';
 export const ERROR_VALIDATING_USER = 'Error validating User';
