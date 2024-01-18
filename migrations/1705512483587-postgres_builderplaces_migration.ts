@@ -1,5 +1,5 @@
-import builderPlaces from '../prisma/mongo-dump/real.builderplaces.json';
-import { EntityStatus, PrismaClient } from '.prisma/client';
+import builderPlaces from '../prisma/mongo-dump/builderplaces.json';
+import { EntityStatus, PrismaClient, WorkType } from '.prisma/client';
 import {
   getUserByAddress as getTalentLayerUserByAddress,
   getUserById as getTalentLayerUserById,
@@ -30,16 +30,39 @@ const getUserTalentLayerDataByAddress = async (userAddress: string) => {
   }
 };
 
+const getJobTypes = (jobTypes: string[]) => {
+  const jobTypesArray: WorkType[] = [];
+  for (const jobType of jobTypes) {
+    switch (jobType) {
+      case 'jobs':
+        jobTypesArray.push(WorkType.JOBS);
+        break;
+      case 'bounties':
+        jobTypesArray.push(WorkType.BOUNTIES);
+        break;
+      case 'grants':
+        jobTypesArray.push(WorkType.GRANTS);
+        break;
+      case 'gigs':
+        jobTypesArray.push(WorkType.GIGS);
+        break;
+      default:
+        break;
+    }
+  }
+  return jobTypesArray;
+};
+
 /* List of actions:
 1 - Create BuilderPlace
 2 - Graph Call to get TalentLayer Owner, create a User with the TalentLayer infos | Set email to this user
 3 - Graph Call to get TalentLayer collaborators, create a User with the TalentLayer infos | do not set any email
 * */
+
 export async function up(): Promise<void> {
   const prisma = new PrismaClient();
   // Migrate BuilderPlaces
   for (const item of builderPlaces) {
-    if (item.name === 'Developer DAO') continue;
     if (item.status !== 'validated') continue;
     console.log('item', item.name);
 
@@ -149,7 +172,7 @@ export async function up(): Promise<void> {
         aboutTech,
         ownerId: builderPlaceOwner?.id,
         status: EntityStatus.VALIDATED,
-        preferredWorkTypes,
+        preferredWorkTypes: getJobTypes(preferredWorkTypes),
         collaborators: {
           connect: collaboratorIds.map(id => ({ id })),
         },
