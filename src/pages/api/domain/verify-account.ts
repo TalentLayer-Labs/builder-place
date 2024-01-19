@@ -3,6 +3,7 @@ import { VerifyAccount } from '../../../modules/BuilderPlace/types';
 import { recoverMessageAddress } from 'viem';
 import { EntityStatus } from '@prisma/client';
 import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions/user';
+import { MISSING_DATA } from '../../../modules/BuilderPlace/apiResponses';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -10,7 +11,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     console.log('Received data:', body);
 
     if (!body.userId || !body.signature) {
-      return res.status(400).json({ error: 'Missing data.' });
+      return res.status(400).json({ error: MISSING_DATA });
     }
 
     const ownerAddress = await recoverMessageAddress({

@@ -4,6 +4,7 @@ import { getUserById, updateUserEmail } from '../../../modules/BuilderPlace/acti
 import { recoverMessageAddress } from 'viem';
 import { getUserByEmail } from '../../../modules/BuilderPlace/actions/email';
 import { sendTransactionalEmailValidation } from '../utils/sendgrid';
+import { MISSING_DATA } from '../../../modules/BuilderPlace/apiResponses';
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
@@ -19,7 +20,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         !body.domain ||
         !body.name
       ) {
-        return res.status(400).json({ error: 'Missing data' });
+        return res.status(400).json({ error: MISSING_DATA });
       }
 
       const address = await recoverMessageAddress({
