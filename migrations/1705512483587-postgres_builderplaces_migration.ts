@@ -126,11 +126,12 @@ export async function up(): Promise<void> {
         let collaborator;
         if (address.toLocaleLowerCase() === builderPlaceOwner?.address?.toLocaleLowerCase())
           continue;
+        console.log('Creating collaborator with address:', address);
         const talentLayerCollaborator = await getUserTalentLayerDataByAddress(address);
         if (talentLayerCollaborator) {
           const existingUser = await prisma.user.findFirst({
             where: {
-              talentLayerId: ownerTalentLayerId,
+              talentLayerId: talentLayerCollaborator.id,
             },
           });
           if (existingUser) {
@@ -157,6 +158,7 @@ export async function up(): Promise<void> {
         }
       }
     }
+    console.log('collaboratorIds', collaboratorIds);
 
     // Create the BuilderPlace with the mongo data + add owners & collaborators
     const builderPlace = await prisma.builderPlace.create({
