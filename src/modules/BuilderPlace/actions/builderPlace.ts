@@ -181,8 +181,8 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
 
       // null means remove the custom domain
     } else if (builderPlace.customDomain! === '') {
-      // Remove the custom domain from the MongoDB document
-      console.log('Removing custom domain from MongoDB document');
+      // Remove the custom domain from the entity
+      console.log('Removing custom domain');
       await prisma.builderPlace.updateMany({
         where: {
           subdomain: builderPlace.subdomain,
