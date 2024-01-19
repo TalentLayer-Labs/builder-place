@@ -32,10 +32,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     return res.status(500).json({ error: 'Missing default chain config' });
   }
 
-  if (!body.builderPlaceId || !body.hirerId || !body.ownerAddress || !body.ownerTalentLayerId) {
-    return res.status(400).json({ error: MISSING_DATA });
-  }
-
   try {
     const [
       existingSpace,
@@ -54,7 +50,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       getUserById(body.hirerId as string),
     ]);
 
-    // Various validations
+    // Validations
     if (existingSpace && existingSpace.status === EntityStatus.VALIDATED) {
       throw new Error('You already own a domain');
     }
