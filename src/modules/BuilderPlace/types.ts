@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import { EntityStatus, User, WorkType } from '.prisma/client';
 
 export interface iBuilderPlacePalette {
@@ -257,32 +256,6 @@ export interface IWorkerProfile extends IUserProfile {
 }
 
 export interface IHirerProfile extends IUserProfile {}
-
-export interface IWorkerMongooseSchema extends Document {
-  _id: string;
-  email: string;
-  emailVerified: boolean;
-  status: 'validated' | 'pending';
-  talentLayerId?: string;
-  name: string;
-  picture?: string;
-  about?: string;
-  skills?: string[];
-  weeklyTransactionCounter: number;
-  counterStartDate: number;
-}
-export interface IHirerMongooseSchema extends Document {
-  _id: string;
-  email: string;
-  emailVerified: boolean;
-  status: 'validated' | 'pending';
-  talentLayerId?: string;
-  name: string;
-  picture?: string;
-  about?: string;
-  weeklyTransactionCounter: number;
-  counterStartDate: number;
-}
 
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain
 export interface DomainResponse {

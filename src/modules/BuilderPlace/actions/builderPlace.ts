@@ -165,8 +165,6 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
       // if the custom domain is valid, we need to store it and add it to Vercel
     } else if (validDomainRegex.test(builderPlace.customDomain!)) {
       console.log(INVALID_CUSTOM_DOMAIN);
-      // Update the MongoDB document with the new custom domain
-      // await BuilderPlace.updateOne({ _id: new mongoose.Types.ObjectId(builderPlace.id) }, { customDomain: builderPlace.customDomain }).exec();
       console.log('Searching subdomain, ', builderPlace.subdomain);
       const updatedEntity = await prisma.builderPlace.update({
         where: {
@@ -187,8 +185,6 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     } else if (builderPlace.customDomain! === '') {
       // Remove the custom domain from the MongoDB document
       console.log('Removing custom domain from MongoDB document');
-      // await BuilderPlace.updateOne({ _id: new mongoose.Types.ObjectId(builderPlace.id) }, { customDomain: "asd.de" }).exec();
-
       await prisma.builderPlace.updateMany({
         where: {
           subdomain: builderPlace.subdomain,
@@ -200,7 +196,6 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     }
 
     // Get the current custom domain from the MongoDB document
-    // const currentBuilderPlace = await BuilderPlace.findById(new mongoose.Types.ObjectId(builderPlace.id)).exec();
     const currentBuilderPlace = await prisma.builderPlace.findFirst({
       where: {
         subdomain: builderPlace.subdomain,
@@ -251,7 +246,7 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
 export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
   let errorMessage;
   try {
-    console.log("getting builderPlace with owner's TlId & mongo _id:", ownerTalentLayerId, id);
+    console.log("getting builderPlace with owner's TlId & postgres id:", ownerTalentLayerId, id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
         AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(id) }],
