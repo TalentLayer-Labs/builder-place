@@ -37,7 +37,6 @@ export interface UpdateBuilderPlace {
 export interface ValidateBuilderPlaceAndOwner {
   builderPlaceId: string;
   ownerId: string;
-  ownerAddress: string;
   subdomain: string;
   owners?: string[];
   baseline?: string;

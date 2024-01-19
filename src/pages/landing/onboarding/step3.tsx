@@ -116,7 +116,6 @@ function onboardingStep3() {
         const res = await validate({
           builderPlaceId: builderPlaceData.id.toString(),
           ownerId: typeof userId === 'string' ? userId : userId[0],
-          ownerAddress: account.address.toLocaleLowerCase(),
           subdomain: subdomain,
           palette: themes[values.palette],
           logo: values.logo,

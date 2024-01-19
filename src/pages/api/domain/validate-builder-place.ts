@@ -16,7 +16,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const body: ValidateBuilderPlaceAndOwner = req.body;
     console.log('Received data:', body);
 
-    if (!body.builderPlaceId || !body.ownerId || !body.ownerAddress || !body.signature) {
+    if (!body.builderPlaceId || !body.ownerId || !body.signature) {
       return res.status(400).json({ error: 'Missing data.' });
     }
 
