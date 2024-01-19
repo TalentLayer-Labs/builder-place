@@ -33,7 +33,8 @@ export default function Collaborators() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const [submitting, setSubmitting] = useState('');
-  if (user?.id !== builderPlace?.ownerTalentLayerId) {
+
+  if (user?.id != builderPlace?.owner.talentLayerId) {
     return <AccessDenied />;
   }
 
@@ -43,8 +44,24 @@ export default function Collaborators() {
   console.log(delegates);
   const onRemove = async (address: string): Promise<void> => {
     try {
-      if (walletClient && account?.address && builderPlace?._id) {
+      if (walletClient && account?.address && builderPlace?.id) {
         setSubmitting(address);
+
+        if (user.delegates?.indexOf(address) !== -1) {
+          /**
+           * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
+           */
+          await toggleDelegation(
+            chainId,
+            user.id,
+            config,
+            address,
+            publicClient,
+            walletClient,
+            false,
+          );
+        }
+
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -58,8 +75,8 @@ export default function Collaborators() {
          */
         const response = await removeBuilderPlaceCollaboratorAsync({
           ownerId: user.id,
-          builderPlaceId: builderPlace._id,
-          collaborator: address,
+          builderPlaceId: builderPlace.id,
+          collaboratorAddress: address.toLocaleLowerCase(),
           signature,
         });
 
