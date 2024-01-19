@@ -3,7 +3,7 @@ import CreateWorkerProfileForm from '../../../components/Form/CreateWorkerProfil
 import { useContext } from 'react';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useRouter } from 'next/router';
-import { EntityStatus } from '.prisma/client';
+import { EntityStatus } from '@prisma/client';
 
 function workerOnboardingStep1() {
   const router = useRouter();

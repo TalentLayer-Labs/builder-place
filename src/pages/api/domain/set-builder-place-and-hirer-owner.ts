@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { SetBuilderPlaceAndHirerOwner } from '../../../modules/BuilderPlace/types';
-import { EntityStatus } from '.prisma/client';
+import { EntityStatus } from '@prisma/client';
 import { getUserByAddress as getTalentLayerUserByAddress } from '../../../queries/users';
 import {
   getBuilderPlaceById,

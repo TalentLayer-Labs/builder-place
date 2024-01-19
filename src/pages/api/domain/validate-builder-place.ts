@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ValidateBuilderPlaceAndOwner } from '../../../modules/BuilderPlace/types';
 import { recoverMessageAddress } from 'viem';
-import { EntityStatus } from '.prisma/client';
+import { EntityStatus } from '@prisma/client';
 import { getUserById, validateUser } from '../../../modules/BuilderPlace/actions/user';
 import {
   getBuilderPlaceById,

@@ -3,9 +3,9 @@ import { verifyAccount } from '../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
-import { EntityStatus } from '.prisma/client';
 import { useChainId } from '../hooks/useChainId';
 import { useWalletClient } from 'wagmi';
+import { EntityStatus } from '@prisma/client';
 
 type VerifyAccountNotificationProps = {
   callback?: () => void | Promise<void>;
