@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '.prisma/client';
+import { User } from '.prisma/client';
 import { NextApiResponse } from 'next';
 import { MAX_TRANSACTION_AMOUNT } from '../../../config';
 import {
@@ -6,9 +6,8 @@ import {
   ERROR_INCREMENTING_TRANSACTION_COUNTER,
   TRANSACTION_LIMIT_REACHED,
 } from '../apiResponses';
-// import prisma from '../../postgre/postgreClient';
+import prisma from '../../../postgre/postgreClient';
 
-const prisma = new PrismaClient();
 export async function checkOrResetTransactionCounter(
   user: User,
   res: NextApiResponse,

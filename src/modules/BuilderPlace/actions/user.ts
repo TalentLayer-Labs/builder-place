@@ -1,4 +1,4 @@
-import { EntityStatus, PrismaClient } from '.prisma/client';
+import { EntityStatus } from '.prisma/client';
 import { NextApiResponse } from 'next';
 import {
   ERROR_CREATING_HIRER_PROFILE,
@@ -19,9 +19,7 @@ import {
   UpdateUserEmailAction,
   UpdateWorkerProfileAction,
 } from '../types';
-// import prisma from '../../postgre/postgreClient';
-
-const prisma = new PrismaClient();
+import prisma from '../../../postgre/postgreClient';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage;

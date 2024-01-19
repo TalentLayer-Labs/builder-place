@@ -1,4 +1,4 @@
-import { EntityStatus, PrismaClient } from '.prisma/client';
+import { EntityStatus } from '.prisma/client';
 import {
   COLLABORATOR_NOT_FOUND,
   DOMAIN_CONTAINS_BUILDER_PLACE,
@@ -31,9 +31,7 @@ import {
   removeDomainFromVercelTeam,
   validDomainRegex,
 } from '../domains';
-// import prisma from '../../postgre/postgreClient';
-
-const prisma = new PrismaClient();
+import prisma from '../../../postgre/postgreClient';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED

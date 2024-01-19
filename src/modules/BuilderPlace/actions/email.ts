@@ -1,13 +1,11 @@
-import { PrismaClient, User } from '.prisma/client';
+import { User } from '.prisma/client';
 import { NextApiResponse } from 'next';
 import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
   ERROR_CHECKING_TRANSACTION_COUNTER,
 } from '../apiResponses';
-// import prisma from '../../postgre/postgreClient';
-
-const prisma = new PrismaClient();
+import prisma from '../../../postgre/postgreClient';
 
 export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
   let errorMessage;
