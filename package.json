@@ -45,7 +45,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npx migrate up",
+    "build": "next build && npx prisma migrate deploy",
     "start": "next start",
     "format": "prettier --config .prettierrc 'src/**/*.{js,ts,tsx}' --write",
     "lint": "tsc --noEmit && eslint",
