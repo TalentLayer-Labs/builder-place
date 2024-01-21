@@ -4,6 +4,7 @@ import {
   getBuilderPlaceByCollaboratorAddressAndId,
   getBuilderPlaceByOwnerTlIdAndId,
 } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { User } from '.prisma/client';
 
 /**
  * Checks if the signature is from a BuilderPlace collaborator by getting the BuilderPlace
@@ -64,4 +65,14 @@ export const checkOwnerSignature = async (
   }
 
   return { builderPlace, address };
+};
+
+export const isCollaboratorExists = (
+  collaborators: User[] = [],
+  newCollaboratorAddress: string,
+): boolean => {
+  return collaborators.some(
+    collaborator =>
+      collaborator?.address?.toLocaleLowerCase() === newCollaboratorAddress.toLocaleLowerCase(),
+  );
 };
