@@ -52,7 +52,6 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     const talentLayerUser = talentLayerGraphResponse?.data?.data?.users[0];
 
-    // Validations
     if (existingSpace && existingSpace.status === EntityStatus.VALIDATED) {
       throw new Error('You already own a domain');
     }
@@ -79,27 +78,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     /**
      * @dev: If profile Validated and owner already set, skip the owner setting step
      */
-    if (
-      userProfile.status === EntityStatus.VALIDATED &&
-      userProfile.talentLayerId === body.ownerTalentLayerId &&
-      userProfile.address?.toLocaleLowerCase() === body.ownerAddress.toLocaleLowerCase()
-    ) {
-      /**
-       * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint
-       */
-      if (existingSpace && existingSpace.ownerId && existingSpace.status === EntityStatus.PENDING) {
-        //TODO: Prisma carrément suppr la BP ?
-        await removeBuilderPlaceOwner({
-          id: existingSpace.id,
-          ownerId: existingSpace.ownerId,
-        });
-      }
-
-      await setBuilderPlaceOwner({
-        id: body.builderPlaceId,
-        ownerId: body.hirerId,
-      });
-    } else {
+    if (userProfile.status === EntityStatus.PENDING) {
       /**
        * @dev: If existing pending profile with same address, remove address
        * from pending profile to avoid conflicts on field "unique" constraint
@@ -120,22 +99,23 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         userAddress: body.ownerAddress.toLocaleLowerCase(),
         talentLayerId: talentLayerUser.id,
       });
+    }
 
-      /**
-       * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint
-       */
-      if (existingSpace && existingSpace.ownerId && existingSpace.status === EntityStatus.PENDING) {
-        await removeBuilderPlaceOwner({
-          id: existingSpace.id,
-          ownerId: existingSpace.ownerId,
-        });
-      }
-
-      await setBuilderPlaceOwner({
-        id: body.builderPlaceId,
-        ownerId: body.hirerId,
+    /**
+     * @dev: Remove owner from pending domain to avoid conflicts on field "unique" constraint
+     */
+    if (existingSpace && existingSpace.ownerId && existingSpace.status === EntityStatus.PENDING) {
+      //TODO: Prisma carrément suppr la BP ?
+      await removeBuilderPlaceOwner({
+        id: existingSpace.id,
+        ownerId: existingSpace.ownerId,
       });
     }
+
+    await setBuilderPlaceOwner({
+      id: body.builderPlaceId,
+      ownerId: body.hirerId,
+    });
 
     res.status(200).json({
       message: 'BuilderPlace domain & Hirer profile updated successfully',
