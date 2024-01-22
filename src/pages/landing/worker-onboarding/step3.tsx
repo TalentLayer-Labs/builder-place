@@ -42,7 +42,7 @@ function onboardingStep3() {
   if (loading) {
     return (
       <>
-        <OnboardingSteps currentStep={2} type='worker' />
+        <OnboardingSteps currentStep={3} type='worker' />
         <div className='p-8 flex flex-col items-center'>
           <Loading />
         </div>
