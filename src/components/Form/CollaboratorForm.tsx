@@ -147,7 +147,18 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                 Collaborators
               </span>
               <div className='border-b border-base-300 mb-4'></div>
-              <div className='flex justify-between border border-base-300 rounded-lg border p-10'>
+
+              <label className='block'>
+                <Field
+                  type='text'
+                  id='collaboratorFilter'
+                  name='collaboratorFilter'
+                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 focus:ring-opacity-50'
+                  placeholder='Filter...'
+                />
+              </label>
+
+              <div className='mt-5 flex justify-between border border-base-300 rounded-lg border p-10'>
                 <div className='flex'>
                   <ProfileImage size={50} url={user?.description?.image_url} />
                   <div className='flex flex-col'>
