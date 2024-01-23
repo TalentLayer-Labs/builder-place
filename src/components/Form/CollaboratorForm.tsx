@@ -129,9 +129,9 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                 <ErrorMessage name='collaborator' />
               </span>
               <div className='border-b border-base-300 mt-10 mb-5'></div>
-              <div className='flex justify-between'>
-                <div className='flex items-center'>
-                  <span className='text-base-content '>Learn more about&nbsp;</span>
+              <div className='flex  lg:justify-between mr-2'>
+                <div className='mb-2 flex-col lg:items-center'>
+                  <span className='text-base-content'>Learn more about&nbsp;</span>
                   <a
                     href='https://github.com/TalentLayer-Labs/builder-place'
                     target='_blank'
@@ -139,38 +139,44 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                     Collaborator
                   </a>
                 </div>
-                <SubmitButton isSubmitting={isSubmitting} label='Add' />
+                <div className='ml-2'>
+                  <SubmitButton isSubmitting={isSubmitting} label='Add' />
+                </div>
               </div>
             </div>
             <div className='mt-5'>
-              <span className='text-base-content font-bold border-base-300 border-b-4'>
+              <span className='text-base-content font-bold border-base-300 border-b-4 pb-2'>
                 Collaborators
               </span>
-              <div className='border-b border-base-300 mb-4'></div>
+              <div className='border-b border-base-300 mt-2 mb-4'></div>
 
               <label className='block'>
                 <Field
                   type='text'
                   id='collaboratorFilter'
                   name='collaboratorFilter'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-lg border border-info bg-base-200 focus:ring-opacity-50'
                   placeholder='Filter...'
                 />
               </label>
 
-              <div className='mt-5 flex justify-between border border-base-300 rounded-lg border p-10'>
-                <div className='flex'>
+              <div className='mt-5 flex flex-col lg:flex-row justify-between border border-base-300 rounded-lg p-5 lg:p-10'>
+                <div className='flex items-center lg:items-start'>
                   <ProfileImage size={50} url={user?.description?.image_url} />
-                  <div className='flex flex-col'>
-                    <span className='ml-5 text-base-content font-bold'>Romain</span>
-                    <span className='ml-5 text-base-content '>0x1234</span>
+                  <div className='flex flex-col lg:ml-5'>
+                    <span className='text-base-content font-bold'>Romain</span>
+                    <span className='text-base-content'>0x1234</span>
                   </div>
                 </div>
-                <div className='flex flex-row'>
-                  <button type='submit' className=' px-5 py-2 mr-5 rounded-xl bg-red-500 text-white'>
+                <div className='mt-3 lg:mt-0 flex flex-col lg:flex-row'>
+                  <button
+                    type='submit'
+                    className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-white'>
                     Delete
                   </button>
-                  <button type='submit' className=' px-5 py-2  rounded-xl bg-green-500 text-white'>
+                  <button
+                    type='submit'
+                    className='px-5 py-2 rounded-xl bg-green-500 font-bold text-white'>
                     Grant Access
                   </button>
                 </div>
