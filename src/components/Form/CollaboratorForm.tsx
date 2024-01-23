@@ -12,6 +12,7 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { toggleDelegation } from '../../contracts/toggleDelegation';
 import { useConfig } from '../../hooks/useConfig';
+import ProfileImage from '../ProfileImage';
 
 interface IFormValues {
   collaborator: string;
@@ -130,15 +131,38 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
               <div className='border-b border-base-300 mt-10 mb-5'></div>
               <div className='flex justify-between'>
                 <div className='flex items-center'>
-                <span className='text-base-content '>Learn more about&nbsp;</span>
-                <a
-                  href='https://github.com/TalentLayer-Labs/builder-place'
-                  target='_blank'
-                  className='text-base-content underline hover:opacity-60'>
-                  Collaborator
-                </a>
+                  <span className='text-base-content '>Learn more about&nbsp;</span>
+                  <a
+                    href='https://github.com/TalentLayer-Labs/builder-place'
+                    target='_blank'
+                    className='text-base-content underline hover:opacity-60'>
+                    Collaborator
+                  </a>
                 </div>
                 <SubmitButton isSubmitting={isSubmitting} label='Add' />
+              </div>
+            </div>
+            <div className='mt-5'>
+              <span className='text-base-content font-bold border-base-300 border-b-4'>
+                Collaborators
+              </span>
+              <div className='border-b border-base-300 mb-4'></div>
+              <div className='flex justify-between border border-base-300 rounded-lg border p-10'>
+                <div className='flex'>
+                  <ProfileImage size={50} url={user?.description?.image_url} />
+                  <div className='flex flex-col'>
+                    <span className='ml-5 text-base-content font-bold'>Romain</span>
+                    <span className='ml-5 text-base-content '>0x1234</span>
+                  </div>
+                </div>
+                <div className='flex flex-row'>
+                  <button type='submit' className=' px-5 py-2 mr-5 rounded-xl bg-red-500 text-white'>
+                    Delete
+                  </button>
+                  <button type='submit' className=' px-5 py-2  rounded-xl bg-green-500 text-white'>
+                    Grant Access
+                  </button>
+                </div>
               </div>
             </div>
           </div>
