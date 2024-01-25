@@ -113,7 +113,7 @@ export default function Collaborators() {
                 />
               </label> */}
 
-            {builderPlace?.owners?.map(owner => (
+            {builderPlace?.owners?.slice(1).map(owner => (
               <div className='mt-5 flex flex-col lg:flex-row justify-between border border-base-300 rounded-lg p-5 lg:p-10'>
                 <div className='flex items-center lg:items-start'>
                   <ProfileImage size={50} url={user?.description?.image_url} />
