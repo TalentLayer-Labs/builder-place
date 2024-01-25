@@ -15,6 +15,8 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import Loading from '../../../components/Loading';
 import RemoveButton from '../../../components/Form/RemoveButton';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
+import ProfileImage from '../../../components/ProfileImage';
+import { Field } from 'formik';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -31,7 +33,6 @@ export default function Collaborators() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const [submitting, setSubmitting] = useState('');
-
   if (user?.id !== builderPlace?.ownerTalentLayerId) {
     return <AccessDenied />;
   }
@@ -39,7 +40,7 @@ export default function Collaborators() {
   if (!user?.id) {
     return <Loading />;
   }
-
+  console.log(delegates);
   const onRemove = async (address: string): Promise<void> => {
     try {
       if (walletClient && account?.address && builderPlace?._id) {
@@ -95,7 +96,69 @@ export default function Collaborators() {
       <AdminSettingsLayout title={'Collaborators'}>
         <div className={'flex flex-col'}>
           <CollaboratorForm />
-          {!!delegates && (
+          <div className='mt-10'>
+            <span className='text-base-content font-bold border-base-300 border-b-4 pb-2'>
+              Collaborators
+            </span>
+            <div className='border-b border-base-300 mt-2 mb-4'></div>
+
+            {/* <label className='block'>
+                <Field
+                  type='text'
+                  id='collaboratorFilter'
+                  name='collaboratorFilter'
+                  className='mt-1 mb-1 block w-full rounded-lg border border-info bg-base-200 focus:ring-opacity-50'
+                  placeholder='Filter...'
+                />
+              </label> */}
+
+            {builderPlace?.owners?.map(owner => (
+              <div className='mt-5 flex flex-col lg:flex-row justify-between border border-base-300 rounded-lg p-5 lg:p-10'>
+                <div className='flex items-center lg:items-start'>
+                  <ProfileImage size={50} url={user?.description?.image_url} />
+                  <div className='flex flex-col lg:ml-5'>
+                    <span className='text-base-content font-bold'>Name</span>
+                    <span className='text-base-content text-sm mr-4'>{owner}</span>
+                  </div>
+                </div>
+                <div className='mt-3 lg:mt-0 flex flex-col lg:flex-row'>
+                  {/* <button
+                    type='button'
+                    className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-white'
+                    onClick={() => onRemove(owner)}>
+                    Delete
+                  </button> */}
+                  <RemoveButton
+                    isSubmitting={submitting}
+                    onClick={() => onRemove(owner)}
+                    index={owner}
+                  />
+                  {!delegates?.includes(owner) && (
+                    <button
+                      type='button'
+                      className='px-5 py-2 rounded-xl bg-green-500 font-bold text-white'
+                      onClick={async () => {
+                        if (walletClient) {
+                          await toggleDelegation(
+                            chainId,
+                            user.id,
+                            config,
+                            owner,
+                            publicClient,
+                            walletClient,
+                            true,
+                          );
+                        }
+                      }}>
+                      Grant Access
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* {!!delegates && (
             <div className={'flew flex-row mt-2'}>
               {delegates.map(delegate => (
                 <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
@@ -108,7 +171,7 @@ export default function Collaborators() {
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </AdminSettingsLayout>
     </div>
