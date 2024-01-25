@@ -153,21 +153,6 @@ export default function Collaborators() {
               </div>
             ))}
           </div>
-
-          {/* {!!delegates && (
-            <div className={'flew flex-row mt-2'}>
-              {delegates.map(delegate => (
-                <span key={delegate} className='flex items-center mb-2 bg-gray-100 p-2 rounded'>
-                  <span className='mr-4 font-mono text-gray-800'>{delegate}</span>
-                  <RemoveButton
-                    isSubmitting={submitting}
-                    onClick={() => onRemove(delegate)}
-                    index={delegate}
-                  />
-                </span>
-              ))}
-            </div>
-          )} */}
         </div>
       </AdminSettingsLayout>
     </div>
