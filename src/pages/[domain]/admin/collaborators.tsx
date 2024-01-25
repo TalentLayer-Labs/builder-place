@@ -65,7 +65,8 @@ export default function Collaborators() {
 
         if (response?.error) {
           showErrorTransactionToast(response.error);
-        } else if (user.delegates?.indexOf(address) !== -1) {
+        } 
+        if (delegates?.includes(address.toLowerCase())) {
           /**
            * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
            */
@@ -122,21 +123,16 @@ export default function Collaborators() {
                   </div>
                 </div>
                 <div className='mt-3 lg:mt-0 flex flex-col lg:flex-row'>
-                  {/* <button
+                  <button
                     type='button'
-                    className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-white'
+                    className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-sm text-white'
                     onClick={() => onRemove(owner)}>
                     Delete
-                  </button> */}
-                  <RemoveButton
-                    isSubmitting={submitting}
-                    onClick={() => onRemove(owner)}
-                    index={owner}
-                  />
-                  {!delegates?.includes(owner) && (
+                  </button>
+                  {!delegates?.includes(owner.toLowerCase()) && (
                     <button
                       type='button'
-                      className='px-5 py-2 rounded-xl bg-green-500 font-bold text-white'
+                      className='px-5 py-2 rounded-xl bg-green-500 font-bold text-sm text-white'
                       onClick={async () => {
                         if (walletClient) {
                           await toggleDelegation(

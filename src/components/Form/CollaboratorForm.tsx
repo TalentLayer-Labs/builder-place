@@ -65,13 +65,13 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
           newCollaborator: values.collaborator,
           signature,
         });
-
+        console.log(response)
         if (response?.error) {
           throw new Error(response.error);
         }
 
         // if address is not a delegated yet on chain
-        if (user.delegates?.indexOf(values.collaborator) === -1) {
+        if (!user.delegates?.includes(values.collaborator.toLowerCase())) {
           /**
            * @dev Add the new collaborator as a delegate to the BuilderPlace owner
            */
