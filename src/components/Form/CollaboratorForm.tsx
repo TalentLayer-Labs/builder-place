@@ -75,7 +75,6 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
           newCollaboratorAddress: values.collaborator,
           signature,
         });
-        console.log(response)
         if (response?.error) {
           throw new Error(response.error);
         }
