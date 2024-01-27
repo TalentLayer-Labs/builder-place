@@ -82,7 +82,7 @@ export default function Collaborators() {
 
         if (response?.error) {
           showErrorTransactionToast(response.error);
-        } 
+        }
         if (delegates?.includes(address.toLowerCase())) {
           /**
            * @dev Remove the new collaborator as a delegate to the BuilderPlace owner
@@ -130,45 +130,52 @@ export default function Collaborators() {
                 />
               </label> */}
 
-            {builderPlace?.owners?.slice(1).map(owner => (
-              <div className='mt-5 flex flex-col lg:flex-row justify-between border border-base-300 rounded-lg p-5 lg:p-10'>
-                <div className='flex items-center lg:items-start'>
-                  <ProfileImage size={50} url={user?.description?.image_url} />
-                  <div className='flex flex-col lg:ml-5'>
-                    <span className='text-base-content font-bold'>Name</span>
-                    <span className='text-base-content text-sm mr-4'>{owner}</span>
+            {builderPlace?.collaborators?.map(collaborator => {
+              if (collaborator.id === builderPlace.owner.id) {
+                return null;
+              }
+
+              return (
+                <div className='mt-5 flex flex-col lg:flex-row justify-between border border-base-300 rounded-lg p-5 lg:p-10'>
+                  <div className='flex items-center lg:items-start'>
+                    <ProfileImage size={50} url={collaborator.picture || undefined} />
+                    <div className='flex flex-col lg:ml-5'>
+                      <span className='text-base-content font-bold'>{collaborator.name}</span>
+                      <span className='text-base-content text-sm mr-4'>{collaborator.address}</span>
+                    </div>
                   </div>
-                </div>
-                <div className='mt-3 lg:mt-0 flex flex-col lg:flex-row'>
-                  <button
-                    type='button'
-                    className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-sm text-white'
-                    onClick={() => onRemove(owner)}>
-                    Delete
-                  </button>
-                  {!delegates?.includes(owner.toLowerCase()) && (
+                  <div className='mt-3 lg:mt-0 flex flex-col lg:flex-row'>
                     <button
                       type='button'
-                      className='px-5 py-2 rounded-xl bg-green-500 font-bold text-sm text-white'
-                      onClick={async () => {
-                        if (walletClient) {
-                          await toggleDelegation(
-                            chainId,
-                            user.id,
-                            config,
-                            owner,
-                            publicClient,
-                            walletClient,
-                            true,
-                          );
-                        }
-                      }}>
-                      Grant Access
+                      className='mb-2 lg:mb-0 lg:mr-2 px-5 py-2 rounded-xl bg-red-500 font-bold text-sm text-white'
+                      onClick={() => collaborator.address && onRemove(collaborator.address)}>
+                      Delete
                     </button>
-                  )}
+                    {collaborator?.address &&
+                      !delegates?.includes(collaborator.address.toLowerCase()) && (
+                        <button
+                          type='button'
+                          className='px-5 py-2 rounded-xl bg-green-500 font-bold text-sm text-white'
+                          onClick={async () => {
+                            if (collaborator.address && walletClient) {
+                              await toggleDelegation(
+                                chainId,
+                                user.id,
+                                config,
+                                collaborator.address,
+                                publicClient,
+                                walletClient,
+                                true,
+                              );
+                            }
+                          }}>
+                          Grant Access
+                        </button>
+                      )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </AdminSettingsLayout>
