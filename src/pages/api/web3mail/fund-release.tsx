@@ -1,5 +1,5 @@
 import { getNewPayments } from '../../../queries/payments';
-import { EmailType, IPayment, NotificationApiUri, PaymentTypeEnum } from '../../../types';
+import { IPayment, NotificationApiUri, PaymentTypeEnum } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -8,7 +8,6 @@ import {
   getDomain,
   hasEmailBeenSent,
   persistCronProbe,
-  persistEmail,
 } from '../../../modules/Web3mail/utils/database';
 import {
   EmptyError,
@@ -18,6 +17,7 @@ import {
 } from '../utils/web3mail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Check if a notification email has already been sent for these fund releases
     for (const payment of payments) {
-      const hasBeenSent = await hasEmailBeenSent(payment.id, EmailType.FundRelease);
+      const hasBeenSent = await hasEmailBeenSent(payment.id, EmailType.FUND_RELEASE);
       if (!hasBeenSent) {
         nonSentPaymentEmails.push(payment);
       }
@@ -112,7 +112,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (paymentEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New fund release detected, but no  concerned users opted for the ${EmailType.FundRelease} feature`,
+        `New fund release detected, but no concerned users opted for the ${EmailType.FUND_RELEASE} feature`,
       );
     }
 
@@ -154,18 +154,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
       try {
         // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
-        await sendMailToAddresses(
+        const { successCount, errorCount } = await sendMailToAddresses(
           `Funds ${action} for the open-source work project - ${payment.service.description?.title}`,
           email,
           [receiverAddress],
-          true,
           payment.service.platform.name,
+          payment.id,
+          EmailType.FUND_RELEASE,
           dataProtector,
           web3mail,
         );
-        await persistEmail(payment.id, EmailType.FundRelease);
         console.log('Notification recorded in Database');
-        sentEmails++;
+        sentEmails += successCount;
+        nonSentEmails += errorCount;
       } catch (e: any) {
         nonSentEmails++;
         console.error(e.message);
@@ -181,9 +182,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      await persistCronProbe(EmailType.FundRelease, sentEmails, nonSentEmails, cronDuration);
+      await persistCronProbe(EmailType.FUND_RELEASE, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.FundRelease}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.FUND_RELEASE}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

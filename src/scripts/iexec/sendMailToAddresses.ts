@@ -1,6 +1,8 @@
-import { IExecWeb3mail, getWeb3Provider as getMailProvider } from '@iexec/web3mail';
-import { IExecDataProtector, getWeb3Provider as getProtectorProvider } from '@iexec/dataprotector';
+import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
+import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
 import { userGaveAccessToPlatform } from '../../modules/Web3mail/utils/data-protector';
+import { persistEmail } from '../../modules/Web3mail/utils/database';
+import { EmailType } from '.prisma/client';
 
 /**
  * @dev: The parameter "throwable" will interrupt the function's loop and throw an error if set to true
@@ -11,8 +13,10 @@ export const sendMailToAddresses = async (
   emailSubject: string,
   emailContent: string,
   addresses: string[],
-  throwable = false,
   platformName: string,
+  id: string,
+  emailType: EmailType,
+  //TODO see if this still needed
   providedDataProtector?: IExecDataProtector,
   providedWeb3mail?: IExecWeb3mail,
 ): Promise<{ successCount: number; errorCount: number }> => {
@@ -53,7 +57,11 @@ export const sendMailToAddresses = async (
     const results = await Promise.all(sendPromises);
 
     results.forEach(result => {
-      if (result.success) {
+      if (result.success === true) {
+        if (id && emailType) {
+          //TODO rename web3mail en "mail" ou "email" ?
+          persistEmail(id, emailType);
+        }
         sentCount++;
       } else {
         nonSentCount++;
@@ -85,7 +93,7 @@ const sendMarketingEmailTo = async (
     const protectedEmailAddress = await userGaveAccessToPlatform(address, dataProtector);
     if (!protectedEmailAddress) {
       console.warn(`sendMailToAddresses - User ${address} did not grant access to his email`);
-      return { success: false, error: 'access denied' };
+      return throwError('access denied');
     }
 
     const mailSent = await web3mail.sendEmail({
@@ -97,7 +105,7 @@ const sendMarketingEmailTo = async (
     });
     console.log('sent email', mailSent);
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
     return { success: false, error: e };
   }
