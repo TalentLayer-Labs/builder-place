@@ -590,7 +590,6 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         palette: { ...builderPlace.palette },
         preferredWorkTypes: builderPlace.preferredWorkTypes,
         presentation: builderPlace.presentation,
-        profilePicture: builderPlace.profilePicture,
       },
     });
     return {

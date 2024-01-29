@@ -11,8 +11,8 @@ model BuilderPlace {
   id                       Int          @id @default(autoincrement())
   status                   EntityStatus @default(PENDING)
   name                     String
-  customDomain             String?      @unique
   subdomain                String?      @unique
+  customDomain             String?      @unique
   talentLayerPlatformId    String?      @unique
   talentLayerPlatformName  String?      @unique
   owner                    User?        @relation(fields: [ownerId], references: [id])
@@ -21,11 +21,11 @@ model BuilderPlace {
   baseline                 String?
   about                    String?
   aboutTech                String?
+  presentation             String?
   logo                     String?
   icon                     String?
   cover                    String?
   palette                  Json
-  presentation             String?
   jobPostingConditions     Json?
   preferredWorkTypes       WorkType[]
 }
