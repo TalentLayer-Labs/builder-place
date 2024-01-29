@@ -463,7 +463,7 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
         about: data.about,
         preferredWorkTypes: data.preferredWorkTypes,
         palette: { ...data.palette },
-        profilePicture: data.profilePicture,
+        icon: data.icon,
         status: EntityStatus.PENDING,
       },
     });

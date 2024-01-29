@@ -15,7 +15,7 @@ interface IFormValues {
   about: string;
   email: string;
   preferred_work_types: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 function onboardingStep1() {
   const { mutateAsync: createBuilderPlaceAsync } = useCreateBuilderPlaceMutation();
@@ -66,7 +66,7 @@ function onboardingStep1() {
         const userResponse = await createHirerProfileAsync({
           email: values.email,
           name: values.name,
-          picture: values.profilePicture || undefined,
+          icon: values.icon || undefined,
           about: values.about,
         });
 
@@ -82,7 +82,7 @@ function onboardingStep1() {
         palette: themes['lisboa'],
         about: values.about,
         preferredWorkTypes: values.preferred_work_types,
-        profilePicture: values.profilePicture || undefined,
+        icon: values.icon || undefined,
       });
 
       if (builderPlaceResponse.error) {
@@ -281,10 +281,10 @@ function onboardingStep1() {
               </span>
 
               <UploadImage
-                fieldName='profilePicture'
-                label='profile picture'
+                fieldName='icon'
+                label='profile icon'
                 legend='square format'
-                src={values.profilePicture}
+                src={values.icon}
                 setFieldValue={setFieldValue}
               />
 

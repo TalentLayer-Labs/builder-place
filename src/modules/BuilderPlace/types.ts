@@ -143,7 +143,7 @@ export interface CreateBuilderPlaceAction {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileAction {
@@ -194,7 +194,7 @@ export interface CreateBuilderPlaceProps {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileProps {
@@ -207,7 +207,7 @@ export interface CreateWorkerProfileProps {
 export interface CreateHirerProfileProps {
   email: string;
   name: string;
-  picture?: string;
+  icon?: string;
   about?: string;
   status?: string;
 }
