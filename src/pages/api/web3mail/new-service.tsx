@@ -1,4 +1,4 @@
-import { EmailType, IService, IUserDetails, NotificationApiUri } from '../../../types';
+import { IService, IUserDetails, NotificationApiUri } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getWeb3mailUsersForNewServices } from '../../../queries/users';
@@ -12,6 +12,7 @@ import {
 import { getNewServicesForPlatform } from '../../../queries/services';
 import { EmptyError, generateWeb3mailProviders, prepareCronApi } from '../utils/web3mail';
 import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -101,7 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Check if a notification email has already been sent for these services
         const emailHasBeenSent = await hasEmailBeenSent(
           `${contact.user.id}-${service.id}`,
-          EmailType.NewService,
+          EmailType.NEW_SERVICE,
         );
         if (!emailHasBeenSent) {
           const userSkills = contact.skills_raw?.split(',');
@@ -120,6 +121,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               )}`,
             );
 
+            // TODO not working
             const domain = await getDomain(service.buyer.id);
 
             try {
@@ -141,16 +143,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 domain,
               );
               // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
-              await sendMailToAddresses(
-                `A new open-source contribution mission matching your skills is available on BuilderPlace !`,
+              const { successCount, errorCount } = await sendMailToAddresses(
+                `A new open-source mission matching your skills is available on BuilderPlace !`,
                 email,
                 [contact.user.address],
-                true,
                 service.platform.name,
+                service.id,
+                EmailType.NEW_SERVICE,
                 dataProtector,
                 web3mail,
               );
-              await persistEmail(`${contact.user.id}-${service.id}`, EmailType.NewService);
+              sentEmails += successCount;
+              nonSentEmails += errorCount;
               console.log('Notification recorded in Database');
               sentEmails++;
             } catch (e: any) {
@@ -171,9 +175,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      await persistCronProbe(EmailType.NewService, sentEmails, nonSentEmails, cronDuration);
+      await persistCronProbe(EmailType.NEW_SERVICE, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.NewService}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.NEW_SERVICE}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(
