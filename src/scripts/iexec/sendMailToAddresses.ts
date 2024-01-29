@@ -1,5 +1,5 @@
-import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
-import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
+import { IExecWeb3mail } from '@iexec/web3mail';
+import { IExecDataProtector } from '@iexec/dataprotector';
 import { userGaveAccessToPlatform } from '../../modules/Web3mail/utils/data-protector';
 import { persistEmail } from '../../modules/Web3mail/utils/database';
 import { EmailType } from '.prisma/client';
@@ -14,11 +14,10 @@ export const sendMailToAddresses = async (
   emailContent: string,
   addresses: string[],
   platformName: string,
-  id: string,
-  emailType: EmailType,
-  //TODO see if this still needed
-  providedDataProtector?: IExecDataProtector,
-  providedWeb3mail?: IExecWeb3mail,
+  providedDataProtector: IExecDataProtector,
+  providedWeb3mail: IExecWeb3mail,
+  id?: string,
+  emailType?: EmailType,
 ): Promise<{ successCount: number; errorCount: number }> => {
   console.log('Sending email to addresses');
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
@@ -30,19 +29,6 @@ export const sendMailToAddresses = async (
   let web3mail: IExecWeb3mail, dataProtector: IExecDataProtector;
 
   try {
-    if (!providedDataProtector) {
-      const protectorWebProvider = getProtectorProvider(privateKey);
-      dataProtector = new IExecDataProtector(protectorWebProvider);
-    } else {
-      dataProtector = providedDataProtector;
-    }
-    if (!providedWeb3mail) {
-      const mailWeb3Provider = getMailProvider(privateKey);
-      web3mail = new IExecWeb3mail(mailWeb3Provider);
-    } else {
-      web3mail = providedWeb3mail;
-    }
-
     const sendPromises = addresses.map(address =>
       sendMarketingEmailTo(
         address,
@@ -68,7 +54,7 @@ export const sendMailToAddresses = async (
       }
     });
   } catch (e) {
-    /**@dev: No error should be thrown here if dataProtector or web3mail are provided */
+    //TODO is this try catch useful ?
     throwError(e);
   }
   return { successCount: sentCount, errorCount: nonSentCount };
@@ -107,6 +93,6 @@ const sendMarketingEmailTo = async (
     return { success: true };
   } catch (e: any) {
     console.log(e);
-    return { success: false, error: e };
+    return { success: false, error: e.message };
   }
 };

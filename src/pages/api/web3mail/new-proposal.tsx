@@ -1,5 +1,5 @@
 import { getProposalsFromPlatformServices } from '../../../queries/proposals';
-import { EmailType, IProposal, NotificationApiUri } from '../../../types';
+import { IProposal, NotificationApiUri } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -8,7 +8,6 @@ import {
   getDomain,
   hasEmailBeenSent,
   persistCronProbe,
-  persistEmail,
 } from '../../../modules/Web3mail/utils/database';
 import {
   EmptyError,
@@ -18,6 +17,7 @@ import {
 } from '../utils/web3mail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Check if a notification email has already been sent for these proposals
     if (proposals.length > 0) {
       for (const proposal of proposals) {
-        const hasBeenSent = await hasEmailBeenSent(proposal.id, EmailType.NewProposal);
+        const hasBeenSent = await hasEmailBeenSent(proposal.id, EmailType.NEW_PROPOSAL);
         if (!hasBeenSent) {
           nonSentProposalEmails.push(proposal);
         }
@@ -107,7 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (proposalEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New proposals detected, but no concerned users opted for the ${EmailType.NewProposal} feature`,
+        `New proposals detected, but no concerned users opted for the ${EmailType.NEW_PROPOSAL} feature`,
       );
     }
 
@@ -133,19 +133,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           `Go to proposal detail`,
           domain,
         );
-        // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
-        await sendMailToAddresses(
+        const { successCount, errorCount } = await sendMailToAddresses(
           `You got a new proposal !`,
           email,
           [proposal.service.buyer.address],
-          true,
           proposal.service.platform.name,
           dataProtector,
           web3mail,
+          proposal.id,
+          EmailType.NEW_PROPOSAL,
         );
-        await persistEmail(proposal.id, EmailType.NewProposal);
         console.log('Notification recorded in Database');
-        sentEmails++;
+        sentEmails += successCount;
+        nonSentEmails += errorCount;
       } catch (e: any) {
         nonSentEmails++;
         console.error(e.message);
@@ -162,9 +162,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      await persistCronProbe(EmailType.NewProposal, sentEmails, nonSentEmails, cronDuration);
+      await persistCronProbe(EmailType.NEW_PROPOSAL, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.NewProposal}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.NEW_PROPOSAL}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

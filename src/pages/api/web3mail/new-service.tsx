@@ -7,7 +7,6 @@ import {
   getDomain,
   hasEmailBeenSent,
   persistCronProbe,
-  persistEmail,
 } from '../../../modules/Web3mail/utils/database';
 import { getNewServicesForPlatform } from '../../../queries/services';
 import { EmptyError, generateWeb3mailProviders, prepareCronApi } from '../utils/web3mail';
@@ -142,16 +141,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 `Go to open-source mission details`,
                 domain,
               );
-              // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
               const { successCount, errorCount } = await sendMailToAddresses(
                 `A new open-source mission matching your skills is available on BuilderPlace !`,
                 email,
                 [contact.user.address],
                 service.platform.name,
-                service.id,
-                EmailType.NEW_SERVICE,
                 dataProtector,
                 web3mail,
+                service.id,
+                EmailType.NEW_SERVICE,
               );
               sentEmails += successCount;
               nonSentEmails += errorCount;

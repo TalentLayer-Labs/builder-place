@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ********************* BuilderPlace *********************
+
 model BuilderPlace {
   id                 Int          @id @default(autoincrement())
   about              String?
@@ -67,4 +69,32 @@ enum WorkType {
   GRANTS
   GIGS
   JOBS
+}
+
+// ********************* Web3 Mail *********************
+
+enum EmailType {
+  NEW_PROPOSAL
+  PROPOSAL_VALIDATED
+  FUND_RELEASE
+  REVIEW
+  PLATFORM_MARKETING
+  PROTOCOL_MARKETING
+  NEW_SERVICE
+}
+
+model CronProbe {
+  id           Int       @id @default(autoincrement())
+  //TODO add @unique here ?
+  type         EmailType
+  lastRanAt    Int
+  successCount Int
+  duration     Int
+  errorCount   Int
+}
+
+model Web3Mail {
+  id     String    @id
+  sentAt Int
+  type   EmailType
 }

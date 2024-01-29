@@ -1,5 +1,5 @@
 import { getAcceptedProposals } from '../../../queries/proposals';
-import { EmailType, IProposal, NotificationApiUri } from '../../../types';
+import { IProposal, NotificationApiUri } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -18,6 +18,7 @@ import {
 } from '../utils/web3mail';
 import { renderWeb3mail } from '../utils/generateWeb3Mail';
 import { renderTokenAmount } from '../../../utils/conversion';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -68,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Check if a notification email has already been sent for these proposals
     if (proposals.length > 0) {
       for (const proposal of proposals) {
-        const hasBeenSent = await hasEmailBeenSent(proposal.id, EmailType.ProposalValidated);
+        const hasBeenSent = await hasEmailBeenSent(proposal.id, EmailType.PROPOSAL_VALIDATED);
         if (!hasBeenSent) {
           nonSentProposalEmails.push(proposal);
         }
@@ -102,7 +103,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (proposalEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New proposals validated detected, but no concerned users opted for the ${EmailType.ProposalValidated} feature`,
+        `New proposals validated detected, but no concerned users opted for the ${EmailType.PROPOSAL_VALIDATED} feature`,
       );
     }
 
@@ -132,12 +133,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           `Your proposal got accepted !`,
           email,
           [proposal.seller.address],
-          true,
           proposal.service.platform.name,
           dataProtector,
           web3mail,
+          proposal.id,
+          EmailType.PROPOSAL_VALIDATED,
         );
-        await persistEmail(proposal.id, EmailType.ProposalValidated);
+        await persistEmail(proposal.id, EmailType.PROPOSAL_VALIDATED);
         console.log('Notification recorded in Database');
         sentEmails++;
       } catch (e: any) {
@@ -155,9 +157,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      await persistCronProbe(EmailType.ProposalValidated, sentEmails, nonSentEmails, cronDuration);
+      await persistCronProbe(EmailType.PROPOSAL_VALIDATED, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.ProposalValidated}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.PROPOSAL_VALIDATED}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

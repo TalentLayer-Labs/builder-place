@@ -1,4 +1,4 @@
-import { EmailType, IReview, NotificationApiUri } from '../../../types';
+import { IReview, NotificationApiUri } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -7,7 +7,6 @@ import {
   getDomain,
   hasEmailBeenSent,
   persistCronProbe,
-  persistEmail,
 } from '../../../modules/Web3mail/utils/database';
 import { getNewReviews } from '../../../queries/reviews';
 import {
@@ -17,6 +16,7 @@ import {
   prepareCronApi,
 } from '../utils/web3mail';
 import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (reviews.length > 0) {
       for (const review of reviews) {
-        const hasBeenSent = await hasEmailBeenSent(review.id, EmailType.Review);
+        const hasBeenSent = await hasEmailBeenSent(review.id, EmailType.REVIEW);
         if (!hasBeenSent) {
           nonSentReviewEmails.push(review);
         }
@@ -102,7 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (reviewEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New reviews detected, but no concerned users opted for the ${EmailType.Review} feature`,
+        `New reviews detected, but no concerned users opted for the ${EmailType.REVIEW} feature`,
       );
     }
 
@@ -138,17 +138,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           `Go to review detail`,
           domain,
         );
-        // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
         await sendMailToAddresses(
           `A review was created for the open-source contribution - ${review.service.description?.title}`,
           email,
           [review.to.address],
-          true,
           review.service.platform.name,
           dataProtector,
           web3mail,
+          review.id,
+          EmailType.REVIEW,
         );
-        await persistEmail(review.id, EmailType.Review);
         console.log('Notification recorded in Database');
         sentEmails++;
       } catch (e: any) {
@@ -166,9 +165,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      persistCronProbe(EmailType.Review, sentEmails, nonSentEmails, cronDuration);
+      persistCronProbe(EmailType.REVIEW, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.Review}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.REVIEW}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

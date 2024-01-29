@@ -153,16 +153,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         domain,
       );
       try {
-        // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
         const { successCount, errorCount } = await sendMailToAddresses(
           `Funds ${action} for the open-source work project - ${payment.service.description?.title}`,
           email,
           [receiverAddress],
           payment.service.platform.name,
-          payment.id,
-          EmailType.FUND_RELEASE,
           dataProtector,
           web3mail,
+          payment.id,
+          EmailType.FUND_RELEASE,
         );
         console.log('Notification recorded in Database');
         sentEmails += successCount;

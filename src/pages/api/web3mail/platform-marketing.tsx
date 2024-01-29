@@ -46,7 +46,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `${emailSubject}`,
       `${email}`,
       usersAddresses,
-      false,
       platformResponse.data.data.platforms[0].name,
       dataProtector,
       web3mail,

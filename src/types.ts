@@ -292,16 +292,6 @@ export type IUserGain = {
   totalGain: string;
 };
 
-export enum EmailType {
-  NewProposal = 'newProposal',
-  ProposalValidated = 'proposalValidated',
-  FundRelease = 'fundRelease',
-  Review = 'review',
-  PlatformMarketing = 'platformMarketing',
-  ProtocolMarketing = 'protocolMarketing',
-  NewService = 'newService',
-}
-
 export enum NotificationApiUri {
   NewProposal = 'new-proposal',
   ProposalValidated = 'proposal-validated',
@@ -317,13 +307,6 @@ export type Web3MailStats = {
   totalContact: number;
   totalCronRunning: number;
 };
-
-// export enum PreferredWorkTypes {
-//   jobs = 'jobs',
-//   bounties = 'bounties',
-//   grants = 'grants',
-//   gigs = 'gigs',
-// }
 
 export type iTalentLayerContext = {
   loading: boolean;
