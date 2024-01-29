@@ -8,37 +8,39 @@ datasource db {
 }
 
 model BuilderPlace {
-  id                 Int          @id @default(autoincrement())
-  about              String?
-  aboutTech          String?
-  baseline           String?
-  cover              String?
-  customDomain       String?      @unique
-  icon               String?
-  logo               String?
-  name               String
-  owner              User?        @relation(fields: [ownerId], references: [id])
-  ownerId            Int?         @unique
-  collaborators      User[]       @relation("BuilderPlaceCollaborators")
-  palette            Json
-  preferredWorkTypes WorkType[]
-  presentation       String?
-  profilePicture     String?
-  status             EntityStatus @default(PENDING)
-  subdomain          String?      @unique
+  id                       Int          @id @default(autoincrement())
+  status                   EntityStatus @default(PENDING)
+  name                     String
+  customDomain             String?      @unique
+  subdomain                String?      @unique
+  talentLayerPlatformId    String?      @unique
+  talentLayerPlatformName  String?      @unique
+  owner                    User?        @relation(fields: [ownerId], references: [id])
+  ownerId                  Int?         @unique
+  collaborators            User[]       @relation("BuilderPlaceCollaborators")
+  baseline                 String?
+  about                    String?
+  aboutTech                String?
+  logo                     String?
+  icon                     String?
+  cover                    String?
+  palette                  Json
+  presentation             String?
+  jobPostingConditions     Json?
+  preferredWorkTypes       WorkType[]
 }
 
 model User {
   id                       Int            @id @default(autoincrement())
-  about                    String?
-  address                  String?        @unique
-  counterStartDate         Int            @default(0)
-  email                    String?        @unique
-  isEmailVerified          Boolean        @default(false)
-  name                     String
-  picture                  String?
   status                   EntityStatus   @default(PENDING)
+  name                     String
+  email                    String?        @unique
   talentLayerId            String?        @unique
+  isEmailVerified          Boolean        @default(false)
+  address                  String?        @unique
+  about                    String?
+  picture                  String?
+  counterStartDate         Int            @default(0)
   weeklyTransactionCounter Int            @default(0)
   workerProfile            WorkerProfile? @relation("WorkerProfile")
   hirerProfile             HirerProfile?  @relation("HirerProfile")
