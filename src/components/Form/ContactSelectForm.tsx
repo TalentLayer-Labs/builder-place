@@ -19,7 +19,9 @@ interface IFormValues {
 }
 
 const validationSchema = Yup.object({
-  subject: Yup.string().required('Please provide a subject'),
+  subject: Yup.string()
+    .max(77, 'Subject must be at most 77 characters')
+    .required('Please provide a subject'),
   body: Yup.string().required('Please provide a body'),
   users: Yup.array().min(1).required('Please select at least one user'),
 });

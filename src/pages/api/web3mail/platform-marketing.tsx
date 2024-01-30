@@ -24,6 +24,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!emailSubject || !emailContent || !signature || !usersAddresses)
     return res.status(500).json(`Missing argument`);
 
+  if (emailSubject.length >= 78)
+    return res.status(400).json(`Email subject must be less than 78 characters`);
+
   try {
     // Check whether the address which provided the signature is the owner of the platform
     const address = await recoverMessageAddress({
