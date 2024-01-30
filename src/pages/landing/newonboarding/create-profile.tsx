@@ -10,6 +10,7 @@ import { useContext, useEffect } from 'react';
 import Loading from '../../../components/Loading';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import { useAccount } from 'wagmi';
 
 interface IFormValues {
   name: string;
@@ -46,6 +47,7 @@ interface IMutationValues {
  * Display the generated handle under name (slugify version of the name)
  */
 function createProfile() {
+  const { address } = useAccount();
   const { loading, user } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const router = useRouter();
@@ -196,15 +198,17 @@ function createProfile() {
         )}
       </Formik>
 
-      <p className='mt-4'>
-        Already got a profile ?{' '}
-        <button
-          onClick={() => {
-            openConnectModal();
-          }}>
-          <a className='text-pink-500'>connect now</a>
-        </button>
-      </p>
+      {!address && (
+        <p className='mt-4'>
+          Already got a profile ?{' '}
+          <button
+            onClick={() => {
+              openConnectModal();
+            }}>
+            <a className='text-pink-500'>connect now</a>
+          </button>
+        </p>
+      )}
     </Layout>
   );
 }

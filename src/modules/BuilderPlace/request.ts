@@ -1,5 +1,6 @@
 import { User } from '@prisma/client';
-import { UserFilters } from '../../pages/api/users/route';
+import { UsersFilters } from '../../app/api/users/route';
+import axios from 'axios';
 
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
@@ -68,28 +69,17 @@ export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
   }
 };
 
-export const getUserBy = async (filters: UserFilters): Promise<User> => {
-  try {
-    const response = await fetch('/api/users', {
-      method: 'GET', // we use GET to enable cache possibility!
-      body: JSON.stringify(filters),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const users: User[] = await response.json();
-    if (users.length === 0) {
-      throw new Error(`user not found`);
-    }
+export const getUserBy = async (filters: UsersFilters): Promise<User> => {
+  console.log(`*DEBUG* getUserBy fetch!`);
 
-    return users[0];
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+  const response = await axios.get('/api/users', {
+    params: filters,
+  });
+
+  const users: User[] = response.data.users;
+
+  console.log(`*DEBUG* getUserBy results!`, users);
+  return users[0];
 };
 
 export const getWorkerProfileById = async (id: string): Promise<any> => {

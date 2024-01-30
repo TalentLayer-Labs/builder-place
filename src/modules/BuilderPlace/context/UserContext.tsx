@@ -36,7 +36,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       console.log('*DEBUG* getUserBy', { address: address });
-      const data = await getUserBy({ address: address });
+      const data = await getUserBy({ address: address.toLowerCase() });
+
+      console.log('*DEBUG* fetch end', { user: data });
       setUser(data);
     } catch (err: any) {
       toast.error(`An error happened while loading your account: ${err.message}.`);
