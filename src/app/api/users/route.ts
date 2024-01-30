@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
 import prisma from '../../../postgre/postgreClient';
+import { IPostUser } from '../../../pages/landing/newonboarding/create-profile';
+import { recoverMessageAddress } from 'viem';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export interface UsersFilters {
   id?: string | null;
@@ -22,11 +25,34 @@ export async function GET(request: Request) {
 
 export async function POST(req: Request) {
   console.log('POST');
-  const data = await req.json();
-  console.log('json', data);
-  const user = await prisma.user.create({
-    data: data,
+  const body: IPostUser = await req.json();
+  console.log('json', body);
+
+  // @TODO: move it to a middleware and apply to all GET or POST ?
+  const signatureAddress = await recoverMessageAddress({
+    message: `connect with ${body.data.address}`,
+    signature: body.signature,
   });
 
-  return Response.json('Success!', { status: 201 });
+  if (signatureAddress !== body.data.address) {
+    return Response.json({ error: 'Signature invalid' }, { status: 401 });
+  }
+
+  try {
+    const user = await prisma.user.create({
+      data: body.data,
+    });
+    return Response.json({ id: user.id }, { status: 201 });
+  } catch (error: any) {
+    // @TODO: move error handle to a middleware ? or factorize it ?
+    let message = 'Failed to create user';
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        const target = (error.meta?.target as string)[0] || 'data';
+        message = `A user already exist with this ${target}`;
+      }
+    }
+
+    return Response.json({ message, error }, { status: 500 });
+  }
 }

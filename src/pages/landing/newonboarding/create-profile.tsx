@@ -9,33 +9,36 @@ import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import { useContext, useEffect } from 'react';
 import Loading from '../../../components/Loading';
 import { useMutation } from 'react-query';
-import axios from 'axios';
-import { useAccount } from 'wagmi';
+import axios, { AxiosResponse } from 'axios';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { sendVerificationEmail } from '../../../modules/BuilderPlace/request';
+import { createVerificationEmailToast } from '../../../modules/BuilderPlace/utils/toast';
 
 interface IFormValues {
-  name: string;
   email: string;
+  name: string;
   picture?: string;
 }
 
-interface IMutationValues {
-  email: string;
-  name: string;
-  address: string;
-  picture?: string;
+interface IMutation<T> {
+  data: T;
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface IPostUser
+  extends IMutation<
+    IFormValues & {
+      address: string;
+    }
+  > {}
+
 /**
- * @SPECS
+ * @dev
  *  IF user has a wallet connected
- *      IF user has a TalentLayerID
- *          IF user has profile in DB with this TalentLayerID
- *             redirect to step 2
- *          ELSE
- *              Let the user complete the form, we will create a profile in DB (link to the existing TalentLayerID)
+ *      IF user has profile in DB with this wallet
+ *         redirect to step 2
  *      ELSE
- *         Let the user complete the form, we will create a a TalentLayerID and a profile in DB
+ *          Let the user complete the form, we will create a profile in DB (and a TalentLayerID if the wallet don't have one yet)
  *  ELSE
  *     let the user complete the form and ask him to conenct on submit
  *
@@ -47,28 +50,17 @@ interface IMutationValues {
  * Display the generated handle under name (slugify version of the name)
  */
 function createProfile() {
+  const chainId = useChainId();
+  const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const { loading, user } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const router = useRouter();
-  const userMutation = useMutation({
-    mutationFn: (user: IMutationValues) => {
-      return axios.post('/api/users', user);
+  const userMutation = useMutation(
+    async (body: IPostUser): Promise<AxiosResponse<{ id: string }>> => {
+      return await axios.post('/api/users', body);
     },
-    onMutate: variables => {
-      // A mutation is about to happen!
-      console.log(`*DEBUG* start mutate!`);
-      // Optionally return a context containing data to use when for example rolling back
-      return { id: 1 };
-    },
-    onError: (error, variables, context) => {
-      // An error happened!
-      console.log(`*DEBUG* rolling back optimistic update with id ${context?.id}`);
-    },
-    onSuccess: (data, variables, context) => {
-      console.log(`*DEBUG* boom baby!`);
-    },
-  });
+  );
 
   const initialValues: IFormValues = {
     name: '',
@@ -80,11 +72,12 @@ function createProfile() {
     email: Yup.string().required('Please provide your email'),
   });
 
-  console.log('*DEBUG* createProfile', { user });
+  console.log('*DEBUG* createProfile', { user, address, walletClient });
 
   useEffect(() => {
     if (user) {
-      router.push('/newonboarding/create-platform');
+      console.log('*DEBUG* REDIRECT');
+      // router.push('/newonboarding/create-platform');
     }
   }, [user]);
 
@@ -94,29 +87,48 @@ function createProfile() {
   ) => {
     try {
       setSubmitting(true);
-      const userResponse = await userMutation.mutate({
-        email: values.email,
-        name: values.name,
-        picture: values.picture || undefined,
-        address: '',
-        signature: '0xtreter',
+
+      console.log('*DEBUG* handleSubmit', { user, address, walletClient });
+
+      if (!walletClient || !address) {
+        throw new Error('Please connect your wallet');
+      }
+
+      /**
+       * @dev Sign message to prove ownership of the address
+       */
+      const signature = await walletClient.signMessage({
+        account: address,
+        message: `connect with ${address}`,
       });
 
-      console.log('*DEBUG* userMutation.mutate', { userResponse });
+      /**
+       * @dev Post a new user to DB. Everytime we need to create or update an entity, we need to confirm with the signature
+       */
+      const response = await userMutation.mutateAsync({
+        data: {
+          email: values.email,
+          name: values.name,
+          picture: values.picture || undefined,
+          address: address,
+        },
+        signature: signature,
+      });
 
-      // const userId = userResponse.id;
+      console.log('*DEBUG* userMutation.mutate', { response });
 
-      // if (userResponse.error) {
-      //   throw new Error(userResponse.error);
-      // }
+      /**
+       * @dev: send validation email to owner to validate email
+       * @todo: better to send it from the backend on mutation success, it prevents to have an endpoint that send email for security issue ?
+       */
+      await sendVerificationEmail(values.email, response.data.id, values.name, '');
+      await createVerificationEmailToast();
 
-      // router.query.userId = userId;
-      // router.push({
-      //   pathname: '/newonboarding/create-platform',
-      //   query: { userId: userId },
-      // });
+      router.push({
+        pathname: '/newonboarding/create-platform',
+      });
     } catch (error: any) {
-      showErrorTransactionToast(error.message);
+      showErrorTransactionToast(error);
     } finally {
       setTimeout(() => {
         setSubmitting(false);
@@ -186,11 +198,21 @@ function createProfile() {
                 </button>
               ) : (
                 <>
-                  <button
-                    type='submit'
-                    className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
-                    create my profile
-                  </button>
+                  {address ? (
+                    <button
+                      type='submit'
+                      className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                      create my profile
+                    </button>
+                  ) : (
+                    <button
+                      className='grow px-5 py-2 rounded-xl bg-black text-white'
+                      onClick={() => {
+                        openConnectModal();
+                      }}>
+                      connect your wallet first
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -200,12 +222,12 @@ function createProfile() {
 
       {!address && (
         <p className='mt-4'>
-          Already got a profile ?{' '}
+          Already got a profile?{' '}
           <button
             onClick={() => {
               openConnectModal();
             }}>
-            <a className='text-pink-500'>connect now</a>
+            <a className='text-block underline'>connect now</a>
           </button>
         </p>
       )}

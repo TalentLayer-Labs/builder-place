@@ -36,7 +36,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       console.log('*DEBUG* getUserBy', { address: address });
-      const data = await getUserBy({ address: address.toLowerCase() });
+      const data = await getUserBy({ address: address });
 
       console.log('*DEBUG* fetch end', { user: data });
       setUser(data);
