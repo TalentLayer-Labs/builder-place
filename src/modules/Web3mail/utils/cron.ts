@@ -41,6 +41,8 @@ export const calculateCronData = (
       cronExpression.prev().toDate().getTime() / 1000 -
       cronDuration * RETRY_FACTOR
     ).toString();
+    //TODO a delete
+    sinceTimestamp = '0';
   }
   return { sinceTimestamp, cronDuration };
 };
