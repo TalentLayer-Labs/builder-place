@@ -47,10 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     stats.totalSent = await getWeb3mailCount();
     stats.totalCronRunning = await getCronProbeCount();
     stats.totalSentByMonth = await getWeb3mailCountByMonth();
-    stats.totalSentThisMonth =
-      stats.totalSentByMonth.find(
-        (monthData: { _id: number; count: number }) => monthData._id === new Date().getMonth() + 1,
-      )?.count || 0;
+    stats.totalSentThisMonth = stats.totalSentByMonth[new Date().getMonth()] || 0;
 
     const { web3mail } = generateWeb3mailProviders(privateKey);
     const contactList: Contact[] = await web3mail.fetchMyContacts();
