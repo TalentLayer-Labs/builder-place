@@ -1,3 +1,6 @@
+import { User } from '@prisma/client';
+import { UserFilters } from '../../pages/api/users/route';
+
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
   try {
@@ -59,6 +62,30 @@ export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
         'Content-type': 'application/json',
       },
     });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const getUserBy = async (filters: UserFilters): Promise<User> => {
+  try {
+    const response = await fetch('/api/users', {
+      method: 'GET', // we use GET to enable cache possibility!
+      body: JSON.stringify(filters),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const users: User[] = await response.json();
+    if (users.length === 0) {
+      throw new Error(`user not found`);
+    }
+
+    return users[0];
   } catch (err) {
     console.error(err);
     throw err;

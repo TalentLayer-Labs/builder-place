@@ -324,15 +324,3 @@ export type Web3MailStats = {
 //   grants = 'grants',
 //   gigs = 'gigs',
 // }
-
-export type iTalentLayerContext = {
-  loading: boolean;
-  canUseDelegation: boolean;
-  refreshData: () => Promise<boolean>;
-  refreshWorkerProfile: () => Promise<boolean>;
-  user?: IUser;
-  account?: IAccount;
-  workerProfile?: IWorkerProfile;
-  completionScores?: ICompletionScores;
-  talentLayerClient?: TalentLayerClient;
-};

@@ -20,6 +20,7 @@ import {
   UpdateWorkerProfileAction,
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
+import { UserFilters } from '../../../pages/api/users/route';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage;
@@ -93,6 +94,43 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
       console.log(error.message);
       throw new Error(errorMessage);
     }
+  }
+};
+
+export const getUserBy = async (filters: UserFilters) => {
+  let errorMessage;
+  try {
+    console.log('Getting User Profile with filters:', filters);
+
+    // Construct the where clause based on filters
+    const whereClause: any = {};
+    if (filters.id) {
+      whereClause.id = Number(filters.id);
+    } else if (filters.address) {
+      whereClause.address = filters.address;
+    } else if (filters.email) {
+      whereClause.email = filters.email;
+    }
+
+    const userProfile = await prisma.user.findUnique({
+      where: whereClause,
+      include: {
+        workerProfile: true,
+        hirerProfile: true,
+        ownedBuilderPlace: true,
+        managedPlaces: true,
+      },
+    });
+    console.log('Fetched User Profile: ', userProfile);
+    return userProfile;
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_USER;
+    } else {
+      errorMessage = error.message;
+    }
+    console.error(error.message);
+    throw new Error(errorMessage);
   }
 };
 
