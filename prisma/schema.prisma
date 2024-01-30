@@ -83,11 +83,15 @@ enum EmailType {
   NEW_SERVICE
 }
 
+enum EmailSender {
+  IEXEC
+  SENDGRID
+}
+
 model CronProbe {
   id           Int       @id @default(autoincrement())
-  //TODO add @unique here ?
-  type         EmailType
-  lastRanAt    Int
+  type         EmailType @unique
+  lastRanAt    DateTime
   successCount Int
   duration     Int
   errorCount   Int
@@ -95,6 +99,7 @@ model CronProbe {
 
 model Web3Mail {
   id     String    @id
-  sentAt Int
+  sentAt DateTime
   type   EmailType
+  sender EmailSender
 }
