@@ -54,50 +54,19 @@ export const persistCronProbe = async (
   errorCount: number,
   cronDuration: number,
 ) => {
-  //TODO use upsert when unique field implemented
-  // await prisma.cronProbe.upsert({
-  //   where: {
-  //     type: emailType, // Assuming `type` is unique
-  //   },
-  //   update: {
-  //     lastRanAt: getTimestampNowSeconds(),
-  //     successCount: successCount,
-  //     errorCount: errorCount,
-  //     duration: cronDuration,
-  //   },
-  //   create: {
-  //     type: emailType,
-  //     lastRanAt: getTimestampNowSeconds(),
-  //     successCount: successCount,
-  //     errorCount: errorCount,
-  //     duration: cronDuration,
-  //   },
-  // });
-  const existingCronProbe = await prisma.cronProbe.findFirst({
+  await prisma.cronProbe.upsert({
     where: {
-      type: emailType,
+      type: emailType, // `type` is unique
     },
-  });
-  if (existingCronProbe) {
-    await prisma.cronProbe.update({
-      where: {
-        id: existingCronProbe.id,
-      },
-      data: {
-        lastRanAt: getTimestampNowSeconds(),
-        // lastRanAt: new Date(),
-        successCount: successCount,
-        errorCount: errorCount,
-        duration: cronDuration,
-      },
-    });
-    return;
-  }
-  await prisma.cronProbe.create({
-    data: {
+    update: {
+      lastRanAt: new Date(),
+      successCount: successCount,
+      errorCount: errorCount,
+      duration: cronDuration,
+    },
+    create: {
       type: emailType,
-      lastRanAt: getTimestampNowSeconds(),
-      // lastRanAt: new Date(),
+      lastRanAt: new Date(),
       successCount: successCount,
       errorCount: errorCount,
       duration: cronDuration,
