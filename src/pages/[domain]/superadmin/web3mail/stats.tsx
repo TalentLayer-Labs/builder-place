@@ -59,7 +59,7 @@ function Web3mailStats() {
         <div className='flex py-2 px-6 sm:px-0 items-center w-full mb-8'>
           <p className='text-2xl font-bold flex-1 mt-6'>Stats Web3 Mails</p>
           <a
-            href={`/admin/web3mail`}
+            href={`/superadmin/web3mail`}
             className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm flex items-center rounded-xl'>
             <PaperAirplane width={18} height={18} className='w-[18px] h-[18px] mr-2' />
             Send
