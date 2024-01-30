@@ -9,6 +9,7 @@ import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useWeb3MailStats from '../../../../modules/Web3mail/hooks/useWeb3MailStats';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
+import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -23,6 +24,7 @@ const Web3mailChart = dynamic(
 
 function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { web3MailStats } = useWeb3MailStats();
   const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
 
@@ -32,7 +34,7 @@ function Web3mailStats() {
   if (!user) {
     return <Steps />;
   }
-  if (!user.isAdmin) {
+  if (user?.id != builderPlace?.owner.talentLayerId) {
     return <UserNeedsMoreRights />;
   }
 
