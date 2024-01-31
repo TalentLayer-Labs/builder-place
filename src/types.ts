@@ -2,6 +2,9 @@ import { TalentLayerClient } from '@talentlayer/client';
 import { Connector } from 'wagmi';
 import { ICompletionScores } from './utils/profile';
 import { IWorkerProfile } from './modules/BuilderPlace/types';
+import { IExecDataProtector } from '@iexec/dataprotector';
+import { IExecWeb3mail } from '@iexec/web3mail';
+import * as sgMail from '@sendgrid/mail';
 
 export type IUser = {
   id: string;
@@ -298,6 +301,17 @@ export enum NotificationApiUri {
   FundRelease = 'fund-release',
   Review = 'review',
   NewService = 'new-service',
+}
+
+export type MailProviders = {
+  dataProtector?: IExecDataProtector;
+  web3mail?: IExecWeb3mail;
+  sendGrid?: typeof sgMail;
+};
+
+export enum NotificationType {
+  WEB3,
+  WEB2,
 }
 
 export type Web3MailStats = {
