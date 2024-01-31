@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { generateWeb3mailProviders } from '../utils/web3mail';
+import { generateWeb3mailProviders } from '../utils/mail';
 import { Contact } from '@iexec/web3mail';
 
 export const config = {

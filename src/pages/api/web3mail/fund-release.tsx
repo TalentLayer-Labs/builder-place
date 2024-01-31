@@ -9,7 +9,7 @@ import {
   hasEmailBeenSent,
   persistCronProbe,
 } from '../../../modules/Web3mail/utils/database';
-import { EmptyError, getValidUsers, prepareCronApi } from '../utils/web3mail';
+import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { renderMail } from '../utils/generateWeb3Mail';
 import { EmailType } from '.prisma/client';

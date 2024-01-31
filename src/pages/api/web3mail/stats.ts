@@ -5,7 +5,7 @@ import {
   getWeb3mailCountByMonth,
 } from '../../../modules/Web3mail/utils/database';
 import { Web3MailStats } from '../../../types';
-import { generateWeb3mailProviders } from '../utils/web3mail';
+import { generateWeb3mailProviders } from '../utils/mail';
 import { Contact } from '@iexec/web3mail';
 
 export const config = {
