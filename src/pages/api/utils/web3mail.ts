@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { IExecWeb3mail, getWeb3Provider as getMailProvider } from '@iexec/web3mail';
-import { IExecDataProtector, getWeb3Provider as getProtectorProvider } from '@iexec/dataprotector';
-import { IUserDetails } from '../../../types';
+import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
+import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
+import { IUserDetails, NotificationType } from '../../../types';
 
 export class EmptyError extends Error {
   constructor(message: string) {
@@ -12,16 +12,27 @@ export class EmptyError extends Error {
 
 export const prepareCronApi = (
   isWeb3mailActive: string | undefined,
+  isWeb2mailActive: string | undefined,
   chainId: string | undefined,
   platformId: string | undefined,
   databaseUrl: string | undefined,
   cronSecurityKey: string | undefined,
   privateKey: string | undefined,
   res: NextApiResponse,
-) => {
-  if (isWeb3mailActive !== 'true') {
-    console.warn('Web3mail not activated');
-    return res.status(500).json({ message: 'Web3mail not activated' });
+): NotificationType | void => {
+  if (isWeb3mailActive === 'true' && isWeb2mailActive === 'true') {
+    console.warn('You must choose between web2mail & web3mail');
+    return res.status(500).json({ message: 'Server error' });
+  }
+
+  if (isWeb3mailActive === 'false' && isWeb2mailActive === 'false') {
+    console.warn('No notification function activated');
+    return res.status(500).json({ message: 'No notification function activated' });
+  }
+
+  if (isWeb3mailActive !== 'true' && !privateKey) {
+    console.warn('Web3mail Private key is not set');
+    return res.status(500).json('Server error');
   }
 
   if (!(cronSecurityKey == `Bearer ${process.env.CRON_SECRET}`)) {
@@ -44,22 +55,30 @@ export const prepareCronApi = (
     return res.status(500).json('Platform Id is not set');
   }
 
-  if (!privateKey) {
-    console.warn('Private key is not set');
-    return res.status(500).json('Private key is not set');
-  }
+  return isWeb3mailActive === 'true' ? NotificationType.WEB3 : NotificationType.WEB2;
 };
 
 export const prepareNonCronApi = (
   isWeb3mailActive: string | undefined,
+  isWeb2mailActive: string | undefined,
   chainId: string | undefined,
   platformId: string | undefined,
   privateKey: string | undefined,
   res: NextApiResponse,
-) => {
-  if (isWeb3mailActive !== 'true') {
-    console.warn('Web3mail not activated');
-    return res.status(500).json({ message: 'Web3mail not activated' });
+): NotificationType | void => {
+  if (isWeb3mailActive === 'true' && isWeb2mailActive === 'true') {
+    console.warn('You must choose between web2mail & web3mail');
+    return res.status(500).json({ message: 'Server error' });
+  }
+
+  if (isWeb3mailActive === 'false' && isWeb2mailActive === 'false') {
+    console.warn('No notification function activated');
+    return res.status(500).json({ message: 'No notification function activated' });
+  }
+
+  if (isWeb3mailActive !== 'true' && !privateKey) {
+    console.warn('Web3mail Private key is not set');
+    return res.status(500).json('Server error');
   }
 
   if (!chainId) {
@@ -72,10 +91,7 @@ export const prepareNonCronApi = (
     return res.status(500).json('Platform Id is not set');
   }
 
-  if (!privateKey) {
-    console.warn('Private key is not set');
-    return res.status(500).json('Private key is not set');
-  }
+  return isWeb3mailActive === 'true' ? NotificationType.WEB3 : NotificationType.WEB2;
 };
 
 export const generateWeb3mailProviders = (
@@ -88,6 +104,7 @@ export const generateWeb3mailProviders = (
   return { dataProtector, web3mail };
 };
 
+//TODO with new graph event this can be optimized
 export const getValidUsers = (userDescriptions: IUserDetails[]): string[] => {
   // Only select the latest version of each user metaData
   const validUsers = userDescriptions.filter(
