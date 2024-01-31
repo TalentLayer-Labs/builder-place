@@ -3,6 +3,7 @@ import { NextApiResponse } from 'next';
 import {
   ERROR_CREATING_HIRER_PROFILE,
   ERROR_CREATING_WORKER_PROFILE,
+  ERROR_FETCHING_EMAILS,
   ERROR_FETCHING_USER,
   ERROR_REMOVING_USER_OWNER,
   ERROR_SETTING_USER_OWNER,
@@ -46,6 +47,42 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
       errorMessage = ERROR_FETCHING_USER;
+    } else {
+      errorMessage = error.message;
+    }
+    if (res) {
+      console.log(error.message);
+      res.status(500).json({ error: errorMessage });
+    } else {
+      console.log(error.message);
+      throw new Error(errorMessage);
+    }
+  }
+};
+export const getUserEmailsByAddresses = async (userAddresses: string[], res?: NextApiResponse) => {
+  let errorMessage;
+  try {
+    console.log('Getting User Email with address:', userAddresses);
+    const userEmails = await prisma.user.findMany({
+      where: {
+        address: {
+          in: userAddresses.map(address => address.toLocaleLowerCase()),
+        },
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    if (!userEmails) {
+      return null;
+    }
+
+    console.log(`Fetched ${userEmails.length} user emails`);
+    return userEmails.map(data => data.email).filter(email => !!email);
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_EMAILS;
     } else {
       errorMessage = error.message;
     }
