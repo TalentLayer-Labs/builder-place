@@ -24,13 +24,9 @@ export const hasEmailBeenSent = async (id: string, emailType: EmailType): Promis
   return true;
 };
 
-export const persistEmail = async (
-  id: string,
-  emailType: EmailType,
-  //TODO remove this default when web2 implemented
-  sender: EmailSender = EmailSender.IEXEC,
-) => {
+export const persistEmail = async (id: string, emailType: EmailType, sender: EmailSender) => {
   const compositeId = `${id}-${emailType.toString()}`;
+  console.log('Persisting email ', compositeId);
 
   await prisma.web3Mail.upsert({
     where: {

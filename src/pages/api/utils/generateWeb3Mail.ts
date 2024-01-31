@@ -1,4 +1,4 @@
-export const renderWeb3mail = (
+export const renderMail = (
   title: string,
   body: string,
   name?: string,
