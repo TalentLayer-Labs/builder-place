@@ -1,5 +1,5 @@
 import { getProposalsFromPlatformServices } from '../../../queries/proposals';
-import { IProposal, NotificationApiUri } from '../../../types';
+import { IProposal, NotificationApiUri, NotificationType } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -9,15 +9,11 @@ import {
   hasEmailBeenSent,
   persistCronProbe,
 } from '../../../modules/Web3mail/utils/database';
-import {
-  EmptyError,
-  generateWeb3mailProviders,
-  getValidUsers,
-  prepareCronApi,
-} from '../utils/web3mail';
+import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderTokenAmount } from '../../../utils/conversion';
-import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateWeb3Mail';
 import { EmailType } from '.prisma/client';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -30,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
   const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb2mailActive = process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -37,8 +34,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareCronApi(
+  const notificationType = prepareCronApi(
     isWeb3mailActive,
+    isWeb2mailActive,
     chainId,
     platformId,
     databaseUrl,
@@ -111,13 +109,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+    // const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+    const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
       const domain = await getDomain(proposal.buyer.id);
 
       try {
-        const email = renderWeb3mail(
+        const email = renderMail(
           `You got a new proposal!`,
           `You just received a new proposal for the open-source mission "${
             proposal.service.description?.title
@@ -138,10 +137,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           email,
           [proposal.service.buyer.address],
           proposal.service.platform.name,
-          dataProtector,
-          web3mail,
-          proposal.id,
+          providers,
+          notificationType as NotificationType,
           EmailType.NEW_PROPOSAL,
+          proposal.id,
         );
         console.log('Notification recorded in Database');
         sentEmails += successCount;

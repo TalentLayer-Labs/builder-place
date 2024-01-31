@@ -1,9 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
-import { generateWeb3mailProviders, prepareNonCronApi } from '../utils/web3mail';
+import { prepareNonCronApi } from '../utils/mail';
 import { recoverMessageAddress } from 'viem';
 import { getPlatformId } from '../../../queries/platform';
-import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateWeb3Mail';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { NotificationType } from '../../../types';
+import { EmailType } from '.prisma/client';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -14,11 +17,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
   const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb2mailActive = process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string;
 
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareNonCronApi(isWeb3mailActive, chainId, platformId, privateKey, res);
+  const notificationType = prepareNonCronApi(
+    isWeb3mailActive,
+    isWeb2mailActive,
+    chainId,
+    platformId,
+    privateKey,
+    res,
+  );
 
   const { emailSubject, emailContent, signature, usersAddresses } = req.body;
   if (!emailSubject || !emailContent || !signature || !usersAddresses)
@@ -41,17 +52,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json(`Unauthorized`);
     }
 
-    const email = renderWeb3mail(emailSubject, emailContent);
+    const email = renderMail(emailSubject, emailContent);
 
-    const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+    const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
     const { successCount, errorCount } = await sendMailToAddresses(
       `${emailSubject}`,
       `${email}`,
       usersAddresses,
       platformResponse.data.data.platforms[0].name,
-      dataProtector,
-      web3mail,
+      providers,
+      notificationType as NotificationType,
+      EmailType.PLATFORM_MARKETING,
     );
     sentEmails += successCount;
     nonSentEmails += errorCount;

@@ -1,4 +1,4 @@
-import { IService, IUserDetails, NotificationApiUri } from '../../../types';
+import { IService, IUserDetails, NotificationApiUri, NotificationType } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getWeb3mailUsersForNewServices } from '../../../queries/users';
@@ -9,9 +9,10 @@ import {
   persistCronProbe,
 } from '../../../modules/Web3mail/utils/database';
 import { getNewServicesForPlatform } from '../../../queries/services';
-import { EmptyError, generateWeb3mailProviders, prepareCronApi } from '../utils/web3mail';
-import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmptyError, prepareCronApi } from '../utils/mail';
+import { renderMail } from '../utils/generateWeb3Mail';
 import { EmailType } from '.prisma/client';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -24,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
   const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb2mailActive = process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -31,8 +33,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareCronApi(
+  const notificationType = prepareCronApi(
     isWeb3mailActive,
+    isWeb2mailActive,
     chainId,
     platformId,
     databaseUrl,
@@ -41,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res,
   );
 
-  const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+  const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
   // Check whether the user provided a timestamp or if it will come from the cron config
   const { sinceTimestamp, cronDuration } = calculateCronData(
@@ -52,83 +55,86 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   let status = 200;
   try {
-    // Fetch all contacts who protected their email and granted access to the platform
-    const allContacts = await web3mail.fetchMyContacts();
+    if (providers.web3mail) {
+      // Fetch all contacts who protected their email and granted access to the platform
+      const allContacts = await providers.web3mail.fetchMyContacts();
 
-    if (!allContacts || allContacts.length === 0) {
-      throw new EmptyError(`No contacts granted access to their email`);
-    }
+      if (!allContacts || allContacts.length === 0) {
+        throw new EmptyError(`No contacts granted access to their email`);
+      }
 
-    const allContactsAddresses = allContacts.map(contact => contact.owner);
+      const allContactsAddresses = allContacts.map(contact => contact.owner);
 
-    // Get all users that opted for the feature
-    const response = await getWeb3mailUsersForNewServices(
-      Number(chainId),
-      allContactsAddresses,
-      'activeOnNewService',
-    );
-
-    let validUsers: IUserDetails[] = [];
-
-    if (response?.data?.data?.userDescriptions && response.data.data.userDescriptions.length > 0) {
-      validUsers = response.data.data.userDescriptions;
-      // Only select the latest version of each user metaData
-      validUsers = validUsers.filter(contact => contact.user?.description?.id === contact.id);
-    } else {
-      throw new EmptyError(`No User opted for this feature`);
-    }
-
-    // Check if new services are available & get their keywords
-    const serviceResponse = await getNewServicesForPlatform(
-      Number(chainId),
-      platformId,
-      sinceTimestamp,
-    );
-
-    if (!serviceResponse?.data?.data?.services) {
-      throw new EmptyError(`No new services available`);
-    }
-
-    const services: IService[] = serviceResponse.data.data.services;
-
-    // For each contact, check if an email was already sent for each new service. If not, check if skills match
-    for (const contact of validUsers) {
-      console.log(
-        '*************************************Contact*************************************',
-        contact.user.address,
+      // Get all users that opted for the feature
+      const response = await getWeb3mailUsersForNewServices(
+        Number(chainId),
+        allContactsAddresses,
+        'activeOnNewService',
       );
-      for (const service of services) {
-        // Check if a notification email has already been sent for these services
-        const emailHasBeenSent = await hasEmailBeenSent(
-          `${contact.user.id}-${service.id}`,
-          EmailType.NEW_SERVICE,
-        );
-        if (!emailHasBeenSent) {
-          const userSkills = contact.skills_raw?.split(',');
-          const serviceSkills = service.description?.keywords_raw?.split(',');
-          // Check if the service keywords match the user keywords
-          const matchingSkills = userSkills?.filter((skill: string) =>
-            serviceSkills?.includes(skill),
-          );
 
-          if (matchingSkills && matchingSkills?.length > 0) {
-            console.log(
-              `The skills ${
-                contact.user.handle
-              } has which are required by this open-source contribution mission are: ${matchingSkills.join(
-                ', ',
-              )}`,
+      let validUsers: IUserDetails[] = [];
+
+      if (
+        response?.data?.data?.userDescriptions &&
+        response.data.data.userDescriptions.length > 0
+      ) {
+        validUsers = response.data.data.userDescriptions;
+        // Only select the latest version of each user metaData
+        validUsers = validUsers.filter(contact => contact.user?.description?.id === contact.id);
+      } else {
+        throw new EmptyError(`No User opted for this feature`);
+      }
+
+      // Check if new services are available & get their keywords
+      const serviceResponse = await getNewServicesForPlatform(
+        Number(chainId),
+        platformId,
+        sinceTimestamp,
+      );
+
+      if (!serviceResponse?.data?.data?.services) {
+        throw new EmptyError(`No new services available`);
+      }
+
+      const services: IService[] = serviceResponse.data.data.services;
+
+      // For each contact, check if an email was already sent for each new service. If not, check if skills match
+      for (const contact of validUsers) {
+        console.log(
+          '*************************************Contact*************************************',
+          contact.user.address,
+        );
+        for (const service of services) {
+          // Check if a notification email has already been sent for these services
+          const emailHasBeenSent = await hasEmailBeenSent(
+            `${contact.user.id}-${service.id}`,
+            EmailType.NEW_SERVICE,
+          );
+          if (!emailHasBeenSent) {
+            const userSkills = contact.skills_raw?.split(',');
+            const serviceSkills = service.description?.keywords_raw?.split(',');
+            // Check if the service keywords match the user keywords
+            const matchingSkills = userSkills?.filter((skill: string) =>
+              serviceSkills?.includes(skill),
             );
 
-            // TODO not working
-            const domain = await getDomain(service.buyer.id);
+            if (matchingSkills && matchingSkills?.length > 0) {
+              console.log(
+                `The skills ${
+                  contact.user.handle
+                } has which are required by this open-source contribution mission are: ${matchingSkills.join(
+                  ', ',
+                )}`,
+              );
 
-            try {
-              const email = renderWeb3mail(
-                `New mission available on BuilderPlace!`,
-                `Good news, the following open-source contribution mission: "${
-                  service.description?.title
-                }" was recently posted by ${service.buyer.handle} and you are a good match for it.
+              const domain = await getDomain(service.buyer.id);
+
+              try {
+                const email = renderMail(
+                  `New mission available on BuilderPlace!`,
+                  `Good news, the following open-source contribution mission: "${
+                    service.description?.title
+                  }" was recently posted by ${service.buyer.handle} and you are a good match for it.
                   Here is what is proposed: ${service.description?.about}.
                   
                   The skills you have which are required by this open-source contribution mission are: ${matchingSkills.join(
@@ -136,28 +142,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   )}.
                   
                   Be the first one to send a proposal !`,
-                contact.user.handle,
-                `${domain}/work/${service.id}`,
-                `Go to open-source mission details`,
-                domain,
-              );
-              const { successCount, errorCount } = await sendMailToAddresses(
-                `A new open-source mission matching your skills is available on BuilderPlace !`,
-                email,
-                [contact.user.address],
-                service.platform.name,
-                dataProtector,
-                web3mail,
-                service.id,
-                EmailType.NEW_SERVICE,
-              );
-              sentEmails += successCount;
-              nonSentEmails += errorCount;
-              console.log('Notification recorded in Database');
-              sentEmails++;
-            } catch (e: any) {
-              console.error(e.message);
-              nonSentEmails++;
+                  contact.user.handle,
+                  `${domain}/work/${service.id}`,
+                  `Go to open-source mission details`,
+                  domain,
+                );
+                const { successCount, errorCount } = await sendMailToAddresses(
+                  `A new open-source mission matching your skills is available on BuilderPlace !`,
+                  email,
+                  [contact.user.address],
+                  service.platform.name,
+                  providers,
+                  notificationType as NotificationType,
+                  EmailType.NEW_SERVICE,
+                  service.id,
+                );
+                sentEmails += successCount;
+                nonSentEmails += errorCount;
+                console.log('Notification recorded in Database');
+                sentEmails++;
+              } catch (e: any) {
+                console.error(e.message);
+                nonSentEmails++;
+              }
             }
           }
         }
