@@ -3,7 +3,7 @@ import { getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions/us
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   const body: any = req.body;
-  console.log('Received data:', body);
+  console.log('Received data :', body);
 
   if (!body.id) {
     return res.status(500).json({ error: 'No id.' });
