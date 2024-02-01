@@ -6,7 +6,7 @@ const getTimestampNowSeconds = () => Math.floor(new Date().getTime() / 1000);
 
 export const hasEmailBeenSent = async (id: string, emailType: EmailType): Promise<boolean> => {
   console.log(`---------------------- ${emailType} ${id} ----------------------`);
-  const existingProposal = await prisma.web3Mail.findUnique({
+  const existingProposal = await prisma.mail.findUnique({
     where: {
       id: `${id}-${emailType.toString()}`,
     },
@@ -28,7 +28,7 @@ export const persistEmail = async (id: string, emailType: EmailType, sender: Ema
   const compositeId = `${id}-${emailType.toString()}`;
   console.log('Persisting email ', compositeId);
 
-  await prisma.web3Mail.upsert({
+  await prisma.mail.upsert({
     where: {
       id: compositeId,
     },
@@ -71,13 +71,13 @@ export const persistCronProbe = async (
 };
 
 export const getWeb3mailCount = async (): Promise<number> => {
-  return prisma.web3Mail.count();
+  return prisma.mail.count();
 };
 
 export const getWeb3mailCountByMonth = async (): Promise<number[]> => {
   const currentYear = new Date().getFullYear();
 
-  const web3Mails = await prisma.web3Mail.findMany({
+  const web3Mails = await prisma.mail.findMany({
     where: {
       sentAt: {
         gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),

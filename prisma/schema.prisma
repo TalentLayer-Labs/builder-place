@@ -97,8 +97,8 @@ model CronProbe {
   errorCount   Int
 }
 
-model Web3Mail {
-  id     String    @id
+model Mail {
+  id     String      @id
   sentAt DateTime
   type   EmailType
   sender EmailSender

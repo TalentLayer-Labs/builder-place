@@ -18,7 +18,9 @@ function Web3mail() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { contacts: contactList, contactsLoaded } = useFetchMyContacts();
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb3mailActive = (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string) === 'true';
+  const isWeb2mailActive =
+    (process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string) === 'true';
 
   if (loading) {
     return <Loading />;
@@ -30,16 +32,16 @@ function Web3mail() {
     return <UserNeedsMoreRights />;
   }
 
-  if (isWeb3mailActive === 'false') {
+  if (!isWeb3mailActive && !isWeb2mailActive) {
     return (
       <div className='max-w-7xl mx-auto text-base-content'>
         <div className=' -mx-6 -mt-6 '>
           <div className='flex py-2 px-6 items-center border-b w-full border-info mb-8'>
-            <p className='text-2xl font-bold flex-1 mt-6'>Send Web3 Mails</p>
+            <p className='text-2xl font-bold flex-1 mt-6'>Send Mail Notifications</p>
           </div>
         </div>
         <div className='flex flex-col items-center justify-center'>
-          <p className='text-2xl font-bold flex-1 mt-6'>Web3mail is not active</p>
+          <p className='text-2xl font-bold flex-1 mt-6'>Mail notifications are not active</p>
         </div>
       </div>
     );
@@ -50,7 +52,11 @@ function Web3mail() {
       <div className=' -mx-6 -mt-6 sm:mx-0 sm:mt-0'>
         <div className='flex py-2 px-6 sm:px-0 items-center w-full mb-8'>
           <p className='text-2xl font-bold flex-1 mt-6'>
-            Send <span className='text-base-content ml-1'>Web3mails</span>
+            Send{' '}
+            <span className='text-base-content ml-1'>
+              {isWeb3mailActive && 'Web3mails'}
+              {isWeb2mailActive && 'Mails'}
+            </span>
           </p>
           <a
             href={`/admin/web3mail/stats`}
@@ -65,4 +71,4 @@ function Web3mail() {
   );
 }
 
-export default Web3mail;
+export default Mail;

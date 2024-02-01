@@ -74,7 +74,6 @@ export const sendMailToAddresses = async (
     results.forEach(result => {
       if (result.success) {
         if (id && emailType) {
-          //TODO rename web3mail en "mail" ou "email" ?
           persistEmail(id, emailType, emailSender);
         }
         sentCount++;
