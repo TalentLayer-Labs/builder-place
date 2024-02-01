@@ -35,7 +35,7 @@ export const navigation = () => {
     // },
   ];
 
-  if (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL == 'false') {
+  if (process.env.NEXT_PUBLIC_EMAIL_MODE !== 'web3') {
     config.splice(2, 1);
   }
 

@@ -16,20 +16,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID;
   const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
-  const isWeb2mailActive = process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string;
+  const notificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
 
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  const notificationType = prepareNonCronApi(
-    isWeb3mailActive,
-    isWeb2mailActive,
-    chainId,
-    platformId,
-    privateKey,
-    res,
-  );
+  prepareNonCronApi(notificationType, chainId, platformId, privateKey, res);
 
   const { emailSubject, emailContent, signature, usersAddresses } = req.body;
   if (!emailSubject || !emailContent || !signature || !usersAddresses)

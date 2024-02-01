@@ -24,8 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
-  const isWeb2mailActive = process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string;
+  const notificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -33,9 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  const notificationType = prepareCronApi(
-    isWeb3mailActive,
-    isWeb2mailActive,
+  prepareCronApi(
+    notificationType,
     chainId,
     platformId,
     databaseUrl,

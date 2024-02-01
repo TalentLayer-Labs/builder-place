@@ -26,7 +26,7 @@ function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { web3MailStats } = useWeb3MailStats();
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb3mailActive = (process.env.NEXT_PUBLIC_EMAIL_MODE as string) === 'web3';
 
   if (loading || !web3MailStats) {
     return <Loading />;
@@ -38,7 +38,7 @@ function Web3mailStats() {
     return <UserNeedsMoreRights />;
   }
 
-  if (isWeb3mailActive === 'false') {
+  if (!isWeb3mailActive) {
     return (
       <div className='max-w-7xl mx-auto text-base-content'>
         <div className=' -mx-6 -mt-6 '>
