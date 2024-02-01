@@ -34,10 +34,11 @@ model User {
   id                       Int            @id @default(autoincrement())
   status                   EntityStatus   @default(PENDING)
   name                     String
-  email                    String?        @unique
+  email                    String         @unique
+  address                  String         @unique
   talentLayerId            String?        @unique
+  talentLayerHandle        String?        @unique
   isEmailVerified          Boolean        @default(false)
-  address                  String?        @unique
   about                    String?
   picture                  String?
   counterStartDate         Int            @default(0)
