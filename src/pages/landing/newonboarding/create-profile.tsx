@@ -20,9 +20,17 @@ interface IFormValues {
   picture?: string;
 }
 
+/**
+ * @dev We want to normalize all database mutations
+ * A mutation must required:
+ *  - data: the data to mutate with a dynamic type
+ *  - signature: the signature of the data by the current wallet. The only for us to confirm the ownership of the address
+ *  - domain: the domain of the BP used which could be the default one, or any BuilderPlaces
+ */
 interface IMutation<T> {
   data: T;
   signature: `0x${string}` | Uint8Array;
+  domain: string;
 }
 
 export interface IPostUser
@@ -33,8 +41,15 @@ export interface IPostUser
   > {}
 
 /**
- * @dev
+ * @dev This form aims to be used for all profile onboarding (worker, builder space owner, collaborator).
+ *  The differences beetween context are:
+ *    - the redirection on success
+ *    - the automatic redirection in case of existing profile
+ *
+ * @dev Logicall flow:
  *  IF user has a wallet connected
+ *      REQUEST: We try to get from DB his user profile
+ *
  *      IF user has profile in DB with this wallet
  *         redirect to step 2
  *      ELSE
@@ -42,18 +57,13 @@ export interface IPostUser
  *  ELSE
  *     let the user complete the form and ask him to conenct on submit
  *
- *
  * @TODO
- * Already got a profile ? just connect
- * useState => check if user is connect and if he has a profile, if yes move to step 2
- *
  * Display the generated handle under name (slugify version of the name)
  */
 function createProfile() {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { address } = useAccount();
-  const { loading, user } = useContext(UserContext);
+  const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const router = useRouter();
   const userMutation = useMutation(
@@ -69,7 +79,7 @@ function createProfile() {
 
   const validationSchema = Yup.object({
     name: Yup.string().min(2).max(20).required('Enter your name'),
-    email: Yup.string().required('Please provide your email'),
+    email: Yup.string().required('Enter your email'),
   });
 
   console.log('*DEBUG* createProfile', { user, address, walletClient });
@@ -113,15 +123,11 @@ function createProfile() {
           address: address,
         },
         signature: signature,
+        domain: window.location.hostname + ':' + window.location.port,
       });
 
       console.log('*DEBUG* userMutation.mutate', { response });
 
-      /**
-       * @dev: send validation email to owner to validate email
-       * @todo: better to send it from the backend on mutation success, it prevents to have an endpoint that send email for security issue ?
-       */
-      await sendVerificationEmail(values.email, response.data.id, values.name, '');
       await createVerificationEmailToast();
 
       router.push({
@@ -136,13 +142,13 @@ function createProfile() {
     }
   };
 
-  if (loading) {
+  if (isLoadingUser) {
     return <Loading />;
   }
 
   return (
     <Layout step={1}>
-      <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-6 text-center'>
+      <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-3 sm:mt-6 text-center'>
         Create your profile
       </p>
 

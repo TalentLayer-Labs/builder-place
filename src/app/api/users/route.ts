@@ -4,6 +4,7 @@ import prisma from '../../../postgre/postgreClient';
 import { IPostUser } from '../../../pages/landing/newonboarding/create-profile';
 import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
 
 export interface UsersFilters {
   id?: string | null;
@@ -42,6 +43,9 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: body.data,
     });
+
+    await sendTransactionalEmailValidation(user.email, user.id, user.name, body?.domain);
+
     return Response.json({ id: user.id }, { status: 201 });
   } catch (error: any) {
     // @TODO: move error handle to a middleware ? or factorize it ?
