@@ -166,16 +166,12 @@ export const ContactListForm = ({
                             return (
                               <div
                                 key={index}
-                                className={`text-base-content flex ${
+                                className={`text-base-content flex items-center ${
                                   isAddressAlreadyAdded ? 'hidden' : ''
                                 }`}>
                                 {userDetail.user.handle}
                                 <span onClick={() => arrayHelpers.insert(index, userDetail)}>
-                                  <CheckCircleIcon
-                                    className={
-                                      'ml-3 h-5 w-5 items-center justify-center text-base-content cursor-pointer'
-                                    }
-                                  />
+                                  <CheckCircleIcon className='ml-3 h-5 w-5 justify-center text-base-content cursor-pointer' />
                                 </span>
                               </div>
                             );
@@ -202,12 +198,12 @@ export const ContactListForm = ({
                     <div className={'overflow-y-auto overflow-x-visible w-auto h-24'}>
                       {values.users.length > 0 ? (
                         values.users.map((userDetails, index) => (
-                          <div key={index} className={'text-base-content flex'}>
+                          <div key={index} className={'text-base-content items-center  flex'}>
                             {userDetails.user.handle}
                             <span onClick={() => arrayHelpers.remove(index)}>
                               <XCircleIcon
                                 className={
-                                  'ml-3 h-5 w-5 items-center justify-center text-base-content cursor-pointer'
+                                  'ml-3 h-5 w-5 justify-center text-base-content cursor-pointer'
                                 }
                               />
                             </span>
