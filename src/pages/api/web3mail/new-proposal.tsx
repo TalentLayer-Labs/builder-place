@@ -11,9 +11,10 @@ import {
 } from '../../../modules/Web3mail/utils/database';
 import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderTokenAmount } from '../../../utils/conversion';
-import { renderMail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateMail';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -108,11 +109,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    // const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
     const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
-      const domain = await getDomain(proposal.buyer.id);
+      const builderPlace = await getBuilderPlaceByOwnerId(proposal.buyer.id);
+
+      /**
+       * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+       */
+      if (!builderPlace) {
+        console.warn(`User ${proposal.buyer.id} is not a BuilderPlace owner`);
+        continue;
+      }
 
       try {
         const email = renderMail(
@@ -126,11 +134,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             proposal.rateToken,
             proposal.rateAmount,
           )}.`,
+          notificationType,
+          builderPlace.palette,
+          builderPlace?.customDomain || builderPlace?.subdomain,
+          builderPlace.logo,
           proposal.service.buyer.handle,
-          `${domain}/work/${proposal.service.id}`,
+          `${builderPlace?.customDomain || builderPlace?.subdomain}/work/${proposal.service.id}`,
           `Go to proposal detail`,
-          domain,
         );
+
         const { successCount, errorCount } = await sendMailToAddresses(
           `You got a new proposal !`,
           email,
