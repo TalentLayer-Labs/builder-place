@@ -138,11 +138,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
        */
-      if (!builderPlace || (!builderPlace?.customDomain && !builderPlace?.subdomain)) {
+      const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+
+      if (!builderPlace || !domain) {
         console.warn(`User ${payment.service.buyer.id} is not a BuilderPlace owner`);
         continue;
       }
 
+      //TODO add function to check needed variables (palette etc.)
       const email = renderMail(
         `Funds released!`,
         `${senderHandle} has ${action} ${renderTokenAmount(
@@ -151,7 +154,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )} for the project ${payment.service.description?.title} on BuilderPlace !`,
         notificationType,
         builderPlace.palette,
-        builderPlace.customDomain || builderPlace.subdomain,
+        domain,
         builderPlace.logo,
         receiverHandle,
         `${builderPlace.customDomain || builderPlace.subdomain}/work/${payment.service.id}`,
