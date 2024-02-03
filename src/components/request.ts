@@ -143,6 +143,7 @@ export const sendPlatformMarketingWeb3mail = async (
   emailSubject: string,
   emailContent: string,
   usersAddresses: string[],
+  builderPlaceId: string,
   signature: string,
 ): Promise<any> => {
   try {
@@ -150,6 +151,7 @@ export const sendPlatformMarketingWeb3mail = async (
       emailSubject: emailSubject,
       emailContent: emailContent,
       usersAddresses: usersAddresses,
+      builderPlaceId: builderPlaceId,
       signature: signature,
     });
   } catch (err) {

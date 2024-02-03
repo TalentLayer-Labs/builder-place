@@ -130,6 +130,12 @@ export interface SendVerificationEmail {
   domain: string;
 }
 
+export interface GetUserEmails {
+  builderPlaceId: string;
+  ownerId: string;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',

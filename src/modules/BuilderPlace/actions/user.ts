@@ -197,6 +197,35 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
+export const getVerifiedUsersAddresses = async () => {
+  let errorMessage;
+  try {
+    // console.log('Getting Users verified emails');
+    const emails = await prisma.user.findMany({
+      where: {
+        isEmailVerified: true,
+      },
+      select: {
+        address: true,
+      },
+    });
+    // console.log('Fetched emails: ', emails);
+    if (emails) {
+      return emails.filter(mail => !!mail.address).map(mail => mail.address);
+    }
+
+    return null;
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_EMAILS;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
 export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
   let errorMessage;
   /**

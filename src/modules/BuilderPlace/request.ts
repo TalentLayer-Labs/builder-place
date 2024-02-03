@@ -161,3 +161,27 @@ export const getUserByEmail = async (email: string): Promise<any> => {
     throw err;
   }
 };
+
+export const getUsersAddresses = async (
+  builderPlaceId: string,
+  ownerId: string,
+  signature: `0x${string}` | Uint8Array,
+): Promise<any> => {
+  try {
+    const response = await fetch('/api/domain/get-verified-users-addresses', {
+      method: 'POST',
+      body: JSON.stringify({
+        builderPlaceId,
+        ownerId,
+        signature,
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

@@ -6,21 +6,19 @@ import Loading from '../../../../components/Loading';
 import Steps from '../../../../components/Steps';
 import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
-import useFetchMyContacts from '../../../../modules/Web3mail/hooks/useFetchMyContacts';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { NotificationType } from '../../../../types';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
-
-function Web3mail() {
-  const { user, loading } = useContext(TalentLayerContext);
+//TODO update doc for env var
+function Mail() {
+  const { user, account, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const { contacts: contactList, contactsLoaded } = useFetchMyContacts();
-  const isWeb3mailActive = (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string) === 'true';
-  const isWeb2mailActive =
-    (process.env.NEXT_PUBLIC_ACTIVATE_MAIL_NOTIFICATIONS as string) === 'true';
+  const notificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
 
   if (loading) {
     return <Loading />;
@@ -32,21 +30,6 @@ function Web3mail() {
     return <UserNeedsMoreRights />;
   }
 
-  if (!isWeb3mailActive && !isWeb2mailActive) {
-    return (
-      <div className='max-w-7xl mx-auto text-base-content'>
-        <div className=' -mx-6 -mt-6 '>
-          <div className='flex py-2 px-6 items-center border-b w-full border-info mb-8'>
-            <p className='text-2xl font-bold flex-1 mt-6'>Send Mail Notifications</p>
-          </div>
-        </div>
-        <div className='flex flex-col items-center justify-center'>
-          <p className='text-2xl font-bold flex-1 mt-6'>Mail notifications are not active</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       <div className=' -mx-6 -mt-6 sm:mx-0 sm:mt-0'>
@@ -54,19 +37,23 @@ function Web3mail() {
           <p className='text-2xl font-bold flex-1 mt-6'>
             Send{' '}
             <span className='text-base-content ml-1'>
-              {isWeb3mailActive && 'Web3mails'}
-              {isWeb2mailActive && 'Mails'}
+              {notificationType === NotificationType.WEB3 && 'Web3mails'}
+              {notificationType === NotificationType.WEB2 && 'Mails'}
             </span>
           </p>
           <a
             href={`/admin/web3mail/stats`}
-            className='  text-base-content bg-base-300 px-3 py-2 text-sm flex items-center rounded-xl'>
+            className='text-base-content bg-base-300 px-3 py-2 text-sm flex items-center rounded-xl'>
             <ChartBarIcon width={18} height={18} className='w-[18px] h-[18px] mr-2' />
             Stats
           </a>
         </div>
       </div>
-      <ContactListForm userDetailList={contactList} usersLoaded={contactsLoaded} />
+      <ContactListForm
+        builderPlaceId={builderPlace?.id}
+        userId={user.id}
+        address={account?.address}
+      />
     </div>
   );
 }
