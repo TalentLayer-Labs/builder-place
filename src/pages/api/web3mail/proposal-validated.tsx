@@ -4,16 +4,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { calculateCronData } from '../../../modules/Web3mail/utils/cron';
-import {
-  getDomain,
-  hasEmailBeenSent,
-  persistCronProbe,
-} from '../../../modules/Web3mail/utils/database';
+import { hasEmailBeenSent, persistCronProbe } from '../../../modules/Web3mail/utils/database';
 import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
-import { renderMail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateMail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -106,7 +103,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
-      const domain = await getDomain(proposal.service.buyer.id);
+      const builderPlace = await getBuilderPlaceByOwnerId(proposal.service.buyer.id);
+
+      /**
+       * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+       */
+      const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+
+      if (!builderPlace || !domain) {
+        console.warn(`User ${proposal.service.buyer.id} is not a BuilderPlace owner`);
+        continue;
+      }
 
       try {
         const email = renderMail(
@@ -119,6 +126,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 proposal.rateAmount,
               )}. 
               For the following work to be provided: ${proposal.description?.about}.`,
+          notificationType,
+          builderPlace.palette,
           domain,
           proposal.seller.handle,
           `${domain}/work/${proposal.service.id}`,
