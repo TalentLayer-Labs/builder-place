@@ -2,11 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { prepareNonCronApi } from '../utils/mail';
 import { recoverMessageAddress } from 'viem';
-import { getPlatformId } from '../../../queries/platform';
-import { renderMail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateMail';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { NotificationType } from '../../../types';
 import { EmailType } from '.prisma/client';
+import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -24,8 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   prepareNonCronApi(notificationType, chainId, platformId, privateKey, res);
 
-  const { emailSubject, emailContent, signature, usersAddresses } = req.body;
-  if (!emailSubject || !emailContent || !signature || !usersAddresses)
+  const { emailSubject, emailContent, signature, usersAddresses, builderPlaceId } = req.body;
+  if (!emailSubject || !emailContent || !signature || !usersAddresses || !builderPlaceId)
     return res.status(500).json(`Missing argument`);
 
   if (emailSubject.length >= 78)
@@ -34,18 +34,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Check whether the address which provided the signature is the owner of the platform
     const address = await recoverMessageAddress({
-      message: emailSubject,
+      message: builderPlaceId.toString(),
       signature,
     });
 
-    const platformResponse = await getPlatformId(Number(chainId), address);
-    const platformId: string | undefined = platformResponse.data?.data?.platforms[0]?.id;
+    const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(address, builderPlaceId);
+    const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 
-    if (!platformId || (platformId && platformId !== process.env.NEXT_PUBLIC_PLATFORM_ID)) {
+    if (!builderPlace || !domain) {
       return res.status(401).json(`Unauthorized`);
     }
 
-    const email = renderMail(emailSubject, emailContent);
+    const email = renderMail(
+      emailSubject,
+      emailContent,
+      notificationType,
+      builderPlace.palette,
+      domain,
+      builderPlace.logo,
+    );
 
     const providers = generateMailProviders(notificationType as NotificationType, privateKey);
 
@@ -53,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `${emailSubject}`,
       `${email}`,
       usersAddresses,
-      platformResponse.data.data.platforms[0].name,
+      builderPlace.name,
       providers,
       notificationType as NotificationType,
       EmailType.PLATFORM_MARKETING,
