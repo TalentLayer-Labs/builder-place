@@ -3,16 +3,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { calculateCronData } from '../../../modules/Web3mail/utils/cron';
-import {
-  getDomain,
-  hasEmailBeenSent,
-  persistCronProbe,
-} from '../../../modules/Web3mail/utils/database';
+import { hasEmailBeenSent, persistCronProbe } from '../../../modules/Web3mail/utils/database';
 import { getNewReviews } from '../../../queries/reviews';
 import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
-import { renderMail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateMail';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -122,7 +119,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? console.log('Reviewer is the seller')
         : console.log('Reviewer is the buyer');
 
-      const domain = await getDomain(review.service.buyer.id);
+      const builderPlace = await getBuilderPlaceByOwnerId(review.service.buyer.id);
+
+      /**
+       * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+       */
+      const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+
+      if (!builderPlace || !domain) {
+        console.warn(`User ${review.service.buyer.id} is not a BuilderPlace owner`);
+        continue;
+      }
 
       try {
         const email = renderMail(
@@ -130,11 +137,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           `${fromHandle} has left a review for the open-source contribution ${review.service.description?.title}.
             The open-source contribution was rated ${review.rating}/5 stars and the following comment was left: ${review.description?.content}.
             Congratulations on completing your open-source contribution and improving your reputation !`,
+          notificationType,
+          builderPlace.palette,
+          domain,
+          builderPlace.logo,
           review.to.handle,
           `${domain}/work/${review.service.id}`,
           `Go to review detail`,
-          domain,
         );
+
         await sendMailToAddresses(
           `A review was created for the open-source contribution - ${review.service.description?.title}`,
           email,

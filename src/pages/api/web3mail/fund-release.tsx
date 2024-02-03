@@ -157,7 +157,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         domain,
         builderPlace.logo,
         receiverHandle,
-        `${builderPlace.customDomain || builderPlace.subdomain}/work/${payment.service.id}`,
+        `${domain}/work/${payment.service.id}`,
         `Go to payment detail`,
       );
 
