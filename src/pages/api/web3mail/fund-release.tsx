@@ -138,7 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
        */
-      if (!builderPlace) {
+      if (!builderPlace || (!builderPlace?.customDomain && !builderPlace?.subdomain)) {
         console.warn(`User ${payment.service.buyer.id} is not a BuilderPlace owner`);
         continue;
       }
@@ -151,11 +151,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )} for the project ${payment.service.description?.title} on BuilderPlace !`,
         notificationType,
         builderPlace.palette,
-        receiverHandle,
-        `${builderPlace?.customDomain || builderPlace?.subdomain}/work/${payment.service.id}`,
-        `Go to payment detail`,
-        builderPlace?.customDomain || builderPlace?.subdomain,
+        builderPlace.customDomain || builderPlace.subdomain,
         builderPlace.logo,
+        receiverHandle,
+        `${builderPlace.customDomain || builderPlace.subdomain}/work/${payment.service.id}`,
+        `Go to payment detail`,
       );
 
       try {

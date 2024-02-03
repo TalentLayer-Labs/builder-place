@@ -4,11 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { calculateCronData } from '../../../modules/Web3mail/utils/cron';
-import {
-  getDomain,
-  hasEmailBeenSent,
-  persistCronProbe,
-} from '../../../modules/Web3mail/utils/database';
+import { hasEmailBeenSent, persistCronProbe } from '../../../modules/Web3mail/utils/database';
 import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { renderMail } from '../utils/generateMail';
@@ -117,7 +113,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
        */
-      if (!builderPlace) {
+      if (!builderPlace || (!builderPlace.customDomain && !builderPlace.subdomain)) {
         console.warn(`User ${proposal.buyer.id} is not a BuilderPlace owner`);
         continue;
       }
@@ -136,10 +132,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           )}.`,
           notificationType,
           builderPlace.palette,
-          builderPlace?.customDomain || builderPlace?.subdomain,
+          builderPlace.customDomain || builderPlace.subdomain,
           builderPlace.logo,
           proposal.service.buyer.handle,
-          `${builderPlace?.customDomain || builderPlace?.subdomain}/work/${proposal.service.id}`,
+          `${builderPlace.customDomain || builderPlace.subdomain}/work/${proposal.service.id}`,
           `Go to proposal detail`,
         );
 
