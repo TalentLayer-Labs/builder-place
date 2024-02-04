@@ -32,12 +32,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json(`Email subject must be less than 78 characters`);
 
   try {
-    // Check whether the address which provided the signature is the owner of the platform
+    /**
+     * @dev: Check whether the message sender is a Collaborator of the BuilderPlace
+     */
     const address = await recoverMessageAddress({
       message: builderPlaceId.toString(),
       signature,
     });
 
+    /**
+     * @dev: Allow BuilderPlace Collaborators to send emails
+     */
     const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(address, builderPlaceId);
     const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 

@@ -16,7 +16,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 //TODO update doc for env var
 function Mail() {
   const { user, account, loading } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const notificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
 
@@ -26,7 +26,7 @@ function Mail() {
   if (!user) {
     return <Steps />;
   }
-  if (user?.id != builderPlace?.owner.talentLayerId) {
+  if (isBuilderPlaceCollaborator) {
     return <UserNeedsMoreRights />;
   }
 
@@ -49,11 +49,13 @@ function Mail() {
           </a>
         </div>
       </div>
-      <ContactListForm
-        builderPlaceId={builderPlace?.id}
-        userId={user.id}
-        address={account?.address}
-      />
+      {builderPlace && (
+        <ContactListForm
+          builderPlaceId={builderPlace?.id}
+          userId={user.id}
+          address={account?.address}
+        />
+      )}
     </div>
   );
 }
