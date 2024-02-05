@@ -36,10 +36,6 @@ function ServiceList() {
         </p>
       )}
 
-      <div className='flex justify-center items-center gap-10 flex-col pb-5'>
-        <SearchServiceButton value={searchQuery} />
-      </div>
-
       <div className='flex mb-5'>
         <button
           onClick={() => setView(1)}
@@ -55,6 +51,13 @@ function ServiceList() {
           }`}>
           Table View
         </button>
+        <button className='ml-auto px-4 py-2 rounded-full ml-2 text-base-content border'>
+          Filter
+        </button>
+
+        <div className='ml-5 justify-center items-center flex-col'>
+          <SearchServiceButton value={searchQuery} />
+        </div>
       </div>
 
       {view === 1 &&
@@ -70,7 +73,7 @@ function ServiceList() {
       {view === 2 && (
         <table className='min-w-full text-center' style={{ borderRadius: '1rem' }}>
           <thead>
-            <tr className='bg-primary'>
+            <tr className='bg-primary text-primary'>
               <th className='border border-gray-300 p-2'>Title</th>
               <th className='border border-gray-300 p-2'>Date</th>
               <th className='border border-gray-300 p-2'>Rate</th>
