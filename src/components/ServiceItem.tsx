@@ -9,7 +9,15 @@ function limitText(text: string, maxLength: number) {
   return text.substr(0, maxLength - 3) + '...';
 }
 
-function ServiceItem({ service, embedded, view }: { service: IService; embedded?: boolean; view?: number }) {
+function ServiceItem({
+  service,
+  embedded,
+  view,
+}: {
+  service: IService;
+  embedded?: boolean;
+  view?: number;
+}) {
   const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;
   const daysAgo = formatDaysAgo(createdAt);
@@ -18,7 +26,7 @@ function ServiceItem({ service, embedded, view }: { service: IService; embedded?
     <>
       {/* LIST VIEW */}
       {view === 1 && (
-        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent'>
+        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent mb-5'>
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
             <div className='flex items-center justify-between gap-4'>
               <p className='font-bold break-all'>{service.description?.title}</p>
@@ -71,8 +79,8 @@ function ServiceItem({ service, embedded, view }: { service: IService; embedded?
 
       {/* TABLE VIEW */}
       {view === 2 && (
-        <tr>
-          <td className='border border-gray-300 p-2 break-all'>{service.description?.title}</td>
+        <tr className='bg-base-100 hover:bg-base-200'>
+          <td className='border border-gray-300 p-2 break-all '>{service.description?.title}</td>
           <td className='border border-gray-300 p-2'>{daysAgo}</td>
           <td className='border border-gray-300 p-2'>
             {service.description?.rateToken && service.description?.rateAmount && (
@@ -82,18 +90,15 @@ function ServiceItem({ service, embedded, view }: { service: IService; embedded?
               />
             )}
           </td>
+
+          <td className='border border-gray-300 p-2'>Gig</td>
           <td className='border border-gray-300 p-2'>
             <Link
-              className='text-primary hover:opacity-70'
+              className='text-base-content hover:opacity-70'
               href={`/work/${service.id}`}
               target={embedded ? 'blank' : ''}>
               View Post
             </Link>
-          </td>
-          <td className='border border-gray-300 p-2'>
-            <button className='bg-info px-3 py-1.5 text-info text-xs rounded-full' disabled>
-              Gig
-            </button>
           </td>
         </tr>
       )}

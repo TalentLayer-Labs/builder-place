@@ -40,28 +40,37 @@ function ServiceList() {
         <SearchServiceButton value={searchQuery} />
       </div>
 
-      <button onClick={() => setView(view === 1 ? 2 : 1)}>
-        Toggle View
-      </button>
+      <button onClick={() => setView(view === 1 ? 2 : 1)}>Toggle View</button>
 
-      {view === 1 && services.map((service: IService, i: number) => (
-        <ServiceItem service={service} embedded={router.asPath.includes('embed/')} key={i} view={view} />
-      ))}
+      {view === 1 &&
+        services.map((service: IService, i: number) => (
+          <ServiceItem
+            service={service}
+            embedded={router.asPath.includes('embed/')}
+            key={i}
+            view={view}
+          />
+        ))}
 
       {view === 2 && (
-        <table className='min-w-full'>
+        <table className='min-w-full text-center' style={{ borderRadius: '1rem' }}>
           <thead>
-            <tr>
+            <tr className='bg-primary'>
               <th className='border border-gray-300 p-2'>Title</th>
-              <th className='border border-gray-300 p-2'>Days Ago</th>
+              <th className='border border-gray-300 p-2'>Date</th>
               <th className='border border-gray-300 p-2'>Rate</th>
+              <th className='border border-gray-300 p-2'>Work</th>
               <th className='border border-gray-300 p-2'>View</th>
-              <th className='border border-gray-300 p-2'>Gig</th>
             </tr>
           </thead>
           <tbody>
             {services.map((service: IService, i: number) => (
-              <ServiceItem service={service} embedded={router.asPath.includes('embed/')} key={i} view={view} />
+              <ServiceItem
+                service={service}
+                embedded={router.asPath.includes('embed/')}
+                key={i}
+                view={view}
+              />
             ))}
           </tbody>
         </table>
