@@ -40,7 +40,22 @@ function ServiceList() {
         <SearchServiceButton value={searchQuery} />
       </div>
 
-      <button onClick={() => setView(view === 1 ? 2 : 1)}>Toggle View</button>
+      <div className='flex mb-5'>
+        <button
+          onClick={() => setView(1)}
+          className={`px-4 py-2 rounded-full ${
+            view === 1 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+          }`}>
+          List View
+        </button>
+        <button
+          onClick={() => setView(2)}
+          className={`px-4 py-2 rounded-full ml-2 ${
+            view === 2 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+          }`}>
+          Table View
+        </button>
+      </div>
 
       {view === 1 &&
         services.map((service: IService, i: number) => (
