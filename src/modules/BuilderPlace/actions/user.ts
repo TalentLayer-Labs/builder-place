@@ -8,6 +8,7 @@ import {
   ERROR_REMOVING_USER_OWNER,
   ERROR_SETTING_USER_OWNER,
   ERROR_UPDATING_HIRER_PROFILE,
+  ERROR_UPDATING_USER,
   ERROR_UPDATING_USER_EMAIL,
   ERROR_UPDATING_WORKER_PROFILE,
   ERROR_VALIDATING_USER,
@@ -18,6 +19,7 @@ import {
   SetUserProfileOwner,
   UpdateHirerProfileAction,
   UpdateUserEmailAction,
+  UpdateUserNotificationsPreferencesAction,
   UpdateWorkerProfileAction,
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
@@ -391,6 +393,34 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
       errorMessage = ERROR_CREATING_WORKER_PROFILE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
+export const updateUserNotificationsPreferences = async (
+  data: UpdateUserNotificationsPreferencesAction,
+) => {
+  let errorMessage;
+  try {
+    await prisma.user.update({
+      where: {
+        address: data.address,
+      },
+      data: {
+        emailPreferences: { ...data.preferences },
+      },
+    });
+
+    return {
+      message: 'Preferences updated successfully',
+    };
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_UPDATING_USER;
     } else {
       errorMessage = error.message;
     }

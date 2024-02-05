@@ -1,4 +1,5 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
+import { INotificationsPreferences } from '../../types';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -114,6 +115,12 @@ export interface UpdateUserEmail {
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface UpdateUserNotificationPreferences {
+  userId: string;
+  preferences: INotificationsPreferences;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface VerifyAccount {
   userId: string;
   signature: `0x${string}` | Uint8Array;
@@ -188,6 +195,11 @@ export interface UpdateWorkerProfileAction {
   status?: string;
   skills?: string;
   talentLayerId?: string;
+}
+
+export interface UpdateUserNotificationsPreferencesAction {
+  address: `0x${string}`;
+  preferences: INotificationsPreferences;
 }
 
 export interface UpdateUserEmailAction {

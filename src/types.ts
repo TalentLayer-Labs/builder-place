@@ -5,6 +5,7 @@ import { IWorkerProfile } from './modules/BuilderPlace/types';
 import { IExecDataProtector } from '@iexec/dataprotector';
 import { IExecWeb3mail } from '@iexec/web3mail';
 import * as sgMail from '@sendgrid/mail';
+import { User } from '.prisma/client';
 
 export type IUser = {
   id: string;
@@ -27,10 +28,10 @@ export type IUserDetails = {
   about?: string;
   skills_raw?: string;
   user: IUser;
-  web3mailPreferences?: IWeb3mailPreferences;
+  web3mailPreferences?: INotificationsPreferences;
 };
 
-export type IWeb3mailPreferences = {
+export type INotificationsPreferences = {
   activeOnNewService: boolean;
   activeOnNewProposal: boolean;
   activeOnProposalValidated: boolean;
@@ -329,7 +330,7 @@ export type iTalentLayerContext = {
   refreshWorkerProfile: () => Promise<boolean>;
   user?: IUser;
   account?: IAccount;
-  workerProfile?: IWorkerProfile;
+  workerProfile?: User;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
 };
