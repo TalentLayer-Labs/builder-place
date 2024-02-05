@@ -46,6 +46,7 @@ model User {
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
   managedPlaces            BuilderPlace[] @relation("BuilderPlaceCollaborators")
+  emailPreferences         Json           @default("{\"activeOnNewService\": false, \"activeOnNewProposal\": true, \"activeOnProposalValidated\": true, \"activeOnFundRelease\": true, \"activeOnReview\": true, \"activeOnPlatformMarketing\": false, \"activeOnProtocolMarketing\": true}")
 }
 
 model WorkerProfile {
