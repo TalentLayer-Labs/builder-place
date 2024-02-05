@@ -1,4 +1,4 @@
-import { IUser, IUserDetails, IWeb3mailPreferences } from '../types';
+import { IUser, IUserDetails, INotificationsPreferences } from '../types';
 
 export type ICompletionScores = {
   total: ICompletionScore;
@@ -61,7 +61,7 @@ export const getCompletionScores = (user: IUser): ICompletionScores => {
     userWeb3mailTotalPoint += value;
     if (
       user.description?.web3mailPreferences &&
-      user.description.web3mailPreferences[key as keyof IWeb3mailPreferences] !== null
+      user.description.web3mailPreferences[key as keyof INotificationsPreferences] !== null
     ) {
       score += value;
       userWeb3mailScore += value;

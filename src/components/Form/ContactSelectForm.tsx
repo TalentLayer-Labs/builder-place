@@ -26,6 +26,7 @@ const validationSchema = Yup.object({
   body: Yup.string().required('Please provide a body'),
   users: Yup.array().min(1).required('Please select at least one user'),
 });
+
 export const ContactListForm = ({
   userId,
   builderPlaceId,
