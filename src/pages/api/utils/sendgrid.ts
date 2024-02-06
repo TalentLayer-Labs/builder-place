@@ -31,23 +31,3 @@ export const sendTransactionalEmailValidation = async (
     throw new Error(error.message);
   }
 };
-
-export const sendWeb2Email = async (to: string, userId: string, name: string, domain: string) => {
-  if (!APIKEY || !SENDERS_EMAIL) {
-    throw new Error('No APIKEY or SENDERS_EMAIL, skipping email.');
-  }
-
-  const builderPlace = await getBuilderPlaceByDomain(domain);
-
-  console.log('Sending email with variables: ', to, userId, name, domain);
-  const htmlBody = renderValidationMail(name, userId, domain, builderPlace?.logo);
-  const subject = 'Validate your email';
-
-  try {
-    console.log('Sending email...');
-    await sgMail.send({ from: SENDERS_EMAIL, to: to, subject: subject, html: htmlBody });
-    console.log('Email sent successfully.');
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
-};
