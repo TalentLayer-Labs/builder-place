@@ -27,9 +27,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
         <Web3Modal>
-          <TalentLayerProvider>
-            <BuilderPlaceProvider data={pageProps.builderPlace}>
-              <UserProvider>
+          <BuilderPlaceProvider data={pageProps.builderPlace}>
+            <UserProvider>
+              <TalentLayerProvider>
                 <CustomPalette />
                 <XmtpContextProvider>
                   <MessagingProvider>
@@ -39,9 +39,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                   </MessagingProvider>
                 </XmtpContextProvider>
                 <ToastContainer position='bottom-right' />
-              </UserProvider>
-            </BuilderPlaceProvider>
-          </TalentLayerProvider>
+              </TalentLayerProvider>
+            </UserProvider>
+          </BuilderPlaceProvider>
         </Web3Modal>
       </QueryClientProvider>
       <SpeedInsights />
