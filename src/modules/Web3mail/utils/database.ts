@@ -1,4 +1,3 @@
-import { getBuilderPlaceFromOwner } from '../../BuilderPlace/request';
 import { EmailSender, EmailType } from '.prisma/client';
 import prisma from '../../../postgre/postgreClient';
 
@@ -132,9 +131,4 @@ export const getWeb3mailCountByMonth = async (): Promise<number[]> => {
 
 export const getCronProbeCount = async (): Promise<number> => {
   return prisma.cronProbe.count();
-};
-
-export const getDomain = async (buyerTlId: string): Promise<string> => {
-  const builderPlace = await getBuilderPlaceFromOwner(buyerTlId);
-  return builderPlace?.customDomain || builderPlace?.subdomain;
 };
