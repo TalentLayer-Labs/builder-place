@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
 import prisma from '../../../postgre/postgreClient';
-import { IPostUser } from '../../../pages/landing/newonboarding/create-profile';
 import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
+import { ICreateUser } from '../../../components/Form/CreateUserForm';
 
 export interface UsersFilters {
   id?: string | null;
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
 export async function POST(req: Request) {
   console.log('POST');
-  const body: IPostUser = await req.json();
+  const body: ICreateUser = await req.json();
   console.log('json', body);
 
   // @TODO: move it to a middleware and apply to all GET or POST ?
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       data: body.data,
     });
 
-    await sendTransactionalEmailValidation(user.email, user.id, user.name, body?.domain);
+    await sendTransactionalEmailValidation(user.email, user.id.toString(), user.name, body?.domain);
 
     return Response.json({ id: user.id }, { status: 201 });
   } catch (error: any) {
