@@ -18,6 +18,7 @@ import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useUpdateNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateNotificationPreferencesMutation';
+import { toast } from 'react-toastify';
 
 function EmailPreferencesForm() {
   const config = useConfig();
@@ -83,6 +84,13 @@ function EmailPreferencesForm() {
 
         if (response.error) {
           showErrorTransactionToast(response.error);
+        }
+
+        if (response.message) {
+          toast.success(response.message, {
+            autoClose: 5000,
+            closeOnClick: true,
+          });
         }
       } else if (user && publicClient && walletClient) {
         const cid = await postToIPFS(

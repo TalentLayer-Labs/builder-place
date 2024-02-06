@@ -408,7 +408,7 @@ export const updateUserNotificationsPreferences = async (
   try {
     await prisma.user.update({
       where: {
-        address: data.address,
+        address: data.address.toLocaleLowerCase(),
       },
       data: {
         emailPreferences: { ...data.preferences },
