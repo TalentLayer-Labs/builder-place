@@ -2,13 +2,14 @@
 
 ## Onboarding
 
-We have 3 types of user on Builder Place.
+We have 4 types of user on Builder Place.
 
 | User Type | Description | Onboarding From |
 | --- | --- | --- |
 | Owner | A user that owned a platform | Default domain |
 | Collaborator | A user added by a platform owner to help him administrate it | The platform custom domain |
 | Worker | A user that is searching for work | Could be both |
+| Hirer | A user that is want to post on a BuilderPlace | The platform custom domain |
 
 ### Owner onboarding
 
@@ -40,7 +41,6 @@ We have 3 types of user on Builder Place.
     - Redirect to the platform dashboard
 
 
-
 ### Worker onboarding
 
 - From: 
@@ -53,6 +53,16 @@ We have 3 types of user on Builder Place.
 - On success: 
     - Case 1: Redirect to his dashboard
     - Case 2: Redirect to the job page
+
+
+### Hirer onboarding
+
+- From a given BuilderPlace, i the hirer want to post a job
+- Step 1: Complete the "create your profile" form 
+    - It creates the user in DB
+    - And create a TLid linked to the address if the user don't have one yet
+    - Note: this step is automatically skipped if the user already have a TLid
+- On success: Redirect to the create job page
 
 ## TalentLayerId
 
