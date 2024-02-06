@@ -12,8 +12,8 @@ function classNames(...classes: string[]) {
 }
 
 export function Toogle({ entityId, label }: ToggleProps) {
-  const { setFieldValue, values } = useFormikContext<any>();
-  const [isChecked, setIsChecked] = useState<boolean>(values[entityId]);
+  const { setFieldValue, values, initialValues } = useFormikContext<any>();
+  const [isChecked, setIsChecked] = useState<boolean>(initialValues[entityId]);
 
   const handleChange = () => {
     const newValue = !isChecked;
