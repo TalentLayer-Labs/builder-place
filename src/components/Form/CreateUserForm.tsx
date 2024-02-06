@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { useMutation } from 'react-query';
 import axios, { AxiosResponse } from 'axios';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useChainId, useWalletClient } from 'wagmi';
 import { useContext, useEffect } from 'react';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
@@ -69,7 +69,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { open: openConnectModal } = useWeb3Modal();
   const { calculateMintFee } = useMintFee();
   const talentLayerClient = useTalentLayerClient();
-  const router = useRouter();
   const userMutation = useMutation(
     async (body: ICreateUser): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.post('/api/users', body);
@@ -92,14 +91,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       .required('Enter your handle'),
   });
 
-  console.log('*DEBUG* createProfile', { user, address, walletClient });
-
-  useEffect(() => {
-    if (user) {
-      console.log('*DEBUG* REDIRECT');
-      // router.push('/newonboarding/create-platform');
-    }
-  }, [user]);
+  console.log('*DEBUG* CreateUserForm render', { user, address, walletClient });
 
   const handleSubmit = async (
     values: IFormValues,
