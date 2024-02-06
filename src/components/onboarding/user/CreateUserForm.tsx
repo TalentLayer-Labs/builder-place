@@ -11,6 +11,7 @@ import { showErrorTransactionToast } from '../../../utils/toast';
 import { HandleInput } from '../../Form/HandleInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
+import { EntityStatus } from '@prisma/client';
 
 export interface ICreateUserFormValues {
   name: string;
@@ -33,7 +34,7 @@ export interface ICreateUser
  *
  * IF user has a wallet connected
  *      EXECUTE REQUEST: We try to get from DB his user profile
- *      IF user has profile in DB with this wallet
+ *      IF user has profile in DB with this wallet and the account is validated
  *         execute success callback
  *      ELSE
  *          Let the user complete the form, we will create a profile in DB (and a TalentLayerID if the wallet don't have one yet)
@@ -52,16 +53,18 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
    * @dev if user already got an account, we redirect him to the next step
    */
   useEffect(() => {
-    if (user) {
+    if (user && user.status == EntityStatus.VALIDATED) {
       onSuccess();
     }
   }, [user]);
 
   const initialValues: ICreateUserFormValues = {
-    name: talentLayerUser?.description?.name || talentLayerUser?.handle || '',
-    talentLayerHandle: talentLayerUser?.handle || '',
-    email: '',
+    name: user?.name || talentLayerUser?.description?.name || talentLayerUser?.handle || '',
+    talentLayerHandle: user?.talentLayerHandle || talentLayerUser?.handle || '',
+    email: user?.email || '',
   };
+
+  console.log({ initialValues });
 
   const validationSchema = Yup.object({
     name: Yup.string().min(5).max(20).required('Enter your name'),
@@ -129,9 +132,9 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
               <label className='block'>
                 <span className='font-bold text-md'>handle* </span>
-                <HandleInput />
+                <HandleInput initiaValue={initialValues.talentLayerHandle} />
                 <span className='text-red-500'>
-                  <ErrorMessage name='handle' />
+                  <ErrorMessage name='talentLayerHandle' />
                 </span>
                 <p className='font-alt text-xs font-normal'>
                   <span className='text-base-content'>
