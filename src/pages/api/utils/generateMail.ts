@@ -1,11 +1,11 @@
 import { NotificationType } from '../../../types';
-import { Prisma } from '.prisma/client';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 
 export const renderMail = (
   title: string,
   body: string,
   notificationType: NotificationType,
-  palette: Prisma.JsonValue,
+  palette: iBuilderPlacePalette,
   domain: string,
   logoUrl?: string | null,
   name?: string,
@@ -402,7 +402,7 @@ ${link && linkText ? renderLink(link, linkText, palette) : ''}
 `;
 };
 
-const renderLink = (link: string, linkText: string, palette: Prisma.JsonValue) => {
+const renderLink = (link: string, linkText: string, palette: iBuilderPlacePalette) => {
   return `<table style="font-family:'Lato',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
   <tbody>
     <tr>

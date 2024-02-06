@@ -11,6 +11,7 @@ import { renderMail } from '../utils/generateMail';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -133,7 +134,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             proposal.rateAmount,
           )}.`,
           notificationType,
-          builderPlace.palette,
+          builderPlace.palette as unknown as iBuilderPlacePalette,
           domain,
           builderPlace.logo,
           proposal.service.buyer.handle,

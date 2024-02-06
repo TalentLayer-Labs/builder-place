@@ -7,6 +7,7 @@ import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { NotificationType } from '../../../types';
 import { EmailType } from '.prisma/client';
 import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -54,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       emailSubject,
       emailContent,
       notificationType,
-      builderPlace.palette,
+      builderPlace.palette as unknown as iBuilderPlacePalette,
       domain,
       builderPlace.logo,
     );
