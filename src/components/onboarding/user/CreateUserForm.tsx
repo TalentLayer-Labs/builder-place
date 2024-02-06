@@ -64,8 +64,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
     email: user?.email || '',
   };
 
-  console.log({ initialValues });
-
   const validationSchema = Yup.object({
     name: Yup.string().min(5).max(20).required('Enter your name'),
     email: Yup.string().required('Enter your email'),
@@ -76,8 +74,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       .required('Enter your handle'),
   });
 
-  console.log('*DEBUG* CreateUserForm render', { user, address, walletClient });
-
   const handleSubmit = async (
     values: ICreateUserFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
@@ -85,15 +81,14 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       setSubmitting(true);
 
-      console.log('*DEBUG* handleSubmit', { user, address, walletClient, values });
-
-      createNewUser(values);
+      await createNewUser(values);
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
        */
       onSuccess();
     } catch (error: any) {
+      console.log('CATCH error', error);
       showErrorTransactionToast(error);
     } finally {
       setTimeout(() => {
