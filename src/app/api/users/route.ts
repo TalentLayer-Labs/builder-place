@@ -1,11 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
-import prisma from '../../../postgre/postgreClient';
-import { recoverMessageAddress } from 'viem';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
-import { ICreateUser } from '../../../components/Form/CreateUserForm';
 import { EntityStatus } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { recoverMessageAddress } from 'viem';
+import { ICreateUser } from '../../../components/onboarding/user/CreateUserForm';
+import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
+import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
+import prisma from '../../../postgre/postgreClient';
 
 export interface UsersFilters {
   id?: string | null;

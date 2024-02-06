@@ -1,24 +1,18 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import axios, { AxiosResponse } from 'axios';
-import { ErrorMessage, Field, Form, Formik, useFormikContext } from 'formik';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useEffect } from 'react';
-import { useMutation } from 'react-query';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import useMintFee from '../../hooks/useMintFee';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
-import { IMutation } from '../../types';
-import { showErrorTransactionToast } from '../../utils/toast';
-import UploadImage from '../UploadImage';
-import { delegateMintID } from '../request';
-import Loading from '../Loading';
-import { slugify } from '../../modules/BuilderPlace/utils';
-import { HandleInput } from './HandleInput';
-import TalentLayerContext from '../../context/talentLayer';
+import TalentLayerContext from '../../../context/talentLayer';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import useCreateUser from '../../../modules/BuilderPlace/hooks/user/useCreateUser';
+import { IMutation } from '../../../types';
+import { showErrorTransactionToast } from '../../../utils/toast';
+import { HandleInput } from '../../Form/HandleInput';
+import Loading from '../../Loading';
+import UploadImage from '../../UploadImage';
 
-interface IFormValues {
+export interface ICreateUserFormValues {
   name: string;
   talentLayerHandle: string;
   email: string;
@@ -27,7 +21,7 @@ interface IFormValues {
 
 export interface ICreateUser
   extends IMutation<
-    IFormValues & {
+    ICreateUserFormValues & {
       address: string;
     }
   > {}
@@ -52,21 +46,18 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const { calculateMintFee } = useMintFee();
-  const talentLayerClient = useTalentLayerClient();
-  const userMutation = useMutation(
-    async (body: ICreateUser): Promise<AxiosResponse<{ id: string }>> => {
-      return await axios.post('/api/users', body);
-    },
-  );
+  const { createNewUser } = useCreateUser();
 
+  /**
+   * @dev if user already got an account, we redirect him to the next step
+   */
   useEffect(() => {
     if (user) {
       onSuccess();
     }
   }, [user]);
 
-  const initialValues: IFormValues = {
+  const initialValues: ICreateUserFormValues = {
     name: talentLayerUser?.description?.name || talentLayerUser?.handle || '',
     talentLayerHandle: talentLayerUser?.handle || '',
     email: '',
@@ -85,75 +76,15 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   console.log('*DEBUG* CreateUserForm render', { user, address, walletClient });
 
   const handleSubmit = async (
-    values: IFormValues,
+    values: ICreateUserFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
       setSubmitting(true);
 
-      console.log('*DEBUG* handleSubmit', { user, address, walletClient });
+      console.log('*DEBUG* handleSubmit', { user, address, walletClient, values });
 
-      if (!walletClient || !address) {
-        throw new Error('Please connect your wallet');
-      }
-
-      /**
-       * @dev Create a multistep toast to inform the user about the process
-       */
-
-      /**
-       * @dev Sign message to prove ownership of the address
-       */
-      const signature = await walletClient.signMessage({
-        account: address,
-        message: `connect with ${address}`,
-      });
-
-      /**
-       * @dev Now we can mint the TalentLayerID. Better to do a new query here to make it not blocking potentially.
-       * @note: it would block the process if we have to wait for tx confirmation to get the new TLID, so we continue the process.
-       */
-      if (!talentLayerUser) {
-        if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true') {
-          const handlePrice = calculateMintFee(values.talentLayerHandle);
-          const response2 = await delegateMintID(
-            chainId,
-            values.talentLayerHandle,
-            String(handlePrice),
-            address,
-            signature,
-            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
-          );
-          console.log('*DEBUG* delegateMintID', { response2 });
-        } else {
-          if (talentLayerClient) {
-            const tx = await talentLayerClient.profile.create(values.talentLayerHandle);
-            console.log('*DEBUG* mint', { tx });
-          }
-        }
-      }
-
-      /**
-       * @dev Post a new user to DB. Everytime we need to create or update an entity, we need to confirm with the signature
-       */
-      const response = await userMutation.mutateAsync({
-        data: {
-          name: values.name,
-          talentLayerHandle: values.talentLayerHandle,
-          email: values.email,
-          picture: values.picture || undefined,
-          address: address,
-        },
-        signature: signature,
-        domain: window.location.hostname + ':' + window.location.port,
-      });
-
-      console.log('*DEBUG* userMutation.mutate', { response });
-
-      /**
-       * @dev Success, we can redirect to the next step and alter the user for Email and Minting
-       */
-      await createVerificationEmailToast();
+      createNewUser(values);
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.

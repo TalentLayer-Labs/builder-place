@@ -1,11 +1,11 @@
-import { useContext, useEffect } from 'react';
-import CreateUserForm from '../../../components/Form/CreateUserForm';
-import Loading from '../../../components/Loading';
+import { useRouter } from 'next/router';
+import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
 import Header from '../../../components/onboarding/Header';
-import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import Steps from '../../../components/onboarding/platform/Steps';
 
 function createProfile() {
+  const router = useRouter();
+
   const onSuccess = () => {
     console.log('*DEBUG* onSuccess REDIRECT');
     // router.push('/newonboarding/create-platform');
