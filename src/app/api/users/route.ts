@@ -5,6 +5,7 @@ import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
 import { ICreateUser } from '../../../components/Form/CreateUserForm';
+import { EntityStatus } from '@prisma/client';
 
 export interface UsersFilters {
   id?: string | null;
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
 
   try {
     const user = await prisma.user.create({
-      data: body.data,
+      data: { ...body.data, status: EntityStatus.VALIDATED },
     });
 
     await sendTransactionalEmailValidation(user.email, user.id.toString(), user.name, body?.domain);

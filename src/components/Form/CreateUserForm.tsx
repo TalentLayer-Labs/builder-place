@@ -1,38 +1,28 @@
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/router';
-import * as Yup from 'yup';
-import { useMutation } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
-import { useChainId, useWalletClient } from 'wagmi';
-import { useContext, useEffect } from 'react';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
+import axios, { AxiosResponse } from 'axios';
+import { ErrorMessage, Field, Form, Formik, useFormikContext } from 'formik';
+import { useContext, useEffect } from 'react';
+import { useMutation } from 'react-query';
+import { useChainId, useWalletClient } from 'wagmi';
+import * as Yup from 'yup';
 import useMintFee from '../../hooks/useMintFee';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import { delegateMintID } from '../request';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
+import { IMutation } from '../../types';
 import { showErrorTransactionToast } from '../../utils/toast';
-import Loading from '../Loading';
 import UploadImage from '../UploadImage';
+import { delegateMintID } from '../request';
+import Loading from '../Loading';
+import { slugify } from '../../modules/BuilderPlace/utils';
+import { HandleInput } from './HandleInput';
+import TalentLayerContext from '../../context/talentLayer';
 
 interface IFormValues {
   name: string;
-  handle: string;
+  talentLayerHandle: string;
   email: string;
   picture?: string;
-}
-
-/**
- * @dev We want to normalize all database mutations
- * A mutation must required:
- *  - data: the data to mutate with a dynamic type
- *  - signature: the signature of the data by the current wallet. The only for us to confirm the ownership of the address
- *  - domain: the domain of the BP used which could be the default one, or any BuilderPlaces
- */
-interface IMutation<T> {
-  data: T;
-  signature: `0x${string}` | Uint8Array;
-  domain: string;
 }
 
 export interface ICreateUser
@@ -43,29 +33,24 @@ export interface ICreateUser
   > {}
 
 /**
- * @dev This form aims to be used for all profile onboarding (worker, builder space owner, collaborator).
- *  The differences beetween context are:
- *    - the redirection on success
- *    - the automatic redirection in case of existing profile
+ * @dev This form aims to be used for all profile onboarding (worker, builder space owner, collaborator, hirer).
  *
- * @dev Logicall flow:
- *  IF user has a wallet connected
- *      REQUEST: We try to get from DB his user profile
+ * Logicall flow:
  *
+ * IF user has a wallet connected
+ *      EXECUTE REQUEST: We try to get from DB his user profile
  *      IF user has profile in DB with this wallet
- *         redirect to step 2
+ *         execute success callback
  *      ELSE
  *          Let the user complete the form, we will create a profile in DB (and a TalentLayerID if the wallet don't have one yet)
  *  ELSE
  *     let the user complete the form and ask him to conenct on submit
- *
- * @TODO
- * Display the handle field under name (slugify version of the name)
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { calculateMintFee } = useMintFee();
   const talentLayerClient = useTalentLayerClient();
@@ -75,17 +60,23 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
     },
   );
 
+  useEffect(() => {
+    if (user) {
+      onSuccess();
+    }
+  }, [user]);
+
   const initialValues: IFormValues = {
-    name: '',
-    handle: '',
+    name: talentLayerUser?.description?.name || talentLayerUser?.handle || '',
+    talentLayerHandle: talentLayerUser?.handle || '',
     email: '',
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string().min(2).max(20).required('Enter your name'),
+    name: Yup.string().min(5).max(20).required('Enter your name'),
     email: Yup.string().required('Enter your email'),
-    handle: Yup.string()
-      .min(2)
+    talentLayerHandle: Yup.string()
+      .min(5)
       .max(20)
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your handle'),
@@ -120,27 +111,25 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
       /**
        * @dev Now we can mint the TalentLayerID. Better to do a new query here to make it not blocking potentially.
+       * @note: it would block the process if we have to wait for tx confirmation to get the new TLID, so we continue the process.
        */
-      // @todo only if user don't have one yet
-      // - get TLuser by address connected
-      // - if no TLuser, mint
-      // - if TLuser, remove this step
-      // pass the TLid in the userMutation
-      if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true') {
-        const handlePrice = calculateMintFee(values.handle);
-        const response2 = await delegateMintID(
-          chainId,
-          values.handle,
-          String(handlePrice),
-          address,
-          signature,
-          process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
-        );
-        console.log('*DEBUG* delegateMintID', { response2 });
-      } else {
-        if (talentLayerClient) {
-          const tx = await talentLayerClient.profile.create(values.handle);
-          console.log('*DEBUG* mint', { tx });
+      if (!talentLayerUser) {
+        if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true') {
+          const handlePrice = calculateMintFee(values.talentLayerHandle);
+          const response2 = await delegateMintID(
+            chainId,
+            values.talentLayerHandle,
+            String(handlePrice),
+            address,
+            signature,
+            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
+          );
+          console.log('*DEBUG* delegateMintID', { response2 });
+        } else {
+          if (talentLayerClient) {
+            const tx = await talentLayerClient.profile.create(values.talentLayerHandle);
+            console.log('*DEBUG* mint', { tx });
+          }
         }
       }
 
@@ -150,7 +139,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       const response = await userMutation.mutateAsync({
         data: {
           name: values.name,
-          handle: values.handle,
+          talentLayerHandle: values.talentLayerHandle,
           email: values.email,
           picture: values.picture || undefined,
           address: address,
@@ -208,17 +197,23 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
               </label>
 
               <label className='block'>
-                <span className='font-bold text-md'>handle*</span>
-                <Field
-                  type='text'
-                  id='handle'
-                  name='handle'
-                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                  placeholder='your handle'
-                />
+                <span className='font-bold text-md'>handle* </span>
+                <HandleInput />
                 <span className='text-red-500'>
                   <ErrorMessage name='handle' />
                 </span>
+                <p className='font-alt text-xs font-normal'>
+                  <span className='text-base-content'>
+                    Used to create your onchain identity on{' '}
+                    <a
+                      href='https://talentlayer.org'
+                      target='_blank'
+                      className='underline text-info'>
+                      TalentLayer
+                    </a>
+                    .
+                  </span>
+                </p>
               </label>
 
               <label className='block'>

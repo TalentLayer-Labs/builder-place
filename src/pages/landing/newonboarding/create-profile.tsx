@@ -5,33 +5,18 @@ import Header from '../../../components/onboarding/Header';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import Steps from '../../../components/onboarding/platform/Steps';
 
-/**
- * @note: pages should handle steps, everything else in the form. Form can be embed in a modal too for some context.
- */
 function createProfile() {
-  const { loading: isLoadingUser, user, address } = useContext(UserContext);
-
-  useEffect(() => {
-    if (user) {
-      console.log('*DEBUG* onLoad REDIRECT');
-      // router.push('/newonboarding/create-platform');
-    }
-  }, [user]);
-
   const onSuccess = () => {
     console.log('*DEBUG* onSuccess REDIRECT');
     // router.push('/newonboarding/create-platform');
   };
-
-  if (isLoadingUser) {
-    return <Loading />;
-  }
 
   return (
     <div className=''>
       <Header />
 
       <Steps currentStep={1} />
+
       <div className='text-stone-800'>
         <div className='pb-16 max-w-3xl transition-all duration-300 rounded-md mx-auto'>
           <div className='p-6 mx-auto'>
