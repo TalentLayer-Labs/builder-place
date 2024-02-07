@@ -36,26 +36,33 @@ function ServiceList() {
         </p>
       )}
 
-      <div className='flex mb-5'>
-        <button
-          onClick={() => setView(1)}
-          className={`px-4 py-2 rounded-full ${
-            view === 1 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
-          }`}>
-          List View
-        </button>
-        <button
-          onClick={() => setView(2)}
-          className={`px-4 py-2 rounded-full ml-2 ${
-            view === 2 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
-          }`}>
-          Table View
-        </button>
-        <button className='ml-auto px-4 py-2 rounded-full ml-2 text-base-content border'>
+      <div className='flex flex-col md:flex-row mb-5'>
+        <div className='flex mb-2 md:mb-0'>
+          <button
+            onClick={() => setView(1)}
+            className={`px-4 py-2 rounded-full ${
+              view === 1 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+            }`}>
+            List View
+          </button>
+          <button
+            onClick={() => setView(2)}
+            className={`px-4 py-2 rounded-full ml-2 ${
+              view === 2 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+            }`}>
+            Table View
+          </button>
+
+          <button className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'>
+            Filter
+          </button>
+        </div>
+
+        <button className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'>
           Filter
         </button>
 
-        <div className='ml-5 justify-center items-center flex-col'>
+        <div className='mt-2 md:mt-0 md:mr-2'>
           <SearchServiceButton value={searchQuery} />
         </div>
       </div>
