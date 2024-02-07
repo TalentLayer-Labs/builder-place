@@ -80,7 +80,9 @@ function ServiceItem({
       {/* TABLE VIEW */}
       {view === 2 && (
         <tr className='bg-base-100 hover:bg-base-200'>
-          <td className='border border-gray-300 p-2 break-all '>{service.description?.title}</td>
+          <td className='border border-gray-300 p-2 break-all text-left '>
+            {service.description?.title}
+          </td>
           <td className='border border-gray-300 p-2'>{daysAgo}</td>
           <td className='border border-gray-300 p-2'>
             {service.description?.rateToken && service.description?.rateAmount && (
@@ -94,7 +96,7 @@ function ServiceItem({
           <td className='border border-gray-300 p-2'>Gig</td>
           <td className='border border-gray-300 p-2'>
             <Link
-              className='text-base-content hover:opacity-70'
+              className='text-base-content hover:opacity-70 underline'
               href={`/work/${service.id}`}
               target={embedded ? 'blank' : ''}>
               View Post
