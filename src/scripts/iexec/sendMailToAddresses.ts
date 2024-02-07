@@ -4,7 +4,6 @@ import { userGaveAccessToPlatform } from '../../modules/Web3mail/utils/data-prot
 import { persistEmail } from '../../modules/Web3mail/utils/database';
 import { EmailSender, EmailType } from '.prisma/client';
 import { MailProviders, NotificationType } from '../../types';
-import { getUserEmailsByAddresses } from '../../modules/BuilderPlace/actions/user';
 import * as sgMail from '@sendgrid/mail';
 
 export const sendMailToAddresses = async (
@@ -71,10 +70,18 @@ export const sendMailToAddresses = async (
       }
     }
 
+    /**
+     * @dev: If no ID is provided here it means that the emails are Marketing Emails,
+     * and the Database id will have the following format: <Date.getTime()-"address">
+     */
     results.forEach(result => {
       if (result.success) {
-        if (id && emailType) {
+        if (id) {
           persistEmail(id, emailType, emailSender);
+        } else {
+          const nowMilliseconds = new Date().getTime();
+          const compositeId = nowMilliseconds + '-' + result.address;
+          persistEmail(compositeId, emailType, emailSender);
         }
         sentCount++;
       } else {
@@ -95,7 +102,7 @@ const sendWeb3MarketingEmailTo = async (
   emailSubject: string,
   emailContent: string,
   platformName: string,
-) => {
+): Promise<{ address: string; success: boolean } | { success: boolean; error: any }> => {
   try {
     console.log(`------- Sending web3mail to ${address} -------`);
 
@@ -114,7 +121,7 @@ const sendWeb3MarketingEmailTo = async (
       senderName: platformName,
     });
     console.log('sent email', mailSent);
-    return { success: true };
+    return { success: true, address };
   } catch (e: any) {
     console.log(e);
     return { success: false, error: e.message };
@@ -126,7 +133,7 @@ const sendMarketingEmailTo = async (
   email: string,
   emailSubject: string,
   emailContent: string,
-): Promise<{ success: boolean } | { success: boolean; error: any }> => {
+): Promise<{ address: string; success: boolean } | { success: boolean; error: any }> => {
   try {
     console.log(`------- Sending mail to ${email} -------`);
 
@@ -136,8 +143,7 @@ const sendMarketingEmailTo = async (
       subject: emailSubject,
       html: emailContent,
     });
-    console.log('sent email', ClientResponse);
-    return { success: true };
+    return { success: true, address: email };
   } catch (e: any) {
     console.log(e);
     return { success: false, error: e.message };

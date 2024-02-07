@@ -5,6 +5,7 @@ import {
   ERROR_CREATING_WORKER_PROFILE,
   ERROR_FETCHING_EMAILS,
   ERROR_FETCHING_USER,
+  ERROR_FETCHING_USERS,
   ERROR_REMOVING_USER_OWNER,
   ERROR_SETTING_USER_OWNER,
   ERROR_UPDATING_HIRER_PROFILE,
@@ -23,6 +24,7 @@ import {
   UpdateWorkerProfileAction,
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
+import { handleApiError } from '../utils/error';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage;
@@ -95,6 +97,30 @@ export const getUserEmailsByAddresses = async (userAddresses: string[], res?: Ne
       console.log(error.message);
       throw new Error(errorMessage);
     }
+  }
+};
+export const getVerifiedEmailCount = async (res?: NextApiResponse) => {
+  let errorMessage = '';
+  try {
+    console.log('Getting Verified User Emails count');
+    const verifiedEmailCount = await prisma.user.count({
+      where: {
+        email: {
+          not: null,
+        },
+        isEmailVerified: true,
+      },
+    });
+
+    console.log(`Count of users with verified email: ${verifiedEmailCount}`);
+
+    if (!verifiedEmailCount) {
+      return 0;
+    }
+
+    return verifiedEmailCount;
+  } catch (error: any) {
+    handleApiError(error, errorMessage, ERROR_FETCHING_USERS, res);
   }
 };
 

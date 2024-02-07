@@ -7,7 +7,7 @@ import Loading from '../../../../components/Loading';
 import Steps from '../../../../components/Steps';
 import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
-import useWeb3MailStats from '../../../../modules/Web3mail/hooks/useWeb3MailStats';
+import useEmailStats from '../../../../modules/Web3mail/hooks/useEmailStats';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
@@ -25,10 +25,9 @@ const Web3mailChart = dynamic(
 function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const { web3MailStats } = useWeb3MailStats();
-  const isWeb3mailActive = (process.env.NEXT_PUBLIC_EMAIL_MODE as string) === 'web3';
+  const { emailStats } = useEmailStats();
 
-  if (loading || !web3MailStats) {
+  if (loading || !emailStats) {
     return <Loading />;
   }
   if (!user) {
@@ -38,28 +37,13 @@ function Web3mailStats() {
     return <UserNeedsMoreRights />;
   }
 
-  if (!isWeb3mailActive) {
-    return (
-      <div className='max-w-7xl mx-auto text-base-content'>
-        <div className=' -mx-6 -mt-6 '>
-          <div className='flex py-2 px-6 items-center border-b w-full border-info mb-8'>
-            <p className='text-2xl font-bold flex-1 mt-6'>Stats Web3 Mails</p>
-          </div>
-        </div>
-        <div className='flex flex-col items-center justify-center'>
-          <p className='text-2xl font-bold flex-1 mt-6'>Web3mail is not active</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       <div className=' -mx-6 -mt-6 sm:mx-0 sm:mt-0'>
         <div className='flex py-2 px-6 sm:px-0 items-center w-full mb-8'>
-          <p className='text-2xl font-bold flex-1 mt-6'>Stats Web3 Mails</p>
+          <p className='text-2xl font-bold flex-1 mt-6'>Email Notification Stats</p>
           <a
-            href={`/superadmin/web3mail`}
+            href={`/superadmin/mail`}
             className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm flex items-center rounded-xl'>
             <PaperAirplane width={18} height={18} className='w-[18px] h-[18px] mr-2' />
             Send
@@ -82,7 +66,7 @@ function Web3mailStats() {
                   </div>
                   <div>
                     <h2 className='text-base-content'>
-                      <span>{web3MailStats.totalSent}</span>
+                      <span>{emailStats.totalSent}</span>
                     </h2>
                     <p className=''>
                       <span className='text-base-content'> Total sent </span>
@@ -95,7 +79,7 @@ function Web3mailStats() {
                   </div>
                   <div>
                     <h2 className='text-base-content'>
-                      <span>{web3MailStats.totalSentThisMonth}</span>
+                      <span>{emailStats.totalSentThisMonth}</span>
                     </h2>
                     <p className=''>
                       <span className='text-base-content'> sent this month </span>
@@ -108,7 +92,7 @@ function Web3mailStats() {
                   </div>
                   <div>
                     <h2 className='text-base-content'>
-                      <span>{web3MailStats.totalContact}</span>
+                      <span>{emailStats.totalContact}</span>
                     </h2>
                     <p className=''>
                       <span className='text-base-content'> contacts </span>
@@ -121,7 +105,7 @@ function Web3mailStats() {
                   </div>
                   <div>
                     <h2 className='text-base-content'>
-                      <span>{web3MailStats.totalCronRunning}</span>
+                      <span>{emailStats.totalCronRunning}</span>
                     </h2>
                     <p className=''>
                       <span className='text-base-content'> cron running </span>
@@ -141,7 +125,7 @@ function Web3mailStats() {
               <div className='-ms-4'>
                 {/**/}
                 <div className='vue-apexcharts' style={{ minHeight: 273 }}>
-                  <Web3mailChart totalSentByMonth={web3MailStats.totalSentByMonth} />
+                  <Web3mailChart totalSentByMonth={emailStats.totalSentByMonth} />
                 </div>
               </div>
             </div>

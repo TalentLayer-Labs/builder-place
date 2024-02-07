@@ -13,7 +13,7 @@ import { NotificationType } from '../../../../types';
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
-//TODO update doc for env var
+
 function Mail() {
   const { user, account, loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
@@ -26,7 +26,7 @@ function Mail() {
   if (!user) {
     return <Steps />;
   }
-  if (isBuilderPlaceCollaborator) {
+  if (!isBuilderPlaceCollaborator) {
     return <UserNeedsMoreRights />;
   }
 
@@ -42,7 +42,7 @@ function Mail() {
             </span>
           </p>
           <a
-            href={`/admin/web3mail/stats`}
+            href={`/admin/mail/stats`}
             className='text-base-content bg-base-300 px-3 py-2 text-sm flex items-center rounded-xl'>
             <ChartBarIcon width={18} height={18} className='w-[18px] h-[18px] mr-2' />
             Stats

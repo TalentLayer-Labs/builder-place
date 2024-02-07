@@ -69,11 +69,11 @@ export const persistCronProbe = async (
   });
 };
 
-export const getWeb3mailCount = async (): Promise<number> => {
+export const getEmailCount = async (): Promise<number> => {
   return prisma.mail.count();
 };
 
-export const getWeb3mailCountByMonth = async (): Promise<number[]> => {
+export const getEmailCountByMonth = async (): Promise<number[]> => {
   const currentYear = new Date().getFullYear();
 
   const web3Mails = await prisma.mail.findMany({

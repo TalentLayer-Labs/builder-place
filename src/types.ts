@@ -315,7 +315,7 @@ export enum NotificationType {
   WEB2,
 }
 
-export type Web3MailStats = {
+export type EmailStats = {
   totalSent: number;
   totalSentByMonth: number[];
   totalSentThisMonth: number;

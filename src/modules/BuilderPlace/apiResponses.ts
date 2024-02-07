@@ -33,6 +33,7 @@ export const ERROR_UPDATING_WORKER_PROFILE = 'Error updating Worker Profile';
 export const ERROR_UPDATING_USER_EMAIL = 'Error updating User email';
 export const ERROR_UPDATING_USER = 'Error updating User data';
 export const ERROR_FETCHING_USER = 'Error fetching User';
+export const ERROR_FETCHING_USERS = 'Error fetching Users';
 export const ERROR_FETCHING_EMAILS = 'Error fetching User Emails';
 export const TRANSACTION_LIMIT_REACHED = 'Transaction limit reached for the week';
 export const ERROR_INCREMENTING_TRANSACTION_COUNTER = 'Error incrementing transaction counter';
