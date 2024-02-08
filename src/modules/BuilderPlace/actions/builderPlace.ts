@@ -407,7 +407,7 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
         collaborators: true,
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
