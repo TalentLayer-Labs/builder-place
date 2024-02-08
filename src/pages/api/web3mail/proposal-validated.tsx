@@ -12,6 +12,8 @@ import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { getVerifiedUsersNotificationData } from '../../../modules/BuilderPlace/actions/user';
+import { IQueryData } from '../domain/get-verified-users-notification-data';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -76,20 +78,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     // Filter out users which have not opted for the feature
     const allSellerAddresses = nonSentProposalEmails.map(proposal => proposal.seller.address);
-    const notificationResponse = await getUsersWeb3MailPreference(
-      Number(chainId),
-      allSellerAddresses,
-      'activeOnProposalValidated',
-    );
 
-    if (
-      !notificationResponse?.data?.data?.userDescriptions ||
-      notificationResponse.data.data.userDescriptions.length === 0
-    ) {
-      throw new EmptyError(`No User opted for this feature`);
+    let validUserAddresses: string[] = [];
+
+    if (notificationType === NotificationType.WEB3) {
+      const notificationResponse = await getUsersWeb3MailPreference(
+        Number(chainId),
+        allSellerAddresses,
+        'activeOnProposalValidated',
+      );
+
+      if (
+        !notificationResponse?.data?.data?.userDescriptions ||
+        notificationResponse.data.data.userDescriptions.length === 0
+      ) {
+        throw new EmptyError(`No User opted for this feature`);
+      }
+
+      validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
+    } else {
+      const result = await getVerifiedUsersNotificationData();
+
+      const filteredUsers = result.filter(
+        (data: IQueryData) => data.emailPreferences['activeOnProposalValidated'],
+      );
+
+      filteredUsers.forEach((data: IQueryData) => {
+        if (data.address) {
+          validUserAddresses.push(data.address);
+        }
+      });
     }
-
-    const validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
 
     const proposalEmailsToBeSent = nonSentProposalEmails.filter(proposal =>
       validUserAddresses.includes(proposal.seller.address),
