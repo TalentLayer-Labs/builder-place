@@ -7,12 +7,13 @@ import {
   TRANSACTION_LIMIT_REACHED,
 } from '../apiResponses';
 import prisma from '../../../postgre/postgreClient';
+import { handleApiError } from '../utils/error';
 
 export async function checkOrResetTransactionCounter(
   user: User,
   res: NextApiResponse,
 ): Promise<void> {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const nowMilliseconds = new Date().getTime();
     const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
@@ -38,18 +39,7 @@ export async function checkOrResetTransactionCounter(
     }
     console.log('Delegating transaction');
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_CHECKING_TRANSACTION_COUNTER, res);
   }
 }
 
@@ -57,7 +47,7 @@ export async function incrementWeeklyTransactionCounter(
   user: User,
   res: NextApiResponse,
 ): Promise<void> {
-  let errorMessage;
+  let errorMessage = '';
   try {
     // Increment the counter
     const newWeeklyTransactionCounter = (user.weeklyTransactionCounter || 0) + 1;
@@ -71,17 +61,6 @@ export async function incrementWeeklyTransactionCounter(
     });
     console.log('Transaction counter incremented', newWeeklyTransactionCounter);
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_INCREMENTING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_INCREMENTING_TRANSACTION_COUNTER, res);
   }
 }
