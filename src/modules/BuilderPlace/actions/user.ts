@@ -28,7 +28,7 @@ import { handleApiError } from '../utils/error';
 import { IQueryData } from '../../../pages/api/domain/get-verified-users-notification-data';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting User Profile with address:', userAddress);
     const userProfile = await prisma.user.findUnique({
@@ -50,22 +50,11 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
     console.log('Fetched user profile with id: ', userProfile?.id);
     return userProfile;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_FETCHING_USER, res);
   }
 };
 export const getUserEmailsByAddresses = async (userAddresses: string[], res?: NextApiResponse) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting User Email with address:', userAddresses);
     const userEmails = await prisma.user.findMany({
@@ -86,18 +75,7 @@ export const getUserEmailsByAddresses = async (userAddresses: string[], res?: Ne
     console.log(`Fetched ${userEmails.length} user emails`);
     return userEmails.map(data => data.email).filter(email => !!email);
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_EMAILS;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_FETCHING_EMAILS, res);
   }
 };
 export const getVerifiedEmailCount = async (res?: NextApiResponse) => {
@@ -126,7 +104,7 @@ export const getVerifiedEmailCount = async (res?: NextApiResponse) => {
 };
 
 export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextApiResponse) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
     const userProfile = await prisma.user.findUnique({
@@ -147,23 +125,12 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
 
     return userProfile;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_FETCHING_USER, res);
   }
 };
 
 export const getUserById = async (id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting User Profile with id:', id);
     const userProfile = await prisma.user.findUnique({
@@ -184,18 +151,12 @@ export const getUserById = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_USER);
   }
 };
 
 export const getUserByEmail = async (email: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting User Profile with email:', email);
     const userProfile = await prisma.user.findUnique({
@@ -216,18 +177,12 @@ export const getUserByEmail = async (email: string) => {
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_USER);
   }
 };
 
 export const getVerifiedUsersNotificationData = async (includeSkills: boolean = false) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting Users notification preferences data');
     let data = await prisma.user.findMany({
@@ -253,18 +208,12 @@ export const getVerifiedUsersNotificationData = async (includeSkills: boolean = 
     const result = data.filter(item => !!item.email);
     return result as IQueryData[];
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_EMAILS;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_EMAILS);
   }
 };
 
 export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
-  let errorMessage;
+  let errorMessage = '';
   /**
    * @dev: No Prisma nested update yet, so we need to update the User and WorkerProfile separately
    */
@@ -298,18 +247,12 @@ export const updateWorkerProfile = async (data: UpdateWorkerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_WORKER_PROFILE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_WORKER_PROFILE);
   }
 };
 
 export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
-  let errorMessage;
+  let errorMessage = '';
   /**
    * @dev: No Prisma nested update yet, so we need to update the User and WorkerProfile separately
    */
@@ -336,18 +279,12 @@ export const updateHirerProfile = async (data: UpdateHirerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_HIRER_PROFILE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_HIRER_PROFILE);
   }
 };
 
 export const updateUserEmail = async (data: UpdateUserEmailAction) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const user = await prisma.user.update({
       where: {
@@ -364,18 +301,12 @@ export const updateUserEmail = async (data: UpdateUserEmailAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_USER_EMAIL;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_USER_EMAIL);
   }
 };
 
 export const createHirerProfile = async (data: CreateHirerProfileAction) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const user = await prisma.user.create({
       data: {
@@ -394,18 +325,12 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CREATING_HIRER_PROFILE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_CREATING_HIRER_PROFILE);
   }
 };
 
 export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const user = await prisma.user.create({
       data: {
@@ -426,20 +351,14 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
       id: user.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CREATING_WORKER_PROFILE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_CREATING_WORKER_PROFILE);
   }
 };
 
 export const updateUserNotificationsPreferences = async (
   data: UpdateUserNotificationsPreferencesAction,
 ) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     await prisma.user.update({
       where: {
@@ -454,18 +373,12 @@ export const updateUserNotificationsPreferences = async (
       message: 'Preferences updated successfully',
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_USER);
   }
 };
 
 export const setUserOwner = async (data: SetUserProfileOwner) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     await prisma.user.update({
       where: {
@@ -481,13 +394,7 @@ export const setUserOwner = async (data: SetUserProfileOwner) => {
       id: data.talentLayerId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_SETTING_USER_OWNER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_SETTING_USER_OWNER);
   }
 };
 
@@ -496,7 +403,7 @@ export const setUserOwner = async (data: SetUserProfileOwner) => {
  * @param userId
  */
 export const validateUser = async (userId: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     await prisma.user.update({
       where: {
@@ -511,18 +418,12 @@ export const validateUser = async (userId: string) => {
       id: userId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_VALIDATING_USER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_VALIDATING_USER);
   }
 };
 
 export const removeOwnerFromUser = async (userId: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Removing address from pending User:', userId);
     await prisma.user.update({
@@ -539,12 +440,6 @@ export const removeOwnerFromUser = async (userId: string) => {
       id: userId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_REMOVING_USER_OWNER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_REMOVING_USER_OWNER);
   }
 };
