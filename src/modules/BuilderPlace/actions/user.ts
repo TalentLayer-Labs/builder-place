@@ -25,6 +25,7 @@ import {
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
+import { IQueryData } from '../../../pages/api/domain/get-verified-users-notification-data';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage;
@@ -225,24 +226,25 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-export const getVerifiedUsersAddresses = async () => {
+export const getVerifiedUsersNotificationData = async () => {
   let errorMessage;
   try {
-    // console.log('Getting Users verified emails');
-    const emails = await prisma.user.findMany({
+    console.log('Getting Users notification preferences data');
+    let data = await prisma.user.findMany({
       where: {
         isEmailVerified: true,
       },
       select: {
         address: true,
+        email: true,
+        name: true,
+        id: true,
+        emailPreferences: true,
       },
     });
-    // console.log('Fetched emails: ', emails);
-    if (emails) {
-      return emails.filter(mail => !!mail.address).map(mail => mail.address);
-    }
-
-    return null;
+    console.log(`Fetched ${data.length} users`);
+    const result = data.filter(item => !!item.email);
+    return result as IQueryData[];
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {
       errorMessage = ERROR_FETCHING_EMAILS;

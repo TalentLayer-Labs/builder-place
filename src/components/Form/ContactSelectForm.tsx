@@ -9,14 +9,14 @@ import Loading from '../Loading';
 import { useChainId } from '../../hooks/useChainId';
 import { useWalletClient } from 'wagmi';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { IUserDetails, NotificationType } from '../../types';
+import { NotificationType } from '../../types';
 import { sendPlatformMarketingWeb3mail } from '../request';
-import useFetchMyContacts from '../../modules/Web3mail/hooks/useFetchMyContacts';
+import useFetchMyContacts, { IContact } from '../../modules/Web3mail/hooks/useFetchMyContacts';
 
 interface IFormValues {
   subject: string;
   body: string;
-  users: IUserDetails[];
+  users: IContact[];
 }
 
 const validationSchema = Yup.object({
@@ -43,7 +43,7 @@ export const ContactListForm = ({
   const notificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
   const {
-    contacts: userDetailList,
+    contacts: contactList,
     contactsLoaded: usersLoaded,
     fetchFunctionCalled,
     fetchData,
@@ -60,11 +60,11 @@ export const ContactListForm = ({
   const handleAddOrRemoveAllContacts = (
     event: React.MouseEvent<HTMLInputElement>,
     arrayHelpers: any,
-    users: IUserDetails[],
+    users: IContact[],
   ) => {
     setAllContractsAdded(!allContractsAdded);
     if (!allContractsAdded) {
-      userDetailList.forEach(userDetail => {
+      contactList.forEach(userDetail => {
         if (!users.includes(userDetail)) {
           arrayHelpers.push(userDetail);
         }
@@ -90,7 +90,7 @@ export const ContactListForm = ({
           account: address,
         });
 
-        const userAddresses = values.users.map(user => user.user.address);
+        const userAddresses = values.users.map(contact => contact.address);
 
         const promise = sendPlatformMarketingWeb3mail(
           values.subject,
@@ -208,8 +208,8 @@ export const ContactListForm = ({
                               </p>
                             </div>
                           )}
-                          {usersLoaded && userDetailList && userDetailList.length > 0
-                            ? userDetailList.map((userDetail, index) => {
+                          {usersLoaded && contactList && contactList.length > 0
+                            ? contactList.map((userDetail, index) => {
                                 const addedUserIds = values.users.map(user => user.id);
                                 const isAddressAlreadyAdded = addedUserIds.includes(userDetail.id);
                                 return (
@@ -218,7 +218,7 @@ export const ContactListForm = ({
                                     className={`text-base-content flex items-center ${
                                       isAddressAlreadyAdded ? 'hidden' : ''
                                     }`}>
-                                    {userDetail.user.handle}
+                                    {userDetail.name}
                                     <span onClick={() => arrayHelpers.insert(index, userDetail)}>
                                       <CheckCircleIcon className='ml-3 h-5 w-5 justify-center text-base-content cursor-pointer' />
                                     </span>
@@ -250,9 +250,9 @@ export const ContactListForm = ({
                         <span className='text-base-content'>Selected Contacts</span>
                         <div className={'overflow-y-auto overflow-x-visible w-auto h-24'}>
                           {values.users.length > 0 ? (
-                            values.users.map((userDetails, index) => (
+                            values.users.map((contact, index) => (
                               <div key={index} className={'text-base-content items-center  flex'}>
-                                {userDetails.user.handle}
+                                {contact.name}
                                 <span onClick={() => arrayHelpers.remove(index)}>
                                   <XCircleIcon
                                     className={

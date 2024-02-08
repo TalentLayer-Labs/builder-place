@@ -137,9 +137,10 @@ export interface SendVerificationEmail {
   domain: string;
 }
 
-export interface GetUserEmails {
+export interface GetUserNotificationData {
   builderPlaceId: string;
   ownerId: string;
+  notificationType: keyof INotificationsPreferences;
   signature: `0x${string}` | Uint8Array;
 }
 

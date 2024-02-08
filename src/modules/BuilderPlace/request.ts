@@ -1,3 +1,5 @@
+import { INotificationsPreferences } from '../../types';
+
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
   try {
@@ -162,17 +164,19 @@ export const getUserByEmail = async (email: string): Promise<any> => {
   }
 };
 
-export const getUsersAddresses = async (
+export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
+  notificationType: keyof INotificationsPreferences,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {
   try {
-    const response = await fetch('/api/domain/get-verified-users-addresses', {
+    const response = await fetch('/api/domain/get-verified-users-notification-data', {
       method: 'POST',
       body: JSON.stringify({
         builderPlaceId,
         ownerId,
+        notificationType,
         signature,
       }),
       headers: {

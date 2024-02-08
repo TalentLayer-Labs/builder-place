@@ -4,10 +4,15 @@ import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { IUserDetails, NotificationType } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
 import { fetchMyContacts } from '../../../components/request';
-import { getUsersAddresses } from '../../BuilderPlace/request';
+import { getUsersNotificationData } from '../../BuilderPlace/request';
 import { Chain, WalletClient } from 'wagmi';
 import { Account, Transport } from 'viem';
 
+export interface IContact {
+  id: string;
+  name: string;
+  address: string;
+}
 const useFetchMyContacts = (
   notificationType: NotificationType,
   userId: string | undefined,
@@ -18,9 +23,9 @@ const useFetchMyContacts = (
   fetchData: () => Promise<void>;
   contactsLoaded: boolean;
   fetchFunctionCalled: boolean;
-  contacts: IUserDetails[];
+  contacts: IContact[];
 } => {
-  const [contacts, setContacts] = useState<IUserDetails[]>([]);
+  const [contacts, setContacts] = useState<IContact[]>([]);
   const [contactsLoaded, setContactsLoaded] = useState(false);
   const [fetchFunctionCalled, setFetchFunctionCalled] = useState(false);
   const chainId = useChainId();
@@ -28,9 +33,11 @@ const useFetchMyContacts = (
   const fetchData = async () => {
     setContactsLoaded(false);
     setFetchFunctionCalled(true);
-    let contactAddresses: string[] = [];
 
     try {
+      // This array has all the users that have granted access to their email to this platform and opted for the platform marketing feature
+      let validUsers: IContact[] = [];
+
       if (notificationType === NotificationType.WEB2 && walletClient && userId && builderPlaceId) {
         /**
          * @dev Sign message to prove ownership of the address
@@ -40,8 +47,22 @@ const useFetchMyContacts = (
           account: address,
         });
 
-        const response = await getUsersAddresses(builderPlaceId, userId, signature);
-        contactAddresses = response?.addresses;
+        const response = await getUsersNotificationData(
+          builderPlaceId,
+          userId.toString(),
+          'activeOnPlatformMarketing',
+          signature,
+        );
+        const contactList: { address: string; id: string; name: string }[] = response?.data;
+
+        // Format contacts
+        contactList.forEach(contact => {
+          validUsers.push({
+            id: contact.id,
+            name: contact.name,
+            address: contact.address,
+          });
+        });
       }
 
       if (notificationType === NotificationType.WEB3 && chainId) {
@@ -50,30 +71,38 @@ const useFetchMyContacts = (
 
         if (contactList && contactList.length > 0) {
           // This array has all the addresses of the users that have granted access to their email to this platform
-          contactAddresses = contactList.map(contact => contact.owner);
+          const contactAddresses = contactList.map(contact => contact.owner);
+
+          const userPreferencesResponse = await getUsersWeb3MailPreference(
+            Number(chainId),
+            contactAddresses,
+            'activeOnPlatformMarketing',
+          );
+
+          if (
+            userPreferencesResponse?.data?.data?.userDescriptions &&
+            userPreferencesResponse.data.data.userDescriptions.length > 0
+          ) {
+            let userDescriptions: IUserDetails[] =
+              userPreferencesResponse.data.data.userDescriptions;
+            // Only select the latest version of each user metaData
+            userDescriptions = userDescriptions.filter(
+              userDetails => userDetails.user?.description?.id === userDetails.id,
+            );
+
+            // Format contacts
+            userDescriptions.forEach(userDescription => {
+              validUsers.push({
+                id: userDescription.id,
+                name: userDescription.user.handle,
+                address: userDescription.user.address,
+              });
+            });
+          }
         }
       }
 
-      const response = await getUsersWeb3MailPreference(
-        Number(chainId),
-        contactAddresses,
-        'activeOnPlatformMarketing',
-      );
-
-      // This array has all the users that have granted access to their email to this platform and opted for the platform marketing feature
-      let validUsers: IUserDetails[] = [];
-
-      if (
-        response?.data?.data?.userDescriptions &&
-        response.data.data.userDescriptions.length > 0
-      ) {
-        validUsers = response.data.data.userDescriptions;
-        // Only select the latest version of each user metaData
-        validUsers = validUsers.filter(
-          userDetails => userDetails.user?.description?.id === userDetails.id,
-        );
-        setContacts(validUsers);
-      }
+      setContacts(validUsers);
       setContactsLoaded(true);
     } catch (error: any) {
       // eslint-disable-next-line no-console
