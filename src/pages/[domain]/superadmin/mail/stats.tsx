@@ -26,6 +26,7 @@ function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { emailStats, loading: statsLoading } = useEmailStats();
+  console.log('statsLoading', statsLoading);
 
   if (loading || !emailStats) {
     return <Loading />;
@@ -50,6 +51,12 @@ function Web3mailStats() {
           </a>
         </div>
       </div>
+      {statsLoading && (
+        <div className='flex mb-5 items-center justify-center space-x-2'>
+          <Loading />
+          <span className='text-sm text-base-content'>Stats loading...</span>
+        </div>
+      )}
       <div>
         <div className='grid grid-cols-12 gap-6'>
           <div className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info'>
