@@ -12,7 +12,7 @@ import {
 } from '../../../modules/BuilderPlace/actions/transactionCounter';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { userId, userAddress, cid, chainId, existingService } = req.body;
+  const { userId, userAddress, cid, chainId, existingService, builderPlaceId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delegation for a user
@@ -52,6 +52,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           functionName: 'createService',
           args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
         });
+
+        console.log("builderPlaceId, DERCIO", builderPlaceId, cid);
       }
 
       await incrementWeeklyTransactionCounter(worker, res);

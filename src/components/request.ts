@@ -7,6 +7,7 @@ export const delegateCreateOrUpdateService = async (
   userAddress: string,
   cid: string,
   existingService: boolean,
+  builderPlaceId: string,
 ): Promise<any> => {
   try {
     return await axios.post('/api/delegate/create-update-service', {
@@ -15,6 +16,7 @@ export const delegateCreateOrUpdateService = async (
       userAddress,
       cid,
       existingService,
+      builderPlaceId
     });
   } catch (err) {
     console.error(err);
