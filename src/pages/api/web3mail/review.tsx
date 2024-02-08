@@ -153,7 +153,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           [review.to.address],
           review.service.platform.name,
           providers,
-          notificationType as NotificationType,
+          notificationType,
           EmailType.REVIEW,
           review.id,
         );

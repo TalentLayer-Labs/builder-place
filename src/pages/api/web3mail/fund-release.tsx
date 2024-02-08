@@ -168,7 +168,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           [receiverAddress],
           payment.service.platform.name,
           providers,
-          notificationType as NotificationType,
+          notificationType,
           EmailType.FUND_RELEASE,
           payment.id,
         );

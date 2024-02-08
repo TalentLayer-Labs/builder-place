@@ -148,7 +148,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           [proposal.service.buyer.address],
           proposal.service.platform.name,
           providers,
-          notificationType as NotificationType,
+          notificationType,
           EmailType.NEW_PROPOSAL,
           proposal.id,
         );

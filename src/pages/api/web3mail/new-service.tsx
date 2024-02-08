@@ -163,7 +163,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   [contact.user.address],
                   service.platform.name,
                   providers,
-                  notificationType as NotificationType,
+                  notificationType,
                   EmailType.NEW_SERVICE,
                   service.id,
                 );

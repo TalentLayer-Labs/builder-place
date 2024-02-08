@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       usersAddresses,
       builderPlace.name,
       providers,
-      notificationType as NotificationType,
+      notificationType,
       EmailType.PLATFORM_MARKETING,
     );
     sentEmails += successCount;
