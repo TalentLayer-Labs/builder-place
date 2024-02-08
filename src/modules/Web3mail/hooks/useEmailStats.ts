@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchEmailAmount } from '../components/request';
 import { EmailStats } from '../../../types';
 
-const useEmailStats = (): { emailStats: EmailStats } => {
+const useEmailStats = (): { emailStats: EmailStats; loading: boolean } => {
   const [emailStats, setEmailStats] = useState<EmailStats>({
     totalSent: 0,
     totalSentByMonth: [],
@@ -30,7 +30,7 @@ const useEmailStats = (): { emailStats: EmailStats } => {
     fetchData();
   }, []);
 
-  return { emailStats };
+  return { emailStats, loading };
 };
 
 export default useEmailStats;

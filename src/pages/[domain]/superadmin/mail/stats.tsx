@@ -25,7 +25,7 @@ const Web3mailChart = dynamic(
 function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const { emailStats } = useEmailStats();
+  const { emailStats, loading: statsLoading } = useEmailStats();
 
   if (loading || !emailStats) {
     return <Loading />;
