@@ -37,7 +37,7 @@ function EmailPreferencesForm() {
   const { mutateAsync: updateNotificationPreferencesAsync } =
     useUpdateNotificationPreferencesMutation();
 
-  if (!user?.id || loading) {
+  if (!user?.id || loading || !workerProfile) {
     return <Loading />;
   }
 
