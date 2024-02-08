@@ -10,7 +10,9 @@ export interface IQueryData {
   address: string | null;
   email: string | null;
   name: string;
+  skills: string[];
   emailPreferences: INotificationsPreferences;
+  workerProfile: { id: number; skills: string[] } | null;
 }
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -18,8 +20,13 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   console.log('Received data:', req.body);
-  const { builderPlaceId, ownerId, signature, notificationType }: GetUserNotificationData =
-    req.body;
+  const {
+    builderPlaceId,
+    ownerId,
+    signature,
+    notificationType,
+    includeSkills,
+  }: GetUserNotificationData = req.body;
 
   if (!builderPlaceId || !ownerId || !signature || !notificationType) {
     return res.status(400).json({ error: MISSING_DATA });
@@ -28,7 +35,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   try {
     await checkOwnerSignature(builderPlaceId, ownerId, signature, res);
 
-    const result = await getVerifiedUsersNotificationData();
+    const result = await getVerifiedUsersNotificationData(includeSkills);
 
     const filteredUsers = result.filter(
       (data: IQueryData) => data.emailPreferences[notificationType] === true,

@@ -226,7 +226,7 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-export const getVerifiedUsersNotificationData = async () => {
+export const getVerifiedUsersNotificationData = async (includeSkills: boolean = false) => {
   let errorMessage;
   try {
     console.log('Getting Users notification preferences data');
@@ -240,6 +240,13 @@ export const getVerifiedUsersNotificationData = async () => {
         name: true,
         id: true,
         emailPreferences: true,
+        workerProfile: includeSkills
+          ? {
+              select: {
+                skills: true,
+              },
+            }
+          : false,
       },
     });
     console.log(`Fetched ${data.length} users`);

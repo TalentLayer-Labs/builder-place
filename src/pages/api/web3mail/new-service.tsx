@@ -11,10 +11,19 @@ import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { getVerifiedUsersNotificationData } from '../../../modules/BuilderPlace/actions/user';
+import { IQueryData } from '../domain/get-verified-users-notification-data';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
 };
+
+export interface IUserForService {
+  id: string;
+  address: string;
+  name: string;
+  skills: string[];
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string;
@@ -49,10 +58,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     Number(RETRY_FACTOR),
     NotificationApiUri.NewService,
   );
-
   let status = 200;
   try {
-    if (providers.web3mail) {
+    /**
+     * @notice: Get all users that opted for the feature
+     * @dev: Depending on the notification type, different methods are used to fetch the users
+     * and get different data. So for this cron job, data will be formatted using the custom
+     * IUserForService interface.
+     */
+    let validUsers: IUserForService[] = [];
+
+    if (notificationType === NotificationType.WEB3 && providers.web3mail) {
       // Fetch all contacts who protected their email and granted access to the platform
       const allContacts = await providers.web3mail.fetchMyContacts();
 
@@ -62,86 +78,114 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const allContactsAddresses = allContacts.map(contact => contact.owner);
 
-      // Get all users that opted for the feature
       const response = await getWeb3mailUsersForNewServices(
         Number(chainId),
         allContactsAddresses,
         'activeOnNewService',
       );
 
-      let validUsers: IUserDetails[] = [];
-
       if (
         response?.data?.data?.userDescriptions &&
         response.data.data.userDescriptions.length > 0
       ) {
-        validUsers = response.data.data.userDescriptions;
+        const validUserDescriptions = response.data.data.userDescriptions.filter(
+          (contact: IUserDetails) => contact.user?.description?.id === contact.id,
+        );
         // Only select the latest version of each user metaData
-        validUsers = validUsers.filter(contact => contact.user?.description?.id === contact.id);
+        validUserDescriptions.forEach((userDetails: IUserDetails) => {
+          const user = validUsers.find(user => user.id === userDetails.id);
+          if (!user) {
+            validUsers.push({
+              id: userDetails.id,
+              address: userDetails.user.address,
+              name: userDetails.name,
+              skills: userDetails.skills_raw?.split(',') || [],
+            });
+          }
+        });
       } else {
         throw new EmptyError(`No User opted for this feature`);
       }
+    } else {
+      const result = await getVerifiedUsersNotificationData(true);
 
-      // Check if new services are available & get their keywords
-      const serviceResponse = await getNewServicesForPlatform(
-        Number(chainId),
-        platformId,
-        sinceTimestamp,
+      console.log('result', result);
+      const filteredUsers = result.filter(
+        (data: IQueryData) => data.emailPreferences['activeOnNewService'],
       );
 
-      if (!serviceResponse?.data?.data?.services) {
-        throw new EmptyError(`No new services available`);
-      }
+      console.log('filteredUsers', filteredUsers);
+      filteredUsers.forEach((data: IQueryData) => {
+        if (data.address) {
+          validUsers.push({
+            id: data.id.toString(),
+            address: data.address,
+            name: data.name,
+            skills: data.workerProfile?.skills || [],
+          });
+        }
+        console.log('validUsers', validUsers);
+      });
+    }
 
-      const services: IService[] = serviceResponse.data.data.services;
+    // Check if new services are available & get their keywords
+    const serviceResponse = await getNewServicesForPlatform(
+      Number(chainId),
+      platformId,
+      sinceTimestamp,
+    );
 
-      // For each contact, check if an email was already sent for each new service. If not, check if skills match
-      for (const contact of validUsers) {
-        console.log(
-          '*************************************Contact*************************************',
-          contact.user.address,
-        );
-        for (const service of services) {
-          // Check if a notification email has already been sent for these services
-          const emailHasBeenSent = await hasEmailBeenSent(
-            `${contact.user.id}-${service.id}`,
-            EmailType.NEW_SERVICE,
+    if (!serviceResponse?.data?.data?.services) {
+      throw new EmptyError(`No new services available`);
+    }
+
+    const services: IService[] = serviceResponse.data.data.services;
+
+    // For each contact, check if an email was already sent for each new service. If not, check if skills match
+    for (const contact of validUsers) {
+      console.log(
+        '*************************************Contact*************************************',
+        contact.address,
+      );
+      for (const service of services) {
+        // Check if a notification email has already been sent for these services
+        const compositeId = `${contact.id}-${service.id}`;
+        const emailHasBeenSent = await hasEmailBeenSent(compositeId, EmailType.NEW_SERVICE);
+        if (!emailHasBeenSent) {
+          const userSkills = contact.skills;
+          const serviceSkills = service.description?.keywords_raw?.split(',');
+          // Check if the service keywords match the user keywords
+          const matchingSkills = userSkills?.filter((skill: string) =>
+            serviceSkills?.includes(skill),
           );
-          if (!emailHasBeenSent) {
-            const userSkills = contact.skills_raw?.split(',');
-            const serviceSkills = service.description?.keywords_raw?.split(',');
-            // Check if the service keywords match the user keywords
-            const matchingSkills = userSkills?.filter((skill: string) =>
-              serviceSkills?.includes(skill),
+
+          if (matchingSkills && matchingSkills?.length > 0) {
+            console.log(
+              `The skills ${
+                contact.name
+              } has which are required by this open-source contribution mission are: ${matchingSkills.join(
+                ', ',
+              )}`,
             );
 
-            if (matchingSkills && matchingSkills?.length > 0) {
-              console.log(
-                `The skills ${
-                  contact.user.handle
-                } has which are required by this open-source contribution mission are: ${matchingSkills.join(
-                  ', ',
-                )}`,
-              );
+            const builderPlace = await getBuilderPlaceByOwnerId(service.buyer.id);
 
-              const builderPlace = await getBuilderPlaceByOwnerId(service.buyer.id);
+            /**
+             * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+             */
+            const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 
-              /**
-               * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
-               */
-              const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+            if (!builderPlace || !domain) {
+              console.warn(`User ${service.buyer.id} is not a BuilderPlace owner`);
+              continue;
+            }
 
-              if (!builderPlace || !domain) {
-                console.warn(`User ${service.buyer.id} is not a BuilderPlace owner`);
-                continue;
-              }
-
-              try {
-                const email = renderMail(
-                  `New mission available on BuilderPlace!`,
-                  `Good news, the following open-source contribution mission: "${
-                    service.description?.title
-                  }" was recently posted by ${service.buyer.handle} and you are a good match for it.
+            try {
+              const email = renderMail(
+                `New mission available on BuilderPlace!`,
+                `Good news, the following open-source contribution mission: "${
+                  service.description?.title
+                }" was recently posted by ${service.buyer.handle} and you are a good match for it.
                   Here is what is proposed: ${service.description?.about}.
                   
                   The skills you have which are required by this open-source contribution mission are: ${matchingSkills.join(
@@ -149,32 +193,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   )}.
                   
                   Be the first one to send a proposal !`,
-                  notificationType,
-                  builderPlace.palette as unknown as iBuilderPlacePalette,
-                  domain,
-                  builderPlace.logo,
-                  contact.user.handle,
-                  `${domain}/work/${service.id}`,
-                  `Go to open-source mission details`,
-                );
-                const { successCount, errorCount } = await sendMailToAddresses(
-                  `A new open-source mission matching your skills is available on BuilderPlace !`,
-                  email,
-                  [contact.user.address],
-                  service.platform.name,
-                  providers,
-                  notificationType,
-                  EmailType.NEW_SERVICE,
-                  service.id,
-                );
-                sentEmails += successCount;
-                nonSentEmails += errorCount;
-                console.log('Notification recorded in Database');
-                sentEmails++;
-              } catch (e: any) {
-                console.error(e.message);
-                nonSentEmails++;
-              }
+                notificationType,
+                builderPlace.palette as unknown as iBuilderPlacePalette,
+                domain,
+                builderPlace.logo,
+                contact.name,
+                `${domain}/work/${service.id}`,
+                `Go to open-source mission details`,
+              );
+              const { successCount, errorCount } = await sendMailToAddresses(
+                `A new open-source mission matching your skills is available on BuilderPlace !`,
+                email,
+                [contact.address],
+                service.platform.name,
+                providers,
+                notificationType,
+                EmailType.NEW_SERVICE,
+                compositeId,
+              );
+              sentEmails += successCount;
+              nonSentEmails += errorCount;
+              console.log('Notification recorded in Database');
+              sentEmails++;
+            } catch (e: any) {
+              console.error(e.message);
+              nonSentEmails++;
             }
           }
         }

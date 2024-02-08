@@ -142,6 +142,7 @@ export interface GetUserNotificationData {
   ownerId: string;
   notificationType: keyof INotificationsPreferences;
   signature: `0x${string}` | Uint8Array;
+  includeSkills?: boolean;
 }
 
 export enum DomainVerificationStatusProps {
