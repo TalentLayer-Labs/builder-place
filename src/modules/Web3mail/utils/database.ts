@@ -98,35 +98,6 @@ export const getEmailCountByMonth = async (): Promise<number[]> => {
 
   // Now counts array has the count of emails from index 0 to 11 for each month
   return counts;
-
-  // If we want old format
-  // const countPerMonth = web3Mails.reduce(
-  //   (
-  //     acc: Record<
-  //       number,
-  //       {
-  //         _id: number;
-  //         count: number;
-  //       }
-  //     >,
-  //     mail: { sentAt: Date },
-  //   ) => {
-  //     const month = mail.sentAt.getMonth(); // getMonth() is zero-indexed
-  //     const monthId = month + 1; // Convert to one-indexed month ID
-  //
-  //     if (!acc[monthId]) {
-  //       acc[monthId] = { _id: monthId, count: 0 };
-  //     }
-  //
-  //     acc[monthId].count++;
-  //
-  //     return acc;
-  //   },
-  //   {},
-  // );
-  //
-  // // Convert object to array
-  // const result = Object.values(countPerMonth);
 };
 
 export const getCronProbeCount = async (): Promise<number> => {
