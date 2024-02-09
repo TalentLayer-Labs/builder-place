@@ -155,16 +155,7 @@ function EmailPreferencesForm() {
   return (
     <>
       <div className='grid grid-cols-1 gap-6'>
-        {emailNotificationType === EmailNotificationType.WEB3 ? (
-          <Web3mailCard />
-        ) : (
-          <Web2mailCard
-            to={workerProfile?.email}
-            userId={workerProfile?.id}
-            name={workerProfile?.name}
-            domain={builderPlace?.customDomain || builderPlace?.subdomain}
-          />
-        )}
+        {emailNotificationType === EmailNotificationType.WEB3 ? <Web3mailCard /> : <Web2mailCard />}
 
         <Formik initialValues={initialValues} enableReinitialize={true} onSubmit={onSubmit}>
           {({ isSubmitting }) => (
