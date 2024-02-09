@@ -147,7 +147,7 @@ export const sendPlatformMarketingWeb3mail = async (
   signature: string,
 ): Promise<any> => {
   try {
-    return await axios.post('/api/web3mail/platform-marketing', {
+    return await axios.post('/api/email/platform-marketing', {
       emailSubject: emailSubject,
       emailContent: emailContent,
       usersAddresses: usersAddresses,
@@ -162,7 +162,7 @@ export const sendPlatformMarketingWeb3mail = async (
 
 export const fetchMyContacts = async (): Promise<any> => {
   try {
-    return await axios.post('/api/web3mail/fetch-my-contacts');
+    return await axios.post('/api/email/fetch-my-contacts');
   } catch (err) {
     console.error(err);
     throw err;
