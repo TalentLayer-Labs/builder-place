@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       builderPlace.logo,
     );
 
-    const providers = generateMailProviders(notificationType as NotificationType, privateKey);
+    const providers = generateMailProviders(notificationType, privateKey);
 
     const { successCount, errorCount } = await sendMailToAddresses(
       `${emailSubject}`,
