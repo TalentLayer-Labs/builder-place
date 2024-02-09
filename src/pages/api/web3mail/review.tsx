@@ -119,7 +119,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    const providers = generateMailProviders(notificationType as NotificationType, privateKey);
+    const providers = generateMailProviders(notificationType, privateKey);
 
     for (const review of reviewEmailsToBeSent) {
       let fromHandle = '',

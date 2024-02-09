@@ -120,7 +120,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    const providers = generateMailProviders(notificationType as NotificationType, privateKey);
+    const providers = generateMailProviders(notificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
       const builderPlace = await getBuilderPlaceByOwnerId(proposal.service.buyer.id);
