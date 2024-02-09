@@ -157,7 +157,7 @@ function MailNotificationsStats() {
               <div className='p-6'>
                 <div className='mb-6'>
                   <h3 className='text-base-content'>
-                    <span>Web3mails sent by month</span>
+                    <span>Emails sent by month</span>
                   </h3>
                 </div>
                 <div className='-ms-4'>
