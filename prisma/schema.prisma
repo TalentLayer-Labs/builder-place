@@ -98,7 +98,7 @@ model CronProbe {
   errorCount   Int
 }
 
-model Mail {
+model Email {
   id     String      @id
   sentAt DateTime
   type   EmailType
