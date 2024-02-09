@@ -26,7 +26,7 @@ CREATE TABLE "Email" (
     "type" "EmailType" NOT NULL,
     "sender" "EmailSender" NOT NULL,
 
-    CONSTRAINT "Mail_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Email_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
