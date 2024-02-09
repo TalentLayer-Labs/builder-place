@@ -103,11 +103,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       const result = await getVerifiedUsersNotificationData();
 
-      const filteredUsers = result.filter(
+      const filteredUsers = result?.filter(
         (data: IQueryData) => data.emailPreferences['activeOnFundRelease'],
       );
 
-      filteredUsers.forEach((data: IQueryData) => {
+      filteredUsers?.forEach((data: IQueryData) => {
         if (data.address) {
           validUserAddresses.push(data.address);
         }
