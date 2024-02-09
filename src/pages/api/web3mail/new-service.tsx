@@ -18,7 +18,7 @@ export const config = {
   maxDuration: 300, // 5 minutes.
 };
 
-export interface IUserForService {
+interface IUserForService {
   id: string;
   address: string;
   name: string;
