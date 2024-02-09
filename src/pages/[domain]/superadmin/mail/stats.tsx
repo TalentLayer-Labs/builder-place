@@ -26,7 +26,6 @@ function Web3mailStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { emailStats, loading: statsLoading } = useEmailStats();
-  console.log('statsLoading', statsLoading);
 
   if (loading || !emailStats) {
     return <Loading />;
@@ -37,6 +36,28 @@ function Web3mailStats() {
   if (user?.id != builderPlace?.owner.talentLayerId) {
     return <UserNeedsMoreRights />;
   }
+
+  const SkeletonLoader = () => (
+    <div className='flex flex-row animate-pulse'>
+      <div className='grid grid-cols-12 gap-6'>
+        {[...Array(4)].map((_, index) => (
+          <div
+            key={index}
+            className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info p-6'>
+            <div className='h-8 bg-base-200 rounded mb-4'></div>
+            <div className='space-y-4'>
+              <div className='h-4 bg-base-200 rounded'></div>
+              <div className='h-4 bg-base-200 rounded'></div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className='col-span-12 lg:col-span-12 bg-base-300 rounded-xl border border-info p-6'>
+        <div className='h-8 bg-base-200 rounded mb-4'></div>
+        <div className='h-64 bg-base-200 rounded'></div>
+      </div>
+    </div>
+  );
 
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
@@ -51,94 +72,101 @@ function Web3mailStats() {
           </a>
         </div>
       </div>
-      {statsLoading && (
-        <div className='flex mb-5 items-center justify-center space-x-2'>
-          <Loading />
-          <span className='text-sm text-base-content'>Stats loading...</span>
+      {true ? (
+        <>
+          <div className='flex mb-5 items-center justify-center space-x-2'>
+            <span className='relative flex h-5 w-5 flex-shrink-0 items-center justify-center '>
+              <span className='animate-ping absolute h-4 w-4 rounded-full bg-zinc-200' />
+              <span className='relative block h-2 w-2 rounded-full bg-zinc-600' />
+            </span>
+            <span className='text-sm text-base-content'>Data loading...</span>
+          </div>
+          <SkeletonLoader />
+        </>
+      ) : (
+        <div>
+          <div className={`grid grid-cols-12 gap-6`}>
+            <div className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info'>
+              <div className='p-6'>
+                <div className='mb-6'>
+                  <h3 className='text-base-content'>
+                    <span>Quick Stats</span>
+                  </h3>
+                </div>
+                <div className='grid gap-4 md:grid-cols-2'>
+                  <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
+                    <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
+                      <PaperAirplane width={20} height={20} />
+                    </div>
+                    <div>
+                      <h2 className='text-base-content'>
+                        <span>{emailStats.totalSent}</span>
+                      </h2>
+                      <p className=''>
+                        <span className='text-base-content'> Total sent </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
+                    <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
+                      <PaperAirplane width={20} height={20} />
+                    </div>
+                    <div>
+                      <h2 className='text-base-content'>
+                        <span>{emailStats.totalSentThisMonth}</span>
+                      </h2>
+                      <p className=''>
+                        <span className='text-base-content'> sent this month </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
+                    <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
+                      <UserGroupIcon width={20} height={20} />
+                    </div>
+                    <div>
+                      <h2 className='text-base-content'>
+                        <span>{emailStats.totalContact}</span>
+                      </h2>
+                      <p className=''>
+                        <span className='text-base-content'> contacts </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
+                    <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
+                      <CogIcon width={20} height={20} />
+                    </div>
+                    <div>
+                      <h2 className='text-base-content'>
+                        <span>{emailStats.totalCronRunning}</span>
+                      </h2>
+                      <p className=''>
+                        <span className='text-base-content'> cron running </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info'>
+              <div className='p-6'>
+                <div className='mb-6'>
+                  <h3 className='text-base-content'>
+                    <span>Web3mails sent by month</span>
+                  </h3>
+                </div>
+                <div className='-ms-4'>
+                  {/**/}
+                  <div className='vue-apexcharts' style={{ minHeight: 273 }}>
+                    <Web3mailChart totalSentByMonth={emailStats.totalSentByMonth} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-      <div>
-        <div className='grid grid-cols-12 gap-6'>
-          <div className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info'>
-            <div className='p-6'>
-              <div className='mb-6'>
-                <h3 className='text-base-content'>
-                  <span>Quick Stats</span>
-                </h3>
-              </div>
-              <div className='grid gap-4 md:grid-cols-2'>
-                <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
-                  <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
-                    <PaperAirplane width={20} height={20} />
-                  </div>
-                  <div>
-                    <h2 className='text-base-content'>
-                      <span>{emailStats.totalSent}</span>
-                    </h2>
-                    <p className=''>
-                      <span className='text-base-content'> Total sent </span>
-                    </p>
-                  </div>
-                </div>
-                <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
-                  <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
-                    <PaperAirplane width={20} height={20} />
-                  </div>
-                  <div>
-                    <h2 className='text-base-content'>
-                      <span>{emailStats.totalSentThisMonth}</span>
-                    </h2>
-                    <p className=''>
-                      <span className='text-base-content'> sent this month </span>
-                    </p>
-                  </div>
-                </div>
-                <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
-                  <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
-                    <UserGroupIcon width={20} height={20} />
-                  </div>
-                  <div>
-                    <h2 className='text-base-content'>
-                      <span>{emailStats.totalContact}</span>
-                    </h2>
-                    <p className=''>
-                      <span className='text-base-content'> contacts </span>
-                    </p>
-                  </div>
-                </div>
-                <div className='bg-base-200 flex items-center gap-2 rounded-xl px-5 py-10'>
-                  <div className='p-4 rounded-full border-2 border-info/80 bg-info/20 text-primary'>
-                    <CogIcon width={20} height={20} />
-                  </div>
-                  <div>
-                    <h2 className='text-base-content'>
-                      <span>{emailStats.totalCronRunning}</span>
-                    </h2>
-                    <p className=''>
-                      <span className='text-base-content'> cron running </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info'>
-            <div className='p-6'>
-              <div className='mb-6'>
-                <h3 className='text-base-content'>
-                  <span>Web3mails sent by month</span>
-                </h3>
-              </div>
-              <div className='-ms-4'>
-                {/**/}
-                <div className='vue-apexcharts' style={{ minHeight: 273 }}>
-                  <Web3mailChart totalSentByMonth={emailStats.totalSentByMonth} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
