@@ -1,5 +1,3 @@
-import { sendVerificationEmail } from '../../BuilderPlace/request';
-
 function Web2mailCard() {
   return (
     <>
