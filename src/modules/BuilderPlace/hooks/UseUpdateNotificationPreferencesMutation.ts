@@ -9,10 +9,10 @@ export function useUpdateNotificationPreferencesMutation() {
     Error,
     UpdateUserNotificationPreferences
   >(
-    updateEmail =>
+    updateNotificationPreferences =>
       fetch('/api/domain/update-user-notification-preferences', {
         method: 'PUT',
-        body: JSON.stringify(updateEmail),
+        body: JSON.stringify(updateNotificationPreferences),
         headers: {
           'Content-type': 'application/json',
         },
