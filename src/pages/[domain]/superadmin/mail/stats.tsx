@@ -15,14 +15,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
-const Web3mailChart = dynamic(
+const MailNotificationsChart = dynamic(
   () => import('../../../../modules/Web3mail/components/Web3mailChart'),
   {
     ssr: false,
   },
 );
 
-function Web3mailStats() {
+function MailNotificationsStats() {
   const { user, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { emailStats, loading: statsLoading } = useEmailStats();
@@ -163,7 +163,7 @@ function Web3mailStats() {
                 <div className='-ms-4'>
                   {/**/}
                   <div className='vue-apexcharts' style={{ minHeight: 273 }}>
-                    <Web3mailChart totalSentByMonth={emailStats.totalSentByMonth} />
+                    <MailNotificationsChart totalSentByMonth={emailStats.totalSentByMonth} />
                   </div>
                 </div>
               </div>
@@ -175,4 +175,4 @@ function Web3mailStats() {
   );
 }
 
-export default Web3mailStats;
+export default MailNotificationsStats;
