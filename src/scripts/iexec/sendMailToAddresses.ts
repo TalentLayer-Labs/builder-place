@@ -5,6 +5,7 @@ import { persistEmail } from '../../modules/Web3mail/utils/database';
 import { EmailSender, EmailType } from '.prisma/client';
 import { MailProviders, NotificationType } from '../../types';
 import * as sgMail from '@sendgrid/mail';
+import { getUserEmailsByAddresses } from '../../modules/BuilderPlace/actions/user';
 
 export const sendMailToAddresses = async (
   emailSubject: string,
@@ -30,9 +31,7 @@ export const sendMailToAddresses = async (
         throw new Error('Senders Email is not set');
       }
       emailSender = EmailSender.SENDGRID;
-      // @ts-ignore
-      const usersEmails: string[] | null = await getUserEmailsByAddresses(addresses);
-
+      const usersEmails = await getUserEmailsByAddresses(addresses);
       if (usersEmails && usersEmails.length > 0) {
         const sendPromises = usersEmails.map(email =>
           sendMarketingEmailTo(
