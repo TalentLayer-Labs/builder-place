@@ -37,7 +37,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     const result = await getVerifiedUsersNotificationData(includeSkills);
 
-    const filteredUsers = result.filter(
+    const filteredUsers = result?.filter(
       (data: IQueryData) => data.emailPreferences[notificationType] === true,
     );
 
