@@ -20,7 +20,7 @@ CREATE TABLE "CronProbe" (
 );
 
 -- CreateTable
-CREATE TABLE "Mail" (
+CREATE TABLE "Email" (
     "id" TEXT NOT NULL,
     "sentAt" TIMESTAMP(3) NOT NULL,
     "type" "EmailType" NOT NULL,
