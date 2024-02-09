@@ -4,7 +4,7 @@ import { prepareNonCronApi } from '../utils/mail';
 import { recoverMessageAddress } from 'viem';
 import { renderMail } from '../utils/generateMail';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
-import { NotificationType } from '../../../types';
+import { EmailNotificationType } from '../../../types';
 import { EmailType } from '.prisma/client';
 import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
@@ -18,7 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
   const notificationType =
-    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
 
   let sentEmails = 0,
     nonSentEmails = 0;

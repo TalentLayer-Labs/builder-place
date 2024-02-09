@@ -1,5 +1,5 @@
 import { getProposalsFromPlatformServices } from '../../../queries/proposals';
-import { IProposal, NotificationApiUri, NotificationType } from '../../../types';
+import { IProposal, EmailNotificationApiUri, EmailNotificationType } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -12,7 +12,7 @@ import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
-import { getVerifiedUsersNotificationData } from '../../../modules/BuilderPlace/actions/user';
+import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-notification-data';
 
 export const config = {
@@ -25,8 +25,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const notificationType =
-    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
+  const emailNotificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -35,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     nonSentEmails = 0;
 
   prepareCronApi(
-    notificationType,
+    emailNotificationType,
     chainId,
     platformId,
     databaseUrl,
@@ -48,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { sinceTimestamp, cronDuration } = calculateCronData(
     req,
     Number(RETRY_FACTOR),
-    NotificationApiUri.NewProposal,
+    EmailNotificationApiUri.NewProposal,
   );
 
   let status = 200;
@@ -78,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // If some emails have not been sent yet, send a web3mail & persist in the DB that the email was sent
     if (nonSentProposalEmails.length == 0) {
-      throw new EmptyError(`All new proposals notifications already sent`);
+      throw new EmptyError(`All new proposals notification emails already sent`);
     }
 
     // Filter out users which have not opted for the feature
@@ -86,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let validUserAddresses: string[] = [];
 
-    if (notificationType === NotificationType.WEB3) {
+    if (emailNotificationType === EmailNotificationType.WEB3) {
       const notificationResponse = await getUsersWeb3MailPreference(
         Number(chainId),
         allBuyerAddresses,
@@ -102,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
     } else {
-      const result = await getVerifiedUsersNotificationData();
+      const result = await getVerifiedUsersEmailData();
 
       const filteredUsers = result?.filter(
         (data: IQueryData) => data.emailPreferences['activeOnNewProposal'],
@@ -125,7 +127,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    const providers = generateMailProviders(notificationType, privateKey);
+    const providers = generateMailProviders(emailNotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
       const builderPlace = await getBuilderPlaceByOwnerId(proposal.buyer.id);
@@ -152,7 +154,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             proposal.rateToken,
             proposal.rateAmount,
           )}.`,
-          notificationType,
+          emailNotificationType,
           builderPlace.palette as unknown as iBuilderPlacePalette,
           domain,
           builderPlace.logo,
@@ -167,7 +169,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           [proposal.service.buyer.address],
           proposal.service.platform.name,
           providers,
-          notificationType,
+          emailNotificationType,
           EmailType.NEW_PROPOSAL,
           proposal.id,
         );

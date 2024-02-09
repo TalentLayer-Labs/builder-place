@@ -20,7 +20,7 @@ import {
   SetUserProfileOwner,
   UpdateHirerProfileAction,
   UpdateUserEmailAction,
-  UpdateUserNotificationsPreferencesAction,
+  UpdateUserEmailPreferencesAction,
   UpdateWorkerProfileAction,
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
@@ -181,10 +181,10 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-export const getVerifiedUsersNotificationData = async (includeSkills: boolean = false) => {
+export const getVerifiedUsersEmailData = async (includeSkills: boolean = false) => {
   let errorMessage = '';
   try {
-    console.log('Getting Users notification preferences data');
+    console.log('Getting Users email notification preferences data');
     let data = await prisma.user.findMany({
       where: {
         isEmailVerified: true,
@@ -356,7 +356,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
 };
 
 export const updateUserNotificationsPreferences = async (
-  data: UpdateUserNotificationsPreferencesAction,
+  data: UpdateUserEmailPreferencesAction,
 ) => {
   let errorMessage = '';
   try {

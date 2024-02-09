@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Contact } from '@iexec/web3mail';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
-import { IUserDetails, NotificationType } from '../../../types';
+import { IUserDetails, EmailNotificationType } from '../../../types';
 import { useChainId } from '../../../hooks/useChainId';
 import { fetchMyContacts } from '../../../components/request';
 import { getUsersNotificationData } from '../../BuilderPlace/request';
@@ -14,7 +14,7 @@ export interface IContact {
   address: string;
 }
 const useFetchMyContacts = (
-  notificationType: NotificationType,
+  emailNotificationType: EmailNotificationType,
   userId: string | undefined,
   builderPlaceId: string | undefined,
   address: `0x${string}` | undefined,
@@ -38,7 +38,12 @@ const useFetchMyContacts = (
       // This array has all the users that have granted access to their email to this platform and opted for the platform marketing feature
       let validUsers: IContact[] = [];
 
-      if (notificationType === NotificationType.WEB2 && walletClient && userId && builderPlaceId) {
+      if (
+        emailNotificationType === EmailNotificationType.WEB2 &&
+        walletClient &&
+        userId &&
+        builderPlaceId
+      ) {
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -65,7 +70,7 @@ const useFetchMyContacts = (
         });
       }
 
-      if (notificationType === NotificationType.WEB3 && chainId) {
+      if (emailNotificationType === EmailNotificationType.WEB3 && chainId) {
         const response = await fetchMyContacts();
         const contactList: Contact[] = response?.data?.data;
 
@@ -113,7 +118,7 @@ const useFetchMyContacts = (
   };
 
   useEffect(() => {
-    if (notificationType === NotificationType.WEB3) {
+    if (emailNotificationType === EmailNotificationType.WEB3) {
       fetchData();
     }
   }, [chainId]);

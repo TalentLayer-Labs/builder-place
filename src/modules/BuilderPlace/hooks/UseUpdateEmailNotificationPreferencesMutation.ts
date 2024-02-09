@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { UpdateUserNotificationPreferences } from '../types';
+import { UpdateUserEmailPreferences } from '../types';
 
-export function useUpdateNotificationPreferencesMutation() {
+export function useUpdateEmailNotificationPreferencesMutation() {
   const queryClient = useQueryClient();
 
   return useMutation<
     { message: string; id: string; error?: string },
     Error,
-    UpdateUserNotificationPreferences
+    UpdateUserEmailPreferences
   >(
     updateNotificationPreferences =>
       fetch('/api/domain/update-user-notification-preferences', {

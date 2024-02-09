@@ -1,9 +1,8 @@
-import { NotificationType, MailProviders } from '../../../types';
+import { EmailNotificationType, MailProviders } from '../../../types';
 import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
 import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
 import * as sgMail from '@sendgrid/mail';
 
-//TODO check if need 2 functions
 let providers: MailProviders = {
   sendGrid: undefined,
   web3mail: undefined,
@@ -27,13 +26,13 @@ const initializeSendGridProvider = () => {
 };
 
 export const generateMailProviders = (
-  notificationType: NotificationType,
+  emailNotificationType: EmailNotificationType,
   privateKey?: string,
 ): MailProviders => {
   try {
-    if (notificationType === NotificationType.WEB3 && privateKey) {
+    if (emailNotificationType === EmailNotificationType.WEB3 && privateKey) {
       initializeWeb3Providers(privateKey);
-    } else if (notificationType === NotificationType.WEB2) {
+    } else if (emailNotificationType === EmailNotificationType.WEB2) {
       initializeSendGridProvider();
     }
     return providers;

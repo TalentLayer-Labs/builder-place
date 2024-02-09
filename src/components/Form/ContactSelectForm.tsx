@@ -9,7 +9,7 @@ import Loading from '../Loading';
 import { useChainId } from '../../hooks/useChainId';
 import { useWalletClient } from 'wagmi';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { NotificationType } from '../../types';
+import { EmailNotificationType } from '../../types';
 import { sendPlatformMarketingWeb3mail } from '../request';
 import useFetchMyContacts, { IContact } from '../../modules/Web3mail/hooks/useFetchMyContacts';
 
@@ -40,14 +40,16 @@ export const ContactListForm = ({
   const { data: walletClient } = useWalletClient({ chainId });
   const { open: openConnectModal } = useWeb3Modal();
 
-  const notificationType =
-    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
+  const emailNotificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
   const {
     contacts: contactList,
     contactsLoaded: usersLoaded,
     fetchFunctionCalled,
     fetchData,
-  } = useFetchMyContacts(notificationType, userId, builderPlaceId, address, walletClient);
+  } = useFetchMyContacts(emailNotificationType, userId, builderPlaceId, address, walletClient);
 
   const [allContractsAdded, setAllContractsAdded] = useState(false);
 
@@ -157,7 +159,7 @@ export const ContactListForm = ({
               </span>
             </label>
 
-            {notificationType === NotificationType.WEB2 && !usersLoaded && (
+            {emailNotificationType === EmailNotificationType.WEB2 && !usersLoaded && (
               <div className='mt-4 flex flex-col items-center'>
                 <button
                   disabled={fetchFunctionCalled}
@@ -173,8 +175,10 @@ export const ContactListForm = ({
               </div>
             )}
 
-            {((notificationType === NotificationType.WEB2 && fetchFunctionCalled && usersLoaded) ||
-              notificationType === NotificationType.WEB3) && (
+            {((emailNotificationType === EmailNotificationType.WEB2 &&
+              fetchFunctionCalled &&
+              usersLoaded) ||
+              emailNotificationType === EmailNotificationType.WEB3) && (
               <div>
                 <FieldArray
                   name='users'

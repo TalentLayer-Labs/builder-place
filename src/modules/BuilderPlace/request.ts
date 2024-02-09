@@ -1,4 +1,4 @@
-import { INotificationsPreferences } from '../../types';
+import { IEmailPreferences } from '../../types';
 
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
@@ -167,7 +167,7 @@ export const getUserByEmail = async (email: string): Promise<any> => {
 export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
-  notificationType: keyof INotificationsPreferences,
+  notificationType: keyof IEmailPreferences,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {
   try {

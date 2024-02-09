@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
 import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
-import { IUserDetails, NotificationType } from '../../../types';
+import { IUserDetails, EmailNotificationType } from '../../../types';
 
 export class EmptyError extends Error {
   constructor(message: string) {
@@ -11,7 +11,7 @@ export class EmptyError extends Error {
 }
 
 export const prepareCronApi = (
-  notificationType: NotificationType,
+  notificationType: EmailNotificationType,
   chainId: string | undefined,
   platformId: string | undefined,
   databaseUrl: string | undefined,
@@ -19,7 +19,7 @@ export const prepareCronApi = (
   privateKey: string | undefined,
   res: NextApiResponse,
 ): void => {
-  if (notificationType === NotificationType.WEB3 && !privateKey) {
+  if (notificationType === EmailNotificationType.WEB3 && !privateKey) {
     console.warn('Web3mail Private key is not set');
     return res.status(500).json('Server error');
   }
@@ -46,13 +46,13 @@ export const prepareCronApi = (
 };
 
 export const prepareNonCronApi = (
-  notificationType: NotificationType,
+  notificationType: EmailNotificationType,
   chainId: string | undefined,
   platformId: string | undefined,
   privateKey: string | undefined,
   res: NextApiResponse,
 ): void => {
-  if (notificationType === NotificationType.WEB3 && !privateKey) {
+  if (notificationType === EmailNotificationType.WEB3 && !privateKey) {
     console.warn('Web3mail Private key is not set');
     return res.status(500).json('Server error');
   }

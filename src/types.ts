@@ -28,10 +28,10 @@ export type IUserDetails = {
   about?: string;
   skills_raw?: string;
   user: IUser;
-  web3mailPreferences?: INotificationsPreferences;
+  web3mailPreferences?: IEmailPreferences;
 };
 
-export type INotificationsPreferences = {
+export type IEmailPreferences = {
   activeOnNewService: boolean;
   activeOnNewProposal: boolean;
   activeOnProposalValidated: boolean;
@@ -296,7 +296,7 @@ export type IUserGain = {
   totalGain: string;
 };
 
-export enum NotificationApiUri {
+export enum EmailNotificationApiUri {
   NewProposal = 'new-proposal',
   ProposalValidated = 'proposal-validated',
   FundRelease = 'fund-release',
@@ -310,7 +310,7 @@ export type MailProviders = {
   sendGrid?: typeof sgMail;
 };
 
-export enum NotificationType {
+export enum EmailNotificationType {
   WEB3,
   WEB2,
 }

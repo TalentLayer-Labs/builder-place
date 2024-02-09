@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Contact } from '@iexec/web3mail';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
-import { NotificationType } from '../../../types';
+import { EmailNotificationType } from '../../../types';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -25,15 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { web3mail } = generateMailProviders(NotificationType.WEB3, privateKey);
+    const { web3mail } = generateMailProviders(EmailNotificationType.WEB3, privateKey);
     if (web3mail) {
       const contactList: Contact[] = await web3mail.fetchMyContacts();
-      return res
-        .status(200)
-        .json({
-          message: `Successfully fetched ${contactList.length} contacts`,
-          data: contactList,
-        });
+      return res.status(200).json({
+        message: `Successfully fetched ${contactList.length} contacts`,
+        data: contactList,
+      });
     }
   } catch (e: any) {
     console.error(e.message);

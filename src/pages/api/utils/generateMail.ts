@@ -1,10 +1,10 @@
-import { NotificationType } from '../../../types';
+import { EmailNotificationType } from '../../../types';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 
 export const renderMail = (
   title: string,
   body: string,
-  notificationType: NotificationType,
+  emailNotificationType: EmailNotificationType,
   palette: iBuilderPlacePalette,
   domain: string,
   logoUrl?: string | null,
@@ -281,7 +281,7 @@ ${link && linkText ? renderLink(link, linkText, palette) : ''}
       <td style="overflow-wrap:break-word;word-break:break-word;padding:40px 40px 30px;font-family:'Lato',sans-serif;" align="left">
         
   <div style="font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-   ${renderEditProfileLink(notificationType, domain)}
+   ${renderEditProfileLink(emailNotificationType, domain)}
   </div>
 
       </td>
@@ -423,8 +423,8 @@ const renderLink = (link: string, linkText: string, palette: iBuilderPlacePalett
   </table>`;
 };
 
-const renderEditProfileLink = (notificationType: NotificationType, domain?: string | null) => {
-  return domain && notificationType === NotificationType.WEB3
+const renderEditProfileLink = (notificationType: EmailNotificationType, domain?: string | null) => {
+  return domain && notificationType === EmailNotificationType.WEB3
     ? `<p style="font-size: 14px; line-height: 140%;"><span style="color: #888888; font-size: 14px; line-height: 19.6px;"><em><span style="font-size: 16px; line-height: 22.4px;">This email has been sent with iExec confidential web3mail, if you wish to unsubscribe from these notifications, <a rel="noopener" href="https://${domain}/profiles/edit/privacy" target="_blank"><span style="text-decoration: underline; line-height: 19.6px;">go here</span></a> to update your preferences</span></em></span></p>`
     : `<p style="font-size: 14px; line-height: 140%;"><span style="color: #888888; font-size: 14px; line-height: 19.6px;"><em><span style="font-size: 16px; line-height: 22.4px;">If you wish to unsubscribe from these notifications, <a rel="noopener" href="https://${domain}/profiles/edit/privacy" target="_blank"><span style="text-decoration: underline; line-height: 19.6px;">go here</span></a> to update your preferences</span></em></span></p>`;
 };

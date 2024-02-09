@@ -8,7 +8,7 @@ import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { NotificationType } from '../../../../types';
+import { EmailNotificationType } from '../../../../types';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -17,8 +17,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Mail() {
   const { user, account, loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
-  const notificationType =
-    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
+  const emailNotificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
 
   if (loading) {
     return <Loading />;
@@ -37,8 +39,8 @@ function Mail() {
           <p className='text-2xl font-bold flex-1 mt-6'>
             Send{' '}
             <span className='text-base-content ml-1'>
-              {notificationType === NotificationType.WEB3 && 'Web3mails'}
-              {notificationType === NotificationType.WEB2 && 'Mails'}
+              {emailNotificationType === EmailNotificationType.WEB3 && 'Web3mails'}
+              {emailNotificationType === EmailNotificationType.WEB2 && 'Mails'}
             </span>
           </p>
           <a

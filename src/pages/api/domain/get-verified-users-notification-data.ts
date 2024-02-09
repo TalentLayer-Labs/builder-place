@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { METHOD_NOT_ALLOWED, MISSING_DATA } from '../../../modules/BuilderPlace/apiResponses';
-import { GetUserNotificationData } from '../../../modules/BuilderPlace/types';
+import { GetUserEmailData } from '../../../modules/BuilderPlace/types';
 import { checkOwnerSignature } from '../utils/domain';
-import { getVerifiedUsersNotificationData } from '../../../modules/BuilderPlace/actions/user';
-import { INotificationsPreferences } from '../../../types';
+import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
+import { IEmailPreferences } from '../../../types';
 
 export interface IQueryData {
   id: number;
@@ -11,7 +11,7 @@ export interface IQueryData {
   email: string | null;
   name: string;
   skills: string[];
-  emailPreferences: INotificationsPreferences;
+  emailPreferences: IEmailPreferences;
   workerProfile: { id: number; skills: string[] } | null;
 }
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
@@ -20,25 +20,20 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   console.log('Received data:', req.body);
-  const {
-    builderPlaceId,
-    ownerId,
-    signature,
-    notificationType,
-    includeSkills,
-  }: GetUserNotificationData = req.body;
+  const { builderPlaceId, ownerId, signature, emailType, includeSkills }: GetUserEmailData =
+    req.body;
 
-  if (!builderPlaceId || !ownerId || !signature || !notificationType) {
+  if (!builderPlaceId || !ownerId || !signature || !emailType) {
     return res.status(400).json({ error: MISSING_DATA });
   }
 
   try {
     await checkOwnerSignature(builderPlaceId, ownerId, signature, res);
 
-    const result = await getVerifiedUsersNotificationData(includeSkills);
+    const result = await getVerifiedUsersEmailData(includeSkills);
 
     const filteredUsers = result?.filter(
-      (data: IQueryData) => data.emailPreferences[notificationType] === true,
+      (data: IQueryData) => data.emailPreferences[emailType] === true,
     );
 
     res.status(200).json({ data: filteredUsers });

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { UpdateUserNotificationPreferences } from '../../../modules/BuilderPlace/types';
+import { UpdateUserEmailPreferences } from '../../../modules/BuilderPlace/types';
 import { updateUserNotificationsPreferences } from '../../../modules/BuilderPlace/actions/user';
 import { recoverMessageAddress } from 'viem';
 import { METHOD_NOT_ALLOWED, MISSING_DATA } from '../../../modules/BuilderPlace/apiResponses';
@@ -10,7 +10,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   try {
-    const body: UpdateUserNotificationPreferences = req.body;
+    const body: UpdateUserEmailPreferences = req.body;
     console.log('Received data:', body);
 
     if (!body.userId || !body.preferences || !body.signature) {

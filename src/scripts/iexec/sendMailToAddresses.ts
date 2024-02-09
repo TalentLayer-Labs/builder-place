@@ -3,7 +3,7 @@ import { IExecDataProtector } from '@iexec/dataprotector';
 import { userGaveAccessToPlatform } from '../../modules/Web3mail/utils/data-protector';
 import { persistEmail } from '../../modules/Web3mail/utils/database';
 import { EmailSender, EmailType } from '.prisma/client';
-import { MailProviders, NotificationType } from '../../types';
+import { MailProviders, EmailNotificationType } from '../../types';
 import * as sgMail from '@sendgrid/mail';
 import { getUserEmailsByAddresses } from '../../modules/BuilderPlace/actions/user';
 
@@ -13,7 +13,7 @@ export const sendMailToAddresses = async (
   addresses: string[],
   platformName: string,
   providers: MailProviders,
-  notificationType: NotificationType,
+  notificationType: EmailNotificationType,
   emailType: EmailType,
   id?: string,
 ): Promise<{ successCount: number; errorCount: number }> => {
@@ -25,7 +25,7 @@ export const sendMailToAddresses = async (
   console.log('Sending email to addresses');
 
   try {
-    if (notificationType === NotificationType.WEB2 && providers?.sendGrid) {
+    if (notificationType === EmailNotificationType.WEB2 && providers?.sendGrid) {
       const sendersEmail = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;
       if (!sendersEmail) {
         throw new Error('Senders Email is not set');
@@ -46,7 +46,7 @@ export const sendMailToAddresses = async (
 
         results = await Promise.all(sendPromises);
       }
-    } else if (notificationType === NotificationType.WEB3) {
+    } else if (notificationType === EmailNotificationType.WEB3) {
       emailSender = EmailSender.IEXEC;
       const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
       if (!privateKey) {

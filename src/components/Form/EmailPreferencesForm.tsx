@@ -11,13 +11,13 @@ import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
-import { INotificationsPreferences, NotificationType } from '../../types';
+import { IEmailPreferences, EmailNotificationType } from '../../types';
 import { postToIPFS } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useUpdateNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateNotificationPreferencesMutation';
+import { useUpdateEmailNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailNotificationPreferencesMutation';
 import { toast } from 'react-toastify';
 
 function EmailPreferencesForm() {
@@ -31,18 +31,20 @@ function EmailPreferencesForm() {
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
   const userDescription = user?.id ? useUserById(user?.id)?.description : null;
-  const web2MailPreferences = workerProfile?.emailPreferences as INotificationsPreferences;
-  const notificationType =
-    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3' ? NotificationType.WEB3 : NotificationType.WEB2;
-  const { mutateAsync: updateNotificationPreferencesAsync } =
-    useUpdateNotificationPreferencesMutation();
+  const web2MailPreferences = workerProfile?.emailPreferences as IEmailPreferences;
+  const emailNotificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
+  const { mutateAsync: updateEmailNotificationPreferencesAsync } =
+    useUpdateEmailNotificationPreferencesMutation();
 
   if (!user?.id || loading || !workerProfile) {
     return <Loading />;
   }
 
-  const initialValues: INotificationsPreferences =
-    notificationType === NotificationType.WEB3
+  const initialValues: IEmailPreferences =
+    emailNotificationType === EmailNotificationType.WEB3
       ? {
           activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService || true,
           activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal || true,
@@ -63,11 +65,11 @@ function EmailPreferencesForm() {
         };
 
   const onSubmit = async (
-    values: INotificationsPreferences,
+    values: IEmailPreferences,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      if (notificationType === NotificationType.WEB2 && walletClient && workerProfile) {
+      if (emailNotificationType === EmailNotificationType.WEB2 && walletClient && workerProfile) {
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -76,7 +78,7 @@ function EmailPreferencesForm() {
           message: workerProfile.id.toString(),
         });
 
-        const response = await updateNotificationPreferencesAsync({
+        const response = await updateEmailNotificationPreferencesAsync({
           preferences: values,
           userId: workerProfile.id.toString(),
           signature,
@@ -153,7 +155,7 @@ function EmailPreferencesForm() {
   return (
     <>
       <div className='grid grid-cols-1 gap-6'>
-        {notificationType === NotificationType.WEB3 ? (
+        {emailNotificationType === EmailNotificationType.WEB3 ? (
           <Web3mailCard />
         ) : (
           <Web2mailCard
@@ -169,7 +171,7 @@ function EmailPreferencesForm() {
             <Form>
               <label className='block'>
                 <div className='mb-2 ml-0.5'>
-                  {notificationType === NotificationType.WEB3 && (
+                  {emailNotificationType === EmailNotificationType.WEB3 && (
                     <div className='mb-4'>
                       <p className='font-heading text-base-content font-medium leading-none'>
                         2. setup your notification preferences

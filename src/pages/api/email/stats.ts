@@ -4,7 +4,7 @@ import {
   getEmailCount,
   getEmailCountByMonth,
 } from '../../../modules/Web3mail/utils/database';
-import { EmailStats, NotificationType } from '../../../types';
+import { EmailStats, EmailNotificationType } from '../../../types';
 import { Contact } from '@iexec/web3mail';
 import { getVerifiedEmailCount } from '../../../modules/BuilderPlace/actions/user';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     stats.totalSentByMonth = await getEmailCountByMonth();
     stats.totalSentThisMonth = stats.totalSentByMonth[new Date().getMonth()] || 0;
 
-    const { web3mail } = generateMailProviders(NotificationType.WEB3, privateKey);
+    const { web3mail } = generateMailProviders(EmailNotificationType.WEB3, privateKey);
 
     if (isWeb3mailActive && web3mail) {
       const contactList: Contact[] = await web3mail.fetchMyContacts();
