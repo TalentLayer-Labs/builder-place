@@ -38,23 +38,27 @@ function Web3mailStats() {
   }
 
   const SkeletonLoader = () => (
-    <div className='flex flex-row animate-pulse'>
+    <div className='w-full animate-pulse'>
       <div className='grid grid-cols-12 gap-6'>
-        {[...Array(4)].map((_, index) => (
-          <div
-            key={index}
-            className='bg-base-300 ltablet:col-span-6 col-span-12 lg:col-span-6 rounded-xl border border-info p-6'>
-            <div className='h-8 bg-base-200 rounded mb-4'></div>
-            <div className='space-y-4'>
-              <div className='h-4 bg-base-200 rounded'></div>
-              <div className='h-4 bg-base-200 rounded'></div>
-            </div>
+        <div className='col-span-12 lg:col-span-6'>
+          <div className='grid grid-cols-12 gap-6'>
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className='bg-base-300 col-span-6 rounded-xl border border-info p-6'>
+                <div className='h-8 bg-base-200 rounded mb-4'></div>{' '}
+                <div className='space-y-4'>
+                  <div className='h-4 bg-base-200 rounded'></div>
+                  <div className='h-4 bg-base-200 rounded'></div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className='col-span-12 lg:col-span-12 bg-base-300 rounded-xl border border-info p-6'>
-        <div className='h-8 bg-base-200 rounded mb-4'></div>
-        <div className='h-64 bg-base-200 rounded'></div>
+        </div>
+
+        <div className='col-span-12 lg:col-span-6 bg-base-300 rounded-xl border border-info p-6'>
+          <div className='h-8 bg-base-200 rounded mb-4'></div>
+          <div className='h-52 bg-base-200 rounded'></div>
+          <div className='h-max bg-base-200 rounded'></div>
+        </div>
       </div>
     </div>
   );
@@ -72,7 +76,7 @@ function Web3mailStats() {
           </a>
         </div>
       </div>
-      {true ? (
+      {statsLoading ? (
         <>
           <div className='flex mb-5 items-center justify-center space-x-2'>
             <span className='relative flex h-5 w-5 flex-shrink-0 items-center justify-center '>
