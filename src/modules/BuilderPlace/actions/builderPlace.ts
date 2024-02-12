@@ -254,7 +254,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
       },
     });
 
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
