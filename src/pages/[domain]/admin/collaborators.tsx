@@ -112,7 +112,6 @@ export default function Collaborators() {
 
   return (
     <div>
-
       <AdminSettingsLayout title={'Collaborators'}>
         <div className={'flex flex-col'}>
           <CollaboratorForm />

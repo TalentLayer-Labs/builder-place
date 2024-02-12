@@ -85,9 +85,6 @@ export const getVerifiedEmailCount = async (res?: NextApiResponse) => {
     console.log('Getting Verified User Emails count');
     const verifiedEmailCount = await prisma.user.count({
       where: {
-        email: {
-          not: null,
-        },
         isEmailVerified: true,
       },
     });
@@ -340,6 +337,7 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
         name: data.name,
         picture: data.picture,
         about: data.about,
+        address: '0x0', // @dev: TEMPS - this function will be removed
         hirerProfile: {
           create: {},
         },
@@ -364,6 +362,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
         name: data.name,
         picture: data.picture,
         about: data.about,
+        address: '0x0', // @dev: TEMPS - this function will be removed
         workerProfile: {
           create: {
             skills: data?.skills?.split(','),
@@ -457,7 +456,6 @@ export const removeOwnerFromUser = async (userId: string) => {
         id: Number(userId),
       },
       data: {
-        address: null,
         talentLayerId: null,
       },
     });
