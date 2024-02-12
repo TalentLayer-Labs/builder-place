@@ -92,6 +92,7 @@ const useCreateUser = () => {
           address: address,
         },
         signature: signature,
+        address: address,
         domain: window.location.hostname + ':' + window.location.port,
       });
 

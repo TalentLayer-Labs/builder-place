@@ -8,7 +8,7 @@ import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import AccessDenied from '../../../components/AccessDenied';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
-import CustomDomain from '../../../components/CustomDomain';
+import SubdomainInput from '../../../components/Form/SubdomainInput';
 import CustomizePalette from '../../../components/CustomizePalette';
 import DefaultPalettes from '../../../components/DefaultPalettes';
 import Loading from '../../../components/Loading';
@@ -263,7 +263,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                   </span>
                 </div>
 
-                <CustomDomain />
+                <SubdomainInput />
 
                 <UploadImage
                   fieldName='logo'

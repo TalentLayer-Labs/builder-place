@@ -335,5 +335,6 @@ export type Web3MailStats = {
 export interface IMutation<T> {
   data: T;
   signature: `0x${string}` | Uint8Array;
+  address: `0x${string}`;
   domain: string;
 }

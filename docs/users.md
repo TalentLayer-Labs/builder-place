@@ -13,7 +13,6 @@ We have 4 types of user on Builder Place.
 
 ### Owner onboarding
 
-
 - From: BuilderPlace homepage
 - Step 1: Complete the "create your profile" form 
     - It creates the user in DB
