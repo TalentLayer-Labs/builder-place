@@ -9,6 +9,11 @@ function limitText(text: string, maxLength: number) {
   return text.substr(0, maxLength - 3) + '...';
 }
 
+enum ViewType {
+  ListView = 1,
+  TableView = 2,
+}
+
 function ServiceItem({
   service,
   embedded,
@@ -16,7 +21,7 @@ function ServiceItem({
 }: {
   service: IService;
   embedded?: boolean;
-  view?: number;
+  view?: ViewType;
 }) {
   const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;
@@ -25,7 +30,7 @@ function ServiceItem({
   return (
     <>
       {/* LIST VIEW */}
-      {view === 1 && (
+      {view === ViewType.ListView && (
         <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent mb-5'>
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
             <div className='flex items-center justify-between gap-4'>
@@ -78,7 +83,7 @@ function ServiceItem({
       )}
 
       {/* TABLE VIEW */}
-      {view === 2 && (
+      {view === ViewType.TableView && (
         <tr className='bg-base-100 hover:bg-base-200'>
           <td className='border border-gray-300 p-2 break-all text-left '>
             {service.description?.title}
