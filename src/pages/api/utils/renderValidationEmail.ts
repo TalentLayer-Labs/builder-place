@@ -1,7 +1,7 @@
 export const renderValidationMail = (
   name: string,
   userId: string,
-  domain: string,
+  domain?: string,
   logoUrl?: string | null,
 ): string => {
   return `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -399,6 +399,6 @@ Validate my email
   </table>`;
 };
 
-export const generateUrl = (userId: string, domain: string) => {
-  return `http://${domain}/verify-email?id=${userId}`;
+export const generateUrl = (userId: string, domain?: string) => {
+  return `https://${domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN}/verify-email?id=${userId}`;
 };

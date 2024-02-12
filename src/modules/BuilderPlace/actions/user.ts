@@ -26,6 +26,7 @@ import {
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { IQueryData } from '../../../pages/api/domain/get-verified-users-email-notification-data';
+import { UsersFilters } from '../../../app/api/users/route';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage = '';
@@ -127,6 +128,31 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_FETCHING_USER, res);
   }
+};
+
+export const getUsersBy = async (filters: UsersFilters) => {
+  console.log('*DEBUG* Getting User Profile with filters:', filters);
+
+  const whereClause: any = {};
+  if (filters.id) {
+    whereClause.id = Number(filters.id);
+  } else if (filters.address) {
+    whereClause.address = filters.address;
+  } else if (filters.email) {
+    whereClause.email = filters.email;
+  }
+
+  const userProfile = await prisma.user.findMany({
+    where: whereClause,
+    include: {
+      workerProfile: true,
+      hirerProfile: true,
+      ownedBuilderPlace: true,
+      managedPlaces: true,
+    },
+  });
+  console.log('Fetched User Profile: ', userProfile);
+  return userProfile;
 };
 
 export const getUserById = async (id: string) => {

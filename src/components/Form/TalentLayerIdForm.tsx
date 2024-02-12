@@ -65,7 +65,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
            */
           const signature = await walletClient.signMessage({
             account: account.address,
-            message: submittedValues.handle,
+            message: `connect with ${account.address}`,
           });
 
           const response = await delegateMintID(

@@ -268,7 +268,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
 export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
   let errorMessage = '';
   try {
-    console.log("getting builderPlace with owner's id:", id);
+    console.log("getting builderPlace with owner's TalentLayer id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
         owner: {
@@ -340,7 +340,7 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
         owner: {
-          talentLayerId: id,
+          id: Number(id),
         },
       },
       include: {
@@ -392,7 +392,7 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
         about: data.about,
         preferredWorkTypes: data.preferredWorkTypes,
         palette: { ...data.palette },
-        profilePicture: data.profilePicture,
+        icon: data.icon,
         status: EntityStatus.PENDING,
       },
     });
@@ -501,7 +501,6 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         palette: { ...builderPlace.palette },
         preferredWorkTypes: builderPlace.preferredWorkTypes,
         presentation: builderPlace.presentation,
-        profilePicture: builderPlace.profilePicture,
       },
     });
     return {

@@ -1,14 +1,33 @@
+import { User } from '.prisma/client';
 import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useWalletClient } from 'wagmi';
-import { useChainId } from '../hooks/useChainId';
-import { getUserByAddress } from '../queries/users';
-import { iTalentLayerContext, IUser } from '../types';
-import { getCompletionScores, ICompletionScores } from '../utils/profile';
-import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
-import { User } from '.prisma/client';
+import { useChainId } from '../hooks/useChainId';
+import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
+import { getUserByAddress } from '../queries/users';
+import { IAccount, IUser } from '../types';
+import { getCompletionScores, ICompletionScores } from '../utils/profile';
+
+export type iTalentLayerContext = {
+  loading: boolean;
+  canUseDelegation: boolean;
+  refreshData: () => Promise<boolean>;
+  refreshWorkerProfile: () => Promise<boolean>;
+  user?: IUser;
+  account?: IAccount;
+  workerProfile?: User;
+  completionScores?: ICompletionScores;
+  talentLayerClient?: TalentLayerClient;
+};
+
+// export enum PreferredWorkTypes {
+//   jobs = 'jobs',
+//   bounties = 'bounties',
+//   grants = 'grants',
+//   gigs = 'gigs',
+// }
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,

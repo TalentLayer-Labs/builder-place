@@ -162,7 +162,7 @@ export interface CreateBuilderPlaceAction {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileAction {
@@ -218,7 +218,7 @@ export interface CreateBuilderPlaceProps {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileProps {
@@ -231,33 +231,51 @@ export interface CreateWorkerProfileProps {
 export interface CreateHirerProfileProps {
   email: string;
   name: string;
-  picture?: string;
+  icon?: string;
   about?: string;
   status?: string;
 }
 
 export type IBuilderPlace = {
   id: string;
+  status: EntityStatus;
+  name: string;
+  subdomain?: string;
+  customDomain?: string | null;
+  talentLayerPlatformId?: string;
+  talentLayerPlatformName?: string;
+  owner: User;
+  ownerId?: string;
+  collaborators?: User[];
+  baseline?: string;
   about?: string;
   aboutTech?: string;
-  baseline?: string;
-  cover?: string;
-  customDomain?: string | null;
-  icon?: string;
-  logo?: string;
-  name: string;
-  owner: User;
-  collaborators?: User[];
-  palette?: iBuilderPlacePalette;
-  preferredWorkTypes: WorkType[];
   presentation?: string;
-  profilePicture?: string;
-  status: EntityStatus;
-  ownerId?: string;
-  // ownerAddress?: string;
-  // ownerTalentLayerId?: string;
-  subdomain?: string;
+  logo?: string;
+  icon?: string;
+  cover?: string;
+  palette?: iBuilderPlacePalette;
+  jobPostingConditions: JobPostingConditions;
+  preferredWorkTypes: WorkType[];
 };
+
+interface JobPostingConditions {
+  allowPosts: boolean;
+  conditions?: PostingCondition[];
+}
+
+type PostingCondition = NFTCondition | TokenCondition;
+
+interface NFTCondition {
+  type: 'NFT';
+  address: string;
+}
+
+interface TokenCondition {
+  type: 'Token';
+  address: string;
+  minimumAmount: number;
+}
 
 export interface IUserProfile {
   id: string;

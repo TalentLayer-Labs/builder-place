@@ -1,6 +1,6 @@
 import { ErrorMessage, Field } from 'formik';
 
-function CustomDomain() {
+function SubdomainInput() {
   return (
     <>
       <label className='block'>
@@ -22,4 +22,4 @@ function CustomDomain() {
   );
 }
 
-export default CustomDomain;
+export default SubdomainInput;

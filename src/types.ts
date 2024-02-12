@@ -323,14 +323,16 @@ export type EmailStats = {
   totalCronRunning: number;
 };
 
-export type iTalentLayerContext = {
-  loading: boolean;
-  canUseDelegation: boolean;
-  refreshData: () => Promise<boolean>;
-  refreshWorkerProfile: () => Promise<boolean>;
-  user?: IUser;
-  account?: IAccount;
-  workerProfile?: User;
-  completionScores?: ICompletionScores;
-  talentLayerClient?: TalentLayerClient;
-};
+/**
+ * @dev We want to normalize all database mutations
+ * A mutation must required:
+ *  - data: the data to mutate with a dynamic type
+ *  - signature: the signature of the data by the current wallet. The only for us to confirm the ownership of the address
+ *  - domain: the domain of the BP used which could be the default one, or any BuilderPlaces. It will be used inside email.
+ */
+export interface IMutation<T> {
+  data: T;
+  signature: `0x${string}` | Uint8Array;
+  address: `0x${string}`;
+  domain: string;
+}

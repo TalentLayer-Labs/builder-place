@@ -15,6 +15,7 @@ import '../styles/globals.css';
 import '../styles/markdown.css';
 import Layout from './Layout';
 import { Analytics } from '@vercel/analytics/react';
+import { UserProvider } from '../modules/BuilderPlace/context/UserContext';
 
 // react-query client
 const queryClient = new QueryClient();
@@ -26,19 +27,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
         <Web3Modal>
-          <TalentLayerProvider>
-            <BuilderPlaceProvider data={pageProps.builderPlace}>
-              <CustomPalette />
-              <XmtpContextProvider>
-                <MessagingProvider>
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </MessagingProvider>
-              </XmtpContextProvider>
-              <ToastContainer position='bottom-right' />
-            </BuilderPlaceProvider>
-          </TalentLayerProvider>
+          <BuilderPlaceProvider data={pageProps.builderPlace}>
+            <UserProvider>
+              <TalentLayerProvider>
+                <CustomPalette />
+                <XmtpContextProvider>
+                  <MessagingProvider>
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </MessagingProvider>
+                </XmtpContextProvider>
+                <ToastContainer position='bottom-right' />
+              </TalentLayerProvider>
+            </UserProvider>
+          </BuilderPlaceProvider>
         </Web3Modal>
       </QueryClientProvider>
       <SpeedInsights />

@@ -1,4 +1,7 @@
 import { IEmailPreferences } from '../../types';
+import { User } from '@prisma/client';
+import { UsersFilters } from '../../app/api/users/route';
+import axios from 'axios';
 
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
@@ -65,6 +68,19 @@ export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
     console.error(err);
     throw err;
   }
+};
+
+export const getUserBy = async (filters: UsersFilters): Promise<User> => {
+  console.log(`*DEBUG* getUserBy fetch!`);
+
+  const response = await axios.get('/api/users', {
+    params: filters,
+  });
+
+  const users: User[] = response.data.users;
+
+  console.log(`*DEBUG* getUserBy results!`, users);
+  return users[0];
 };
 
 export const getWorkerProfileById = async (id: string): Promise<any> => {

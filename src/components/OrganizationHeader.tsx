@@ -19,7 +19,6 @@ function OrganizationHeader() {
 
   if (!builderPlace) return <Loading />;
 
-  console.log('builderPlace', builderPlace);
   return (
     <header className='relative bg-base-300 rounded-xl'>
       <div className='relative h-48 sm:h-96 overflow-hidden'>
@@ -46,10 +45,10 @@ function OrganizationHeader() {
         </div>
       </div>
       <div className='relative h-full m-auto'>
-        {builderPlace.profilePicture && (
+        {builderPlace.icon && (
           <img
-            src={builderPlace.profilePicture}
-            alt={'BuilderPlace profile picture'}
+            src={builderPlace.icon}
+            alt={'BuilderPlace icon'}
             className={`object-coverrounded-3xl bottom-[-2.00rem] left-[40px] absolute top-[-5.75rem] z-[2] w-48 h-48 -mt-8 sm:block hidden`}
           />
         )}
