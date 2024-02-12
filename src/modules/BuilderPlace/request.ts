@@ -167,7 +167,7 @@ export const getUserByEmail = async (email: string): Promise<any> => {
 export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
-  notificationType: keyof IEmailPreferences,
+  emailNotificationType: keyof IEmailPreferences,
   address: `0x${string}`,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {
@@ -177,7 +177,7 @@ export const getUsersNotificationData = async (
       body: JSON.stringify({
         builderPlaceId,
         ownerId,
-        notificationType,
+        emailNotificationType,
         address,
         signature,
       }),

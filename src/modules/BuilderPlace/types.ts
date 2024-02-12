@@ -143,7 +143,7 @@ export interface SendVerificationEmail {
 export interface GetUserEmailData {
   builderPlaceId: string;
   ownerId: string;
-  emailType: keyof IEmailPreferences;
+  emailNotificationType: keyof IEmailPreferences;
   address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
   includeSkills?: boolean;

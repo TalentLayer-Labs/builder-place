@@ -24,12 +24,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     builderPlaceId,
     ownerId,
     signature,
-    emailType,
+    emailNotificationType,
     address,
     includeSkills,
   }: GetUserEmailData = req.body;
 
-  if (!builderPlaceId || !ownerId || !signature || !emailType || !address) {
+  if (!builderPlaceId || !ownerId || !signature || !emailNotificationType || !address) {
     return res.status(400).json({ error: MISSING_DATA });
   }
 
@@ -39,7 +39,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const result = await getVerifiedUsersEmailData(includeSkills);
 
     const filteredUsers = result?.filter(
-      (data: IQueryData) => data.emailPreferences[emailType] === true,
+      (data: IQueryData) => data.emailPreferences[emailNotificationType] === true,
     );
 
     res.status(200).json({ data: filteredUsers });
