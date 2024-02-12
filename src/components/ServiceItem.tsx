@@ -55,7 +55,7 @@ function ServiceItem({
                   <span className='w-[6px] h-[6px] rounded-full bg-base-300 block'></span>
                 </p>
                 {service.description?.rateToken && service.description?.rateAmount && (
-                  <p className='text-sm max-w-[150px] text-ellipsis'>
+                  <p className='text-sm max-w-[150px]'>
                     💰{' '}
                     <span className='text-base-content-50'>
                       <TokenAmount

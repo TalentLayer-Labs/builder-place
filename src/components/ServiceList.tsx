@@ -41,7 +41,7 @@ function ServiceList() {
           <button
             onClick={() => setView(1)}
             className={`px-4 py-2 rounded-full ${
-              view === 1 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+              view === 1 ? 'bg-primary text-primary' : 'bg-transparent text-base-content'
             }`}>
             List View
           </button>
@@ -78,7 +78,7 @@ function ServiceList() {
         ))}
 
       {view === 2 && (
-        <table className='min-w-full text-center' style={{ borderRadius: '1rem' }}>
+        <table className='min-w-full text-center'>
           <thead>
             <tr className='bg-primary text-primary'>
               <th className='border border-gray-300 p-2'>Title</th>
@@ -105,7 +105,7 @@ function ServiceList() {
         <div className='flex justify-center items-center gap-10 flex-col pb-5'>
           <button
             type='submit'
-            className={`px-5 py-2 mt-5 content-center border-2 text-black border-black rounded-xl font-medium text-content 
+            className={`px-5 py-2 mt-5 content-center border-2 text-base-content border-black rounded-xl font-medium text-content 
                 `}
             disabled={!hasMoreData}
             onClick={() => loadMore()}>
