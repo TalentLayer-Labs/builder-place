@@ -92,7 +92,7 @@ function onboardingStep3() {
         /**
          * @dev: send validation email to owner to validate email
          */
-        if (workerProfile) {
+        if (workerProfile?.email) {
           await sendVerificationEmail(
             workerProfile.email,
             userId as string,

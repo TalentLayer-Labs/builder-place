@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ********************* BuilderPlace *********************
+
 model BuilderPlace {
   id                       Int          @id @default(autoincrement())
   status                   EntityStatus @default(PENDING)
@@ -47,6 +49,7 @@ model User {
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
   managedPlaces            BuilderPlace[] @relation("BuilderPlaceCollaborators")
+  emailPreferences         Json           @default("{\"activeOnNewService\": false, \"activeOnNewProposal\": true, \"activeOnProposalValidated\": true, \"activeOnFundRelease\": true, \"activeOnReview\": true, \"activeOnPlatformMarketing\": false, \"activeOnProtocolMarketing\": true}")
 }
 
 model WorkerProfile {
@@ -70,4 +73,37 @@ enum WorkType {
   GRANTS
   GIGS
   JOBS
+}
+
+// ********************* Web3 Mail *********************
+
+enum EmailType {
+  NEW_PROPOSAL
+  PROPOSAL_VALIDATED
+  FUND_RELEASE
+  REVIEW
+  PLATFORM_MARKETING
+  PROTOCOL_MARKETING
+  NEW_SERVICE
+}
+
+enum EmailSender {
+  IEXEC
+  SENDGRID
+}
+
+model CronProbe {
+  id           Int       @id @default(autoincrement())
+  type         EmailType @unique
+  lastRanAt    DateTime
+  successCount Int
+  duration     Int
+  errorCount   Int
+}
+
+model Email {
+  id     String      @id
+  sentAt DateTime
+  type   EmailType
+  sender EmailSender
 }

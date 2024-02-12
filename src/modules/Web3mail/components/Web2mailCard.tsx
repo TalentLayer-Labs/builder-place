@@ -1,7 +1,4 @@
-import { ArrowSmallRightIcon, ArrowUpRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-
-function Web3mailCard() {
+function Web2mailCard() {
   return (
     <>
       <div className='bg-base-200 flex flex-col items-center rounded-2xl p-4 sm:flex-row'>
@@ -83,53 +80,19 @@ function Web3mailCard() {
             <p className='font-heading text-xl font-semibold leading-normal mb-2 text-base-content opacity-90'>
               <span>
                 {' '}
-                configure private email alerts <span className='text-3xl'>🪄</span>
+                configure email alerts <span className='text-3xl'>🪄</span>
               </span>
             </p>
             <p className='font-alt text-sm font-normal leading-normal max-w-sm text-base-content opacity-70'>
               <span>
-                {' '}
-                your email will never be stored by us, BuilderPlace, or TalentLayer. private email
-                is powered by iExec Web3Mail - allowing us to send you email alerts without your
-                data being disclosed to us.
+                configure your preferences to be notified every time an important event happens on
+                your profile.
               </span>
             </p>
-            <div className='mt-3'>
-              <a
-                href='https://medium.com/iex-ec/introducing-privacy-enhancing-marketing-the-future-of-marketing-in-web3-429283e7c7f0'
-                target='_blank'
-                className='px-3 py-1 border border-info rounded-md hover:bg-base-200 text-base-content hover:text-base-content inline-flex items-center text-xs'>
-                <span>learn more</span>
-                <ArrowSmallRightIcon width='16' height='16' className='ml-2' />
-              </a>
-            </div>
           </div>
         </div>
-      </div>
-      <div className='border-b border-info pb-6'>
-        <label className='block'>
-          <div className='mb-2 ml-0.5'>
-            <div className='flex justify-between'>
-              <div>
-                <p className='font-heading text-base-content font-medium leading-none'>
-                  1. setup your email
-                </p>
-                <p className='font-sans text-xs font-normal leading-normal text-base-content mt-0.5'>
-                  configure your preferences to be notified every time an important event happens on
-                  your profile.
-                </p>
-              </div>
-            </div>
-          </div>
-        </label>
-        <Link
-          href='/web3mail'
-          className='grow px-5 py-2 rounded-xl bg-info text-base-content hover:bg-base-200 inline-flex align-center justify-center '>
-          <span>manage your email</span>
-          <ArrowUpRightIcon width='16' height='16' className='ml-2 mt-1' />
-        </Link>
       </div>
     </>
   );
 }
-export default Web3mailCard;
+export default Web2mailCard;

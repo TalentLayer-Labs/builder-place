@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import {
   getCronProbeCount,
-  getWeb3mailCount,
-  getWeb3mailCountByMonth,
+  getEmailCount,
+  getEmailCountByMonth,
 } from '../../../modules/Web3mail/utils/database';
-import { Web3MailStats } from '../../../types';
-import { generateWeb3mailProviders } from '../utils/web3mail';
+import { EmailStats, EmailNotificationType } from '../../../types';
 import { Contact } from '@iexec/web3mail';
+import { getVerifiedEmailCount } from '../../../modules/BuilderPlace/actions/user';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -15,17 +16,13 @@ export const config = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const isWeb3mailActive = (process.env.NEXT_PUBLIC_EMAIL_MODE as string) === 'web3';
 
-  if (isWeb3mailActive !== 'true') {
-    return res.status(500).json({ message: 'Web3mail not activated' });
-  }
-
-  if (!chainId) {
+  if (isWeb3mailActive && !chainId) {
     return res.status(500).json('Chain Id is not set');
   }
 
-  if (!privateKey) {
+  if (isWeb3mailActive && !privateKey) {
     return res.status(500).json('Private key is not set');
   }
 
@@ -35,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json('database Url is not set');
   }
 
-  const stats: Web3MailStats = {
+  const stats: EmailStats = {
     totalSent: 0,
     totalSentByMonth: [],
     totalSentThisMonth: 0,
@@ -44,17 +41,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   try {
-    stats.totalSent = await getWeb3mailCount();
+    stats.totalSent = await getEmailCount();
     stats.totalCronRunning = await getCronProbeCount();
-    stats.totalSentByMonth = await getWeb3mailCountByMonth();
-    stats.totalSentThisMonth =
-      stats.totalSentByMonth.find(
-        (monthData: { _id: number; count: number }) => monthData._id === new Date().getMonth() + 1,
-      )?.count || 0;
+    stats.totalSentByMonth = await getEmailCountByMonth();
+    stats.totalSentThisMonth = stats.totalSentByMonth[new Date().getMonth()] || 0;
 
-    const { web3mail } = generateWeb3mailProviders(privateKey);
-    const contactList: Contact[] = await web3mail.fetchMyContacts();
-    stats.totalContact = contactList.length;
+    const { web3mail } = generateMailProviders(EmailNotificationType.WEB3, privateKey);
+
+    if (isWeb3mailActive && web3mail) {
+      const contactList: Contact[] = await web3mail.fetchMyContacts();
+      stats.totalContact = contactList.length;
+    } else {
+      stats.totalContact = (await getVerifiedEmailCount()) || 0;
+    }
 
     return res.status(200).json({ message: `Successfully fetched email stats`, data: stats });
   } catch (e: any) {

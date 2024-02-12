@@ -1,23 +1,24 @@
 import { getNewPayments } from '../../../queries/payments';
-import { EmailType, IPayment, NotificationApiUri, PaymentTypeEnum } from '../../../types';
+import {
+  IPayment,
+  EmailNotificationApiUri,
+  EmailNotificationType,
+  PaymentTypeEnum,
+} from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { calculateCronData } from '../../../modules/Web3mail/utils/cron';
-import {
-  getDomain,
-  hasEmailBeenSent,
-  persistCronProbe,
-  persistEmail,
-} from '../../../modules/Web3mail/utils/database';
-import {
-  EmptyError,
-  generateWeb3mailProviders,
-  getValidUsers,
-  prepareCronApi,
-} from '../utils/web3mail';
+import { hasEmailBeenSent, persistCronProbe } from '../../../modules/Web3mail/utils/database';
+import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderTokenAmount } from '../../../utils/conversion';
-import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { renderMail } from '../utils/generateMail';
+import { EmailType } from '.prisma/client';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
+import { IQueryData } from '../domain/get-verified-users-email-notification-data';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -29,7 +30,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const emailNotificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -38,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     nonSentEmails = 0;
 
   prepareCronApi(
-    isWeb3mailActive,
+    emailNotificationType,
     chainId,
     platformId,
     databaseUrl,
@@ -51,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { sinceTimestamp, cronDuration } = calculateCronData(
     req,
     Number(RETRY_FACTOR),
-    NotificationApiUri.FundRelease,
+    EmailNotificationApiUri.FundRelease,
   );
 
   let status = 200;
@@ -67,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Check if a notification email has already been sent for these fund releases
     for (const payment of payments) {
-      const hasBeenSent = await hasEmailBeenSent(payment.id, EmailType.FundRelease);
+      const hasBeenSent = await hasEmailBeenSent(payment.id, EmailType.FUND_RELEASE);
       if (!hasBeenSent) {
         nonSentPaymentEmails.push(payment);
       }
@@ -75,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // If some emails have not been sent yet, send a web3mail & persist in the DB that the email was sent
     if (nonSentPaymentEmails.length == 0) {
-      throw new EmptyError('All new fund release notifications already sent');
+      throw new EmptyError('All new fund release notification emails already sent');
     }
 
     // Check whether the users opted for the called feature | Seller if fund release, Buyer if fund reimbursement
@@ -87,20 +91,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
 
-    const notificationResponse = await getUsersWeb3MailPreference(
-      Number(chainId),
-      allAddresses,
-      'activeOnFundRelease',
-    );
+    let validUserAddresses: string[] = [];
 
-    if (
-      !notificationResponse?.data?.data?.userDescriptions ||
-      notificationResponse.data.data.userDescriptions.length === 0
-    ) {
-      throw new EmptyError('No User opted for this feature');
+    if (emailNotificationType === EmailNotificationType.WEB3) {
+      const notificationResponse = await getUsersWeb3MailPreference(
+        Number(chainId),
+        allAddresses,
+        'activeOnFundRelease',
+      );
+
+      if (
+        !notificationResponse?.data?.data?.userDescriptions ||
+        notificationResponse.data.data.userDescriptions.length === 0
+      ) {
+        throw new EmptyError('No User opted for this feature');
+      }
+      validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
+    } else {
+      const result = await getVerifiedUsersEmailData();
+
+      const filteredUsers = result?.filter(
+        (data: IQueryData) => data.emailPreferences['activeOnFundRelease'],
+      );
+
+      filteredUsers?.forEach((data: IQueryData) => {
+        if (data.address) {
+          validUserAddresses.push(data.address);
+        }
+      });
     }
-
-    const validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
 
     const paymentEmailsToBeSent = nonSentPaymentEmails.filter(payment =>
       validUserAddresses.includes(
@@ -112,11 +131,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (paymentEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New fund release detected, but no  concerned users opted for the ${EmailType.FundRelease} feature`,
+        `New fund release detected, but no concerned users opted for the ${EmailType.FUND_RELEASE} feature`,
       );
     }
 
-    const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+    const providers = generateMailProviders(emailNotificationType, privateKey);
 
     for (const payment of paymentEmailsToBeSent) {
       let senderHandle = '',
@@ -139,33 +158,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         `New fund ${action} email to send to ${senderHandle} at address ${receiverAddress}`,
       );
 
-      const domain = await getDomain(payment.service.buyer.id);
+      const builderPlace = await getBuilderPlaceByOwnerId(payment.service.buyer.id);
 
-      const email = renderWeb3mail(
+      /**
+       * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+       */
+      const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+
+      if (!builderPlace || !domain) {
+        console.warn(`User ${payment.service.buyer.id} is not a BuilderPlace owner`);
+        continue;
+      }
+
+      const email = renderMail(
         `Funds released!`,
         `${senderHandle} has ${action} ${renderTokenAmount(
           payment.rateToken,
           payment.amount,
         )} for the project ${payment.service.description?.title} on BuilderPlace !`,
+        emailNotificationType,
+        builderPlace.palette as unknown as iBuilderPlacePalette,
+        domain,
+        builderPlace.logo,
         receiverHandle,
         `${domain}/work/${payment.service.id}`,
         `Go to payment detail`,
-        domain,
       );
+
       try {
-        // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
-        await sendMailToAddresses(
+        const { successCount, errorCount } = await sendMailToAddresses(
           `Funds ${action} for the open-source work project - ${payment.service.description?.title}`,
           email,
           [receiverAddress],
-          true,
           payment.service.platform.name,
-          dataProtector,
-          web3mail,
+          providers,
+          emailNotificationType,
+          EmailType.FUND_RELEASE,
+          payment.id,
         );
-        await persistEmail(payment.id, EmailType.FundRelease);
         console.log('Notification recorded in Database');
-        sentEmails++;
+        sentEmails += successCount;
+        nonSentEmails += errorCount;
       } catch (e: any) {
         nonSentEmails++;
         console.error(e.message);
@@ -181,9 +214,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      await persistCronProbe(EmailType.FundRelease, sentEmails, nonSentEmails, cronDuration);
+      await persistCronProbe(EmailType.FUND_RELEASE, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.FundRelease}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.FUND_RELEASE}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

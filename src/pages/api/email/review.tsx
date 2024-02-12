@@ -1,22 +1,18 @@
-import { EmailType, IReview, NotificationApiUri } from '../../../types';
+import { IReview, EmailNotificationApiUri, EmailNotificationType } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
 import { calculateCronData } from '../../../modules/Web3mail/utils/cron';
-import {
-  getDomain,
-  hasEmailBeenSent,
-  persistCronProbe,
-  persistEmail,
-} from '../../../modules/Web3mail/utils/database';
+import { hasEmailBeenSent, persistCronProbe } from '../../../modules/Web3mail/utils/database';
 import { getNewReviews } from '../../../queries/reviews';
-import {
-  EmptyError,
-  generateWeb3mailProviders,
-  getValidUsers,
-  prepareCronApi,
-} from '../utils/web3mail';
-import { renderWeb3mail } from '../utils/generateWeb3Mail';
+import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
+import { renderMail } from '../utils/generateMail';
+import { EmailType } from '.prisma/client';
+import { generateMailProviders } from '../utils/mailProvidersSingleton';
+import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
+import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
+import { IQueryData } from '../domain/get-verified-users-email-notification-data';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -28,7 +24,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
-  const isWeb3mailActive = process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL as string;
+  const notificationType =
+    process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
+      ? EmailNotificationType.WEB3
+      : EmailNotificationType.WEB2;
   const RETRY_FACTOR = process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     ? process.env.NEXT_WEB3MAIL_RETRY_FACTOR
     : '0';
@@ -37,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     nonSentEmails = 0;
 
   prepareCronApi(
-    isWeb3mailActive,
+    notificationType,
     chainId,
     platformId,
     databaseUrl,
@@ -50,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { sinceTimestamp, cronDuration } = calculateCronData(
     req,
     Number(RETRY_FACTOR),
-    NotificationApiUri.Review,
+    EmailNotificationApiUri.Review,
   );
 
   let status = 200;
@@ -67,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (reviews.length > 0) {
       for (const review of reviews) {
-        const hasBeenSent = await hasEmailBeenSent(review.id, EmailType.Review);
+        const hasBeenSent = await hasEmailBeenSent(review.id, EmailType.REVIEW);
         if (!hasBeenSent) {
           nonSentReviewEmails.push(review);
         }
@@ -81,20 +80,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Filter out users which have not opted for the feature
     const allRevieweesAddresses = nonSentReviewEmails.map(review => review.to.address);
 
-    const notificationResponse = await getUsersWeb3MailPreference(
-      Number(chainId),
-      allRevieweesAddresses,
-      'activeOnReview',
-    );
+    let validUserAddresses: string[] = [];
 
-    if (
-      !notificationResponse?.data?.data?.userDescriptions ||
-      notificationResponse.data.data.userDescriptions.length === 0
-    ) {
-      throw new EmptyError(`No User opted for this feature`);
+    if (notificationType === EmailNotificationType.WEB3) {
+      const notificationResponse = await getUsersWeb3MailPreference(
+        Number(chainId),
+        allRevieweesAddresses,
+        'activeOnReview',
+      );
+
+      if (
+        !notificationResponse?.data?.data?.userDescriptions ||
+        notificationResponse.data.data.userDescriptions.length === 0
+      ) {
+        throw new EmptyError(`No User opted for this feature`);
+      }
+
+      validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
+    } else {
+      const result = await getVerifiedUsersEmailData();
+
+      const filteredUsers = result?.filter(
+        (data: IQueryData) => data.emailPreferences['activeOnReview'],
+      );
+
+      filteredUsers?.forEach((data: IQueryData) => {
+        if (data.address) {
+          validUserAddresses.push(data.address);
+        }
+      });
     }
-
-    const validUserAddresses = getValidUsers(notificationResponse.data.data.userDescriptions);
 
     const reviewEmailsToBeSent = nonSentReviewEmails.filter(review =>
       validUserAddresses.includes(review.to.address),
@@ -102,11 +117,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (reviewEmailsToBeSent.length === 0) {
       throw new EmptyError(
-        `New reviews detected, but no concerned users opted for the ${EmailType.Review} feature`,
+        `New reviews detected, but no concerned users opted for the ${EmailType.REVIEW} feature`,
       );
     }
 
-    const { dataProtector, web3mail } = generateWeb3mailProviders(privateKey);
+    const providers = generateMailProviders(notificationType, privateKey);
 
     for (const review of reviewEmailsToBeSent) {
       let fromHandle = '',
@@ -125,30 +140,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? console.log('Reviewer is the seller')
         : console.log('Reviewer is the buyer');
 
-      const domain = await getDomain(review.service.buyer.id);
+      const builderPlace = await getBuilderPlaceByOwnerId(review.service.buyer.id);
+
+      /**
+       * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
+       */
+      const domain = builderPlace?.customDomain || builderPlace?.subdomain;
+
+      if (!builderPlace || !domain) {
+        console.warn(`User ${review.service.buyer.id} is not a BuilderPlace owner`);
+        continue;
+      }
 
       try {
-        const email = renderWeb3mail(
+        const email = renderMail(
           `You received a new review!`,
           `${fromHandle} has left a review for the open-source contribution ${review.service.description?.title}.
             The open-source contribution was rated ${review.rating}/5 stars and the following comment was left: ${review.description?.content}.
             Congratulations on completing your open-source contribution and improving your reputation !`,
+          notificationType,
+          builderPlace.palette as unknown as iBuilderPlacePalette,
+          domain,
+          builderPlace.logo,
           review.to.handle,
           `${domain}/work/${review.service.id}`,
           `Go to review detail`,
-          domain,
         );
-        // @dev: This function needs to be throwable to avoid persisting the entity in the DB if the email is not sent
+
         await sendMailToAddresses(
           `A review was created for the open-source contribution - ${review.service.description?.title}`,
           email,
           [review.to.address],
-          true,
           review.service.platform.name,
-          dataProtector,
-          web3mail,
+          providers,
+          notificationType,
+          EmailType.REVIEW,
+          review.id,
         );
-        await persistEmail(review.id, EmailType.Review);
         console.log('Notification recorded in Database');
         sentEmails++;
       } catch (e: any) {
@@ -166,9 +194,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } finally {
     if (!req.query.sinceTimestamp) {
       // Update cron probe in db
-      persistCronProbe(EmailType.Review, sentEmails, nonSentEmails, cronDuration);
+      persistCronProbe(EmailType.REVIEW, sentEmails, nonSentEmails, cronDuration);
       console.log(
-        `Cron probe updated in DB for ${EmailType.Review}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        `Cron probe updated in DB for ${EmailType.REVIEW}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
       );
     }
     console.log(

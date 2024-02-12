@@ -61,8 +61,8 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          message: user.id,
           account: account.address,
+          message: `connect with ${account.address}`,
         });
 
         /**
@@ -73,6 +73,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
           ownerId: user.id,
           builderPlaceId: builderPlace.id,
           newCollaboratorAddress: values.collaborator,
+          address: account.address,
           signature,
         });
         if (response?.error) {

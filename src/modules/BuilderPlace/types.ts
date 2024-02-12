@@ -1,4 +1,5 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
+import { IEmailPreferences } from '../../types';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -64,6 +65,7 @@ export interface AddBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   newCollaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -71,6 +73,7 @@ export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   collaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -114,6 +117,13 @@ export interface UpdateUserEmail {
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface UpdateUserEmailPreferences {
+  userId: string;
+  preferences: IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface VerifyAccount {
   userId: string;
   signature: `0x${string}` | Uint8Array;
@@ -128,6 +138,15 @@ export interface SendVerificationEmail {
   userId: string;
   name: string;
   domain: string;
+}
+
+export interface GetUserEmailData {
+  builderPlaceId: string;
+  ownerId: string;
+  emailNotificationType: keyof IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+  includeSkills?: boolean;
 }
 
 export enum DomainVerificationStatusProps {
@@ -182,6 +201,11 @@ export interface UpdateWorkerProfileAction {
   status?: string;
   skills?: string;
   talentLayerId?: string;
+}
+
+export interface UpdateUserEmailPreferencesAction {
+  address: `0x${string}`;
+  preferences: IEmailPreferences;
 }
 
 export interface UpdateUserEmailAction {

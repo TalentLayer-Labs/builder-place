@@ -1,3 +1,4 @@
+import { User } from '.prisma/client';
 import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -5,7 +6,6 @@ import { useAccount, useWalletClient } from 'wagmi';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
 import { useChainId } from '../hooks/useChainId';
 import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
-import { IWorkerProfile } from '../modules/BuilderPlace/types';
 import { getUserByAddress } from '../queries/users';
 import { IAccount, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
@@ -17,10 +17,17 @@ export type iTalentLayerContext = {
   refreshWorkerProfile: () => Promise<boolean>;
   user?: IUser;
   account?: IAccount;
-  workerProfile?: IWorkerProfile;
+  workerProfile?: User;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
 };
+
+// export enum PreferredWorkTypes {
+//   jobs = 'jobs',
+//   bounties = 'bounties',
+//   grants = 'grants',
+//   gigs = 'gigs',
+// }
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
@@ -37,10 +44,11 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient();
   const [user, setUser] = useState<IUser | undefined>();
-  const [workerProfile, setWorkerProfile] = useState<IWorkerProfile | undefined>();
+  const [workerProfile, setWorkerProfile] = useState<User>();
   const account = useAccount();
   const [canUseDelegation, setCanUseDelegation] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [workerDataLoading, setWorkerDataLoading] = useState(false);
   const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
 
@@ -86,8 +94,6 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       );
       currentUser.isAdmin = platform?.address === currentUser?.address;
 
-      setUser(currentUser);
-
       const userHasDelegatedToPlatform =
         process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
         userResponse.data.data.users[0].delegates &&
@@ -103,6 +109,9 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
           userHasDelegatedToPlatform &&
           !userHasReachedDelegationLimit,
       );
+
+      setUser(currentUser);
+
       setLoading(false);
       return true;
     } catch (err: any) {
@@ -128,16 +137,25 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   }, [chainId, account.address, talentLayerClient]);
 
   const getWorkerProfile = async (userId: string) => {
-    const response = await getWorkerProfileByOwnerId(userId);
+    try {
+      setLoading(true);
+      const response = await getWorkerProfileByOwnerId(userId);
 
-    if (response.status !== 200) {
-      console.error('Error while fetching worker profile');
-      return;
-    }
+      if (response.status !== 200) {
+        console.error('Error while fetching worker profile');
+        return;
+      }
 
-    const data = await response.json();
-    if (data) {
-      setWorkerProfile(data);
+      const data = await response.json();
+      if (data) {
+        setWorkerProfile(data);
+      }
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 

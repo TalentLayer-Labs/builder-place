@@ -17,7 +17,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     await checkSignature(body.id, body.signature, res);
 
     const result = await deleteBuilderPlace(body.id);
-    res.status(200).json({ message: result.message });
+    res.status(200).json({ message: result?.message });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

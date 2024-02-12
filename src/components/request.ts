@@ -143,13 +143,17 @@ export const sendPlatformMarketingWeb3mail = async (
   emailSubject: string,
   emailContent: string,
   usersAddresses: string[],
+  builderPlaceId: string,
+  address: `0x${string}`,
   signature: string,
 ): Promise<any> => {
   try {
-    return await axios.post('/api/web3mail/platform-marketing', {
+    return await axios.post('/api/email/platform-marketing', {
       emailSubject: emailSubject,
       emailContent: emailContent,
       usersAddresses: usersAddresses,
+      builderPlaceId: builderPlaceId,
+      address: address,
       signature: signature,
     });
   } catch (err) {
@@ -160,7 +164,7 @@ export const sendPlatformMarketingWeb3mail = async (
 
 export const fetchMyContacts = async (): Promise<any> => {
   try {
-    return await axios.post('/api/web3mail/fetch-my-contacts');
+    return await axios.post('/api/email/fetch-my-contacts');
   } catch (err) {
     console.error(err);
     throw err;

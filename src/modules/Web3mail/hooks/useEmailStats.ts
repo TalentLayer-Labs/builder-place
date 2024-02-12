@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { fetchEmailAmount } from '../components/request';
-import { Web3MailStats } from '../../../types';
+import { EmailStats } from '../../../types';
 
-const useWeb3MailStats = (): { web3MailStats: Web3MailStats } => {
-  const [web3MailStats, setWeb3MailStats] = useState<Web3MailStats>({
+const useEmailStats = (): { emailStats: EmailStats; loading: boolean } => {
+  const [emailStats, setEmailStats] = useState<EmailStats>({
     totalSent: 0,
     totalSentByMonth: [],
     totalSentThisMonth: 0,
@@ -15,11 +15,11 @@ const useWeb3MailStats = (): { web3MailStats: Web3MailStats } => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (loading == true) return;
+        if (loading) return;
         setLoading(true);
         const response = await fetchEmailAmount();
-        const emailStats: Web3MailStats = response?.data?.data;
-        setWeb3MailStats(emailStats);
+        const emailStats: EmailStats = response?.data?.data;
+        setEmailStats(emailStats);
       } catch (error: any) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -30,7 +30,7 @@ const useWeb3MailStats = (): { web3MailStats: Web3MailStats } => {
     fetchData();
   }, []);
 
-  return { web3MailStats };
+  return { emailStats, loading };
 };
 
-export default useWeb3MailStats;
+export default useEmailStats;
