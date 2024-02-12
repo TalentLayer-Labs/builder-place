@@ -18,6 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       body.builderPlaceId,
       body.ownerId,
       body.signature,
+      body.address,
       res,
     );
 

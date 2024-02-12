@@ -168,15 +168,17 @@ export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
   notificationType: keyof IEmailPreferences,
+  address: `0x${string}`,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {
   try {
-    const response = await fetch('/api/domain/get-verified-users-notification-data', {
+    const response = await fetch('/api/domain/get-verified-users-email-notification-data', {
       method: 'POST',
       body: JSON.stringify({
         builderPlaceId,
         ownerId,
         notificationType,
+        address,
         signature,
       }),
       headers: {

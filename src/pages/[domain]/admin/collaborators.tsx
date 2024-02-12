@@ -64,8 +64,8 @@ export default function Collaborators() {
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          message: user.id,
           account: account.address,
+          message: `connect with ${account.address}`,
         });
 
         /**
@@ -75,6 +75,7 @@ export default function Collaborators() {
           ownerId: user.id,
           builderPlaceId: builderPlace.id,
           collaboratorAddress: address.toLocaleLowerCase(),
+          address: account.address,
           signature,
         });
 

@@ -65,6 +65,7 @@ export interface AddBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   newCollaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -72,6 +73,7 @@ export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   collaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -142,6 +144,7 @@ export interface GetUserEmailData {
   builderPlaceId: string;
   ownerId: string;
   emailType: keyof IEmailPreferences;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
   includeSkills?: boolean;
 }

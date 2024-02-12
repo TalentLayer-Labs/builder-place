@@ -27,8 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   prepareNonCronApi(notificationType, chainId, platformId, privateKey, res);
 
-  const { emailSubject, emailContent, signature, usersAddresses, builderPlaceId } = req.body;
-  if (!emailSubject || !emailContent || !signature || !usersAddresses || !builderPlaceId)
+  const { emailSubject, emailContent, signature, usersAddresses, builderPlaceId, address } =
+    req.body;
+  if (
+    !emailSubject ||
+    !emailContent ||
+    !signature ||
+    !usersAddresses ||
+    !builderPlaceId ||
+    !address
+  )
     return res.status(500).json(`Missing argument`);
 
   if (emailSubject.length >= 78)
@@ -38,15 +46,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     /**
      * @dev: Check whether the message sender is a Collaborator of the BuilderPlace
      */
-    const address = await recoverMessageAddress({
-      message: builderPlaceId.toString(),
+    const signatureAddress = await recoverMessageAddress({
+      message: `connect with ${address}`,
       signature,
     });
 
-    /**
-     * @dev: Allow BuilderPlace Collaborators to send emails
-     */
-    const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(address, builderPlaceId);
+    if (signatureAddress !== address) {
+      return res.status(401).json(`Invalid Signature`);
+    }
+
+    const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(
+      signatureAddress,
+      builderPlaceId,
+    );
+
     const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 
     if (!builderPlace || !domain) {

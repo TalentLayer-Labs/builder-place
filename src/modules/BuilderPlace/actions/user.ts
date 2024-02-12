@@ -25,7 +25,7 @@ import {
 } from '../types';
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
-import { IQueryData } from '../../../pages/api/domain/get-verified-users-notification-data';
+import { IQueryData } from '../../../pages/api/domain/get-verified-users-email-notification-data';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage = '';

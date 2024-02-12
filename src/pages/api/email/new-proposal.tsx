@@ -13,7 +13,7 @@ import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
-import { IQueryData } from '../domain/get-verified-users-notification-data';
+import { IQueryData } from '../domain/get-verified-users-email-notification-data';
 
 export const config = {
   maxDuration: 300, // 5 minutes.

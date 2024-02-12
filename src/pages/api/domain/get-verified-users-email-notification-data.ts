@@ -20,15 +20,21 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   console.log('Received data:', req.body);
-  const { builderPlaceId, ownerId, signature, emailType, includeSkills }: GetUserEmailData =
-    req.body;
+  const {
+    builderPlaceId,
+    ownerId,
+    signature,
+    emailType,
+    address,
+    includeSkills,
+  }: GetUserEmailData = req.body;
 
-  if (!builderPlaceId || !ownerId || !signature || !emailType) {
+  if (!builderPlaceId || !ownerId || !signature || !emailType || !address) {
     return res.status(400).json({ error: MISSING_DATA });
   }
 
   try {
-    await checkOwnerSignature(builderPlaceId, ownerId, signature, res);
+    await checkOwnerSignature(builderPlaceId, ownerId, signature, address, res);
 
     const result = await getVerifiedUsersEmailData(includeSkills);
 

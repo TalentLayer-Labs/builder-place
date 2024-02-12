@@ -88,8 +88,8 @@ export const ContactListForm = ({
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          message: builderPlaceId.toString(),
           account: address,
+          message: `connect with ${address}`,
         });
 
         const userAddresses = values.users.map(contact => contact.address);
@@ -99,6 +99,7 @@ export const ContactListForm = ({
           values.body,
           userAddresses,
           builderPlaceId,
+          address,
           signature,
         );
 

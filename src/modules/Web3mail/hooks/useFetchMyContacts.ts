@@ -42,20 +42,22 @@ const useFetchMyContacts = (
         emailNotificationType === EmailNotificationType.WEB2 &&
         walletClient &&
         userId &&
-        builderPlaceId
+        builderPlaceId &&
+        address
       ) {
         /**
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          message: userId,
           account: address,
+          message: `connect with ${address}`,
         });
 
         const response = await getUsersNotificationData(
           builderPlaceId,
           userId.toString(),
           'activeOnPlatformMarketing',
+          address,
           signature,
         );
         const contactList: { address: string; id: string; name: string }[] = response?.data;
