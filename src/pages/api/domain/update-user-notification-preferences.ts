@@ -13,18 +13,22 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     const body: UpdateUserEmailPreferences = req.body;
     console.log('Received data:', body);
 
-    if (!body.userId || !body.preferences || !body.signature) {
+    if (!body.userId || !body.preferences || !body.signature || !body.address) {
       return res.status(400).json({ error: MISSING_DATA });
     }
 
-    const address = await recoverMessageAddress({
-      message: body.userId,
+    const signatureAddress = await recoverMessageAddress({
       signature: body.signature,
+      message: `connect with ${body.address}`,
     });
+
+    if (signatureAddress !== body.address) {
+      return res.status(401).json(`Invalid Signature`);
+    }
 
     const preferences = body.preferences;
 
-    await updateUserNotificationsPreferences({ address, preferences });
+    await updateUserNotificationsPreferences({ address: signatureAddress, preferences });
 
     res.status(200).json({ message: 'User preferences updated successfully' });
   } catch (error: any) {

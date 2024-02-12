@@ -118,6 +118,7 @@ export interface UpdateUserEmail {
 export interface UpdateUserEmailPreferences {
   userId: string;
   preferences: IEmailPreferences;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 

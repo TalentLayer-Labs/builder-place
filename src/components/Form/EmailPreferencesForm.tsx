@@ -69,18 +69,24 @@ function EmailPreferencesForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      if (emailNotificationType === EmailNotificationType.WEB2 && walletClient && workerProfile) {
+      if (
+        emailNotificationType === EmailNotificationType.WEB2 &&
+        walletClient &&
+        workerProfile &&
+        address
+      ) {
         /**
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
           account: address,
-          message: workerProfile.id.toString(),
+          message: `connect with ${address}`,
         });
 
         const response = await updateEmailNotificationPreferencesAsync({
           preferences: values,
           userId: workerProfile.id.toString(),
+          address,
           signature,
         });
 
