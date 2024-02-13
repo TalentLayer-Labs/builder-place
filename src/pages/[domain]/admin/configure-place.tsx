@@ -21,12 +21,13 @@ import { slugify } from '../../../modules/BuilderPlace/utils';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { themes } from '../../../utils/themes';
 import { showErrorTransactionToast } from '../../../utils/toast';
+import { IMutation, JobPostingConditions } from '../../../types';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
-interface IFormValues {
+interface IConfigurePlaceFormValues {
   subdomain: string;
   palette?: iBuilderPlacePalette;
   logo?: string;
@@ -36,7 +37,15 @@ interface IFormValues {
   aboutTech: string;
   icon?: string;
   cover?: string;
+  postingConditions?: JobPostingConditions;
 }
+
+export interface IConfigurePlace
+  extends IMutation<
+    IConfigurePlaceFormValues & {
+      builderPlaceId: number;
+    }
+  > {}
 
 const validationSchema = Yup.object({
   subdomain: Yup.string().required('subdomain is required'),
@@ -54,7 +63,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     palette ? palette[colorName as keyof iBuilderPlacePalette] : '#FF71A2',
   );
 
-  const initialValues: IFormValues = {
+  const initialValues: IConfigurePlaceFormValues = {
     subdomain:
       builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
       (builderPlace?.name && slugify(builderPlace.name)) ||
@@ -119,7 +128,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   }
 
   const handleSubmit = async (
-    values: IFormValues,
+    values: IConfigurePlaceFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     if (walletClient && account?.address && builderPlace) {
