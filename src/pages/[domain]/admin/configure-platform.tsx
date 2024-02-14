@@ -15,7 +15,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
-function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function ConfigurePlatform(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { loading } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const [palette, setPalette] = useState<iBuilderPlacePalette | undefined>(builderPlace?.palette);
@@ -82,4 +82,4 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
   );
 }
 
-export default ConfigurePlace;
+export default ConfigurePlatform;

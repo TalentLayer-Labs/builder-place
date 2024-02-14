@@ -1,7 +1,7 @@
 import { recoverMessageAddress } from 'viem';
 import prisma from '../../../../postgre/postgreClient';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { IConfigurePlace } from '../../../../pages/[domain]/admin/configure-place';
+import { IConfigurePlace } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
 
 export async function GET(req: Request) {
   // TODO: implement GET
@@ -26,7 +26,7 @@ export async function PUT(req: Request) {
   try {
     const builderPlace = await prisma.builderPlace.update({
       where: {
-        id: body.data.builderPlaceId,
+        id: Number(body.data.builderPlaceId),
       },
       data: { ...body.data, palette: JSON.stringify(body.data.palette) },
     });

@@ -96,9 +96,9 @@ function Dashboard() {
                 />
                 <Notification
                   title='personalize your space!'
-                  text='customize your BuilderPlace to match your brand'
-                  link='/admin/configure-place'
-                  linkText='personalize my space'
+                  text='customize your Platform to match your brand'
+                  link='/admin/configure-platform'
+                  linkText='personalize my platform'
                   color='success'
                   imageUrl={user?.description?.image_url}
                 />
