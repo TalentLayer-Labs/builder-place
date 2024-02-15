@@ -3,7 +3,6 @@ import { useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useChainId, useWalletClient } from 'wagmi';
-import MultiStepsTransactionToast from '../../../../components/onboarding/platform/MultiStepsTransactionToast';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
@@ -12,6 +11,7 @@ import {
   IConfigurePlace,
   IConfigurePlaceFormValues,
 } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
+import TwoStepsTransactionToast from '../../../../components/onboarding/platform/TwoStepsTransactionToast';
 
 const useUpdatePlatform = () => {
   const chainId = useChainId();
@@ -33,7 +33,7 @@ const useUpdatePlatform = () => {
     /**
      * @dev Create a multistep toast to inform the user about the process
      */
-    const toastId = toast(<MultiStepsTransactionToast currentStep={1} />, {
+    const toastId = toast(<TwoStepsTransactionToast currentStep={1} />, {
       autoClose: false,
       closeOnClick: false,
     });
@@ -50,16 +50,7 @@ const useUpdatePlatform = () => {
       });
 
       toast.update(toastId, {
-        render: <MultiStepsTransactionToast currentStep={2} />,
-      });
-
-      if (talentLayerClient) {
-        // TODO: mint platform
-        // const tx = await talentLayerClient.platform.
-      }
-
-      toast.update(toastId, {
-        render: <MultiStepsTransactionToast currentStep={3} />,
+        render: <TwoStepsTransactionToast currentStep={2} />,
       });
 
       /**
@@ -88,7 +79,7 @@ const useUpdatePlatform = () => {
 
       toast.update(toastId, {
         type: toast.TYPE.SUCCESS,
-        render: 'Congrats! Your platform is fully ready',
+        render: 'Congrats! Your platform was successfully updated',
         autoClose: 5000,
         closeOnClick: true,
       });
