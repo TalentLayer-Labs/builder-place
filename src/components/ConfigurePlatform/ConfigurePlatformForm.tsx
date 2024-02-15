@@ -124,54 +124,34 @@ const ConfigurePlatformForm = () => {
   function addJobPostingConditions(
     push: (obj: any) => void,
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void,
+    setFieldError: (field: string, message: string | undefined) => void,
     jobCondition: {
       address?: string;
       minimumAmount?: number;
       type: 'NFT' | 'Token';
     },
   ) {
-    setTempFormErrors({ tempNftAddress: '', tempTokenAddress: '', tempTokenAmount: '' });
-    const errors = { ...tempFormErrors };
-    let hasError = false;
-
     if (jobCondition.type === 'NFT') {
-      if (jobCondition.address && !isAddress(jobCondition.address)) {
-        errors.tempNftAddress = 'Invalid Ethereum address';
-        hasError = true;
-      } else {
-        errors.tempNftAddress = '';
+      if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
+        setFieldError('tempFormValues.tempNftAddress', 'Invalid Ethereum address');
+        return;
       }
     }
     if (jobCondition.type === 'Token') {
-      if (jobCondition.address && !isAddress(jobCondition.address)) {
-        errors.tempTokenAddress = 'Invalid Ethereum address';
-        hasError = true;
-      } else {
-        errors.tempTokenAddress = '';
+      if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
+        setFieldError('tempFormValues.tempTokenAddress', 'Invalid Ethereum address');
+        return;
       }
-      if (jobCondition?.minimumAmount && jobCondition.minimumAmount <= 0) {
-        errors.tempTokenAmount = 'Amount must be positive';
-        hasError = true;
-      } else {
-        errors.tempTokenAmount = '';
+      if (!jobCondition.minimumAmount || jobCondition.minimumAmount <= 0) {
+        setFieldError('tempFormValues.tempTokenAmount', 'Amount must be positive');
+        return;
       }
     }
 
-    if (hasError) {
-      setTempFormErrors(errors);
-      return;
-    } else {
-      push(jobCondition);
-      if (jobCondition.type === 'NFT') {
-        setFieldValue('tempFormValues.tempNftAddress', '');
-        setTempFormErrors({ ...errors, tempNftAddress: '' });
-      }
-      if (jobCondition.type === 'Token') {
-        setFieldValue('tempFormValues.tempTokenAmount', 0);
-        setFieldValue('tempFormValues.tempTokenAddress', '');
-        setTempFormErrors({ ...errors, tempTokenAddress: '', tempTokenAmount: '' });
-      }
-    }
+    push(jobCondition);
+    setFieldValue('tempFormValues.tempNftAddress', '');
+    setFieldValue('tempFormValues.tempTokenAddress', '');
+    setFieldValue('tempFormValues.tempTokenAmount', '');
   }
 
   return (
@@ -180,7 +160,7 @@ const ConfigurePlatformForm = () => {
       enableReinitialize={true}
       onSubmit={handleSubmit}
       validationSchema={validationSchema}>
-      {({ isSubmitting, setFieldValue, values }) => (
+      {({ isSubmitting, setFieldValue, setFieldError, values }) => (
         <Form>
           <div className='grid grid-cols-1 gap-6'>
             <div>
@@ -328,59 +308,73 @@ const ConfigurePlatformForm = () => {
 
                     {values.jobPostingConditions?.allowPosts && (
                       <>
-                        <div className='flex mb-2'>
-                          <Field
-                            type='text'
+                        <div className='flex-row mb-2'>
+                          <div className='flex mb-2'>
+                            <Field
+                              type='text'
+                              name='tempFormValues.tempNftAddress'
+                              placeholder='NFT Address'
+                              className='rounded border px-2 py-1 mr-2'
+                            />
+                            <button
+                              type='button'
+                              onClick={() => {
+                                addJobPostingConditions(push, setFieldValue, setFieldError, {
+                                  type: 'NFT',
+                                  address: values?.tempFormValues?.tempNftAddress,
+                                });
+                              }}>
+                              Add NFT Condition
+                            </button>
+                          </div>
+                          <ErrorMessage
                             name='tempFormValues.tempNftAddress'
-                            placeholder='NFT Address'
-                            className='rounded border px-2 py-1 mr-2'
+                            component='span'
+                            className='text-red-500'
                           />
-                          <button
-                            type='button'
-                            onClick={() => {
-                              addJobPostingConditions(push, setFieldValue, {
-                                type: 'NFT',
-                                address: values?.tempFormValues?.tempNftAddress,
-                              });
-                            }}>
-                            Add NFT Condition
-                          </button>
-                          {tempFormErrors.tempNftAddress && (
-                            <span className='text-red-500'>{tempFormErrors.tempNftAddress}</span>
-                          )}
                         </div>
 
-                        <div className='flex mb-2'>
-                          <Field
-                            type='text'
-                            name='tempFormValues.tempTokenAddress'
-                            placeholder='Token Address'
-                            className='rounded border px-2 py-1 mr-2'
-                          />
-                          <Field
-                            type='number'
-                            name='tempFormValues.tempTokenAmount'
-                            placeholder='Minimum Amount'
-                            className='rounded border px-2 py-1 mr-2'
-                          />
-                          <button
-                            type='button'
-                            onClick={() => {
-                              addJobPostingConditions(push, setFieldValue, {
-                                type: 'Token',
-                                address: values?.tempFormValues?.tempTokenAddress,
-                                minimumAmount: values?.tempFormValues?.tempTokenAmount,
-                              });
-                            }}>
-                            Add Token Condition
-                          </button>
+                        <div className='flex-row mb-2'>
+                          <div className='flex mb-2'>
+                            <Field
+                              type='text'
+                              name='tempFormValues.tempTokenAddress'
+                              placeholder='Token Address'
+                              className='rounded border px-2 py-1 mr-2'
+                            />
+                            <Field
+                              type='number'
+                              name='tempFormValues.tempTokenAmount'
+                              placeholder='Minimum Amount'
+                              className='rounded border px-2 py-1 mr-2'
+                            />
+                            <button
+                              type='button'
+                              onClick={() => {
+                                addJobPostingConditions(push, setFieldValue, setFieldError, {
+                                  type: 'Token',
+                                  address: values?.tempFormValues?.tempTokenAddress,
+                                  minimumAmount: values?.tempFormValues?.tempTokenAmount,
+                                });
+                              }}>
+                              Add Token Condition
+                            </button>
+                          </div>
 
-                          {tempFormErrors.tempTokenAddress && (
-                            <span className='text-red-500'>{tempFormErrors.tempTokenAddress}</span>
-                          )}
-                          {tempFormErrors.tempTokenAmount && (
-                            <span className='text-red-500'>{tempFormErrors.tempTokenAmount}</span>
-                          )}
+                          <div>
+                            <ErrorMessage
+                              name='tempFormValues.tempTokenAddress'
+                              component='span'
+                              className='text-red-500'
+                            />
+                          </div>
+                          <div>
+                            <ErrorMessage
+                              name='tempFormValues.tempTokenAmount'
+                              component='span'
+                              className='text-red-500'
+                            />
+                          </div>
                         </div>
 
                         {values.jobPostingConditions?.conditions?.map((condition, index) => (
@@ -418,9 +412,6 @@ const ConfigurePlatformForm = () => {
                   .
                 </span>
               </p>
-              {/*<span className='text-red-500'>*/}
-              {/*  <ErrorMessage name='tempFormValues' />*/}
-              {/*</span>*/}
             </div>
 
             {isSubmitting ? (
