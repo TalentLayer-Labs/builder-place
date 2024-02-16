@@ -3,7 +3,6 @@ import { useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useChainId, useWalletClient } from 'wagmi';
-import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
@@ -18,7 +17,6 @@ const useUpdatePlatform = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const talentLayerClient = useTalentLayerClient();
   const platformMutation = useMutation(
     async (body: IConfigurePlace): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.put(`/api/platforms/${builderPlace?.id}`, body);
@@ -54,7 +52,7 @@ const useUpdatePlatform = () => {
       });
 
       /**
-       * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
+       * @dev Update the platform in DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
       await platformMutation.mutateAsync({
         data: {
