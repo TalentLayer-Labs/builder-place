@@ -40,11 +40,7 @@ interface tempFormValues {
 }
 
 export interface IConfigurePlace
-  extends IMutation<
-    Omit<IConfigurePlaceFormValues, keyof tempFormValues> & {
-      builderPlaceId: string;
-    }
-  > {}
+  extends IMutation<Omit<IConfigurePlaceFormValues, keyof tempFormValues>> {}
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
@@ -76,9 +72,9 @@ const ConfigurePlatformForm = () => {
 
   const initialValues: IConfigurePlaceFormValues = {
     subdomain:
-      builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
-      (builderPlace?.name && slugify(builderPlace.name)) ||
-      '',
+      //TODO why ??
+      //   builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
+      builderPlace?.subdomain || (builderPlace?.name && slugify(builderPlace.name)) || '',
     logo: builderPlace?.logo || '',
     palette,
     name: builderPlace?.name || '',
@@ -124,6 +120,7 @@ const ConfigurePlatformForm = () => {
     jobCondition: {
       address?: string;
       minimumAmount?: number;
+      chainId?: number;
       type: 'NFT' | 'Token';
     },
   ) {

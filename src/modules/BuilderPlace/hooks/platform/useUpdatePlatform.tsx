@@ -56,26 +56,23 @@ const useUpdatePlatform = () => {
       /**
        * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
-      if (builderPlace?.id) {
-        const response = await platformMutation.mutateAsync({
-          data: {
-            subdomain: values.subdomain,
-            palette: values.palette,
-            logo: values.logo,
-            name: values.name,
-            baseline: values.baseline,
-            about: values.about,
-            aboutTech: values.aboutTech,
-            icon: values.icon,
-            cover: values.cover,
-            jobPostingConditions: values.jobPostingConditions,
-            builderPlaceId: builderPlace?.id,
-          },
-          signature: signature,
-          address: address,
-          domain: window.location.hostname + ':' + window.location.port,
-        });
-      }
+      await platformMutation.mutateAsync({
+        data: {
+          subdomain: values.subdomain,
+          palette: values.palette,
+          logo: values.logo,
+          name: values.name,
+          baseline: values.baseline,
+          about: values.about,
+          aboutTech: values.aboutTech,
+          icon: values.icon,
+          cover: values.cover,
+          jobPostingConditions: values.jobPostingConditions,
+        },
+        signature: signature,
+        address: address,
+        domain: window.location.hostname + ':' + window.location.port,
+      });
 
       toast.update(toastId, {
         type: toast.TYPE.SUCCESS,

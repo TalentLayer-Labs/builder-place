@@ -10,7 +10,6 @@ export async function GET(req: Request) {
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
   const body: IConfigurePlace = await req.json();
-  console.log('Platform Id', params.id);
 
   const signatureAddress = await recoverMessageAddress({
     message: `connect with ${body.address}`,
@@ -27,10 +26,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       where: {
         id: Number(params.id),
       },
-      data: { name: body.data.name },
+      data: { ...body.data, palette: { ...body.data.palette } },
     });
 
-    return Response.json({ id: builderPlace.id }, { status: 201 });
+    return Response.json({ id: builderPlace?.id }, { status: 201 });
   } catch (error: any) {
     let message = 'Failed to create platform';
     if (error instanceof PrismaClientKnownRequestError) {
