@@ -2,6 +2,10 @@ import { recoverMessageAddress } from 'viem';
 import prisma from '../../../../postgre/postgreClient';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IConfigurePlace } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
+import { Prisma } from '.prisma/client';
+import JsonNull = Prisma.NullTypes.JsonNull;
+import InputJsonValue = Prisma.InputJsonValue;
+import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
 
 export async function GET(req: Request) {
   // TODO: implement GET
