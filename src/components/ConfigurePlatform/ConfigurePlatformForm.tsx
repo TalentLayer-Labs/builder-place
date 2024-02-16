@@ -52,6 +52,20 @@ const validationSchema = Yup.object({
   // }),
 });
 
+/**
+ * @dev This form aims to be used for all platform updates by a platform collaborator.
+ *
+ * Logicall flow:
+ *
+ * IF user has a wallet connected
+ *      EXECUTE REQUEST: We try to get from DB his user profile & Platform Data
+ *      IF user has profile in DB and is a Collaborator of the platform
+ *         execute success callback
+ *      ELSE
+ *          Access Denied Displayed
+ *  ELSE
+ *     Access Denied Displayed
+ */
 const ConfigurePlatformForm = () => {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const [palette, setPalette] = useState<iBuilderPlacePalette | undefined>(builderPlace?.palette);
