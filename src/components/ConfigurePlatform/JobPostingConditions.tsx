@@ -125,7 +125,7 @@ function JobPostingConditionsFieldArray({
                     </div>
                     <button
                       type='button'
-                      className='px-5 py-2 rounded-xl bg-primary text-primary'
+                      className='px-5 py-2 rounded-xl bg-primary text-primary w-52'
                       onClick={() => {
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'NFT',
@@ -176,7 +176,7 @@ function JobPostingConditionsFieldArray({
                     </div>
                     <button
                       type='button'
-                      className='px-5 py-2 rounded-xl bg-primary text-primary'
+                      className='px-5 py-2 rounded-xl bg-primary text-primary w-52'
                       onClick={() => {
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'Token',
