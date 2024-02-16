@@ -32,7 +32,7 @@ model User {
   id                       Int            @id @default(autoincrement())
   about                    String?
   address                  String?        @unique
-  counterStartDate         Int            @default(0)
+  counterStartDate         BigInt         @default(0)
   email                    String?        @unique
   isEmailVerified          Boolean        @default(false)
   name                     String
@@ -40,6 +40,7 @@ model User {
   status                   EntityStatus   @default(PENDING)
   talentLayerId            String?        @unique
   weeklyTransactionCounter Int            @default(0)
+  discordWebhookUrl        String?        @default("")
   workerProfile            WorkerProfile? @relation("WorkerProfile")
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?

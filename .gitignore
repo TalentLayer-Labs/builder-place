@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Github devcontainer
+.devcontainer/*
+
 .env
 .next
 
@@ -30,3 +33,4 @@ dist-ssr
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
