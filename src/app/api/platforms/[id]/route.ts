@@ -26,7 +26,18 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       where: {
         id: Number(params.id),
       },
-      data: { ...body.data, palette: { ...body.data.palette } },
+      //TODO why type issue ?
+      data: {
+        ...body.data,
+        palette: body.data.palette as JsonNull | InputJsonValue | undefined,
+        jobPostingConditions: body.data.jobPostingConditions as
+          | NullableJsonNullValueInput
+          | InputJsonValue
+          | undefined,
+        // palette: JSON.stringify(body.data.palette),
+        // palette: { ...body.data.palette },
+        // jobPostingConditions: { ...body.data.jobPostingConditions },
+      },
     });
 
     return Response.json({ id: builderPlace?.id }, { status: 201 });
