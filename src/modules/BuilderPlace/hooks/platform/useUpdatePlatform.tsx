@@ -21,7 +21,7 @@ const useUpdatePlatform = () => {
   const talentLayerClient = useTalentLayerClient();
   const platformMutation = useMutation(
     async (body: IConfigurePlace): Promise<AxiosResponse<{ id: string }>> => {
-      return await axios.put('/api/platforms', body);
+      return await axios.put(`/api/platforms/${builderPlace?.id}`, body);
     },
   );
 

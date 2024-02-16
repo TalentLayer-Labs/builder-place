@@ -7,12 +7,10 @@ export async function GET(req: Request) {
   // TODO: implement GET
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
   const body: IConfigurePlace = await req.json();
-  console.log('json', body);
-  const { searchParams } = new URL(req.url);
-  console.log('searchParams', searchParams);
+  console.log('Platform Id', params.id);
 
   const signatureAddress = await recoverMessageAddress({
     message: `connect with ${body.address}`,
@@ -24,11 +22,12 @@ export async function PUT(req: Request) {
   }
 
   try {
+    console.log('Updating platform...', params.id);
     const builderPlace = await prisma.builderPlace.update({
       where: {
-        id: Number(body.data.builderPlaceId),
+        id: Number(params.id),
       },
-      data: { ...body.data, palette: JSON.stringify(body.data.palette) },
+      data: { name: body.data.name },
     });
 
     return Response.json({ id: builderPlace.id }, { status: 201 });

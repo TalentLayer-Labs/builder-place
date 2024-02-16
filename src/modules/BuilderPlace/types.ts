@@ -259,22 +259,24 @@ export type IBuilderPlace = {
   preferredWorkTypes: WorkType[];
 };
 
-interface JobPostingConditions {
+export interface JobPostingConditions {
   allowPosts: boolean;
   conditions?: PostingCondition[];
 }
 
-type PostingCondition = NFTCondition | TokenCondition;
+export type PostingCondition = NFTCondition | TokenCondition;
 
-interface NFTCondition {
+export interface NFTCondition {
   type: 'NFT';
-  address: string;
+  chainId: number; // Chain ID of the NFT contract
+  address: string; // Address of the NFT contract
 }
 
-interface TokenCondition {
+export interface TokenCondition {
   type: 'Token';
-  address: string;
-  minimumAmount: number;
+  chainId: number; // Chain ID of the token contract
+  address: string; // Address of the token contract
+  minimumAmount: number; // Minimum amount of tokens required
 }
 
 export interface IUserProfile {

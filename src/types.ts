@@ -319,24 +319,6 @@ export type EmailStats = {
   totalCronRunning: number;
 };
 
-export interface JobPostingConditions {
-  allowPosts: boolean;
-  conditions?: PostingCondition[];
-}
-
-export type PostingCondition = NFTCondition | TokenCondition;
-
-export interface NFTCondition {
-  type: 'NFT';
-  address: string; // Address of the NFT contract
-}
-
-export interface TokenCondition {
-  type: 'Token';
-  address: string; // Address of the token contract
-  minimumAmount: number; // Minimum amount of tokens required
-}
-
 /**
  * @dev We want to normalize all database mutations
  * A mutation must required:

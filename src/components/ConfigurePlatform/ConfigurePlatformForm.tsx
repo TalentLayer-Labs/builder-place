@@ -5,8 +5,8 @@ import DefaultPalettes from '../DefaultPalettes';
 import { themes } from '../../utils/themes';
 import CustomizePalette from '../CustomizePalette';
 import { slugify } from '../../modules/BuilderPlace/utils';
-import { iBuilderPlacePalette } from '../../modules/BuilderPlace/types';
-import { IMutation, JobPostingConditions } from '../../types';
+import { iBuilderPlacePalette, JobPostingConditions } from '../../modules/BuilderPlace/types';
+import { IMutation } from '../../types';
 import * as Yup from 'yup';
 import { useContext, useState } from 'react';
 import TalentLayerContext from '../../context/talentLayer';
@@ -35,6 +35,8 @@ interface tempFormValues {
   tempNftAddress?: string;
   tempTokenAddress?: string;
   tempTokenAmount?: number;
+  tempNftChainId?: number;
+  tempTokenChainId?: number;
 }
 
 export interface IConfigurePlace
@@ -49,15 +51,15 @@ const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 const validationSchema = Yup.object({
   subdomain: Yup.string().required('Subdomain is required'),
 
-  tempFormValues: Yup.object({
-    tempNftAddress: Yup.string().matches(ethAddressRegex, 'Invalid Ethereum address').notRequired(),
-
-    tempTokenAddress: Yup.string()
-      .matches(ethAddressRegex, 'Invalid Ethereum address')
-      .notRequired(),
-
-    tempTokenAmount: Yup.number().positive('Amount must be positive').notRequired(),
-  }),
+  // tempFormValues: Yup.object({
+  //   tempNftAddress: Yup.string().matches(ethAddressRegex, 'Invalid Ethereum address').notRequired(),
+  //
+  //   tempTokenAddress: Yup.string()
+  //     .matches(ethAddressRegex, 'Invalid Ethereum address')
+  //     .notRequired(),
+  //
+  //   tempTokenAmount: Yup.number().positive('Amount must be positive').notRequired(),
+  // }),
 });
 
 const ConfigurePlatformForm = () => {
@@ -71,11 +73,6 @@ const ConfigurePlatformForm = () => {
   const { account, loading } = useContext(TalentLayerContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const { updatePlatform } = useUpdatePlatform();
-  const [tempFormErrors, setTempFormErrors] = useState({
-    tempNftAddress: '',
-    tempTokenAddress: '',
-    tempTokenAmount: '',
-  });
 
   const initialValues: IConfigurePlaceFormValues = {
     subdomain:
@@ -105,7 +102,6 @@ const ConfigurePlatformForm = () => {
     values: IConfigurePlaceFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    console.log('values', values);
     if (walletClient && account?.address && builderPlace) {
       try {
         setSubmitting(true);
@@ -152,6 +148,7 @@ const ConfigurePlatformForm = () => {
     setFieldValue('tempFormValues.tempNftAddress', '');
     setFieldValue('tempFormValues.tempTokenAddress', '');
     setFieldValue('tempFormValues.tempTokenAmount', '');
+    setFieldValue('tempFormValues.tempTokenChainId', '');
   }
 
   return (
@@ -316,12 +313,19 @@ const ConfigurePlatformForm = () => {
                               placeholder='NFT Address'
                               className='rounded border px-2 py-1 mr-2'
                             />
+                            <Field
+                              type='number'
+                              name='tempFormValues.tempNftChainId'
+                              placeholder='NFT Chain ID'
+                              className='rounded border px-2 py-1 mr-2'
+                            />
                             <button
                               type='button'
                               onClick={() => {
                                 addJobPostingConditions(push, setFieldValue, setFieldError, {
                                   type: 'NFT',
                                   address: values?.tempFormValues?.tempNftAddress,
+                                  chainId: values?.tempFormValues?.tempNftChainId,
                                 });
                               }}>
                               Add NFT Condition
@@ -344,6 +348,12 @@ const ConfigurePlatformForm = () => {
                             />
                             <Field
                               type='number'
+                              name='tempFormValues.tempTokenChainId'
+                              placeholder='Token Chain ID'
+                              className='rounded border px-2 py-1 mr-2'
+                            />
+                            <Field
+                              type='number'
                               name='tempFormValues.tempTokenAmount'
                               placeholder='Minimum Amount'
                               className='rounded border px-2 py-1 mr-2'
@@ -355,6 +365,7 @@ const ConfigurePlatformForm = () => {
                                   type: 'Token',
                                   address: values?.tempFormValues?.tempTokenAddress,
                                   minimumAmount: values?.tempFormValues?.tempTokenAmount,
+                                  chainId: values?.tempFormValues?.tempTokenChainId,
                                 });
                               }}>
                               Add Token Condition
@@ -367,8 +378,11 @@ const ConfigurePlatformForm = () => {
                               component='span'
                               className='text-red-500'
                             />
-                          </div>
-                          <div>
+                            <ErrorMessage
+                              name='tempFormValues.tempTokenChainId'
+                              component='span'
+                              className='text-red-500'
+                            />
                             <ErrorMessage
                               name='tempFormValues.tempTokenAmount'
                               component='span'
@@ -381,10 +395,14 @@ const ConfigurePlatformForm = () => {
                           <div className='flex items-center mb-2' key={index}>
                             <div className='flex-1'>
                               {condition.type === 'NFT' ? (
-                                <span>NFT Address: {condition.address}</span>
+                                <>
+                                  <span>NFT Address: {condition.address}</span>
+                                  <span> - Chain Id: {condition.chainId}</span>
+                                </>
                               ) : (
                                 <>
                                   <span>Token Address: {condition.address}</span>
+                                  <span> - Chain Id: {condition.chainId}</span>
                                   <span> - Minimum Amount: {condition.minimumAmount}</span>
                                 </>
                               )}
