@@ -13,9 +13,7 @@ import {
 import { IMutation } from '../../types';
 import * as Yup from 'yup';
 import { useContext, useState } from 'react';
-import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useChainId, useWalletClient } from 'wagmi';
 import { useColor } from 'react-color-palette';
 import { showErrorTransactionToast } from '../../utils/toast';
 import useUpdatePlatform from '../../modules/BuilderPlace/hooks/platform/useUpdatePlatform';
@@ -56,14 +54,12 @@ const validationSchema = Yup.object({
 
 const ConfigurePlatformForm = () => {
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const chainId = useChainId();
   const [palette, setPalette] = useState<iBuilderPlacePalette | undefined>(builderPlace?.palette);
+  console.log('palette', palette);
   const [colorName, setColorName] = useState('primary');
   const [color, setColor] = useColor(
     palette ? palette[colorName as keyof iBuilderPlacePalette] : '#FF71A2',
   );
-  const { account, loading } = useContext(TalentLayerContext);
-  const { data: walletClient } = useWalletClient({ chainId });
   const { updatePlatform } = useUpdatePlatform();
 
   const initialValues: IConfigurePlaceFormValues = {
@@ -96,18 +92,16 @@ const ConfigurePlatformForm = () => {
     values: IConfigurePlaceFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && account?.address && builderPlace) {
-      try {
-        setSubmitting(true);
-        await updatePlatform(values);
-      } catch (error: any) {
-        console.log('CATCH error', error);
-        showErrorTransactionToast(error.message);
-      } finally {
-        setTimeout(() => {
-          setSubmitting(false);
-        }, 1000);
-      }
+    try {
+      setSubmitting(true);
+      await updatePlatform(values);
+    } catch (error: any) {
+      console.log('CATCH error', error);
+      showErrorTransactionToast(error.message);
+    } finally {
+      setTimeout(() => {
+        setSubmitting(false);
+      }, 1000);
     }
   };
 
