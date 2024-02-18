@@ -32,6 +32,7 @@ import {
   validDomainRegex,
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
+import { sendWelcomeMessage } from './discord';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
@@ -392,6 +393,30 @@ export const getBuilderPlaceById = async (id: string) => {
   }
 };
 
+
+export const getDiscordWebhookByBuilderPlaceId = async (id: string) => {
+  let errorMessage;
+  try {
+    const builderPlace = await prisma.builderPlace.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (builderPlace) {
+      return builderPlace.discordWebhook;
+    }
+  } catch (error: any) {
+    if (error?.name?.includes('Prisma')) {
+      errorMessage = ERROR_FETCHING_BUILDERPLACE;
+    } else {
+      errorMessage = error.message;
+    }
+    console.log(error.message);
+    throw new Error(errorMessage);
+  }
+};
+
 export const getBuilderPlaceByOwnerId = async (id: string) => {
   let errorMessage;
   try {
@@ -574,6 +599,11 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   let errorMessage;
   try {
+
+    if (builderPlace.discordWebhook != "" && builderPlace.discordWebhook != undefined) {
+      await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhook);
+    }
+
     const updatedBuilderPlace = await prisma.builderPlace.update({
       where: {
         id: Number(builderPlace.builderPlaceId),
@@ -591,8 +621,10 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         preferredWorkTypes: builderPlace.preferredWorkTypes,
         presentation: builderPlace.presentation,
         profilePicture: builderPlace.profilePicture,
+        discordWebhook: builderPlace.discordWebhook,
       },
     });
+
     return {
       message: 'BuilderPlace updated successfully',
       id: updatedBuilderPlace.id,
@@ -606,6 +638,7 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
     console.log(error.message);
     throw new Error(errorMessage);
   }
+
 };
 
 export const deleteBuilderPlace = async (id: string) => {

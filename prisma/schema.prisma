@@ -15,6 +15,7 @@ model BuilderPlace {
   cover              String?
   customDomain       String?      @unique
   icon               String?
+  discordWebhook     String?      @default("")
   logo               String?
   name               String
   owner              User?        @relation(fields: [ownerId], references: [id])

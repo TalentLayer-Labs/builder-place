@@ -45,6 +45,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
     "build": "npx prisma generate && npx prisma migrate deploy && next build",
     "start": "next start",
     "format": "prettier --config .prettierrc 'src/**/*.{js,ts,tsx}' --write",
