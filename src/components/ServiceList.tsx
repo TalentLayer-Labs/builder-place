@@ -2,18 +2,21 @@ import React, { useContext, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useRouter } from 'next/router';
 import useFilteredServices from '../hooks/useFilteredServices';
-import { IService, ServiceStatusEnum } from '../types';
+import { IService, IToken, ServiceStatusEnum } from '../types';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
+import useAllowedTokens from '../hooks/useAllowedTokens';
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
   const router = useRouter();
+  const allowedTokens = useAllowedTokens();
   const query = router.query;
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
+  const [isPopupVisible, setPopupVisible] = useState(false);
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
@@ -58,9 +61,64 @@ function ServiceList() {
           </button>
         </div>
 
-        <button className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'>
-          Filter
-        </button>
+        <div className='relative ml-auto'>
+          <button
+            className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'
+            onClick={() => setPopupVisible(!isPopupVisible)}>
+            Filter
+          </button>
+          {isPopupVisible && (
+            <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 z-50'>
+              <div className='flex flex-col'>
+                <label className='text-sm mt-1 font-bold'>Rate</label>
+                <div className='flex flex-row gap-2'>
+                  <input
+                    type='number'
+                    className='border border-3 border-gray-300 p-2 rounded w-24'
+                    placeholder='Min'
+                  />
+                  <input
+                    type='number'
+                    className='border border-3 border-gray-300 p-2 rounded w-24'
+                    placeholder='Max'
+                  />
+                </div>
+                <label className='text-sm mt-3 font-bold'>Rating</label>
+                <div className='flex flex-col'>
+                  <div className='flex items-center gap-2'>
+                    <input type='checkbox' value='5' />
+                    <label>5 stars</label>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <input type='checkbox' value='4' />
+                    <label>4 stars</label>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <input type='checkbox' value='3' />
+                    <label>3 stars</label>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <input type='checkbox' value='2' />
+                    <label>2 stars</label>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <input type='checkbox' value='1' />
+                    <label>1 star</label>
+                  </div>
+                </div>
+                <label className='text-sm mt-3 font-bold'>Token</label>
+                <div className='flex flex-col'>
+                  {allowedTokens.map((token: IToken) => (
+                    <div className='flex items-center gap-2' key={token.name}>
+                      <input type='checkbox' value={token.name} />
+                      <label>{token.name}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className='mt-2 md:mt-0 md:mr-2'>
           <SearchServiceButton value={searchQuery} />
