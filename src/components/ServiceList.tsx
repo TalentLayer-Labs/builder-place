@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useRouter } from 'next/router';
 import useFilteredServices from '../hooks/useFilteredServices';
@@ -7,6 +7,8 @@ import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 import useAllowedTokens from '../hooks/useAllowedTokens';
+import useRateFromTokenAmount from '../hooks/useRateFromTokenAmount';
+
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
@@ -17,6 +19,9 @@ function ServiceList() {
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [minRate, setMinRate] = useState('');
+  const [maxRate, setMaxRate] = useState('');
+  const [filteredServices, setFilteredServices] = useState<IService[]>([]);
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
@@ -25,6 +30,22 @@ function ServiceList() {
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
   );
+
+
+const filterFn = () => setFilteredServices(()=>{
+  return services.filter((service) => {
+    const amount = useRateFromTokenAmount(service.description?.rateAmount || '', service.description?.rateToken || '');
+    const rate = service.description?.rateAmount || 0;
+    const minRateNum = minRate;
+    const maxRateNum = maxRate;
+    return (!minRateNum || rate >= minRateNum) && (!maxRateNum || rate <= maxRateNum);
+  });
+})
+
+  useEffect(() => {
+    // Filter services based on minRate and maxRate
+    filterFn();
+  }, [services, minRate, maxRate]);
 
   return (
     <>
@@ -60,7 +81,8 @@ function ServiceList() {
             Filter
           </button>
         </div>
-
+        
+        {/* Filter */}
         <div className='relative ml-auto'>
           <button
             className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'
@@ -76,11 +98,15 @@ function ServiceList() {
                     type='number'
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Min'
+                    value={minRate}
+                    onChange={(e) => setMinRate(e.target.value)}
                   />
                   <input
                     type='number'
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Max'
+                    value={maxRate}
+                    onChange={(e) => setMaxRate(e.target.value)}
                   />
                 </div>
                 <label className='text-sm mt-3 font-bold'>Rating</label>
@@ -120,13 +146,14 @@ function ServiceList() {
           )}
         </div>
 
+
         <div className='mt-2 md:mt-0 md:mr-2'>
           <SearchServiceButton value={searchQuery} />
         </div>
       </div>
 
       {view === 1 &&
-        services.map((service: IService, i: number) => (
+        filteredServices.map((service: IService, i: number) => (
           <ServiceItem
             service={service}
             embedded={router.asPath.includes('embed/')}
@@ -147,7 +174,7 @@ function ServiceList() {
             </tr>
           </thead>
           <tbody>
-            {services.map((service: IService, i: number) => (
+            {filteredServices.map((service: IService, i: number) => (
               <ServiceItem
                 service={service}
                 embedded={router.asPath.includes('embed/')}
@@ -159,7 +186,7 @@ function ServiceList() {
         </table>
       )}
 
-      {services.length > 0 && hasMoreData && !loading && (
+      {filteredServices.length > 0 && hasMoreData && !loading && (
         <div className='flex justify-center items-center gap-10 flex-col pb-5'>
           <button
             type='submit'
