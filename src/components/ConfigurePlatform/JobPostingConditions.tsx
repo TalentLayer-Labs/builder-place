@@ -1,6 +1,7 @@
 import { Field, FieldArray, ErrorMessage } from 'formik';
 import { ChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
 import { isAddress } from 'viem';
+import JobPostingConditionCard from './JobPostingConditionCard';
 
 export interface TempFormValues {
   tempNftAddress?: string;
@@ -208,30 +209,11 @@ function JobPostingConditionsFieldArray({
                   </span>
                 </label>
 
-                {existingJobPostingConditions?.conditions?.map((condition, index) => (
-                  <div className='flex items-center mb-3' key={index}>
-                    <div className='flex-1'>
-                      {condition.type === 'NFT' ? (
-                        <>
-                          <span>NFT Address: {condition.address}</span>
-                          <span> - Chain Id: {condition.chainId}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Token Address: {condition.address}</span>
-                          <span> - Chain Id: {condition.chainId}</span>
-                          <span> - Minimum Amount: {condition.minimumAmount}</span>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      type='button'
-                      className={'px-5 py-2 rounded-xl bg-red-500 text-white'}
-                      onClick={() => remove(index)}>
-                      Delete
-                    </button>
-                  </div>
-                ))}
+                <div className='space-y-4 mt-2'>
+                  {existingJobPostingConditions?.conditions?.map((condition, index) => (
+                    <JobPostingConditionCard condition={condition} index={index} remove={remove} />
+                  ))}
+                </div>
               </>
             )}
           </div>
