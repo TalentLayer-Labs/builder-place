@@ -9,7 +9,6 @@ import SearchServiceButton from './Form/SearchServiceButton';
 import useAllowedTokens from '../hooks/useAllowedTokens';
 import useRateFromTokenAmount from '../hooks/useRateFromTokenAmount';
 
-
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
@@ -21,6 +20,7 @@ function ServiceList() {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState('');
   const [maxRate, setMaxRate] = useState('');
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
@@ -31,21 +31,34 @@ function ServiceList() {
     PAGE_SIZE,
   );
 
-
-const filterFn = () => setFilteredServices(()=>{
-  return services.filter((service) => {
-    const amount = useRateFromTokenAmount(service.description?.rateAmount || '', service.description?.rateToken || '');
-    const rate = service.description?.rateAmount || 0;
-    const minRateNum = minRate;
-    const maxRateNum = maxRate;
-    return (!minRateNum || rate >= minRateNum) && (!maxRateNum || rate <= maxRateNum);
-  });
-})
+  const filterFn = () => {
+    // If no tokens are selected, return all services
+    if (selectedTokens.length === 0) {
+      setFilteredServices(services);
+    } else {
+      // Filter services based on selected tokens
+      setFilteredServices(() => {
+        return services.filter(service => {
+          //have to change the amount rate filter
+          const rate = service.description?.rateAmount || 0;
+          const minRateNum = minRate;
+          const maxRateNum = maxRate;
+          // Check if the token of the service is selected
+          const tokenSelected = selectedTokens.includes(service.description?.rateToken || '');
+          return (
+            (!minRateNum || rate >= minRateNum) &&
+            (!maxRateNum || rate <= maxRateNum) &&
+            tokenSelected
+          );
+        });
+      });
+    }
+  };
 
   useEffect(() => {
     // Filter services based on minRate and maxRate
     filterFn();
-  }, [services, minRate, maxRate]);
+  }, [services, minRate, maxRate, selectedTokens]);
 
   return (
     <>
@@ -81,7 +94,7 @@ const filterFn = () => setFilteredServices(()=>{
             Filter
           </button>
         </div>
-        
+
         {/* Filter */}
         <div className='relative ml-auto'>
           <button
@@ -99,14 +112,14 @@ const filterFn = () => setFilteredServices(()=>{
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Min'
                     value={minRate}
-                    onChange={(e) => setMinRate(e.target.value)}
+                    onChange={e => setMinRate(e.target.value)}
                   />
                   <input
                     type='number'
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Max'
                     value={maxRate}
-                    onChange={(e) => setMaxRate(e.target.value)}
+                    onChange={e => setMaxRate(e.target.value)}
                   />
                 </div>
                 <label className='text-sm mt-3 font-bold'>Rating</label>
@@ -135,9 +148,23 @@ const filterFn = () => setFilteredServices(()=>{
                 <label className='text-sm mt-3 font-bold'>Token</label>
                 <div className='flex flex-col'>
                   {allowedTokens.map((token: IToken) => (
-                    <div className='flex items-center gap-2' key={token.name}>
-                      <input type='checkbox' value={token.name} />
-                      <label>{token.name}</label>
+                    <div className='flex items-center gap-2' key={token.address}>
+                      <input
+                        type='checkbox'
+                        value={token.address}
+                        checked={selectedTokens.includes(token.address)}
+                        onChange={e => {
+                          const tokenName = e.target.value;
+                          if (e.target.checked) {
+                            setSelectedTokens(prevState => [...prevState, tokenName]);
+                          } else {
+                            setSelectedTokens(prevState =>
+                              prevState.filter(name => name !== tokenName),
+                            );
+                          }
+                        }}
+                      />
+                      <label>{token.symbol}</label>
                     </div>
                   ))}
                 </div>
@@ -146,7 +173,6 @@ const filterFn = () => setFilteredServices(()=>{
           )}
         </div>
 
-
         <div className='mt-2 md:mt-0 md:mr-2'>
           <SearchServiceButton value={searchQuery} />
         </div>
@@ -154,6 +180,7 @@ const filterFn = () => setFilteredServices(()=>{
 
       {view === 1 &&
         filteredServices.map((service: IService, i: number) => (
+          
           <ServiceItem
             service={service}
             embedded={router.asPath.includes('embed/')}
