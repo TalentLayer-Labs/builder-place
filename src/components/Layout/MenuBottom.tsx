@@ -1,8 +1,9 @@
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import BottomLink from './BottomLink';
-import { hirerNavigation, workerNavigation } from './navigation';
+import { hirerNavigation } from './navigation';
 import { useContext } from 'react';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import useEnrichMenu from '../../hooks/useEnrichMenu';
 
 function MenuBottom({
   sidebarOpen,
@@ -11,8 +12,10 @@ function MenuBottom({
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
-
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+  const { enrichedWorkerNavigation: workerNavigation } = useEnrichMenu(
+    builderPlace?.jobPostingConditions.allowPosts,
+  );
   const navigation = isBuilderPlaceCollaborator ? hirerNavigation : workerNavigation;
 
   const onClick = (e: any) => {

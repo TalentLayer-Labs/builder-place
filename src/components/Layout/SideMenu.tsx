@@ -3,18 +3,23 @@ import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import SideLink from './SideLink';
 import {
-  hirerNavigation,
   hirerAdminNavigation,
-  PlatformAdminNavigation,
-  workerNavigation,
+  hirerNavigation,
   ownerAdminNavigation,
+  PlatformAdminNavigation,
 } from './navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import useEnrichMenu from '../../hooks/useEnrichMenu';
 
 function SideMenu() {
   const { user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
+    useContext(BuilderPlaceContext);
+  const { enrichedWorkerNavigation: workerNavigation } = useEnrichMenu(
+    builderPlace?.jobPostingConditions.allowPosts,
+  );
+
   return (
     <>
       <div className='sm:mt-8 flex flex-1 flex-col justify-between'>
