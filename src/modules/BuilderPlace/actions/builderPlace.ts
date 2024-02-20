@@ -394,7 +394,7 @@ export const getBuilderPlaceById = async (id: string) => {
 };
 
 
-export const getDiscordWebhookByBuilderPlaceId = async (id: string) => {
+export const getDiscordWebhookDetailsByBuilderPlaceId = async (id: string) => {
   let errorMessage;
   try {
     const builderPlace = await prisma.builderPlace.findUnique({
@@ -404,7 +404,13 @@ export const getDiscordWebhookByBuilderPlaceId = async (id: string) => {
     });
 
     if (builderPlace) {
-      return builderPlace.discordWebhook;
+      return {
+        discordWebhook: builderPlace.discordWebhook,
+        icon: builderPlace.icon,
+        subdomain: builderPlace.subdomain,
+        customDomain: builderPlace.customDomain,
+        name: builderPlace.name
+      };
     }
   } catch (error: any) {
     if (error?.name?.includes('Prisma')) {

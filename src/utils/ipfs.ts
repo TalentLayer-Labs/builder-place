@@ -24,6 +24,22 @@ export const postToIPFS = async (data: any): Promise<string> => {
   return cid;
 };
 
+export const readFromIPFS = async (cid: string): Promise<any> => {
+  try {
+    const uri = `${process.env.NEXT_PUBLIC_IPFS_BASE_URL}${cid}`;
+
+    const response = await fetch(uri);
+
+    const data: any = await response.json();
+    if (data) {
+      return data;
+    }
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
+};
+
 export const IpfsIsSynced = async (cid: string): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     const interval = setInterval(async () => {

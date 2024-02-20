@@ -4,15 +4,17 @@ import TalentLayerService from '../../../contracts/ABI/TalentLayerService.json';
 import { getServiceSignature } from '../../../utils/signature';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
 import { getConfig } from '../../../config';
+
 import { getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions/user';
 import { checkUserEmailVerificationStatus } from '../../../modules/BuilderPlace/actions/email';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../modules/BuilderPlace/actions/transactionCounter';
+import { sendNewServiceNotification } from '../../../modules/BuilderPlace/actions/discord';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { userId, userAddress, cid, chainId, existingService } = req.body;
+  const { userId, userAddress, cid, chainId, existingService, builderPlaceId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delegation for a user
@@ -55,6 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       await incrementWeeklyTransactionCounter(worker, res);
+      await sendNewServiceNotification(builderPlaceId, "0", cid);
 
       res.status(200).json({ transaction: transaction });
     }
