@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { MenuItem, workerNavigation } from '../components/Layout/navigation';
 import { PostingCondition } from '../modules/BuilderPlace/types';
 import { createPublicClient, http } from 'viem';
@@ -19,80 +19,81 @@ const useCheckPostConditions = (
 ): {
   isLoading: boolean;
   returnedPostingConditions: IReturnPostingCondition[];
+  canPost: boolean;
 } => {
   const { account } = useContext(TalentLayerContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [canPost, setCanPost] = useState<boolean>(false);
   useState<MenuItem[]>(workerNavigation);
   const [returnedPostingConditions, setReturnedPostingConditions] = useState<
     IReturnPostingCondition[]
   >([]);
 
+  const chainIdSet = useMemo(() => {
+    const set = new Set<number>();
+    jobPostConditions?.forEach(condition => set.add(Number(condition.chainId)));
+    return set;
+  }, [jobPostConditions]);
+
+  const clients = generateClients(chainIdSet);
+
   useEffect(() => {
     const checkConditions = async () => {
       try {
-        if (!isPostingAllowed) {
-          console.log('not allowed');
-        } else if (jobPostConditions && jobPostConditions.length > 0) {
-          const chainIdSet = new Set<number>();
-          jobPostConditions.forEach((condition: PostingCondition) => {
-            chainIdSet.add(Number(condition.chainId));
-          });
-          console.log('jobPostConditions', jobPostConditions);
-          console.log('chainIdSet', chainIdSet);
-          const clients = generateClients(chainIdSet);
-          // console.log('clients', clients);
+        setIsLoading(true);
+        if (
+          !isPostingAllowed ||
+          !jobPostConditions ||
+          jobPostConditions.length === 0 ||
+          !account?.address
+        ) {
+          setCanPost(false);
+          setIsLoading(false);
+          return;
+        }
 
-          let validatesAllConditions = true;
-          const returnedPostingCondition: IReturnPostingCondition[] = [];
+        let allConditionsMet = true;
+        const allConditions: IReturnPostingCondition[] = [];
 
-          for (const condition of jobPostConditions) {
-            const abi = condition.type === 'NFT' ? erc721ABI : erc20ABI;
-            console.log('clients', clients);
-            const client = clients.get(Number(condition.chainId));
-            let data: bigint = 0n;
+        for (const condition of jobPostConditions) {
+          const abi = condition.type === 'NFT' ? erc721ABI : erc20ABI;
+          const client = clients.get(Number(condition.chainId));
+          let data: bigint = 0n;
 
-            if (!client) {
-              throw new Error('Client not found');
-            }
-            if (!account?.address) {
-              throw new Error('Account not found');
-            }
+          if (!client) {
+            console.log('Client not found');
+            allConditionsMet = false;
+            continue;
+            // break;
+          }
 
-            if (condition.type === 'NFT') {
-              data = await client.readContract({
-                address: condition.address as `0x${string}`,
-                abi: erc721ABI,
-                functionName: 'balanceOf',
-                // args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
-                args: [account.address],
-              });
-            } else if (condition.type === 'Token') {
-              data = await client.readContract({
-                address: condition.address as `0x${string}`,
-                abi: erc20ABI,
-                functionName: 'balanceOf',
-                args: [account.address],
-              });
-            }
-
-            console.log('data', data > 0);
-
-            console.log('to be pushed', {
-              condition,
-              validated: data > 0,
+          if (condition.type === 'NFT') {
+            data = await client.readContract({
+              address: condition.address as `0x${string}`,
+              abi: erc721ABI,
+              functionName: 'balanceOf',
+              // args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
+              args: [account.address],
             });
-
-            if (data < 0) validatesAllConditions = false;
-            returnedPostingCondition.push({
-              condition,
-              validated: data > 0,
+          } else if (condition.type === 'Token') {
+            data = await client.readContract({
+              address: condition.address as `0x${string}`,
+              abi: erc20ABI,
+              functionName: 'balanceOf',
+              args: [account.address],
             });
           }
-          console.log('validatesAllConditions', returnedPostingCondition);
-          setReturnedPostingConditions(returnedPostingConditions);
+
+          const validated = data > 0n;
+          allConditions.push({ condition, validated });
+          if (!validated) allConditionsMet = false;
         }
+
+        setCanPost(allConditionsMet);
+        setReturnedPostingConditions(allConditions);
       } catch (error) {
-        console.error('Error enriching worker sidebar', error);
+        console.error('Error checking posting conditions', error);
+        setCanPost(false);
       } finally {
         setIsLoading(false);
       }
@@ -103,6 +104,7 @@ const useCheckPostConditions = (
   return {
     isLoading,
     returnedPostingConditions,
+    canPost,
   };
 };
 
