@@ -1,7 +1,7 @@
 import { IReturnPostingCondition } from '../../hooks/useCheckPostConditions';
 import { PostingCondition } from '../../modules/BuilderPlace/types';
 
-const ConditionsStatusCard = (returnedPostingConditions: IReturnPostingCondition) => {
+const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition) => {
   const renderConditionText = (condition: PostingCondition) => {
     switch (condition.type) {
       case 'NFT':
@@ -14,17 +14,10 @@ const ConditionsStatusCard = (returnedPostingConditions: IReturnPostingCondition
   };
 
   return (
-    <div className='border border-info rounded-xl p-4 mb-6'>
-      <h3 className='text-lg font-semibold mb-3'>Posting Conditions</h3>
-      <ul>
-        <li key={returnedPostingConditions.condition.address} className='flex items-center mb-2'>
-          <span className={returnedPostingConditions.validated ? 'text-green-500' : 'text-red-500'}>
-            {returnedPostingConditions.validated ? '✓' : '✕'}
-          </span>
-          <p className='ml-2'>{renderConditionText(returnedPostingConditions.condition)}</p>
-        </li>
-      </ul>
-    </div>
+    <li className='flex items-center mb-2'>
+      <span className={validated ? 'text-green-500' : 'text-red-500'}>{validated ? '✓' : '✕'}</span>
+      <p className='ml-2'>{renderConditionText(condition)}</p>
+    </li>
   );
 };
 
