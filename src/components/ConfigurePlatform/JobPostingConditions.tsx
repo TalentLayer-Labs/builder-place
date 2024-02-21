@@ -2,6 +2,7 @@ import { Field, FieldArray, ErrorMessage } from 'formik';
 import { ChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
 import { isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
+import { ZERO_ADDRESS } from '../../utils/constant';
 
 export interface TempFormValues {
   tempNftAddress?: string;
@@ -35,21 +36,20 @@ function JobPostingConditionsFieldArray({
     },
   ) => {
     let error = false;
-    if (jobCondition.type === 'NFT') {
-      if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
-        setFieldError('tempFormValues.tempNftAddress', 'Invalid Ethereum address');
-        error = true;
-      }
+    if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
+      setFieldError('tempFormValues.tempNftAddress', 'Invalid Ethereum address');
+      error = true;
     }
-    if (jobCondition.type === 'Token') {
-      if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
-        setFieldError('tempFormValues.tempTokenAddress', 'Invalid Ethereum address');
-        error = true;
-      }
-      if (!jobCondition.minimumAmount || jobCondition.minimumAmount <= 0) {
-        setFieldError('tempFormValues.tempTokenAmount', 'Amount must be positive');
-        error = true;
-      }
+    if (jobCondition.address === ZERO_ADDRESS) {
+      setFieldError('tempFormValues.tempNftAddress', 'Zero address is not allowed');
+      error = true;
+    }
+    if (
+      jobCondition.type === 'Token' &&
+      (!jobCondition.minimumAmount || jobCondition.minimumAmount <= 0)
+    ) {
+      setFieldError('tempFormValues.tempTokenAmount', 'Amount must be positive');
+      error = true;
     }
 
     if (error) return;
@@ -69,9 +69,13 @@ function JobPostingConditionsFieldArray({
       return obj;
     }, {} as Record<string, ChainIdEnum>);
 
+  // console.log('ChainIds', ChainIds);
+
   const chainIdOptions = Object.entries(ChainIds).map(([key, value]) => {
     return { label: key, value: value };
   });
+
+  // console.log('chainIdOptions', chainIdOptions);
 
   return (
     <div>
