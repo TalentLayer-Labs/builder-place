@@ -19,7 +19,8 @@ function ServiceList() {
   const [view, setView] = useState(1);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState<string>('');
-  const [maxRate, setMaxRate] = useState<string>(''); 
+  const [maxRate, setMaxRate] = useState<string>('');
+  const [amt, setAmt] = useState<string>('');
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
@@ -30,30 +31,38 @@ function ServiceList() {
     PAGE_SIZE,
   );
 
+  // console.log(amount)
   const filterFn = () => {
     setFilteredServices(() => {
       return services.filter(service => {
-        const tokenSelected = selectedTokens.length === 0 || selectedTokens.includes(service.description?.rateToken || '');
-        const rateAmount = parseFloat(service.description?.rateAmount || '');
-        console.log(rateAmount)
+        let amount
+        const tokenSelected =
+          selectedTokens.length === 0 ||
+          selectedTokens.includes(service.description?.rateToken || '');
+        // if((service.description?.rateAmount === null) || (service.description?.rateAmount === undefined) || (service.description?.rateToken === null) || (service.description?.rateToken === undefined)) return false;
+        useRateFromTokenAmount(service.description?.rateAmount!, service.description?.rateToken!)
+          .then(rate => {
+            amount = rate;
+            console.log(amount);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+        const rateAmount = parseFloat(amount || '');
         const minRateParsed = parseFloat(minRate);
         const maxRateParsed = parseFloat(maxRate);
-        
+
         const minRateCondition = !minRateParsed || rateAmount >= minRateParsed;
         const maxRateCondition = !maxRateParsed || rateAmount <= maxRateParsed;
-        
-        return (
-          tokenSelected && minRateCondition && maxRateCondition
-        );
+
+        return tokenSelected && minRateCondition && maxRateCondition;
       });
     });
   };
 
-
   useEffect(() => {
     filterFn();
   }, [services, selectedTokens, minRate, maxRate]);
-
 
   return (
     <>
@@ -100,19 +109,19 @@ function ServiceList() {
           {isPopupVisible && (
             <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 z-50'>
               <div className='flex flex-col'>
-              <label className='text-sm mt-1 font-bold'>Rate</label>
+                <label className='text-sm mt-1 font-bold'>Rate</label>
                 <div className='flex flex-row gap-2'>
                   <input
                     type='number'
                     value={minRate}
-                    onChange={(e) => setMinRate(e.target.value)}
+                    onChange={e => setMinRate(e.target.value)}
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Min'
                   />
                   <input
                     type='number'
                     value={maxRate}
-                    onChange={(e) => setMaxRate(e.target.value)}
+                    onChange={e => setMaxRate(e.target.value)}
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Max'
                   />
