@@ -8,6 +8,8 @@ import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPl
 import ConnectButton from '../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../modules/Messaging/context/messging';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import useCheckPostConditions from '../../../hooks/useCheckPostConditions';
+import Loading from '../../../components/Loading';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -16,13 +18,21 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function CreateService() {
   const { account, user } = useContext(TalentLayerContext);
   const { userExists } = useContext(MessagingContext);
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+  const { returnedPostingConditions, isLoading, canPost } = useCheckPostConditions(
+    builderPlace?.jobPostingConditions.allowPosts,
+    builderPlace?.jobPostingConditions.conditions,
+  );
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   if (!user) {
     return <Steps />;
   }
 
-  if (!isBuilderPlaceCollaborator) {
+  if (!builderPlace?.jobPostingConditions.allowPosts && !isBuilderPlaceCollaborator) {
     return <AccessDenied />;
   }
 
