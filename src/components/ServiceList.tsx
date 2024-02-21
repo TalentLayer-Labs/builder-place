@@ -18,11 +18,10 @@ function ServiceList() {
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [minRate, setMinRate] = useState('');
-  const [maxRate, setMaxRate] = useState('');
+  const [minRate, setMinRate] = useState<string>('');
+  const [maxRate, setMaxRate] = useState<string>(''); 
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
-
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
     builderPlace?.owner?.talentLayerId?.toString(),
@@ -32,33 +31,29 @@ function ServiceList() {
   );
 
   const filterFn = () => {
-    // If no tokens are selected, return all services
-    if (selectedTokens.length === 0) {
-      setFilteredServices(services);
-    } else {
-      // Filter services based on selected tokens
-      setFilteredServices(() => {
-        return services.filter(service => {
-          //have to change the amount rate filter
-          const rate = service.description?.rateAmount || 0;
-          const minRateNum = minRate;
-          const maxRateNum = maxRate;
-          // Check if the token of the service is selected
-          const tokenSelected = selectedTokens.includes(service.description?.rateToken || '');
-          return (
-            (!minRateNum || rate >= minRateNum) &&
-            (!maxRateNum || rate <= maxRateNum) &&
-            tokenSelected
-          );
-        });
+    setFilteredServices(() => {
+      return services.filter(service => {
+        const tokenSelected = selectedTokens.length === 0 || selectedTokens.includes(service.description?.rateToken || '');
+        const rateAmount = parseFloat(service.description?.rateAmount || '');
+        console.log(rateAmount)
+        const minRateParsed = parseFloat(minRate);
+        const maxRateParsed = parseFloat(maxRate);
+        
+        const minRateCondition = !minRateParsed || rateAmount >= minRateParsed;
+        const maxRateCondition = !maxRateParsed || rateAmount <= maxRateParsed;
+        
+        return (
+          tokenSelected && minRateCondition && maxRateCondition
+        );
       });
-    }
+    });
   };
 
+
   useEffect(() => {
-    // Filter services based on minRate and maxRate
     filterFn();
-  }, [services, minRate, maxRate, selectedTokens]);
+  }, [services, selectedTokens, minRate, maxRate]);
+
 
   return (
     <>
@@ -105,21 +100,21 @@ function ServiceList() {
           {isPopupVisible && (
             <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 z-50'>
               <div className='flex flex-col'>
-                <label className='text-sm mt-1 font-bold'>Rate</label>
+              <label className='text-sm mt-1 font-bold'>Rate</label>
                 <div className='flex flex-row gap-2'>
                   <input
                     type='number'
+                    value={minRate}
+                    onChange={(e) => setMinRate(e.target.value)}
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Min'
-                    value={minRate}
-                    onChange={e => setMinRate(e.target.value)}
                   />
                   <input
                     type='number'
+                    value={maxRate}
+                    onChange={(e) => setMaxRate(e.target.value)}
                     className='border border-3 border-gray-300 p-2 rounded w-24'
                     placeholder='Max'
-                    value={maxRate}
-                    onChange={e => setMaxRate(e.target.value)}
                   />
                 </div>
                 <label className='text-sm mt-3 font-bold'>Rating</label>
@@ -180,7 +175,6 @@ function ServiceList() {
 
       {view === 1 &&
         filteredServices.map((service: IService, i: number) => (
-          
           <ServiceItem
             service={service}
             embedded={router.asPath.includes('embed/')}
@@ -218,7 +212,7 @@ function ServiceList() {
           <button
             type='submit'
             className={`px-5 py-2 mt-5 content-center border-2 text-base-content border-black rounded-xl font-medium text-content 
-                `}
+                  `}
             disabled={!hasMoreData}
             onClick={() => loadMore()}>
             Load More Posts
