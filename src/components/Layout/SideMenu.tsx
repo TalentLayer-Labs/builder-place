@@ -17,7 +17,7 @@ function SideMenu() {
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);
   const { enrichedWorkerNavigation: workerNavigation } = useEnrichMenu(
-    builderPlace?.jobPostingConditions.allowPosts,
+    builderPlace?.jobPostingConditions?.allowPosts,
   );
 
   return (
