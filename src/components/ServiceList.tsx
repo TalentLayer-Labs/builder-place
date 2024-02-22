@@ -7,7 +7,8 @@ import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 import useAllowedTokens from '../hooks/useAllowedTokens';
-import useRateFromTokenAmount from '../hooks/useRateFromTokenAmount';
+import TokenAmount from './TokenAmount';
+import { calculateTokenAmount, renderTokenAmount } from '../utils/conversion';
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
@@ -20,7 +21,6 @@ function ServiceList() {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState<string>('');
   const [maxRate, setMaxRate] = useState<string>('');
-  const [amt, setAmt] = useState<string>('');
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
@@ -31,38 +31,37 @@ function ServiceList() {
     PAGE_SIZE,
   );
 
-  // console.log(amount)
-  const filterFn = () => {
+  useEffect(() => {
     setFilteredServices(() => {
       return services.filter(service => {
-        let amount
-        const tokenSelected =
-          selectedTokens.length === 0 ||
-          selectedTokens.includes(service.description?.rateToken || '');
-        // if((service.description?.rateAmount === null) || (service.description?.rateAmount === undefined) || (service.description?.rateToken === null) || (service.description?.rateToken === undefined)) return false;
-        useRateFromTokenAmount(service.description?.rateAmount!, service.description?.rateToken!)
-          .then(rate => {
-            amount = rate;
-            console.log(amount);
-          })
-          .catch(error => {
-            console.log(error);
-          });
-        const rateAmount = parseFloat(amount || '');
-        const minRateParsed = parseFloat(minRate);
-        const maxRateParsed = parseFloat(maxRate);
-
-        const minRateCondition = !minRateParsed || rateAmount >= minRateParsed;
-        const maxRateCondition = !maxRateParsed || rateAmount <= maxRateParsed;
-
-        return tokenSelected && minRateCondition && maxRateCondition;
+        // RATE FILTER
+        if (minRate || maxRate) {
+          if (service.description?.rateAmount) {
+            const rate = parseFloat(service.description.rateAmount);
+            console.log('rate', rate);
+            // Fetch token details
+            const token = allowedTokens.find(
+              token => token.address === service.description?.rateToken,
+            );
+            // If token is found, convert the rate
+            if (token) {
+              const convertedRate = parseFloat(
+                calculateTokenAmount(token, service.description?.rateAmount),
+              );
+              // Filter the service based on minRate and maxRate
+              const minRateParsed = parseFloat(minRate || '0');
+              const maxRateParsed = parseFloat(maxRate || 'Infinity');
+              return convertedRate >= minRateParsed && convertedRate <= maxRateParsed;
+            } else {
+              return false;
+            }
+          }
+        } else {
+          return true;
+        }
       });
     });
-  };
-
-  useEffect(() => {
-    filterFn();
-  }, [services, selectedTokens, minRate, maxRate]);
+  }, [services, minRate, maxRate, allowedTokens]);
 
   return (
     <>
