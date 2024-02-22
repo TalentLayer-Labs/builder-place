@@ -96,6 +96,8 @@ const ConfigurePlatformForm = () => {
     tempFormValues: {
       tempNftAddress: '',
       tempTokenAddress: '',
+      tempNftContractName: '',
+      tempTokenContractName: '',
       tempTokenAmount: 0,
       tempNftChainId: ChainIdEnum.ETHEREUM,
       tempTokenChainId: ChainIdEnum.ETHEREUM,
