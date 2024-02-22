@@ -5,9 +5,21 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
   const renderConditionText = (condition: PostingCondition) => {
     switch (condition.type) {
       case 'NFT':
-        return `You need to own an NFT from the ${condition.contractName} contract`;
+        return (
+          <span>
+            You need to own an NFT from the <strong>{condition.contractName}</strong> contract
+          </span>
+        );
       case 'Token':
-        return `You need a minimum of ${condition.minimumAmount} ${condition.tokenSign} from the ${condition.contractName} contract`;
+        return (
+          <span>
+            You need a minimum of{' '}
+            <strong>
+              {condition.minimumAmount} {condition.tokenSign}
+            </strong>{' '}
+            from the <strong>{condition.contractName}</strong> contract
+          </span>
+        );
       default:
         return 'Unknown condition';
     }
