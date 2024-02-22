@@ -1,11 +1,8 @@
 import { ErrorMessage, Field, FieldArray } from 'formik';
 import { ChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
-import { createPublicClient, http, isAddress } from 'viem';
+import { isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
-import { erc20ABI, erc721ABI } from 'wagmi';
-import { getViemFormattedChain } from '../../chains';
-import { NetworkEnum } from '../../types';
 import useCheckSmartContract from '../../hooks/useCheckSmartContract';
 
 export interface TempFormValues {
@@ -30,7 +27,7 @@ function JobPostingConditionsFieldArray({
   tempFormValues,
   setFieldError,
 }: JobPostingConditionsProps) {
-  const { checkSmartContractName } = useCheckSmartContract();
+  const { checkSmartContractName, nftSubmitting, tokenSubmitting } = useCheckSmartContract();
 
   const addJobPostingConditions = async (
     push: (obj: any) => void,
@@ -45,6 +42,7 @@ function JobPostingConditionsFieldArray({
   ): Promise<void> => {
     let error = false;
     let contractName = '';
+    let tokenSign = '';
     if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
       setFieldError(
         jobCondition.type === 'NFT'
@@ -70,6 +68,7 @@ function JobPostingConditionsFieldArray({
         );
       } else {
         contractName = response.contractName;
+        tokenSign = response.tokenSign;
       }
     }
 
@@ -92,9 +91,7 @@ function JobPostingConditionsFieldArray({
     }
 
     if (error) return;
-    console.log('jobCondition', jobCondition);
-    push({ ...jobCondition, contractName: contractName });
-    console.log('enriched', { ...jobCondition, contractName: contractName });
+    push({ ...jobCondition, contractName, tokenSign });
     setFieldValue('tempFormValues.tempNftAddress', '');
     setFieldValue('tempFormValues.tempTokenAddress', '');
     setFieldValue('tempFormValues.tempNftContractName', '');
