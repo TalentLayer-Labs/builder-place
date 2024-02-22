@@ -3,8 +3,8 @@ import { ChainIdEnum, PostingCondition } from '../../modules/BuilderPlace/types'
 
 const blockScanList = {
   [ChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
-  [ChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/', // Adjust if Arbitrum has a different block explorer
-  [ChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/', // Adjust if iExec has a different block explorer
+  [ChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/',
+  [ChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/',
   [ChainIdEnum.POLYGON]: 'https://polygonscan.com/',
   [ChainIdEnum.BNB]: 'https://bscscan.com/',
 };
