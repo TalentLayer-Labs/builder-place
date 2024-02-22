@@ -1,19 +1,19 @@
 import { IReturnPostingCondition } from '../../hooks/useCheckPostConditions';
 import { ChainIdEnum, PostingCondition } from '../../modules/BuilderPlace/types';
 
-//TODO write the good links
 const blockScanList = {
-  1: 'https://etherscan.io/',
-  42161: 'https://ropsten.etherscan.io/',
-  137: 'https://rinkeby.etherscan.io/',
-  134: 'https://goerli.etherscan.io/',
-  56: 'https://kovan.etherscan.io/',
+  [ChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
+  [ChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/', // Adjust if Arbitrum has a different block explorer
+  [ChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/', // Adjust if iExec has a different block explorer
+  [ChainIdEnum.POLYGON]: 'https://polygonscan.com/',
+  [ChainIdEnum.BNB]: 'https://bscscan.com/',
 };
 
 const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition) => {
-  const getBlockExplorerLink = (chainId: ChainIdEnum, address: string) => {
+  const getBlockExplorerLink = (chainId: ChainIdEnum, address: string, type: string) => {
     const baseLink = blockScanList[chainId];
-    return baseLink ? `${baseLink}address/${address}` : '';
+    const path = type === 'NFT' ? 'address' : 'token';
+    return `${baseLink}${path}/${address}`;
   };
 
   const renderConditionText = (condition: PostingCondition) => {
@@ -42,7 +42,11 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
   const renderButton = () => {
     if (!validated) {
       const buttonText = condition.type === 'Token' ? `Buy ${condition.tokenSign}` : 'Mint NFT';
-      const blockExplorerLink = getBlockExplorerLink(condition.chainId, condition.address);
+      const blockExplorerLink = getBlockExplorerLink(
+        condition.chainId,
+        condition.address,
+        condition.type,
+      );
 
       return (
         blockExplorerLink && (
