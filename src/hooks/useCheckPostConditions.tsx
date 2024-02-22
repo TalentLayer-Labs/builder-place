@@ -70,14 +70,14 @@ const useCheckPostConditions = (
               address: condition.address as `0x${string}`,
               abi: erc721ABI,
               functionName: 'balanceOf',
-              args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
+              args: [account.address],
             });
           } else if (condition.type === 'Token') {
             data = await client.readContract({
               address: condition.address as `0x${string}`,
               abi: erc20ABI,
               functionName: 'balanceOf',
-              args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
+              args: [account.address],
             });
           }
 
