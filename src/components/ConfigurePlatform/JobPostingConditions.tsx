@@ -4,6 +4,7 @@ import { isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
 import useCheckSmartContract from '../../hooks/useCheckSmartContract';
+import AsyncButton from '../AsyncButton';
 
 export interface TempFormValues {
   tempNftAddress?: string;
@@ -167,18 +168,18 @@ function JobPostingConditionsFieldArray({
                         ))}
                       </Field>
                     </div>
-                    <button
-                      type='button'
-                      className='px-5 py-2 rounded-xl bg-primary text-primary w-52'
-                      onClick={() => {
+                    <AsyncButton
+                      label={'Add NFT Condition'}
+                      isSubmitting={nftSubmitting}
+                      buttonCss={'w-52'}
+                      onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'NFT',
                           address: tempFormValues?.tempNftAddress,
                           chainId: tempFormValues?.tempNftChainId as ChainIdEnum,
-                        });
-                      }}>
-                      Add NFT Condition
-                    </button>
+                        })
+                      }
+                    />
                   </div>
                   <div className='ml-4'>
                     <ErrorMessage
@@ -186,11 +187,6 @@ function JobPostingConditionsFieldArray({
                       component='span'
                       className='text-red-500'
                     />
-                    {/*<ErrorMessage*/}
-                    {/*  name='tempFormValues.tempNftContractName'*/}
-                    {/*  component='span'*/}
-                    {/*  className='text-red-500'*/}
-                    {/*/>*/}
                   </div>
                 </div>
 
@@ -223,19 +219,19 @@ function JobPostingConditionsFieldArray({
                         className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                       />
                     </div>
-                    <button
-                      type='button'
-                      className='px-5 py-2 rounded-xl bg-primary text-primary w-52'
-                      onClick={() => {
+                    <AsyncButton
+                      label={'Add Token Condition'}
+                      isSubmitting={tokenSubmitting}
+                      buttonCss={'w-52'}
+                      onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'Token',
                           address: tempFormValues?.tempTokenAddress,
                           minimumAmount: tempFormValues?.tempTokenAmount,
                           chainId: tempFormValues?.tempTokenChainId as ChainIdEnum,
-                        });
-                      }}>
-                      Add Token Condition
-                    </button>
+                        })
+                      }
+                    />
                   </div>
                   <div className='flex flex-col ml-4'>
                     <ErrorMessage
@@ -248,11 +244,6 @@ function JobPostingConditionsFieldArray({
                       component='span'
                       className='text-red-500'
                     />
-                    {/*<ErrorMessage*/}
-                    {/*  name='tempFormValues.tempTokenContractName'*/}
-                    {/*  component='span'*/}
-                    {/*  className='text-red-500'*/}
-                    {/*/>*/}
                   </div>
                 </div>
 
