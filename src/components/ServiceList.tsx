@@ -21,6 +21,7 @@ function ServiceList() {
   const [minRate, setMinRate] = useState<string>('');
   const [maxRate, setMaxRate] = useState<string>('');
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
@@ -33,15 +34,12 @@ function ServiceList() {
   useEffect(() => {
     setFilteredServices(() => {
       return services.filter(service => {
- 
-        if (minRate || maxRate || selectedTokens.length > 0) {
+        if (minRate || maxRate || selectedTokens.length > 0 || selectedRatings.length > 0) {
           const tokenSelected =
             selectedTokens.length === 0 ||
             selectedTokens.includes(service.description?.rateToken || '');
-
           if (service.description?.rateAmount) {
             const rate = parseFloat(service.description.rateAmount);
-            console.log('rate', rate);
             const token = allowedTokens.find(
               token => token.address === service.description?.rateToken,
             );
@@ -51,7 +49,15 @@ function ServiceList() {
               );
               const minRateParsed = parseFloat(minRate || '0');
               const maxRateParsed = parseFloat(maxRate || 'Infinity');
-              return convertedRate >= minRateParsed && convertedRate <= maxRateParsed && tokenSelected;
+              const ratingSelected =
+                selectedRatings.length === 0 ||
+                selectedRatings.includes(service.buyer?.rating || '');
+              return (
+                convertedRate >= minRateParsed &&
+                convertedRate <= maxRateParsed &&
+                tokenSelected &&
+                ratingSelected
+              );
             } else {
               return false;
             }
@@ -61,7 +67,7 @@ function ServiceList() {
         }
       });
     });
-  }, [services, minRate, maxRate, allowedTokens, selectedTokens]);
+  }, [services, minRate, maxRate, allowedTokens, selectedTokens, selectedRatings]);
 
   return (
     <>
@@ -127,26 +133,26 @@ function ServiceList() {
                 </div>
                 <label className='text-sm mt-3 font-bold'>Rating</label>
                 <div className='flex flex-col'>
-                  <div className='flex items-center gap-2'>
-                    <input type='checkbox' value='5' />
-                    <label>5 stars</label>
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <input type='checkbox' value='4' />
-                    <label>4 stars</label>
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <input type='checkbox' value='3' />
-                    <label>3 stars</label>
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <input type='checkbox' value='2' />
-                    <label>2 stars</label>
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <input type='checkbox' value='1' />
-                    <label>1 star</label>
-                  </div>
+                  {Array.from({ length: 5 }, (_, i) => i + 1).map((rating, i) => (
+                    <div className='flex items-center gap-2' key={i}>
+                      <input
+                        type='checkbox'
+                        value={rating.toString()}
+                        checked={selectedRatings.includes(rating.toString())}
+                        onChange={e => {
+                          const rating = e.target.value;
+                          setSelectedRatings(prevState =>
+                            prevState.includes(rating)
+                              ? prevState.filter(r => r !== rating)
+                              : [...prevState, rating],
+                          );
+                        }}
+                      />
+                      <label>
+                        {rating} star{rating == 1 ? '' : 's'}
+                      </label>
+                    </div>
+                  ))}
                 </div>
                 <label className='text-sm mt-3 font-bold'>Token</label>
                 <div className='flex flex-col'>
