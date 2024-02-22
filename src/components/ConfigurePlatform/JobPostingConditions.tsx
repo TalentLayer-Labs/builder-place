@@ -1,12 +1,18 @@
-import { Field, FieldArray, ErrorMessage } from 'formik';
+import { ErrorMessage, Field, FieldArray } from 'formik';
 import { ChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
-import { isAddress } from 'viem';
+import { createPublicClient, http, isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
+import { erc20ABI, erc721ABI } from 'wagmi';
+import { getViemFormattedChain } from '../../chains';
+import { NetworkEnum } from '../../types';
+import useCheckSmartContract from '../../hooks/useCheckSmartContract';
 
 export interface TempFormValues {
   tempNftAddress?: string;
   tempTokenAddress?: string;
+  tempNftContractName?: string;
+  tempTokenContractName?: string;
   tempTokenAmount?: number;
   tempNftChainId: ChainIdEnum;
   tempTokenChainId: ChainIdEnum;
@@ -24,7 +30,9 @@ function JobPostingConditionsFieldArray({
   tempFormValues,
   setFieldError,
 }: JobPostingConditionsProps) {
-  const addJobPostingConditions = (
+  const { checkSmartContractName } = useCheckSmartContract();
+
+  const addJobPostingConditions = async (
     push: (obj: any) => void,
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void,
     setFieldError: (field: string, message: string | undefined) => void,
@@ -34,16 +42,47 @@ function JobPostingConditionsFieldArray({
       chainId: ChainIdEnum;
       type: 'NFT' | 'Token';
     },
-  ) => {
+  ): Promise<void> => {
     let error = false;
+    let contractName = '';
     if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
-      setFieldError('tempFormValues.tempNftAddress', 'Invalid Ethereum address');
+      setFieldError(
+        jobCondition.type === 'NFT'
+          ? 'tempFormValues.tempNftAddress'
+          : 'tempFormValues.tempTokenAddress',
+        'Invalid Ethereum address',
+      );
       error = true;
+    } else {
+      const response = await checkSmartContractName(
+        jobCondition.chainId,
+        jobCondition.type,
+        jobCondition.address,
+      );
+      if (response.error) {
+        console.log('error', response.error);
+        error = true;
+        setFieldError(
+          jobCondition.type === 'NFT'
+            ? 'tempFormValues.tempNftAddress'
+            : 'tempFormValues.tempTokenAddress',
+          'Contract not found',
+        );
+      } else {
+        contractName = response.contractName;
+      }
     }
+
     if (jobCondition.address === ZERO_ADDRESS) {
-      setFieldError('tempFormValues.tempNftAddress', 'Zero address is not allowed');
+      setFieldError(
+        jobCondition.type === 'NFT'
+          ? 'tempFormValues.tempNftAddress'
+          : 'tempFormValues.tempTokenAddress',
+        'Zero address is not allowed',
+      );
       error = true;
     }
+
     if (
       jobCondition.type === 'Token' &&
       (!jobCondition.minimumAmount || jobCondition.minimumAmount <= 0)
@@ -53,10 +92,13 @@ function JobPostingConditionsFieldArray({
     }
 
     if (error) return;
-
-    push(jobCondition);
+    console.log('jobCondition', jobCondition);
+    push({ ...jobCondition, contractName: contractName });
+    console.log('enriched', { ...jobCondition, contractName: contractName });
     setFieldValue('tempFormValues.tempNftAddress', '');
     setFieldValue('tempFormValues.tempTokenAddress', '');
+    setFieldValue('tempFormValues.tempNftContractName', '');
+    setFieldValue('tempFormValues.tempTokenContractName', '');
     setFieldValue('tempFormValues.tempTokenAmount', '');
     setFieldValue('tempFormValues.tempTokenChainId', '');
   };
@@ -147,6 +189,11 @@ function JobPostingConditionsFieldArray({
                       component='span'
                       className='text-red-500'
                     />
+                    {/*<ErrorMessage*/}
+                    {/*  name='tempFormValues.tempNftContractName'*/}
+                    {/*  component='span'*/}
+                    {/*  className='text-red-500'*/}
+                    {/*/>*/}
                   </div>
                 </div>
 
@@ -204,6 +251,11 @@ function JobPostingConditionsFieldArray({
                       component='span'
                       className='text-red-500'
                     />
+                    {/*<ErrorMessage*/}
+                    {/*  name='tempFormValues.tempTokenContractName'*/}
+                    {/*  component='span'*/}
+                    {/*  className='text-red-500'*/}
+                    {/*/>*/}
                   </div>
                 </div>
 
