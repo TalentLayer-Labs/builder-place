@@ -187,15 +187,24 @@ function ServiceList() {
         </div>
       </div>
 
-      {view === 1 &&
-        filteredServices.map((service: IService, i: number) => (
-          <ServiceItem
-            service={service}
-            embedded={router.asPath.includes('embed/')}
-            key={i}
-            view={view}
-          />
-        ))}
+      {view === 1 && (
+        <>
+          {filteredServices.length > 0 ? (
+            filteredServices.map((service: IService, i: number) => (
+              <ServiceItem
+                service={service}
+                embedded={router.asPath.includes('embed/')}
+                key={i}
+                view={view}
+              />
+            ))
+          ) : (
+            <p className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+              No services found
+            </p>
+          )}
+        </>
+      )}
 
       {view === 2 && (
         <table className='min-w-full text-center'>
@@ -209,14 +218,20 @@ function ServiceList() {
             </tr>
           </thead>
           <tbody>
-            {filteredServices.map((service: IService, i: number) => (
+          {filteredServices.length > 0 ? (
+            filteredServices.map((service: IService, i: number) => (
               <ServiceItem
                 service={service}
                 embedded={router.asPath.includes('embed/')}
                 key={i}
                 view={view}
               />
-            ))}
+            ))
+          ) : (
+            <p className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+              No services found
+            </p>
+          )}
           </tbody>
         </table>
       )}
