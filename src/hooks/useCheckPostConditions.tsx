@@ -39,24 +39,23 @@ const useCheckPostConditions = (
 
   useEffect(() => {
     const checkConditions = async () => {
-      try {
-        setIsLoading(true);
-        if (
-          !isPostingAllowed ||
-          !jobPostConditions ||
-          jobPostConditions.length === 0 ||
-          !account?.address
-        ) {
-          setCanPost(false);
-          setIsLoading(false);
-          return;
-        }
+      setIsLoading(true);
+      if (
+        !isPostingAllowed ||
+        !jobPostConditions ||
+        jobPostConditions.length === 0 ||
+        !account?.address
+      ) {
+        setCanPost(false);
+        setIsLoading(false);
+        return;
+      }
 
-        let allConditionsMet = true;
-        const allConditions: IReturnPostingCondition[] = [];
+      let allConditionsMet = true;
+      const allConditions: IReturnPostingCondition[] = [];
 
-        for (const condition of jobPostConditions) {
-          const abi = condition.type === 'NFT' ? erc721ABI : erc20ABI;
+      for (const condition of jobPostConditions) {
+        try {
           const client = clients.get(Number(condition.chainId));
           let data: bigint = 0n;
 
@@ -64,7 +63,6 @@ const useCheckPostConditions = (
             console.log('Client not found');
             allConditionsMet = false;
             continue;
-            // break;
           }
 
           if (condition.type === 'NFT') {
@@ -72,31 +70,29 @@ const useCheckPostConditions = (
               address: condition.address as `0x${string}`,
               abi: erc721ABI,
               functionName: 'balanceOf',
-              // args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
-              args: [account.address],
+              args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
             });
           } else if (condition.type === 'Token') {
             data = await client.readContract({
               address: condition.address as `0x${string}`,
               abi: erc20ABI,
               functionName: 'balanceOf',
-              args: [account.address],
+              args: ['0x4B3380d3A8C1AF85e47dBC1Fc6C3f4e0c8F78fEa'],
             });
           }
 
           const validated = data > 0n;
           allConditions.push({ condition, validated });
           if (!validated) allConditionsMet = false;
+        } catch (error) {
+          console.error('Error checking posting conditions', error);
+          setCanPost(false);
         }
-
-        setCanPost(allConditionsMet);
-        setReturnedPostingConditions(allConditions);
-      } catch (error) {
-        console.error('Error checking posting conditions', error);
-        setCanPost(false);
-      } finally {
-        setIsLoading(false);
       }
+
+      setCanPost(allConditionsMet);
+      setReturnedPostingConditions(allConditions);
+      setIsLoading(false);
     };
     checkConditions();
   }, [isPostingAllowed, jobPostConditions]);
@@ -116,7 +112,7 @@ const generateClients = (chainIdSet: Set<number>): Map<number, PublicClient> => 
       // chain: mainnet,
       transport: http(),
     });
-    clients.set(chainId, publicClient);
+    clients.set(chainId, publicClient as PublicClient);
   });
   return clients;
 };
