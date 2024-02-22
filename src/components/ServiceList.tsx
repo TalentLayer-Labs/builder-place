@@ -228,9 +228,9 @@ function ServiceList() {
               />
             ))
           ) : (
-            <p className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+            <span className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
               No services found
-            </p>
+            </span>
           )}
           </tbody>
         </table>
