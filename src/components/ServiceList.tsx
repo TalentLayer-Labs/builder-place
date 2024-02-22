@@ -7,8 +7,7 @@ import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 import useAllowedTokens from '../hooks/useAllowedTokens';
-import TokenAmount from './TokenAmount';
-import { calculateTokenAmount, renderTokenAmount } from '../utils/conversion';
+import { calculateTokenAmount } from '../utils/conversion';
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
@@ -34,24 +33,25 @@ function ServiceList() {
   useEffect(() => {
     setFilteredServices(() => {
       return services.filter(service => {
-        // RATE FILTER
-        if (minRate || maxRate) {
+ 
+        if (minRate || maxRate || selectedTokens.length > 0) {
+          const tokenSelected =
+            selectedTokens.length === 0 ||
+            selectedTokens.includes(service.description?.rateToken || '');
+
           if (service.description?.rateAmount) {
             const rate = parseFloat(service.description.rateAmount);
             console.log('rate', rate);
-            // Fetch token details
             const token = allowedTokens.find(
               token => token.address === service.description?.rateToken,
             );
-            // If token is found, convert the rate
             if (token) {
               const convertedRate = parseFloat(
                 calculateTokenAmount(token, service.description?.rateAmount),
               );
-              // Filter the service based on minRate and maxRate
               const minRateParsed = parseFloat(minRate || '0');
               const maxRateParsed = parseFloat(maxRate || 'Infinity');
-              return convertedRate >= minRateParsed && convertedRate <= maxRateParsed;
+              return convertedRate >= minRateParsed && convertedRate <= maxRateParsed && tokenSelected;
             } else {
               return false;
             }
@@ -61,7 +61,7 @@ function ServiceList() {
         }
       });
     });
-  }, [services, minRate, maxRate, allowedTokens]);
+  }, [services, minRate, maxRate, allowedTokens, selectedTokens]);
 
   return (
     <>
