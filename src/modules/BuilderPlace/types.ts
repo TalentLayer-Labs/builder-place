@@ -1,4 +1,5 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
+import { IEmailPreferences } from '../../types';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -65,6 +66,7 @@ export interface AddBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   newCollaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -72,6 +74,7 @@ export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   collaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -115,6 +118,13 @@ export interface UpdateUserEmail {
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface UpdateUserEmailPreferences {
+  userId: string;
+  preferences: IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface VerifyAccount {
   userId: string;
   signature: `0x${string}` | Uint8Array;
@@ -131,6 +141,15 @@ export interface SendVerificationEmail {
   domain: string;
 }
 
+export interface GetUserEmailData {
+  builderPlaceId: string;
+  ownerId: string;
+  emailNotificationType: keyof IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+  includeSkills?: boolean;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',
@@ -144,7 +163,7 @@ export interface CreateBuilderPlaceAction {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileAction {
@@ -185,6 +204,11 @@ export interface UpdateWorkerProfileAction {
   talentLayerId?: string;
 }
 
+export interface UpdateUserEmailPreferencesAction {
+  address: `0x${string}`;
+  preferences: IEmailPreferences;
+}
+
 export interface UpdateUserEmailAction {
   id: number;
   email: string;
@@ -195,7 +219,7 @@ export interface CreateBuilderPlaceProps {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileProps {
@@ -208,24 +232,31 @@ export interface CreateWorkerProfileProps {
 export interface CreateHirerProfileProps {
   email: string;
   name: string;
-  picture?: string;
+  icon?: string;
   about?: string;
   status?: string;
 }
 
 export type IBuilderPlace = {
   id: string;
+  status: EntityStatus;
+  name: string;
+  subdomain?: string;
+  customDomain?: string | null;
+  talentLayerPlatformId?: string;
+  talentLayerPlatformName?: string;
+  owner: User;
+  ownerId?: string;
+  collaborators?: User[];
+  baseline?: string;
   about?: string;
   aboutTech?: string;
-  baseline?: string;
-  cover?: string;
-  customDomain?: string | null;
-  icon?: string;
+  presentation?: string;
   logo?: string;
-  name: string;
-  owner: User;
-  collaborators?: User[];
+  icon?: string;
+  cover?: string;
   palette?: iBuilderPlacePalette;
+  jobPostingConditions: JobPostingConditions;
   preferredWorkTypes: WorkType[];
   presentation?: string;
   profilePicture?: string;
@@ -234,8 +265,26 @@ export type IBuilderPlace = {
   // ownerAddress?: string;
   // ownerTalentLayerId?: string;
   subdomain?: string;
-  discordWebhook: string;
+  discordWebhookUrl: string;
 };
+
+interface JobPostingConditions {
+  allowPosts: boolean;
+  conditions?: PostingCondition[];
+}
+
+type PostingCondition = NFTCondition | TokenCondition;
+
+interface NFTCondition {
+  type: 'NFT';
+  address: string;
+}
+
+interface TokenCondition {
+  type: 'Token';
+  address: string;
+  minimumAmount: number;
+}
 
 export interface IUserProfile {
   id: string;

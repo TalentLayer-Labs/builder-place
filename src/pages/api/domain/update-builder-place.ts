@@ -19,7 +19,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 
     const result = await updateBuilderPlace(body);
 
-    res.status(200).json({ message: 'BuilderPlace domain updated successfully', id: result.id });
+    res.status(200).json({ message: 'BuilderPlace domain updated successfully', id: result?.id });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

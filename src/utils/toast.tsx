@@ -82,8 +82,12 @@ export const createMultiStepsTransactionToast = async (
 export const showErrorTransactionToast = (error: any) => {
   console.error(error);
   let errorMessage = error;
-  if (error.name === 'AxiosError') {
-    errorMessage = error.response.data.error;
+  if (typeof error === 'string') {
+    errorMessage = error;
+  } else if (error.name === 'AxiosError') {
+    errorMessage = `${error.message} ${
+      error.response.data.message ? '. More: ' + error.response.data.message : ''
+    }`;
   } else if (error.response && error.response.status === 500) {
     errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
@@ -152,3 +156,9 @@ function getParsedErrorMessage(error: any) {
 
   return 'Unknown error occurred';
 }
+
+export const wait = async (seconds: number): Promise<void> => {
+  return new Promise(resolve => {
+    setTimeout(resolve, seconds * 1000);
+  });
+};

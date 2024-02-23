@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const config = getConfig(chainId);
 
   const address = await recoverMessageAddress({
-    message: handle,
+    message: `connect with ${userAddress}`,
     signature: signature,
   });
 

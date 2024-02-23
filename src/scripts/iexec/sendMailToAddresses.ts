@@ -1,83 +1,107 @@
-import { IExecWeb3mail, getWeb3Provider as getMailProvider } from '@iexec/web3mail';
-import { IExecDataProtector, getWeb3Provider as getProtectorProvider } from '@iexec/dataprotector';
+import { IExecWeb3mail } from '@iexec/web3mail';
+import { IExecDataProtector } from '@iexec/dataprotector';
 import { userGaveAccessToPlatform } from '../../modules/Web3mail/utils/data-protector';
-
-/**
- * @dev: The parameter "throwable" will interrupt the function's loop and throw an error if set to true
- * and simply log the error & keep iterating on all the loop's addresses if set to false.
- */
+import { persistEmail } from '../../modules/Web3mail/utils/database';
+import { EmailSender, EmailType } from '.prisma/client';
+import { MailProviders, EmailNotificationType } from '../../types';
+import * as sgMail from '@sendgrid/mail';
+import { getUserEmailsByAddresses } from '../../modules/BuilderPlace/actions/user';
 
 export const sendMailToAddresses = async (
   emailSubject: string,
   emailContent: string,
   addresses: string[],
-  throwable = false,
   platformName: string,
-  providedDataProtector?: IExecDataProtector,
-  providedWeb3mail?: IExecWeb3mail,
+  providers: MailProviders,
+  notificationType: EmailNotificationType,
+  emailType: EmailType,
+  id?: string,
 ): Promise<{ successCount: number; errorCount: number }> => {
-  console.log('Sending email to addresses');
-  const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
-  if (!privateKey) {
-    throw new Error('Private key is not set');
-  }
   let sentCount = 0,
-    nonSentCount = 0;
-  let web3mail: IExecWeb3mail, dataProtector: IExecDataProtector;
+    nonSentCount = 0,
+    results: any[] = [],
+    emailSender: EmailSender;
+
+  console.log('Sending email to addresses');
 
   try {
-    if (!providedDataProtector) {
-      const protectorWebProvider = getProtectorProvider(privateKey);
-      dataProtector = new IExecDataProtector(protectorWebProvider);
-    } else {
-      dataProtector = providedDataProtector;
+    if (notificationType === EmailNotificationType.WEB2 && providers?.sendGrid) {
+      const sendersEmail = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;
+      if (!sendersEmail) {
+        throw new Error('Senders Email is not set');
+      }
+      emailSender = EmailSender.SENDGRID;
+      const usersEmails = await getUserEmailsByAddresses(addresses);
+      if (usersEmails && usersEmails.length > 0) {
+        const sendPromises = usersEmails.map(email =>
+          sendMarketingEmailTo(
+            // @ts-ignore
+            providers.sendGrid,
+            sendersEmail,
+            email,
+            emailSubject,
+            emailContent,
+          ),
+        );
+
+        results = await Promise.all(sendPromises);
+      }
+    } else if (notificationType === EmailNotificationType.WEB3) {
+      emailSender = EmailSender.IEXEC;
+      const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
+      if (!privateKey) {
+        throw new Error('Private key is not set');
+      }
+
+      if (providers.dataProtector && providers.web3mail) {
+        const sendPromises = addresses.map(address =>
+          sendWeb3MarketingEmailTo(
+            address,
+            providers.dataProtector as IExecDataProtector,
+            providers.web3mail as IExecWeb3mail,
+            emailSubject,
+            emailContent,
+            platformName,
+          ),
+        );
+
+        results = await Promise.all(sendPromises);
+      }
     }
-    if (!providedWeb3mail) {
-      const mailWeb3Provider = getMailProvider(privateKey);
-      web3mail = new IExecWeb3mail(mailWeb3Provider);
-    } else {
-      web3mail = providedWeb3mail;
-    }
 
-    const sendPromises = addresses.map(address =>
-      sendMarketingEmailTo(
-        address,
-        dataProtector,
-        web3mail,
-        emailSubject,
-        emailContent,
-        platformName,
-      ),
-    );
-
-    const results = await Promise.all(sendPromises);
-
+    /**
+     * @dev: If no ID is provided here it means that the emails are Marketing Emails,
+     * and the Database id will have the following format: <Date.getTime()-"address">
+     */
     results.forEach(result => {
       if (result.success) {
+        if (id) {
+          persistEmail(id, emailType, emailSender);
+        } else {
+          const nowMilliseconds = new Date().getTime();
+          const compositeId = nowMilliseconds + '-' + result.address;
+          persistEmail(compositeId, emailType, emailSender);
+        }
         sentCount++;
       } else {
         nonSentCount++;
       }
     });
-  } catch (e) {
-    /**@dev: No error should be thrown here if dataProtector or web3mail are provided */
-    throwError(e);
+  } catch (e: any) {
+    //TODO is this try catch useful ?
+    throw new Error(e.message);
   }
   return { successCount: sentCount, errorCount: nonSentCount };
 };
 
-const throwError = (message: any) => {
-  throw new Error(message);
-};
-
-const sendMarketingEmailTo = async (
+const sendWeb3MarketingEmailTo = async (
   address: string,
   dataProtector: IExecDataProtector,
   web3mail: IExecWeb3mail,
   emailSubject: string,
   emailContent: string,
   platformName: string,
-) => {
+): Promise<{ address: string; success: boolean } | { success: boolean; error: any }> => {
   try {
     console.log(`------- Sending web3mail to ${address} -------`);
 
@@ -85,7 +109,7 @@ const sendMarketingEmailTo = async (
     const protectedEmailAddress = await userGaveAccessToPlatform(address, dataProtector);
     if (!protectedEmailAddress) {
       console.warn(`sendMailToAddresses - User ${address} did not grant access to his email`);
-      return { success: false, error: 'access denied' };
+      throw new Error('access denied');
     }
 
     const mailSent = await web3mail.sendEmail({
@@ -96,9 +120,31 @@ const sendMarketingEmailTo = async (
       senderName: platformName,
     });
     console.log('sent email', mailSent);
-    return { success: true };
-  } catch (e) {
+    return { success: true, address };
+  } catch (e: any) {
     console.log(e);
-    return { success: false, error: e };
+    return { success: false, error: e.message };
+  }
+};
+const sendMarketingEmailTo = async (
+  sendGridProvider: typeof sgMail,
+  from: string,
+  email: string,
+  emailSubject: string,
+  emailContent: string,
+): Promise<{ address: string; success: boolean } | { success: boolean; error: any }> => {
+  try {
+    console.log(`------- Sending mail to ${email} -------`);
+
+    const [ClientResponse] = await sendGridProvider.send({
+      from: from,
+      to: email,
+      subject: emailSubject,
+      html: emailContent,
+    });
+    return { success: true, address: email };
+  } catch (e: any) {
+    console.log(e);
+    return { success: false, error: e.message };
   }
 };

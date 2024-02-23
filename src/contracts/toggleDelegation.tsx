@@ -26,7 +26,7 @@ export const toggleDelegation = async (
       tx = await walletClient.writeContract(request);
       toastMessages = {
         pending: 'Submitting the delegation...',
-        success: 'Congrats! the delegation is active',
+        success: 'Congrats! All is set',
         error: 'An error occurred while delegation process',
       };
     } else {

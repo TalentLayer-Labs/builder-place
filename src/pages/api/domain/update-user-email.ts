@@ -46,7 +46,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     // Step 2: Send verification Email
     await sendTransactionalEmailValidation(body.email, body.userId, body.name, body.domain);
 
-    res.status(200).json({ message: 'User email updated successfully', id: result.id });
+    res.status(200).json({ message: 'User email updated successfully', id: result?.id });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

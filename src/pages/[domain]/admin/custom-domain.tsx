@@ -40,9 +40,8 @@ export default function CustomDomain(
         account: account.address,
         message: builderPlace.id.toString(),
       });
-
       updateBuilderPlaceDomainMutation.mutate({
-        id: builderPlace?.id!.toString(),
+        id: builderPlace?.id.toString(),
         customDomain: customDomain,
         subdomain: builderPlace?.subdomain!,
         signature: signature,

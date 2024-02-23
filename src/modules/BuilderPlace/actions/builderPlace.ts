@@ -33,13 +33,14 @@ import {
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
 import { sendWelcomeMessage } from './discord';
+import { handleApiError } from '../utils/error';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
  * @param builderPlaceId
  */
 export const validateBuilderPlace = async (builderPlaceId: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     await prisma.builderPlace.update({
       where: {
@@ -54,18 +55,12 @@ export const validateBuilderPlace = async (builderPlaceId: string) => {
       id: builderPlaceId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_VALIDATING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_VALIDATING_BUILDERPLACE);
   }
 };
 
 export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Removing owner from pending domain:', data.id);
     await prisma.builderPlace.update({
@@ -84,18 +79,12 @@ export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => 
       id: data.ownerId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_REMOVING_BUILDERPLACE_OWNER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_REMOVING_BUILDERPLACE_OWNER);
   }
 };
 
 export const removeBuilderSubdomain = async (builderPlaceId: number) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Removing subdomain from pending BuilderPlace:', builderPlaceId);
     await prisma.builderPlace.update({
@@ -111,18 +100,12 @@ export const removeBuilderSubdomain = async (builderPlaceId: number) => {
       id: builderPlaceId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_REMOVING_BUILDERPLACE_SUBDOMAIN;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_REMOVING_BUILDERPLACE_SUBDOMAIN);
   }
 };
 
 export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     await prisma.builderPlace.update({
       where: {
@@ -140,19 +123,13 @@ export const setBuilderPlaceOwner = async (data: SetBuilderPlaceOwner) => {
       id: data.ownerId,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_SETTING_BUILDERPLACE_OWNER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_SETTING_BUILDERPLACE_OWNER);
   }
 };
 
 // TODO! createBuilderPlace, can be used for the onboarding workflow maybe for the creating the subdomain & deleteBuilderPlace
 export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Update Domain invoke, ', builderPlace);
     let response;
@@ -232,18 +209,12 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
 
     return response;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_DOMAIN;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_DOMAIN);
   }
 };
 
 export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log("getting builderPlace with owner's TlId & postgres id:", ownerTalentLayerId, id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -262,13 +233,7 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
@@ -276,7 +241,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
   address: string,
   builderPlaceId: string,
 ) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('getting builderPlace with admin address & id:', address, builderPlaceId);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -290,25 +255,19 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
       },
     });
 
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
 export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log("getting builderPlace with owner's TalentLayer id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -325,18 +284,12 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
 export const getBuilderPlaceByDomain = async (domain: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('getting builderPlace ', domain);
     if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
@@ -355,18 +308,12 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
       return builderPlace;
     }
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
 export const getBuilderPlaceById = async (id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting builderPlace with id:', id);
     const builderPlaceSubdomain = await prisma.builderPlace.findUnique({
@@ -383,13 +330,7 @@ export const getBuilderPlaceById = async (id: string) => {
       return builderPlaceSubdomain;
     }
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
@@ -405,7 +346,7 @@ export const getDiscordWebhookDetailsByBuilderPlaceId = async (id: string) => {
 
     if (builderPlace) {
       return {
-        discordWebhook: builderPlace.discordWebhook,
+        discordWebhookUrl: builderPlace.discordWebhookUrl,
         icon: builderPlace.icon,
         subdomain: builderPlace.subdomain,
         customDomain: builderPlace.customDomain,
@@ -424,7 +365,7 @@ export const getDiscordWebhookDetailsByBuilderPlaceId = async (id: string) => {
 };
 
 export const getBuilderPlaceByOwnerId = async (id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log("getting builderPlace with owner's id:", id);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -438,25 +379,19 @@ export const getBuilderPlaceByOwnerId = async (id: string) => {
         collaborators: true,
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
 export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('getting builderPlace with subdomain:', subdomain);
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
@@ -475,18 +410,12 @@ export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
 
     return null;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
 
 export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const newBuilderPlace = await prisma.builderPlace.create({
       data: {
@@ -494,7 +423,7 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
         about: data.about,
         preferredWorkTypes: data.preferredWorkTypes,
         palette: { ...data.palette },
-        profilePicture: data.profilePicture,
+        icon: data.icon,
         status: EntityStatus.PENDING,
       },
     });
@@ -504,19 +433,13 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
       id: newBuilderPlace.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CREATING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_CREATING_BUILDERPLACE);
   }
 };
 
 export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
   console.log('Removing collaborator', body.collaboratorAddress);
-  let errorMessage;
+  let errorMessage = '';
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
@@ -545,18 +468,12 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
       id: collaborator.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_REMOVING_BUILDERPLACE_OWNER;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_REMOVING_BUILDERPLACE_OWNER);
   }
 };
 
 export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollaborator) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
@@ -592,22 +509,16 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
       id: newCollaborator.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_ADDING_COLLABORATOR;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_ADDING_COLLABORATOR);
   }
 };
 
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
 
-    if (builderPlace.discordWebhook != "" && builderPlace.discordWebhook != undefined) {
-      await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhook);
+    if (builderPlace.discordWebhookUrl != "" && builderPlace.discordWebhookUrl != undefined) {
+      await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhookUrl);
     }
 
     const updatedBuilderPlace = await prisma.builderPlace.update({
@@ -627,7 +538,7 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         preferredWorkTypes: builderPlace.preferredWorkTypes,
         presentation: builderPlace.presentation,
         profilePicture: builderPlace.profilePicture,
-        discordWebhook: builderPlace.discordWebhook,
+        discordWebhookUrl: builderPlace.discordWebhookUrl,
       },
     });
 
@@ -636,19 +547,13 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
       id: updatedBuilderPlace.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_UPDATING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_UPDATING_BUILDERPLACE);
   }
 
 };
 
 export const deleteBuilderPlace = async (id: string) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const builderPlace = await prisma.builderPlace.delete({
       where: {
@@ -662,12 +567,6 @@ export const deleteBuilderPlace = async (id: string) => {
       id: builderPlace.id,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_DELETING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
+    handleApiError(error, errorMessage, ERROR_DELETING_BUILDERPLACE);
   }
 };

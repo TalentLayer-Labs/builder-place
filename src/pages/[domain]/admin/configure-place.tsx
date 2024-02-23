@@ -8,7 +8,7 @@ import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import AccessDenied from '../../../components/AccessDenied';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
-import CustomDomain from '../../../components/CustomDomain';
+import SubdomainInput from '../../../components/Form/SubdomainInput';
 import CustomizePalette from '../../../components/CustomizePalette';
 import DefaultPalettes from '../../../components/DefaultPalettes';
 import Loading from '../../../components/Loading';
@@ -34,7 +34,7 @@ interface IFormValues {
   baseline: string;
   about: string;
   aboutTech: string;
-  profilePicture?: string;
+  icon?: string;
   cover?: string;
   discordWebhook?: string;
 }
@@ -66,7 +66,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     baseline: builderPlace?.baseline || '',
     about: builderPlace?.about || '',
     aboutTech: builderPlace?.aboutTech || '',
-    profilePicture: builderPlace?.profilePicture || '',
+    icon: builderPlace?.icon || '',
     cover: builderPlace?.cover || '',
     discordWebhook: builderPlace?.discordWebhook || '',
   };
@@ -145,7 +145,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           baseline: values.baseline,
           about: values.about,
           aboutTech: values.aboutTech,
-          profilePicture: values.profilePicture,
+          icon: values.icon,
           cover: values.cover,
           palette,
           signature,
@@ -266,7 +266,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                   </span>
                 </div>
 
-                <CustomDomain />
+                <SubdomainInput />
 
                 <div>
                   <label className='block'>
@@ -293,10 +293,10 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                 />
 
                 <UploadImage
-                  fieldName='profilePicture'
-                  label='profile picture'
-                  legend='large rectangle format, used in top of your place'
-                  src={values.profilePicture}
+                  fieldName='icon'
+                  label='icon'
+                  legend='square format'
+                  src={values.icon}
                   setFieldValue={setFieldValue}
                 />
 

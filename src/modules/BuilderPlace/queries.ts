@@ -4,7 +4,12 @@ import { getBuilderPlaceByDomain } from './actions/builderPlace';
 // Used inside getServerSideProps
 export const getBuilderPlace = async (domain: string): Promise<IBuilderPlace> => {
   console.log('serverProps', domain);
-  const builderPlace = await getBuilderPlaceByDomain(domain);
+  let builderPlace;
+  try {
+    builderPlace = await getBuilderPlaceByDomain(domain);
+  } catch (error: any) {
+    console.log(error.message);
+  }
 
   if (!builderPlace) {
     throw new Error(`BuilderPlace not found for domain ${domain}`);

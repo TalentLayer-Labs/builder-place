@@ -217,7 +217,7 @@ function ServiceForm({
         if (newId) {
           router.push(`/work/${newId}`);
         }
-        if (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL == 'true' && !platformHasAccess) {
+        if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
           createWeb3mailToast();
         }
       } catch (error) {

@@ -2,6 +2,10 @@ import { TalentLayerClient } from '@talentlayer/client';
 import { Connector } from 'wagmi';
 import { ICompletionScores } from './utils/profile';
 import { IWorkerProfile } from './modules/BuilderPlace/types';
+import { IExecDataProtector } from '@iexec/dataprotector';
+import { IExecWeb3mail } from '@iexec/web3mail';
+import * as sgMail from '@sendgrid/mail';
+import { User } from '.prisma/client';
 
 export type IUser = {
   id: string;
@@ -24,10 +28,10 @@ export type IUserDetails = {
   about?: string;
   skills_raw?: string;
   user: IUser;
-  web3mailPreferences?: IWeb3mailPreferences;
+  web3mailPreferences?: IEmailPreferences;
 };
 
-export type IWeb3mailPreferences = {
+export type IEmailPreferences = {
   activeOnNewService: boolean;
   activeOnNewProposal: boolean;
   activeOnProposalValidated: boolean;
@@ -292,17 +296,7 @@ export type IUserGain = {
   totalGain: string;
 };
 
-export enum EmailType {
-  NewProposal = 'newProposal',
-  ProposalValidated = 'proposalValidated',
-  FundRelease = 'fundRelease',
-  Review = 'review',
-  PlatformMarketing = 'platformMarketing',
-  ProtocolMarketing = 'protocolMarketing',
-  NewService = 'newService',
-}
-
-export enum NotificationApiUri {
+export enum EmailNotificationApiUri {
   NewProposal = 'new-proposal',
   ProposalValidated = 'proposal-validated',
   FundRelease = 'fund-release',
@@ -310,29 +304,35 @@ export enum NotificationApiUri {
   NewService = 'new-service',
 }
 
-export type Web3MailStats = {
+export type MailProviders = {
+  dataProtector?: IExecDataProtector;
+  web3mail?: IExecWeb3mail;
+  sendGrid?: typeof sgMail;
+};
+
+export enum EmailNotificationType {
+  WEB3,
+  WEB2,
+}
+
+export type EmailStats = {
   totalSent: number;
-  totalSentByMonth: { _id: number; count: number }[];
+  totalSentByMonth: number[];
   totalSentThisMonth: number;
   totalContact: number;
   totalCronRunning: number;
 };
 
-// export enum PreferredWorkTypes {
-//   jobs = 'jobs',
-//   bounties = 'bounties',
-//   grants = 'grants',
-//   gigs = 'gigs',
-// }
-
-export type iTalentLayerContext = {
-  loading: boolean;
-  canUseDelegation: boolean;
-  refreshData: () => Promise<boolean>;
-  refreshWorkerProfile: () => Promise<boolean>;
-  user?: IUser;
-  account?: IAccount;
-  workerProfile?: IWorkerProfile;
-  completionScores?: ICompletionScores;
-  talentLayerClient?: TalentLayerClient;
-};
+/**
+ * @dev We want to normalize all database mutations
+ * A mutation must required:
+ *  - data: the data to mutate with a dynamic type
+ *  - signature: the signature of the data by the current wallet. The only for us to confirm the ownership of the address
+ *  - domain: the domain of the BP used which could be the default one, or any BuilderPlaces. It will be used inside email.
+ */
+export interface IMutation<T> {
+  data: T;
+  signature: `0x${string}` | Uint8Array;
+  address: `0x${string}`;
+  domain: string;
+}
