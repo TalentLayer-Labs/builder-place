@@ -1,12 +1,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { MenuItem, workerNavigation } from '../components/Layout/navigation';
 import { PostingCondition } from '../modules/BuilderPlace/types';
-import { createPublicClient, http } from 'viem';
-import { getViemFormattedChain } from '../chains';
-import { NetworkEnum } from '../types';
-import { PublicClient } from 'viem/clients/createPublicClient';
+import { Abi } from 'viem';
 import { erc20ABI, erc721ABI } from 'wagmi';
 import TalentLayerContext from '../context/talentLayer';
+import { generateClients } from '../utils/jobPostConditions';
 
 export interface IReturnPostingCondition {
   condition: PostingCondition;
@@ -102,19 +100,6 @@ const useCheckJobPostConditions = (
     returnedPostingConditions,
     canPost,
   };
-};
-
-const generateClients = (chainIdSet: Set<number>): Map<number, PublicClient> => {
-  const clients = new Map<number, PublicClient>();
-  chainIdSet.forEach(chainId => {
-    const publicClient = createPublicClient({
-      chain: getViemFormattedChain(chainId as NetworkEnum),
-      // chain: mainnet,
-      transport: http(),
-    });
-    clients.set(chainId, publicClient as PublicClient);
-  });
-  return clients;
 };
 
 export default useCheckJobPostConditions;

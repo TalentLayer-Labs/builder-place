@@ -1,9 +1,8 @@
 import { JobConditionsChainIdEnum } from '../modules/BuilderPlace/types';
 import { createPublicClient, http } from 'viem';
-import { getViemFormattedChain } from '../chains';
-import { NetworkEnum } from '../types';
 import { erc20ABI, erc721ABI } from 'wagmi';
 import { useState } from 'react';
+import { getViemFormattedChainForJobConditions } from '../utils/jobPostConditions';
 
 const useCheckSmartContract = () => {
   const [nftSubmitting, setNftSubmitting] = useState<boolean>(false);
@@ -19,8 +18,7 @@ const useCheckSmartContract = () => {
     try {
       type === 'NFT' ? setNftSubmitting(true) : setTokenSubmitting(true);
       const publicClient = createPublicClient({
-        //TODO: Uniformiser les chainId
-        chain: getViemFormattedChain(chainId as NetworkEnum),
+        chain: getViemFormattedChainForJobConditions(chainId),
         transport: http(),
       });
 
