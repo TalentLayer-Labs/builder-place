@@ -268,21 +268,21 @@ export type PostingCondition = NFTCondition | TokenCondition;
 
 export interface NFTCondition {
   type: 'NFT';
-  chainId: ChainIdEnum; // Chain ID of the NFT contract
+  chainId: JobConditionsChainIdEnum; // Chain ID of the NFT contract
   address: string; // Address of the NFT contract
   contractName: string; // Name of the NFT contract
 }
 
 export interface TokenCondition {
   type: 'Token';
-  chainId: ChainIdEnum; // Chain ID of the token contract
+  chainId: JobConditionsChainIdEnum; // Chain ID of the token contract
   address: string; // Address of the token contract
   contractName: string; // Name of the NFT contract
   tokenSign: string; // Token sign
   minimumAmount: number; // Minimum amount of tokens required
 }
 
-export enum ChainIdEnum {
+export enum JobConditionsChainIdEnum {
   ETHEREUM = 1,
   ARBITRUM = 42161,
   IEXEC = 134,

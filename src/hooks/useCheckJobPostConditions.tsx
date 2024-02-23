@@ -13,7 +13,7 @@ export interface IReturnPostingCondition {
   validated: boolean;
 }
 
-const useCheckPostConditions = (
+const useCheckJobPostConditions = (
   isPostingAllowed: boolean = false,
   jobPostConditions?: PostingCondition[],
 ): {
@@ -117,4 +117,4 @@ const generateClients = (chainIdSet: Set<number>): Map<number, PublicClient> => 
   return clients;
 };
 
-export default useCheckPostConditions;
+export default useCheckJobPostConditions;

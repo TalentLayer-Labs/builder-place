@@ -8,7 +8,7 @@ import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPl
 import ConnectButton from '../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../modules/Messaging/context/messging';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-import useCheckPostConditions from '../../../hooks/useCheckPostConditions';
+import useCheckJobPostConditions from '../../../hooks/useCheckJobPostConditions';
 import Loading from '../../../components/Loading';
 import ConditionsStatusCard from '../../../components/CreateService/ConditionsStatusCard ';
 
@@ -20,7 +20,7 @@ function CreateService() {
   const { account, user } = useContext(TalentLayerContext);
   const { userExists } = useContext(MessagingContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
-  const { returnedPostingConditions, isLoading, canPost } = useCheckPostConditions(
+  const { returnedPostingConditions, isLoading, canPost } = useCheckJobPostConditions(
     builderPlace?.jobPostingConditions.allowPosts,
     builderPlace?.jobPostingConditions.conditions,
   );

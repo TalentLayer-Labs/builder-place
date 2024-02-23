@@ -6,7 +6,7 @@ import { themes } from '../../utils/themes';
 import CustomizePalette from '../CustomizePalette';
 import { slugify } from '../../modules/BuilderPlace/utils';
 import {
-  ChainIdEnum,
+  JobConditionsChainIdEnum,
   iBuilderPlacePalette,
   JobPostingConditions,
 } from '../../modules/BuilderPlace/types';
@@ -69,7 +69,6 @@ const validationSchema = Yup.object({
 const ConfigurePlatformForm = () => {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const [palette, setPalette] = useState<iBuilderPlacePalette | undefined>(builderPlace?.palette);
-  console.log('palette', palette);
   const [colorName, setColorName] = useState('primary');
   const [color, setColor] = useColor(
     palette ? palette[colorName as keyof iBuilderPlacePalette] : '#FF71A2',
@@ -99,8 +98,8 @@ const ConfigurePlatformForm = () => {
       tempNftContractName: '',
       tempTokenContractName: '',
       tempTokenAmount: 0,
-      tempNftChainId: ChainIdEnum.ETHEREUM,
-      tempTokenChainId: ChainIdEnum.ETHEREUM,
+      tempNftChainId: JobConditionsChainIdEnum.ETHEREUM,
+      tempTokenChainId: JobConditionsChainIdEnum.ETHEREUM,
     },
   };
 

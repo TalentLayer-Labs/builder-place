@@ -1,4 +1,4 @@
-import { ChainIdEnum } from '../modules/BuilderPlace/types';
+import { JobConditionsChainIdEnum } from '../modules/BuilderPlace/types';
 import { createPublicClient, http } from 'viem';
 import { getViemFormattedChain } from '../chains';
 import { NetworkEnum } from '../types';
@@ -9,7 +9,7 @@ const useCheckSmartContract = () => {
   const [nftSubmitting, setNftSubmitting] = useState<boolean>(false);
   const [tokenSubmitting, setTokenSubmitting] = useState<boolean>(false);
   const checkSmartContractName = async (
-    chainId: ChainIdEnum,
+    chainId: JobConditionsChainIdEnum,
     type: 'NFT' | 'Token',
     address: string,
   ): Promise<{ contractName: string; tokenSign: string; error: boolean }> => {

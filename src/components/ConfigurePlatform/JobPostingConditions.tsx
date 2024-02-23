@@ -1,5 +1,5 @@
 import { ErrorMessage, Field, FieldArray } from 'formik';
-import { ChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
+import { JobConditionsChainIdEnum, JobPostingConditions } from '../../modules/BuilderPlace/types';
 import { isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
@@ -12,8 +12,8 @@ export interface TempFormValues {
   tempNftContractName?: string;
   tempTokenContractName?: string;
   tempTokenAmount?: number;
-  tempNftChainId: ChainIdEnum;
-  tempTokenChainId: ChainIdEnum;
+  tempNftChainId: JobConditionsChainIdEnum;
+  tempTokenChainId: JobConditionsChainIdEnum;
 }
 interface JobPostingConditionsProps {
   existingJobPostingConditions?: JobPostingConditions;
@@ -37,7 +37,7 @@ function JobPostingConditionsFieldArray({
     jobCondition: {
       address?: string;
       minimumAmount?: number;
-      chainId: ChainIdEnum;
+      chainId: JobConditionsChainIdEnum;
       type: 'NFT' | 'Token';
     },
   ): Promise<void> => {
@@ -102,12 +102,12 @@ function JobPostingConditionsFieldArray({
   };
 
   // Dynamically constructing the ChainIds object from the ChainIdEnum
-  const ChainIds = Object.keys(ChainIdEnum)
+  const ChainIds = Object.keys(JobConditionsChainIdEnum)
     .filter(key => isNaN(Number(key)))
-    .reduce((obj: Record<string, ChainIdEnum>, key) => {
-      obj[key] = ChainIdEnum[key as keyof typeof ChainIdEnum];
+    .reduce((obj: Record<string, JobConditionsChainIdEnum>, key) => {
+      obj[key] = JobConditionsChainIdEnum[key as keyof typeof JobConditionsChainIdEnum];
       return obj;
-    }, {} as Record<string, ChainIdEnum>);
+    }, {} as Record<string, JobConditionsChainIdEnum>);
 
   // console.log('ChainIds', ChainIds);
 
@@ -176,7 +176,7 @@ function JobPostingConditionsFieldArray({
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'NFT',
                           address: tempFormValues?.tempNftAddress,
-                          chainId: tempFormValues?.tempNftChainId as ChainIdEnum,
+                          chainId: tempFormValues?.tempNftChainId as JobConditionsChainIdEnum,
                         })
                       }
                     />
@@ -228,7 +228,7 @@ function JobPostingConditionsFieldArray({
                           type: 'Token',
                           address: tempFormValues?.tempTokenAddress,
                           minimumAmount: tempFormValues?.tempTokenAmount,
-                          chainId: tempFormValues?.tempTokenChainId as ChainIdEnum,
+                          chainId: tempFormValues?.tempTokenChainId as JobConditionsChainIdEnum,
                         })
                       }
                     />

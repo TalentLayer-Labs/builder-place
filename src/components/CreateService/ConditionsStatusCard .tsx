@@ -1,16 +1,20 @@
-import { IReturnPostingCondition } from '../../hooks/useCheckPostConditions';
-import { ChainIdEnum, PostingCondition } from '../../modules/BuilderPlace/types';
+import { IReturnPostingCondition } from '../../hooks/useCheckJobPostConditions';
+import { JobConditionsChainIdEnum, PostingCondition } from '../../modules/BuilderPlace/types';
 
 const blockScanList = {
-  [ChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
-  [ChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/',
-  [ChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/',
-  [ChainIdEnum.POLYGON]: 'https://polygonscan.com/',
-  [ChainIdEnum.BNB]: 'https://bscscan.com/',
+  [JobConditionsChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
+  [JobConditionsChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/',
+  [JobConditionsChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/',
+  [JobConditionsChainIdEnum.POLYGON]: 'https://polygonscan.com/',
+  [JobConditionsChainIdEnum.BNB]: 'https://bscscan.com/',
 };
 
 const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition) => {
-  const getBlockExplorerLink = (chainId: ChainIdEnum, address: string, type: string) => {
+  const getBlockExplorerLink = (
+    chainId: JobConditionsChainIdEnum,
+    address: string,
+    type: string,
+  ) => {
     const baseLink = blockScanList[chainId];
     const path = type === 'NFT' ? 'address' : 'token';
     return `${baseLink}${path}/${address}`;
