@@ -225,7 +225,7 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string
         collaborators: true,
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -276,7 +276,7 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
         },
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -302,7 +302,7 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
         },
       });
 
-      console.log('fetched builderPlaces, ', builderPlace);
+      console.log('fetched builderPlaces, ', builderPlace?.subdomain);
 
       return builderPlace;
     }
@@ -324,7 +324,7 @@ export const getBuilderPlaceById = async (id: string) => {
         collaborators: true,
       },
     });
-    console.log('Fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('Fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -372,7 +372,7 @@ export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
       //   collaborators: true,
       // },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }

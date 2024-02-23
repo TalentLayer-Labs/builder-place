@@ -3,7 +3,7 @@ import { JobConditionsChainIdEnum, JobPostingConditions } from '../../modules/Bu
 import { isAddress } from 'viem';
 import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
-import useCheckSmartContract from '../../hooks/useCheckSmartContract';
+import useGetContractData from '../../hooks/useGetContractData';
 import AsyncButton from '../AsyncButton';
 
 export interface TempFormValues {
@@ -28,7 +28,7 @@ function JobPostingConditionsFieldArray({
   tempFormValues,
   setFieldError,
 }: JobPostingConditionsProps) {
-  const { checkSmartContractName, nftSubmitting, tokenSubmitting } = useCheckSmartContract();
+  const { getContractData, nftSubmitting, tokenSubmitting } = useGetContractData();
 
   const addJobPostingConditions = async (
     push: (obj: any) => void,
@@ -53,7 +53,7 @@ function JobPostingConditionsFieldArray({
       );
       error = true;
     } else {
-      const response = await checkSmartContractName(
+      const response = await getContractData(
         jobCondition.chainId,
         jobCondition.type,
         jobCondition.address,
@@ -93,12 +93,7 @@ function JobPostingConditionsFieldArray({
 
     if (error) return;
     push({ ...jobCondition, contractName, tokenSign });
-    setFieldValue('tempFormValues.tempNftAddress', '');
-    setFieldValue('tempFormValues.tempTokenAddress', '');
-    setFieldValue('tempFormValues.tempNftContractName', '');
-    setFieldValue('tempFormValues.tempTokenContractName', '');
-    setFieldValue('tempFormValues.tempTokenAmount', '');
-    setFieldValue('tempFormValues.tempTokenChainId', '');
+    resetErrorMessages();
   };
 
   // Dynamically constructing the ChainIds object from the ChainIdEnum
@@ -109,13 +104,18 @@ function JobPostingConditionsFieldArray({
       return obj;
     }, {} as Record<string, JobConditionsChainIdEnum>);
 
-  // console.log('ChainIds', ChainIds);
-
   const chainIdOptions = Object.entries(ChainIds).map(([key, value]) => {
     return { label: key, value: value };
   });
 
-  // console.log('chainIdOptions', chainIdOptions);
+  const resetErrorMessages = () => {
+    setFieldValue('tempFormValues.tempNftAddress', '');
+    setFieldValue('tempFormValues.tempTokenAddress', '');
+    setFieldValue('tempFormValues.tempNftContractName', '');
+    setFieldValue('tempFormValues.tempTokenContractName', '');
+    setFieldValue('tempFormValues.tempTokenAmount', '');
+    setFieldValue('tempFormValues.tempTokenChainId', '');
+  };
 
   return (
     <div>
@@ -162,7 +162,10 @@ function JobPostingConditionsFieldArray({
                           setFieldValue('tempFormValues.tempNftChainId', e.target.value)
                         }>
                         {chainIdOptions.map(option => (
-                          <option key={option.value} value={option.value}>
+                          <option
+                            className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                            key={option.value}
+                            value={option.value}>
                             {option.label}
                           </option>
                         ))}

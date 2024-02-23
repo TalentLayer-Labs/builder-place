@@ -4,10 +4,10 @@ import { erc20ABI, erc721ABI } from 'wagmi';
 import { useState } from 'react';
 import { getViemFormattedChainForJobConditions } from '../utils/jobPostConditions';
 
-const useCheckSmartContract = () => {
+const useGetContractData = () => {
   const [nftSubmitting, setNftSubmitting] = useState<boolean>(false);
   const [tokenSubmitting, setTokenSubmitting] = useState<boolean>(false);
-  const checkSmartContractName = async (
+  const getContractData = async (
     chainId: JobConditionsChainIdEnum,
     type: 'NFT' | 'Token',
     address: string,
@@ -50,10 +50,10 @@ const useCheckSmartContract = () => {
   };
 
   return {
-    checkSmartContractName,
+    getContractData,
     nftSubmitting,
     tokenSubmitting,
   };
 };
 
-export default useCheckSmartContract;
+export default useGetContractData;
