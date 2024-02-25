@@ -10,27 +10,28 @@ datasource db {
 // ********************* BuilderPlace *********************
 
 model BuilderPlace {
-  id                       Int          @id @default(autoincrement())
-  status                   EntityStatus @default(PENDING)
-  name                     String
-  subdomain                String?      @unique
-  customDomain             String?      @unique
-  discordWebhookUrl        String?
-  talentLayerPlatformId    String?      @unique
-  talentLayerPlatformName  String?      @unique
-  owner                    User?        @relation(fields: [ownerId], references: [id])
-  ownerId                  Int?         @unique
-  collaborators            User[]       @relation("BuilderPlaceCollaborators")
-  baseline                 String?
-  about                    String?
-  aboutTech                String?
-  presentation             String?
-  logo                     String?
-  icon                     String?
-  cover                    String?
-  palette                  Json
-  jobPostingConditions     Json?
-  preferredWorkTypes       WorkType[]
+  id                      Int                   @id @default(autoincrement())
+  status                  EntityStatus          @default(PENDING)
+  name                    String
+  subdomain               String?               @unique
+  customDomain            String?               @unique
+  discordWebhookUrl       String?
+  talentLayerPlatformId   String?               @unique
+  talentLayerPlatformName String?               @unique
+  owner                   User?                 @relation(fields: [ownerId], references: [id])
+  ownerId                 Int?                  @unique
+  collaborators           User[]                @relation("BuilderPlaceCollaborators")
+  baseline                String?
+  about                   String?
+  aboutTech               String?
+  presentation            String?
+  logo                    String?
+  icon                    String?
+  cover                   String?
+  palette                 Json
+  jobPostingConditions    Json?
+  preferredWorkTypes      WorkType[]
+  DiscordNotification     DiscordNotification[]
 }
 
 model User {
@@ -107,4 +108,21 @@ model Email {
   sentAt DateTime
   type   EmailType
   sender EmailSender
+}
+
+// ********************* Discord Notification *********************
+
+enum DiscordNotificationStatus {
+  NEW
+  SUCCESS
+  FAIL
+}
+
+model DiscordNotification {
+  id             Int                       @id @default(autoincrement())
+  cid            String
+  failReason     String?
+  status         DiscordNotificationStatus @default(NEW)
+  builderPlace   BuilderPlace              @relation(fields: [builderPlaceId], references: [id])
+  builderPlaceId Int
 }

@@ -154,7 +154,7 @@ function ServiceForm({
             user.address.toLowerCase(),
             cid,
             !!existingService,
-            builderPlace.id
+            builderPlace.id,
           );
           tx = response.data.transaction;
         } else {

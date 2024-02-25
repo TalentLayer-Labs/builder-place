@@ -34,7 +34,7 @@ export interface UpdateBuilderPlace {
   cover?: string;
   profilePicture?: string;
   signature: `0x${string}` | Uint8Array;
-  discordWebhook?: string;
+  discordWebhookUrl?: string;
 }
 export interface ValidateBuilderPlaceAndOwner {
   builderPlaceId: string;

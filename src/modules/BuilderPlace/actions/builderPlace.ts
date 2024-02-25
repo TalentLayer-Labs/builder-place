@@ -32,7 +32,7 @@ import {
   validDomainRegex,
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
-import { sendWelcomeMessage } from './discord';
+import { sendWelcomeMessage } from '../../Notifications/discord';
 import { handleApiError } from '../utils/error';
 
 /**
@@ -334,36 +334,6 @@ export const getBuilderPlaceById = async (id: string) => {
   }
 };
 
-
-export const getDiscordWebhookDetailsByBuilderPlaceId = async (id: string) => {
-  let errorMessage;
-  try {
-    const builderPlace = await prisma.builderPlace.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    if (builderPlace) {
-      return {
-        discordWebhookUrl: builderPlace.discordWebhookUrl,
-        icon: builderPlace.icon,
-        subdomain: builderPlace.subdomain,
-        customDomain: builderPlace.customDomain,
-        name: builderPlace.name
-      };
-    }
-  } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_FETCHING_BUILDERPLACE;
-    } else {
-      errorMessage = error.message;
-    }
-    console.log(error.message);
-    throw new Error(errorMessage);
-  }
-};
-
 export const getBuilderPlaceByOwnerId = async (id: string) => {
   let errorMessage = '';
   try {
@@ -517,9 +487,8 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   let errorMessage = '';
   try {
 
-    if (builderPlace.discordWebhookUrl != "" && builderPlace.discordWebhookUrl != undefined) {
-      await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhookUrl);
-    }
+    const welcomeMessageResult = await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhookUrl);
+    console.log("welcome message", welcomeMessageResult);
 
     const updatedBuilderPlace = await prisma.builderPlace.update({
       where: {

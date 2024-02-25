@@ -11,7 +11,9 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../modules/BuilderPlace/actions/transactionCounter';
-import { sendNewServiceNotification } from '../../../modules/BuilderPlace/actions/discord';
+import { sendNewServiceNotification } from '../../../modules/Notifications/discord';
+import prisma from '../../../postgre/postgreClient';
+import { createDiscordNotificationEntry } from '../../../modules/Notifications/action';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userId, userAddress, cid, chainId, existingService, builderPlaceId } = req.body;
@@ -54,10 +56,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           functionName: 'createService',
           args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
         });
+
+        await createDiscordNotificationEntry(cid, builderPlaceId);
       }
 
       await incrementWeeklyTransactionCounter(worker, res);
-      await sendNewServiceNotification(builderPlaceId, "0", cid);
 
       res.status(200).json({ transaction: transaction });
     }
