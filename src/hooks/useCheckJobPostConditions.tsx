@@ -63,6 +63,7 @@ const useCheckJobPostConditions = (
             continue;
           }
 
+          let validated = false;
           if (condition.type === 'NFT') {
             data = await client.readContract({
               address: condition.address as `0x${string}`,
@@ -70,6 +71,7 @@ const useCheckJobPostConditions = (
               functionName: 'balanceOf',
               args: [account.address],
             });
+            validated = data > 0n;
           } else if (condition.type === 'Token') {
             data = await client.readContract({
               address: condition.address as `0x${string}`,
@@ -77,9 +79,9 @@ const useCheckJobPostConditions = (
               functionName: 'balanceOf',
               args: [account.address],
             });
+            validated = data > BigInt(condition.parsedMinimumAmount);
           }
 
-          const validated = data > 0n;
           allConditions.push({ condition, validated });
           if (!validated) allConditionsMet = false;
         } catch (error) {

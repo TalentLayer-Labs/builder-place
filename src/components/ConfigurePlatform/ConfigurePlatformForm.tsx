@@ -17,7 +17,7 @@ import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlace
 import { useColor } from 'react-color-palette';
 import { showErrorTransactionToast } from '../../utils/toast';
 import useUpdatePlatform from '../../modules/BuilderPlace/hooks/platform/useUpdatePlatform';
-import JobPostingConditionsFieldArray, { TempFormValues } from './JobPostingConditions';
+import JobPostingConditionsFieldArray, { TempFormValues } from './JobPostingConditionsFieldArray';
 
 export interface IConfigurePlaceFormValues {
   subdomain: string;

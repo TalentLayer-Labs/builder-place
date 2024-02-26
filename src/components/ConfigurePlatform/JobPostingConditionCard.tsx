@@ -34,12 +34,12 @@ const JobPostingConditionCard = ({ index, condition, remove }: JobPostingConditi
                 <div className='text-gray-800'>{condition.chainId}</div>
               </div>
               <div className='mr-4'>
-                <div className='text-sm font-semibold text-gray-600'>Minimum Amount:</div>
-                <div className='text-gray-800'>{condition.minimumAmount}</div>
-              </div>
-              <div>
                 <div className='text-sm font-semibold text-gray-600'>Contract Name:</div>
                 <div className='text-gray-800'>{condition.contractName}</div>
+              </div>
+              <div>
+                <div className='text-sm font-semibold text-gray-600'>Minimum Amount:</div>
+                <div className='text-gray-800'>{condition.minimumAmount}</div>
               </div>
             </div>
           </>

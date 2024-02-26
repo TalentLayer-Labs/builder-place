@@ -279,7 +279,8 @@ export interface TokenCondition {
   address: string; // Address of the token contract
   contractName: string; // Name of the NFT contract
   tokenSign: string; // Token sign
-  minimumAmount: number; // Minimum amount of tokens required
+  minimumAmount: number; // Minimum amount of tokens required for frontend display
+  parsedMinimumAmount: string; // Minimum amount of tokens required in the smallest smart contract uint
 }
 
 export enum JobConditionsChainIdEnum {

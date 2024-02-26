@@ -5,6 +5,7 @@ import JobPostingConditionCard from './JobPostingConditionCard';
 import { ZERO_ADDRESS } from '../../utils/constant';
 import useGetContractData from '../../hooks/useGetContractData';
 import AsyncButton from '../AsyncButton';
+import { ethers } from 'ethers';
 
 export interface TempFormValues {
   tempNftAddress?: string;
@@ -44,6 +45,7 @@ function JobPostingConditionsFieldArray({
     let error = false;
     let contractName = '';
     let tokenSign = '';
+    let parsedMinimumAmount = '';
     if (!jobCondition.address || (jobCondition.address && !isAddress(jobCondition.address))) {
       setFieldError(
         jobCondition.type === 'NFT'
@@ -70,6 +72,12 @@ function JobPostingConditionsFieldArray({
       } else {
         contractName = response.contractName;
         tokenSign = response.tokenSign;
+
+        if (jobCondition.type === 'Token' && jobCondition.minimumAmount) {
+          parsedMinimumAmount = ethers.utils
+            .parseUnits(jobCondition.minimumAmount.toString(), response.decimals)
+            .toString();
+        }
       }
     }
 
@@ -92,7 +100,7 @@ function JobPostingConditionsFieldArray({
     }
 
     if (error) return;
-    push({ ...jobCondition, contractName, tokenSign });
+    push({ ...jobCondition, parsedMinimumAmount, contractName, tokenSign });
     resetErrorMessages();
   };
 

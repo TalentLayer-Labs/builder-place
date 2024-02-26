@@ -11,12 +11,14 @@ const useGetContractData = () => {
     chainId: JobConditionsChainIdEnum,
     type: 'NFT' | 'Token',
     address: string,
-  ): Promise<{ contractName: string; tokenSign: string; error: boolean }> => {
+  ): Promise<{ contractName: string; tokenSign: string; decimals: number; error: boolean }> => {
     let contractName = '';
     let tokenSign = '';
+    let decimals = 0;
     let error = false;
     try {
       type === 'NFT' ? setNftSubmitting(true) : setTokenSubmitting(true);
+
       const publicClient = createPublicClient({
         chain: getViemFormattedChainForJobConditions(chainId),
         transport: http(),
@@ -39,6 +41,11 @@ const useGetContractData = () => {
           abi: erc20ABI,
           functionName: 'symbol',
         });
+        decimals = await publicClient.readContract({
+          address: address as `0x${string}`,
+          abi: erc20ABI,
+          functionName: 'decimals',
+        });
       }
     } catch (e) {
       // console.log('Error checking contract name', e);
@@ -46,7 +53,7 @@ const useGetContractData = () => {
     } finally {
       type === 'NFT' ? setNftSubmitting(false) : setTokenSubmitting(false);
     }
-    return { contractName, tokenSign, error };
+    return { contractName, tokenSign, decimals, error };
   };
 
   return {
