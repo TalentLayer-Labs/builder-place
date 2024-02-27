@@ -8,6 +8,7 @@ import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
 import useAllowedTokens from '../hooks/useAllowedTokens';
 import { calculateTokenAmount } from '../utils/conversion';
+import ServiceFilterPopup from './ServiceFilterPopup'; // Import the new component
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
@@ -68,6 +69,14 @@ function ServiceList() {
       });
     });
   }, [services, minRate, maxRate, allowedTokens, selectedTokens, selectedRatings]);
+  
+  const handleResetFilter = () => {
+    setMinRate('');
+    setMaxRate('');
+    setSelectedTokens([]);
+    setSelectedRatings([]);
+    setPopupVisible(false);
+  };
 
   return (
     <>
@@ -99,7 +108,10 @@ function ServiceList() {
             Table View
           </button>
 
-          <button className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'>
+          <button
+            className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'
+            onClick={() => setPopupVisible(!isPopupVisible)}
+          >
             Filter
           </button>
         </div>
@@ -108,77 +120,22 @@ function ServiceList() {
         <div className='relative ml-auto'>
           <button
             className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'
-            onClick={() => setPopupVisible(!isPopupVisible)}>
+            onClick={() => setPopupVisible(!isPopupVisible)}
+          >
             Filter
           </button>
           {isPopupVisible && (
-            <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 z-50'>
-              <div className='flex flex-col'>
-                <label className='text-sm mt-1 font-bold'>Rate</label>
-                <div className='flex flex-row gap-2'>
-                  <input
-                    type='number'
-                    value={minRate}
-                    onChange={e => setMinRate(e.target.value)}
-                    className='border border-3 border-gray-300 p-2 rounded w-24'
-                    placeholder='Min'
-                  />
-                  <input
-                    type='number'
-                    value={maxRate}
-                    onChange={e => setMaxRate(e.target.value)}
-                    className='border border-3 border-gray-300 p-2 rounded w-24'
-                    placeholder='Max'
-                  />
-                </div>
-                <label className='text-sm mt-3 font-bold'>Rating</label>
-                <div className='flex flex-col'>
-                  {Array.from({ length: 5 }, (_, i) => i + 1).map((rating, i) => (
-                    <div className='flex items-center gap-2' key={i}>
-                      <input
-                        type='checkbox'
-                        value={rating.toString()}
-                        checked={selectedRatings.includes(rating.toString())}
-                        onChange={e => {
-                          const rating = e.target.value;
-                          setSelectedRatings(prevState =>
-                            prevState.includes(rating)
-                              ? prevState.filter(r => r !== rating)
-                              : [...prevState, rating],
-                          );
-                        }}
-                      />
-                      <label>
-                        {rating} star{rating == 1 ? '' : 's'}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                <label className='text-sm mt-3 font-bold'>Token</label>
-                <div className='flex flex-col'>
-                  {allowedTokens.map((token: IToken) => (
-                    <div className='flex items-center gap-2' key={token.address}>
-                      <input
-                        type='checkbox'
-                        value={token.address}
-                        checked={selectedTokens.includes(token.address)}
-                        onChange={e => {
-                          const tokenName = e.target.value;
-                          if (e.target.checked) {
-                            setSelectedTokens(prevState => [...prevState, tokenName]);
-                          } else {
-                            setSelectedTokens(prevState =>
-                              prevState.filter(name => name !== tokenName),
-                            );
-                          }
-                        }}
-                      />
-                      <label>{token.symbol}</label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ServiceFilterPopup
+              minRate={minRate}
+              maxRate={maxRate}
+              selectedTokens={selectedTokens}
+              selectedRatings={selectedRatings}
+              setMinRate={setMinRate}
+              setMaxRate={setMaxRate}
+              setSelectedTokens={setSelectedTokens}
+              setSelectedRatings={setSelectedRatings}
+              handleResetFilter={handleResetFilter}
+            />
           )}
         </div>
 
@@ -218,20 +175,20 @@ function ServiceList() {
             </tr>
           </thead>
           <tbody>
-          {filteredServices.length > 0 ? (
-            filteredServices.map((service: IService, i: number) => (
-              <ServiceItem
-                service={service}
-                embedded={router.asPath.includes('embed/')}
-                key={i}
-                view={view}
-              />
-            ))
-          ) : (
-            <span className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
-              No services found
-            </span>
-          )}
+            {filteredServices.length > 0 ? (
+              filteredServices.map((service: IService, i: number) => (
+                <ServiceItem
+                  service={service}
+                  embedded={router.asPath.includes('embed/')}
+                  key={i}
+                  view={view}
+                />
+              ))
+            ) : (
+              <span className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+                No services found
+              </span>
+            )}
           </tbody>
         </table>
       )}
@@ -243,7 +200,8 @@ function ServiceList() {
             className={`px-5 py-2 mt-5 content-center border-2 text-base-content border-black rounded-xl font-medium text-content 
                   `}
             disabled={!hasMoreData}
-            onClick={() => loadMore()}>
+            onClick={() => loadMore()}
+          >
             Load More Posts
           </button>
         </div>
@@ -258,3 +216,4 @@ function ServiceList() {
 }
 
 export default ServiceList;
+
