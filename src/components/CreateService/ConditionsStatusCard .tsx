@@ -33,9 +33,9 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
           <span>
             You need a minimum of{' '}
             <strong>
-              {condition.minimumAmount} {condition.tokenSign}
+              {condition.minimumAmount} {condition.sign}
             </strong>{' '}
-            from the <strong>{condition.contractName}</strong> contract
+            from the <strong>{condition.name}</strong> contract
           </span>
         );
       default:
@@ -45,7 +45,7 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
 
   const renderButton = () => {
     if (!validated) {
-      const buttonText = condition.type === 'Token' ? `Buy ${condition.tokenSign}` : 'Mint NFT';
+      const buttonText = condition.type === 'Token' ? `Buy ${condition.sign}` : 'Mint NFT';
       const blockExplorerLink = getBlockExplorerLink(
         condition.chainId,
         condition.address,
