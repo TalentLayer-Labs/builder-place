@@ -270,7 +270,7 @@ export interface NFTCondition {
   type: 'NFT';
   chainId: JobConditionsChainIdEnum; // Chain ID of the NFT contract
   address: string; // Address of the NFT contract
-  contractName: string; // Name of the NFT contract
+  name: string; // Name of the NFT contract
 }
 
 export interface TokenCondition {
@@ -278,7 +278,7 @@ export interface TokenCondition {
   chainId: JobConditionsChainIdEnum; // Chain ID of the token contract
   address: string; // Address of the token contract
   name: string; // Name of the NFT contract
-  sign: string; // Token sign
+  symbol: string; // Token sign
   minimumAmount: number; // Minimum amount of tokens required for frontend display
   parsedMinimumAmount: string; // Minimum amount of tokens required in the smallest smart contract uint
 }

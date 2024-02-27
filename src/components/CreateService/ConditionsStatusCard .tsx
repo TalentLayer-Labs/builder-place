@@ -25,7 +25,7 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
       case 'NFT':
         return (
           <span>
-            You need to own an NFT from the <strong>{condition.contractName}</strong> contract
+            You need to own an NFT from the <strong>{condition.name}</strong> contract
           </span>
         );
       case 'Token':
@@ -33,7 +33,7 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
           <span>
             You need a minimum of{' '}
             <strong>
-              {condition.minimumAmount} {condition.sign}
+              {condition.minimumAmount} {condition.symbol}
             </strong>{' '}
             from the <strong>{condition.name}</strong> contract
           </span>
@@ -45,7 +45,7 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
 
   const renderButton = () => {
     if (!validated) {
-      const buttonText = condition.type === 'Token' ? `Buy ${condition.sign}` : 'Mint NFT';
+      const buttonText = condition.type === 'Token' ? `Buy ${condition.symbol}` : 'Mint NFT';
       const blockExplorerLink = getBlockExplorerLink(
         condition.chainId,
         condition.address,

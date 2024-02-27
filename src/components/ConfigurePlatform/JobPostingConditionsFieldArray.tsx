@@ -100,7 +100,7 @@ function JobPostingConditionsFieldArray({
     }
 
     if (error) return;
-    push({ ...jobCondition, parsedMinimumAmount, contractName, tokenSign });
+    push({ ...jobCondition, parsedMinimumAmount, name: contractName, symbol: tokenSign });
     resetErrorMessages();
   };
 
