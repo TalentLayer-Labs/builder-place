@@ -30,15 +30,17 @@ function ServiceList() {
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
+    '0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e',
   );
 
   useEffect(() => {
     setFilteredServices(() => {
       return services.filter(service => {
+        console.log('service', service);  
         if (minRate || maxRate || selectedTokens.length > 0 || selectedRatings.length > 0) {
-          const tokenSelected =
-            selectedTokens.length === 0 ||
-            selectedTokens.includes(service.description?.rateToken || '');
+          // const tokenSelected =
+          //   selectedTokens.length === 0 ||
+          //   selectedTokens.includes(service.description?.rateToken || '');
           if (service.description?.rateAmount) {
             const rate = parseFloat(service.description.rateAmount);
             const token = allowedTokens.find(
@@ -56,7 +58,7 @@ function ServiceList() {
               return (
                 convertedRate >= minRateParsed &&
                 convertedRate <= maxRateParsed &&
-                tokenSelected &&
+                // tokenSelected &&
                 ratingSelected
               );
             } else {

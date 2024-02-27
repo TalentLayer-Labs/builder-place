@@ -9,6 +9,7 @@ const useFilteredServices = (
   sellerId?: string,
   searchQuery?: string,
   numberPerPage?: number,
+  selectedTokens?: string,
   platformId?: string,
 ): {
   hasMoreData: boolean;
@@ -43,6 +44,7 @@ const useFilteredServices = (
           searchQuery,
           platformId,
           chainId,
+          selectedTokens
         );
 
         newServices = response?.data?.services;
@@ -52,7 +54,7 @@ const useFilteredServices = (
         } else {
           setServices([...services, ...newServices]);
         }
-        if (numberPerPage && newServices.length < numberPerPage) {
+        if (newServices && numberPerPage && newServices.length < numberPerPage) {
           setHasMoreData(false);
         } else {
           setHasMoreData(true);

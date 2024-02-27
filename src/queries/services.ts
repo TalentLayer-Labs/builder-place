@@ -10,6 +10,7 @@ interface IProps {
   searchQuery?: string;
   platformId?: string;
   keywordList?: string[];
+  selectedTokens?: string;
 }
 
 const serviceQueryFields = `
@@ -70,18 +71,16 @@ const getFilteredServiceCondition = (params: IProps) => {
   if (params.buyerId) condition += `buyer: "${params.buyerId}",`;
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
   if (params.platformId) condition += `platform: "${params.platformId}",`;
-
+  if (params.selectedTokens) condition += `description_: {rateToken_contains: "${params.selectedTokens}"},`;
+  
   let keywordFilter = '';
-
-  // Filter by keyword
-  // This code filters the list of keywords to exclude those that are included in the keyword list.
 
   if (params.keywordList && params.keywordList.length > 0) {
     keywordFilter = params.keywordList
       .map(keyword => `{keywords_raw_not_contains: "${keyword}"}`)
       .join(', ');
   }
-  // Prepare description_ filter
+
   let descriptionCondition = '';
   if (params.searchQuery) {
     descriptionCondition += `{keywords_raw_not_contains: "${params.searchQuery}"}`;

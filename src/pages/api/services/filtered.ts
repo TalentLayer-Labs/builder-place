@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const searchQuery = query.searchQuery as string;
   const platformId = query.platformId as string;
   const chainId = Number(query.chainId);
+  const selectedTokens = query.selectedTokens as string;
 
   try {
     let response = await getServices(chainId, {
@@ -27,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       keywordList,
       searchQuery,
       platformId,
+      selectedTokens,
     });
 
     const filteredServices = response?.data?.data?.services;
