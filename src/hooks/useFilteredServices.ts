@@ -44,7 +44,7 @@ const useFilteredServices = (
           searchQuery,
           platformId,
           chainId,
-          selectedTokens
+          selectedTokens,
         );
 
         newServices = response?.data?.services;
@@ -67,7 +67,7 @@ const useFilteredServices = (
       }
     };
     fetchData();
-  }, [numberPerPage, offset, searchQuery]);
+  }, [numberPerPage, offset, searchQuery, selectedTokens?.length]);
 
   const loadMore = () => {
     numberPerPage ? setOffset(offset + numberPerPage) : '';

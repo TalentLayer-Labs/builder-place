@@ -6,73 +6,30 @@ import { IService, IToken, ServiceStatusEnum } from '../types';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
-import useAllowedTokens from '../hooks/useAllowedTokens';
-import { calculateTokenAmount } from '../utils/conversion';
-import ServiceFilterPopup from './ServiceFilterPopup'; // Import the new component
+import ServiceFilterPopup from './ServiceFilterPopup';
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
   const router = useRouter();
-  const allowedTokens = useAllowedTokens();
   const query = router.query;
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState<string>('');
   const [maxRate, setMaxRate] = useState<string>('');
-  const [selectedTokens, setSelectedTokens] = useState<string[]>(['0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e']);
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
-  const [filteredServices, setFilteredServices] = useState<IService[]>([]);
-  const array: string[] = ["0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e","0xe9dce89b076ba6107bb64ef30678efec11939234"];
+
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
     builderPlace?.owner?.talentLayerId?.toString(),
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
-    selectedTokens,
+    selectedTokens.length > 0 ? selectedTokens : [],
   );
 
-  useEffect(() => {
-    setFilteredServices(() => {
-      return services.filter(service => {
-        console.log('service', service);  
-        if (minRate || maxRate || selectedTokens.length > 0 || selectedRatings.length > 0) {
-          // const tokenSelected =
-          //   selectedTokens.length === 0 ||
-          //   selectedTokens.includes(service.description?.rateToken || '');
-          if (service.description?.rateAmount) {
-            const rate = parseFloat(service.description.rateAmount);
-            const token = allowedTokens.find(
-              token => token.address === service.description?.rateToken,
-            );
-            if (token) {
-              const convertedRate = parseFloat(
-                calculateTokenAmount(token, service.description?.rateAmount),
-              );
-              const minRateParsed = parseFloat(minRate || '0');
-              const maxRateParsed = parseFloat(maxRate || 'Infinity');
-              const ratingSelected =
-                selectedRatings.length === 0 ||
-                selectedRatings.includes(service.buyer?.rating || '');
-              return (
-                convertedRate >= minRateParsed &&
-                convertedRate <= maxRateParsed &&
-                // tokenSelected &&
-                ratingSelected
-              );
-            } else {
-              return false;
-            }
-          }
-        } else {
-          return true;
-        }
-      });
-    });
-  }, [services, minRate, maxRate, allowedTokens, selectedTokens, selectedRatings]);
-  
   const handleResetFilter = () => {
     setMinRate('');
     setMaxRate('');
@@ -113,8 +70,7 @@ function ServiceList() {
 
           <button
             className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'
-            onClick={() => setPopupVisible(!isPopupVisible)}
-          >
+            onClick={() => setPopupVisible(!isPopupVisible)}>
             Filter
           </button>
         </div>
@@ -123,8 +79,7 @@ function ServiceList() {
         <div className='relative ml-auto'>
           <button
             className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'
-            onClick={() => setPopupVisible(!isPopupVisible)}
-          >
+            onClick={() => setPopupVisible(!isPopupVisible)}>
             Filter
           </button>
           {isPopupVisible && (
@@ -149,8 +104,8 @@ function ServiceList() {
 
       {view === 1 && (
         <>
-          {filteredServices.length > 0 ? (
-            filteredServices.map((service: IService, i: number) => (
+          {services.length > 0 ? (
+            services.map((service: IService, i: number) => (
               <ServiceItem
                 service={service}
                 embedded={router.asPath.includes('embed/')}
@@ -178,8 +133,8 @@ function ServiceList() {
             </tr>
           </thead>
           <tbody>
-            {filteredServices.length > 0 ? (
-              filteredServices.map((service: IService, i: number) => (
+            {services.length > 0 ? (
+              services.map((service: IService, i: number) => (
                 <ServiceItem
                   service={service}
                   embedded={router.asPath.includes('embed/')}
@@ -196,15 +151,14 @@ function ServiceList() {
         </table>
       )}
 
-      {filteredServices.length > 0 && hasMoreData && !loading && (
+      {services.length > 0 && hasMoreData && !loading && (
         <div className='flex justify-center items-center gap-10 flex-col pb-5'>
           <button
             type='submit'
             className={`px-5 py-2 mt-5 content-center border-2 text-base-content border-black rounded-xl font-medium text-content 
                   `}
             disabled={!hasMoreData}
-            onClick={() => loadMore()}
-          >
+            onClick={() => loadMore()}>
             Load More Posts
           </button>
         </div>
@@ -219,4 +173,3 @@ function ServiceList() {
 }
 
 export default ServiceList;
-

@@ -10,7 +10,7 @@ interface IProps {
   searchQuery?: string;
   platformId?: string;
   keywordList?: string[];
-  selectedTokens: string[];
+  selectedTokens?: string[];
 }
 
 const serviceQueryFields = `
@@ -72,7 +72,7 @@ const getFilteredServiceCondition = (params: IProps) => {
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
   if (params.platformId) condition += `platform: "${params.platformId}",`;
 
-  if (params.selectedTokens) {
+  if (params.selectedTokens && params.selectedTokens.length > 0) {
     const tokensList = params.selectedTokens.map(token => `"${token}"`).join(', ');
     condition += `description_: {rateToken_in: [${tokensList}]},`;
   }
