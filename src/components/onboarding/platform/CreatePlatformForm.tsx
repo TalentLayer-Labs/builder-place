@@ -2,9 +2,7 @@ import { EntityStatus } from '@prisma/client';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../../context/talentLayer';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import { IMutation } from '../../../types';
 import { themes } from '../../../utils/themes';
@@ -27,6 +25,7 @@ export interface ICreatePlatform
   extends IMutation<
     ICreatePlatformFormValues & {
       palette: keyof typeof themes;
+      talentLayerPlatformId: string;
     }
   > {}
 
@@ -44,10 +43,7 @@ export interface ICreatePlatform
  *      Access denied
  */
 function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({ chainId });
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
-  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { createNewPlatform } = useCreatePlatform();
 

@@ -51,9 +51,13 @@ const useCreatePlatform = () => {
         render: <MultiStepsTransactionToast currentStep={2} />,
       });
 
+      let platformId;
+
       if (talentLayerClient) {
-        // TODO: mint platform
-        // const tx = await talentLayerClient.platform.
+        const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
+        await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
+        const response = await talentLayerClient.platform.getByOwner(address);
+        platformId = response[0].id;
       }
 
       toast.update(toastId, {
@@ -63,11 +67,12 @@ const useCreatePlatform = () => {
       /**
        * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
-      const response = await platformMutation.mutateAsync({
+      await platformMutation.mutateAsync({
         data: {
           name: values.name,
           subdomain: values.subdomain,
           talentLayerPlatformName: values.talentLayerPlatformName,
+          talentLayerPlatformId: platformId,
           jobPostingConditions: values.jobPostingConditions,
           logo: values.logo,
           palette: 'lisboa',
