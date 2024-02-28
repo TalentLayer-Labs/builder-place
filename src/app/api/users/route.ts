@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   });
 
   if (signatureAddress !== body.data.address) {
-    return Response.json({ error: 'Signature invalid' }, { status: 401 });
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   try {
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const target = (error.meta?.target as string)[0] || 'data';
-        message = `A user already exist with this ${target}`;
+        message = `A user already exists with this ${target}`;
       }
     }
 

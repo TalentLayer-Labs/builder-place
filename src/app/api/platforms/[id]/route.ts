@@ -21,7 +21,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   });
 
   if (signatureAddress !== body.address) {
-    return Response.json({ error: 'Signature invalid' }, { status: 401 });
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   try {
@@ -50,7 +50,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const target = (error.meta?.target as string)[0] || 'data';
-        message = `A platform already exist with this ${target}`;
+        message = `A platform already exists with this ${target}`;
       }
     }
 
