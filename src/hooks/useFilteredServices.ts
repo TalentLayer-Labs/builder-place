@@ -9,7 +9,7 @@ const useFilteredServices = (
   sellerId?: string,
   searchQuery?: string,
   numberPerPage?: number,
-  selectedTokens?: string,
+  selectedTokens?: string[],
   platformId?: string,
 ): {
   hasMoreData: boolean;

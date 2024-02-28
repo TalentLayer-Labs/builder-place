@@ -21,16 +21,17 @@ function ServiceList() {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState<string>('');
   const [maxRate, setMaxRate] = useState<string>('');
-  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+  const [selectedTokens, setSelectedTokens] = useState<string[]>(['0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e']);
   const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
   const [filteredServices, setFilteredServices] = useState<IService[]>([]);
+  const array: string[] = ["0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e","0xe9dce89b076ba6107bb64ef30678efec11939234"];
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
     builderPlace?.owner?.talentLayerId?.toString(),
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
-    '0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e',
+    selectedTokens,
   );
 
   useEffect(() => {

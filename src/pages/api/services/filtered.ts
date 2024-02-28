@@ -5,7 +5,6 @@ import { ServiceStatusEnum } from '../../../types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const query = req.query;
-  // @dev : here you can add the filter logic
   let keywordList = keywordFilter.keywords;
 
   const serviceStatus = query.serviceStatus as ServiceStatusEnum;
@@ -16,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const searchQuery = query.searchQuery as string;
   const platformId = query.platformId as string;
   const chainId = Number(query.chainId);
-  const selectedTokens = query.selectedTokens as string;
+  const selectedTokens = JSON.parse(query.selectedTokens as string);
 
   try {
     let response = await getServices(chainId, {
