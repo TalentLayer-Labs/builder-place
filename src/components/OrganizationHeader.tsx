@@ -15,6 +15,10 @@ function OrganizationHeader() {
     !!builderPlace?.owner?.talentLayerId
       ? builderPlace?.owner?.talentLayerId?.toString()
       : undefined,
+    '',
+    '',
+    10,
+    process.env.NEXT_PUBLIC_PLATFORM_ID,
   );
 
   if (!builderPlace) return <Loading />;
