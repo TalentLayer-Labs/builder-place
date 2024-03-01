@@ -344,7 +344,7 @@ export interface ServiceFilterPopupProps {
   selectedRatings: string[];
   setMinRate: (value: string) => void;
   setMaxRate: (value: string) => void;
-  setSelectedTokens: (value: string[]) => void;
+  setSelectedTokens: React.Dispatch<React.SetStateAction<string[]>>;
   setSelectedRatings: React.Dispatch<React.SetStateAction<string[]>>;
   handleResetFilter: () => void;
 }

@@ -19,7 +19,7 @@ function ServiceFilterPopup({
     handleResetFilter();
   };
   return (
-    <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 z-50'>
+    <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 right-0  z-50'>
       <div className='flex flex-col'>
         <label className='text-sm mt-1 font-bold'>Rate</label>
         <div className='flex flex-row gap-2'>
