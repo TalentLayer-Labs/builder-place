@@ -1,5 +1,7 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
 import { IEmailPreferences } from '../../types';
+import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
+import { iexec } from '../../chains';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -275,7 +277,8 @@ export interface NFTCondition {
 
 export interface TokenCondition {
   type: 'Token';
-  chainId: JobConditionsChainIdEnum; // Chain ID of the token contract
+  chainId: number; // Chain ID of the token contract
+  chainName: string;
   address: string; // Address of the token contract
   name: string; // Name of the NFT contract
   symbol: string; // Token sign
@@ -284,11 +287,11 @@ export interface TokenCondition {
 }
 
 export enum JobConditionsChainIdEnum {
-  ETHEREUM = 1,
-  ARBITRUM = 42161,
-  IEXEC = 134,
-  POLYGON = 137,
-  BNB = 56,
+  ETHEREUM = mainnet.id,
+  ARBITRUM = arbitrum.id,
+  IEXEC = iexec.id,
+  POLYGON = polygon.id,
+  BNB = opBNB.id,
 }
 
 export interface IUserProfile {

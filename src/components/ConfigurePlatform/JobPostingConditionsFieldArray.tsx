@@ -6,6 +6,7 @@ import { ZERO_ADDRESS } from '../../utils/constant';
 import useGetContractData from '../../hooks/useGetContractData';
 import AsyncButton from '../AsyncButton';
 import { ethers } from 'ethers';
+import { getChainData } from '../../modules/BuilderPlace/utils/chain';
 
 export interface TempFormValues {
   tempNftAddress?: string;
@@ -105,15 +106,11 @@ function JobPostingConditionsFieldArray({
   };
 
   // Dynamically constructing the ChainIds object from the ChainIdEnum
-  const ChainIds = Object.keys(JobConditionsChainIdEnum)
-    .filter(key => isNaN(Number(key)))
-    .reduce((obj: Record<string, JobConditionsChainIdEnum>, key) => {
-      obj[key] = JobConditionsChainIdEnum[key as keyof typeof JobConditionsChainIdEnum];
-      return obj;
-    }, {} as Record<string, JobConditionsChainIdEnum>);
+  const chainIds = Object.keys(JobConditionsChainIdEnum).filter(key => !isNaN(Number(key)));
 
-  const chainIdOptions = Object.entries(ChainIds).map(([key, value]) => {
-    return { label: key, value: value };
+  const chainIdOptions = chainIds.map(chainId => {
+    const chainData = getChainData(chainId as unknown as JobConditionsChainIdEnum);
+    return { label: chainData.name, value: chainData.id };
   });
 
   const resetErrorMessages = () => {

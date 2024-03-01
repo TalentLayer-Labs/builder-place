@@ -12,6 +12,7 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
+import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -45,7 +46,8 @@ export interface ICreatePlatform
 function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const { createNewPlatform } = useCreatePlatform();
+  const existingPlatform = usePlatformByOwner(address);
+  const { createNewPlatform } = useCreatePlatform(existingPlatform);
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',
