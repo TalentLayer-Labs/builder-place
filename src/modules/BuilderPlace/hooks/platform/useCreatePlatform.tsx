@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useChainId, useWalletClient } from 'wagmi';
@@ -23,11 +23,9 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
       return await axios.post('/api/platforms', body);
     },
   );
-  const [createNewPlatform, setCreateNewPlatform] =
-    useState<(values: ICreatePlatformFormValues) => Promise<void>>();
 
-  useEffect(() => {
-    const createNewPlatformFunction = async (values: ICreatePlatformFormValues) => {
+  const createNewPlatform = useCallback(
+    async (values: ICreatePlatformFormValues) => {
       if (!walletClient || !address) {
         throw new Error('Please connect your wallet');
       }
@@ -100,9 +98,9 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
 
         throw error;
       }
-    };
-    setCreateNewPlatform(createNewPlatformFunction);
-  }, [existingPlatform]);
+    },
+    [existingPlatform],
+  );
 
   return { createNewPlatform };
 };
