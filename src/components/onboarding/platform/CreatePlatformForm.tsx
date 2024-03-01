@@ -52,7 +52,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
   const initialValues: ICreatePlatformFormValues = {
     name: '',
     subdomain: '',
-    talentLayerPlatformName: '',
+    talentLayerPlatformName: existingPlatform?.name || '',
     logo: '',
   };
 
@@ -129,12 +129,21 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
                   type='text'
                   id='talentLayerPlatformName'
                   name='talentLayerPlatformName'
-                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  disabled={!!existingPlatform}
+                  className={`mt-1 mb-1 block w-full ${
+                    !!existingPlatform && 'text-gray-400'
+                  } rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50`}
                   placeholder='your talentLayerPlatformName'
                 />
                 <span className='text-red-500'>
                   <ErrorMessage name='talentLayerPlatformName' />
                 </span>
+                {!!existingPlatform && (
+                  <p className='font-alt text-xs font-normal opacity-80 text-gray-500'>
+                    This account already owns a TalentLayer Platform. If you wish to create a new
+                    TalentLayer Platform, use another Ethereum account.
+                  </p>
+                )}
               </label>
 
               <UploadImage
