@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useChainId, useWalletClient } from 'wagmi';
@@ -11,8 +11,9 @@ import MultiStepsTransactionToast from '../../../../components/onboarding/platfo
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
+import { IPlatform } from '../../../../types';
 
-const useCreatePlatform = () => {
+const useCreatePlatform = (existingPlatform: IPlatform | null) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useContext(UserContext);
@@ -22,79 +23,86 @@ const useCreatePlatform = () => {
       return await axios.post('/api/platforms', body);
     },
   );
+  const [createNewPlatform, setCreateNewPlatform] =
+    useState<(values: ICreatePlatformFormValues) => Promise<void>>();
 
-  const createNewPlatform = async (values: ICreatePlatformFormValues) => {
-    if (!walletClient || !address) {
-      throw new Error('Please connect your wallet');
-    }
-
-    /**
-     * @dev Create a multistep toast to inform the user about the process
-     */
-    const toastId = toast(<MultiStepsTransactionToast currentStep={1} />, {
-      autoClose: false,
-      closeOnClick: false,
-    });
-
-    await wait(2);
-
-    try {
-      /**
-       * @dev Sign message to prove ownership of the address
-       */
-      const signature = await walletClient.signMessage({
-        account: address,
-        message: `connect with ${address}`,
-      });
-
-      toast.update(toastId, {
-        render: <MultiStepsTransactionToast currentStep={2} />,
-      });
-
-      let platformId;
-
-      if (talentLayerClient) {
-        const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
-        await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
-        const response = await talentLayerClient.platform.getByOwner(address);
-        platformId = response[0].id;
+  useEffect(() => {
+    const createNewPlatformFunction = async (values: ICreatePlatformFormValues) => {
+      if (!walletClient || !address) {
+        throw new Error('Please connect your wallet');
       }
 
-      toast.update(toastId, {
-        render: <MultiStepsTransactionToast currentStep={3} />,
-      });
-
       /**
-       * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
+       * @dev Create a multistep toast to inform the user about the process
        */
-      await platformMutation.mutateAsync({
-        data: {
-          name: values.name,
-          subdomain: values.subdomain,
-          talentLayerPlatformName: values.talentLayerPlatformName,
-          talentLayerPlatformId: platformId,
-          jobPostingConditions: values.jobPostingConditions,
-          logo: values.logo,
-          palette: 'lisboa',
-        },
-        signature: signature,
-        address: address,
-        domain: window.location.hostname + ':' + window.location.port,
+      const toastId = toast(<MultiStepsTransactionToast currentStep={1} />, {
+        autoClose: false,
+        closeOnClick: false,
       });
 
-      toast.update(toastId, {
-        type: toast.TYPE.SUCCESS,
-        render: 'Congrats! Your platform is fully ready',
-        autoClose: 5000,
-        closeOnClick: true,
-      });
-    } catch (error: any) {
-      toast.dismiss(toastId);
-      console.log('CATCH error', error);
+      await wait(2);
 
-      throw error;
-    }
-  };
+      try {
+        /**
+         * @dev Sign message to prove ownership of the address
+         */
+        const signature = await walletClient.signMessage({
+          account: address,
+          message: `connect with ${address}`,
+        });
+
+        toast.update(toastId, {
+          render: <MultiStepsTransactionToast currentStep={2} />,
+        });
+
+        let platformId;
+
+        if (!existingPlatform && talentLayerClient) {
+          const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
+          await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
+          const response = await talentLayerClient.platform.getByOwner(address);
+          platformId = response[0].id;
+        } else {
+          platformId = existingPlatform?.id;
+        }
+
+        toast.update(toastId, {
+          render: <MultiStepsTransactionToast currentStep={3} />,
+        });
+
+        /**
+         * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
+         */
+        await platformMutation.mutateAsync({
+          data: {
+            name: values.name,
+            subdomain: values.subdomain,
+            talentLayerPlatformName: values.talentLayerPlatformName,
+            talentLayerPlatformId: platformId,
+            jobPostingConditions: values.jobPostingConditions,
+            logo: values.logo,
+            palette: 'lisboa',
+          },
+          signature: signature,
+          address: address,
+          domain: window.location.hostname + ':' + window.location.port,
+        });
+
+        toast.update(toastId, {
+          type: toast.TYPE.SUCCESS,
+          render: 'Congrats! Your platform is fully ready',
+          autoClose: 5000,
+          closeOnClick: true,
+        });
+      } catch (error: any) {
+        toast.dismiss(toastId);
+        console.log('CATCH error', error);
+
+        throw error;
+      }
+    };
+    setCreateNewPlatform(createNewPlatformFunction);
+  }, [existingPlatform]);
 
   return { createNewPlatform };
 };
