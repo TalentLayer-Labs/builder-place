@@ -1,16 +1,17 @@
 import {
   BriefcaseIcon,
   ChatBubbleBottomCenterIcon,
+  CodeBracketSquareIcon,
+  CurrencyDollarIcon,
+  EnvelopeIcon,
+  ExclamationCircleIcon,
+  HomeIcon,
+  PlusCircleIcon,
+  PresentationChartLineIcon,
+  ShieldCheckIcon,
   UserIcon,
   UserPlusIcon,
-  PresentationChartLineIcon,
-  ExclamationCircleIcon,
-  ShieldCheckIcon,
-  EnvelopeIcon,
-  PlusCircleIcon,
   WrenchIcon,
-  CodeBracketSquareIcon,
-  HomeIcon,
 } from '@heroicons/react/24/outline';
 import { SVGProps } from 'react';
 
@@ -42,6 +43,12 @@ export const hirerAdminNavigation: MenuItem[] = [
     name: 'embed your place',
     href: '/admin/embed-place',
     icon: CodeBracketSquareIcon,
+    current: false,
+  },
+  {
+    name: 'configure fees',
+    href: '/admin/fees',
+    icon: CurrencyDollarIcon,
     current: false,
   },
 ];
