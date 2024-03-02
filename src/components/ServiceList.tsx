@@ -18,22 +18,21 @@ function ServiceList() {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [minRate, setMinRate] = useState<string>('');
   const [maxRate, setMaxRate] = useState<string>('');
-  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+  const [selectedToken, setSelectedToken] = useState<string>('');
   const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
-
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
     builderPlace?.owner?.talentLayerId?.toString(),
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
-    selectedTokens.length > 0 ? selectedTokens : [],
+    selectedToken,
   );
 
   const handleResetFilter = () => {
     setMinRate('');
     setMaxRate('');
-    setSelectedTokens([]);
+    setSelectedToken('');
     setSelectedRatings([]);
     setPopupVisible(false);
   };
@@ -86,11 +85,11 @@ function ServiceList() {
             <ServiceFilterPopup
               minRate={minRate}
               maxRate={maxRate}
-              selectedTokens={selectedTokens}
+              selectedToken={selectedToken}
               selectedRatings={selectedRatings}
               setMinRate={setMinRate}
               setMaxRate={setMaxRate}
-              setSelectedTokens={setSelectedTokens}
+              setSelectedToken={setSelectedToken}
               setSelectedRatings={setSelectedRatings}
               handleResetFilter={handleResetFilter}
             />

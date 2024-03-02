@@ -5,11 +5,11 @@ import { IToken, ServiceFilterPopupProps } from '../types';
 function ServiceFilterPopup({
   minRate,
   maxRate,
-  selectedTokens,
+  selectedToken,
   selectedRatings,
   setMinRate,
   setMaxRate,
-  setSelectedTokens,
+  setSelectedToken,
   setSelectedRatings,
   handleResetFilter,
 }: ServiceFilterPopupProps) {
@@ -38,6 +38,25 @@ function ServiceFilterPopup({
             placeholder='Max'
           />
         </div>
+        <label className='text-sm mt-3 font-bold'>Token</label>
+        <div className='flex flex-col'>
+          {allowedTokens.map((token: IToken) => (
+            <div className='flex items-center gap-2' key={token.address}>
+              <input
+                type='radio'
+                name='token'
+                value={token.address}
+                onChange={e => {
+                  const tokenName = e.target.value;
+                  if (e.target.checked) {
+                    setSelectedToken(tokenName);
+                  }
+                }}
+              />
+              <label>{token.symbol}</label>
+            </div>
+          ))}
+        </div>
         <label className='text-sm mt-3 font-bold'>Rating</label>
         <div className='flex flex-col'>
           {Array.from({ length: 5 }, (_, i) => i + 1).map((rating, i) => (
@@ -58,27 +77,6 @@ function ServiceFilterPopup({
               <label>
                 {rating} star{rating == 1 ? '' : 's'}
               </label>
-            </div>
-          ))}
-        </div>
-        <label className='text-sm mt-3 font-bold'>Token</label>
-        <div className='flex flex-col'>
-          {allowedTokens.map((token: IToken) => (
-            <div className='flex items-center gap-2' key={token.address}>
-              <input
-                type='checkbox'
-                value={token.address}
-                checked={selectedTokens.includes(token.address)}
-                onChange={e => {
-                  const tokenName = e.target.value;
-                  if (e.target.checked) {
-                    setSelectedTokens(prevState => [...prevState, tokenName]);
-                  } else {
-                    setSelectedTokens(prevState => prevState.filter(name => name !== tokenName));
-                  }
-                }}
-              />
-              <label>{token.symbol}</label>
             </div>
           ))}
         </div>
