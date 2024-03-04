@@ -3,30 +3,28 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
 import * as Yup from 'yup';
+import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { IMutation } from '../../../types';
-import { themes } from '../../../utils/themes';
 import { showErrorTransactionToast } from '../../../utils/toast';
 import SubdomainInput from '../../Form/SubdomainInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
-import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
-import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 
 export interface ICreatePlatformFormValues {
   name: string;
   subdomain: string;
   talentLayerPlatformName: string;
   logo: string;
-  jobPostingConditions?: string;
 }
 
 export interface ICreatePlatform
   extends IMutation<
     ICreatePlatformFormValues & {
-      palette: keyof typeof themes;
-      talentLayerPlatformId: string;
+      palette: iBuilderPlacePalette;
     }
   > {}
 
@@ -43,7 +41,7 @@ export interface ICreatePlatform
  *  ELSE
  *      Access denied
  */
-function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
+function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const existingPlatform = usePlatformByOwner(address);
@@ -78,7 +76,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
        */
-      onSuccess();
+      onSuccess(values.subdomain);
     } catch (error: any) {
       console.log('CATCH error', error);
       showErrorTransactionToast(error);
