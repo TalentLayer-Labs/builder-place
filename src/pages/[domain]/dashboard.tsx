@@ -26,7 +26,7 @@ function Dashboard() {
   const { account, user, workerProfile } = useContext(TalentLayerContext);
   const router = useRouter();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
-  const isComingFromHirerOnboarding = router.asPath.includes('hireronboarding');
+  const isComingFromHirerOnboarding = router.asPath.includes('platformonboarding');
 
   if (!user) {
     return (
