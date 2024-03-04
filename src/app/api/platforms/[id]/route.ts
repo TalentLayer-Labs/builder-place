@@ -6,6 +6,7 @@ import { Prisma } from '.prisma/client';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
 import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
+import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../../modules/BuilderPlace/actions/builderPlace';
 
 export async function GET(req: Request) {
   // TODO: implement GET
@@ -15,6 +16,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   console.log('PUT');
   const body: IConfigurePlace = await req.json();
 
+  // Check if the signature is valid
   const signatureAddress = await recoverMessageAddress({
     message: `connect with ${body.address}`,
     signature: body.signature,
@@ -24,13 +26,19 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
+  // Check if the address is owner or collaborator
+  const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(signatureAddress, params.id);
+
+  if (!builderPlace) {
+    return Response.json({ error: 'The signer is not owner or collaborator' }, { status: 401 });
+  }
+
   try {
     console.log('Updating platform...', params.id);
     const builderPlace = await prisma.builderPlace.update({
       where: {
         id: Number(params.id),
       },
-      //TODO why type issue ?
       data: {
         ...body.data,
         palette: body.data.palette as JsonNull | InputJsonValue | undefined,
@@ -38,22 +46,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
           | NullableJsonNullValueInput
           | InputJsonValue
           | undefined,
-        // palette: JSON.stringify(body.data.palette),
-        // palette: { ...body.data.palette },
-        // jobPostingConditions: { ...body.data.jobPostingConditions },
       },
     });
 
-    return Response.json({ id: builderPlace?.id }, { status: 201 });
+    return Response.json({ id: builderPlace?.id }, { status: 200 });
   } catch (error: any) {
-    let message = 'Failed to create platform';
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        const target = (error.meta?.target as string)[0] || 'data';
-        message = `A platform already exists with this ${target}`;
-      }
-    }
-
+    let message = 'Failed to update platform';
     return Response.json({ message, error }, { status: 500 });
   }
 }
