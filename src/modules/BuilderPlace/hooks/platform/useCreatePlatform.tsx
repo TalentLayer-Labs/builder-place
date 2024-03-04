@@ -9,9 +9,10 @@ import {
 } from '../../../../components/onboarding/platform/CreatePlatformForm';
 import MultiStepsTransactionToast from '../../../../components/onboarding/platform/MultiStepsTransactionToast';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
+import { IPlatform } from '../../../../types';
+import { themes } from '../../../../utils/themes';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
-import { IPlatform } from '../../../../types';
 
 const useCreatePlatform = (existingPlatform: IPlatform | null) => {
   const chainId = useChainId();
@@ -53,15 +54,9 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
           render: <MultiStepsTransactionToast currentStep={2} />,
         });
 
-        let platformId;
-
         if (!existingPlatform && talentLayerClient) {
           const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
           await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
-          const response = await talentLayerClient.platform.getByOwner(address);
-          platformId = response[0].id;
-        } else {
-          platformId = existingPlatform?.id;
         }
 
         toast.update(toastId, {
@@ -71,15 +66,14 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
         /**
          * @dev Post a new platform to DB. Everytime we need to create or update an entity, we need to confirm with the signature
          */
+        const subdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
         await platformMutation.mutateAsync({
           data: {
             name: values.name,
-            subdomain: values.subdomain,
+            subdomain: subdomain,
             talentLayerPlatformName: values.talentLayerPlatformName,
-            talentLayerPlatformId: platformId,
-            jobPostingConditions: values.jobPostingConditions,
             logo: values.logo,
-            palette: 'lisboa',
+            palette: themes['lisboa'],
           },
           signature: signature,
           address: address,
