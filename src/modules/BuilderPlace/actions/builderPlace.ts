@@ -291,21 +291,19 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
   let errorMessage = '';
   try {
     console.log('getting builderPlace ', domain);
-    if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
-      const builderPlace = await prisma.builderPlace.findFirst({
-        where: {
-          OR: [{ subdomain: domain }, { customDomain: domain }],
-        },
-        include: {
-          owner: true,
-          collaborators: true,
-        },
-      });
+    const builderPlace = await prisma.builderPlace.findFirst({
+      where: {
+        OR: [{ subdomain: domain }, { customDomain: domain }],
+      },
+      include: {
+        owner: true,
+        collaborators: true,
+      },
+    });
 
-      console.log('fetched builderPlaces, ', builderPlace?.subdomain);
+    console.log('fetched builderPlaces, ', builderPlace?.subdomain);
 
-      return builderPlace;
-    }
+    return builderPlace;
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
