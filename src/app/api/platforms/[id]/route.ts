@@ -1,12 +1,11 @@
-import { recoverMessageAddress } from 'viem';
-import prisma from '../../../../postgre/postgreClient';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { IConfigurePlace } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
 import { Prisma } from '.prisma/client';
+import { recoverMessageAddress } from 'viem';
+import { IConfigurePlace } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
+import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../../modules/BuilderPlace/actions/builderPlace';
+import prisma from '../../../../postgre/postgreClient';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
 import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
-import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../../modules/BuilderPlace/actions/builderPlace';
 
 export async function GET(req: Request) {
   // TODO: implement GET

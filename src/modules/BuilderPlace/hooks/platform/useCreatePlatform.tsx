@@ -9,12 +9,13 @@ import {
 } from '../../../../components/onboarding/platform/CreatePlatformForm';
 import MultiStepsTransactionToast from '../../../../components/onboarding/platform/MultiStepsTransactionToast';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { IPlatform } from '../../../../types';
+import { IPlatform, IUser } from '../../../../types';
 import { themes } from '../../../../utils/themes';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
+import { User } from '@prisma/client';
 
-const useCreatePlatform = (existingPlatform: IPlatform | null) => {
+const useCreatePlatform = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useContext(UserContext);
@@ -26,7 +27,7 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
   );
 
   const createNewPlatform = useCallback(
-    async (values: ICreatePlatformFormValues) => {
+    async (values: ICreatePlatformFormValues, user: User, existingPlatform?: IPlatform) => {
       if (!walletClient || !address) {
         throw new Error('Please connect your wallet');
       }
@@ -74,6 +75,7 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
             talentLayerPlatformName: values.talentLayerPlatformName,
             logo: values.logo,
             palette: themes['lisboa'],
+            ownerId: user.id,
           },
           signature: signature,
           address: address,
@@ -93,7 +95,7 @@ const useCreatePlatform = (existingPlatform: IPlatform | null) => {
         throw error;
       }
     },
-    [existingPlatform],
+    [],
   );
 
   return { createNewPlatform };

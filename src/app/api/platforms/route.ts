@@ -1,11 +1,12 @@
+import { Prisma } from '.prisma/client';
 import { BuilderPlace, EntityStatus } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { recoverMessageAddress } from 'viem';
-import { ICreateUser } from '../../../components/onboarding/user/CreateUserForm';
-import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
-import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
-import prisma from '../../../postgre/postgreClient';
 import { ICreatePlatform } from '../../../components/onboarding/platform/CreatePlatformForm';
+import prisma from '../../../postgre/postgreClient';
+import JsonNull = Prisma.NullTypes.JsonNull;
+import InputJsonValue = Prisma.InputJsonValue;
+import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
 
 export interface PlatformsFilters {
   id?: string | null;
@@ -40,7 +41,22 @@ export async function POST(req: Request) {
 
   try {
     const builderPlace = await prisma.builderPlace.create({
-      data: { ...body.data, status: EntityStatus.VALIDATED },
+      data: {
+        ...body.data,
+        palette: body.data.palette as unknown as JsonNull | InputJsonValue,
+        status: EntityStatus.VALIDATED,
+      },
+    });
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(builderPlace.id),
+      },
+      data: {
+        collaborators: {
+          set: { id: Number(body.data.ownerId) },
+        },
+      },
     });
 
     return Response.json({ id: builderPlace.id }, { status: 201 });

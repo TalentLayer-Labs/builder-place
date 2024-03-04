@@ -25,6 +25,7 @@ export interface ICreatePlatform
   extends IMutation<
     ICreatePlatformFormValues & {
       palette: iBuilderPlacePalette;
+      ownerId: number;
     }
   > {}
 
@@ -45,7 +46,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const existingPlatform = usePlatformByOwner(address);
-  const { createNewPlatform } = useCreatePlatform(existingPlatform);
+  const { createNewPlatform } = useCreatePlatform();
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',
@@ -71,7 +72,11 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     try {
       setSubmitting(true);
 
-      await createNewPlatform(values);
+      if (!user) {
+        throw new Error('Please connect first');
+      }
+
+      await createNewPlatform(values, user, existingPlatform);
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
@@ -91,7 +96,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     return <Loading />;
   }
 
-  if (user?.status !== EntityStatus.VALIDATED) {
+  if (!user) {
     return <AccessDenied />;
   }
 

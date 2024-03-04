@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { IPlatform } from '../types';
 import useTalentLayerClient from './useTalentLayerClient';
 
-const usePlatformByOwner = (address?: `0x${string}`): IPlatform | null => {
-  const [platforms, setAddresses] = useState<IPlatform | null>(null);
+const usePlatformByOwner = (address?: `0x${string}`): IPlatform | undefined => {
+  const [platforms, setAddresses] = useState<IPlatform | undefined>();
   const talentLayerClient = useTalentLayerClient();
 
   useEffect(() => {
