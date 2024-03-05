@@ -126,7 +126,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
               <label className='block'>
                 <span className='font-bold text-md'>handle* </span>
                 <HandleInput
-                  initiaValue={initialValues.talentLayerHandle}
+                  initialValue={initialValues.talentLayerHandle}
                   existingHandle={talentLayerUser?.handle}
                 />
                 <span className='text-red-500'>
