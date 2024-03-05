@@ -21,12 +21,12 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceCollaborator, setIsBuilderPlaceCollaborator] = useState<boolean>(false);
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
-  const ownerTalentLayerId = data?.owner?.talentLayerId;
+  const ownerTalentLayerHandle = data?.owner?.talentLayerHandle;
   const fetchBuilderPlaceOwner = async () => {
-    if (!ownerTalentLayerId) {
+    if (!ownerTalentLayerHandle) {
       return;
     }
-    const isUserBuilderPlaceOwner = user?.id === ownerTalentLayerId.toString();
+    const isUserBuilderPlaceOwner = user?.handle === ownerTalentLayerHandle.toString();
     setIsBuilderPlaceOwner(isUserBuilderPlaceOwner || false);
   };
 
@@ -35,7 +35,7 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   }, [chainId, data?.ownerId, user?.id]);
 
   useEffect(() => {
-    if (!ownerTalentLayerId) return;
+    if (!ownerTalentLayerHandle) return;
 
     const isBuilderPlaceCollaborator = data?.collaborators?.some(
       collaborator =>
