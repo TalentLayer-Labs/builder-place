@@ -60,7 +60,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
   const initialValues: ICreateUserFormValues = {
     name: user?.name || talentLayerUser?.description?.name || talentLayerUser?.handle || '',
-    talentLayerHandle: user?.talentLayerHandle || talentLayerUser?.handle || '',
+    talentLayerHandle: talentLayerUser?.handle || user?.talentLayerHandle || '',
     email: user?.email || '',
   };
 
@@ -128,7 +128,10 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
               <label className='block'>
                 <span className='font-bold text-md'>handle* </span>
-                <HandleInput initiaValue={initialValues.talentLayerHandle} />
+                <HandleInput
+                  initiaValue={initialValues.talentLayerHandle}
+                  existingHandle={talentLayerUser?.handle}
+                />
                 <span className='text-red-500'>
                   <ErrorMessage name='talentLayerHandle' />
                 </span>
