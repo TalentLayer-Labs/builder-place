@@ -1,7 +1,6 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useEffect } from 'react';
-import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../../context/talentLayer';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
@@ -42,8 +41,6 @@ export interface ICreateUser
  *     let the user complete the form and ask him to conenct on submit
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({ chainId });
   const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
