@@ -9,10 +9,10 @@ interface IFormWithNameAndHandle {
 }
 
 export function HandleInput({
-  initiaValue,
+  initialValue,
   existingHandle,
 }: {
-  initiaValue: string;
+  initialValue: string;
   existingHandle?: string;
 }) {
   const talentLayerClient = useTalentLayerClient();
@@ -27,7 +27,7 @@ export function HandleInput({
 
   useEffect(() => {
     async function checkAvailability() {
-      if (values.talentLayerHandle.length >= 5 && values.talentLayerHandle !== initiaValue) {
+      if (values.talentLayerHandle.length >= 5 && values.talentLayerHandle !== initialValue) {
         const data = await talentLayerClient?.graphQlClient.get(`
           {
             users(where: {handle: "${values.talentLayerHandle}"}, first: 1) {
@@ -55,7 +55,7 @@ export function HandleInput({
           !!existingHandle && 'text-gray-400'
         } rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50`}
         placeholder='your handle'
-        initialvalue={initiaValue}
+        initialvalue={initialValue}
       />
       {!!existingHandle && (
         <p className='font-alt text-xs font-normal opacity-80 text-gray-500'>
