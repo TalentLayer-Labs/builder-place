@@ -35,7 +35,7 @@ export function HandleInput({
             }
           }
         `);
-        if (data.data.users.length == 0) {
+        if (data.data.users.length !== 0) {
           setFieldError('talentLayerHandle', 'Handle already taken');
         }
       }
