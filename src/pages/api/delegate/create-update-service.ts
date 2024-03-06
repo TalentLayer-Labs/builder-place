@@ -45,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           args: [userId, existingService.id, cid],
         });
       } else {
+        //TODO: Miss Serving posting cost
         const signature = await getServiceSignature({ profileId: Number(userId), cid });
         transaction = await walletClient.writeContract({
           address: config.contracts.serviceRegistry,

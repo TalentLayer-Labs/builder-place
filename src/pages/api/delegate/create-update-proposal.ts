@@ -68,6 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           serviceId: Number(serviceId),
         });
 
+        //TODO: Miss Proposal posting cost
         transaction = await walletClient.writeContract({
           address: config.contracts.serviceRegistry,
           abi: TalentLayerService.abi,
