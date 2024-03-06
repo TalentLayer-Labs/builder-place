@@ -68,14 +68,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log(`Minted id: ${userId} for user ${userAddress}`);
 
       // Add delegate
-      await walletClient.writeContract({
+      const delegateTxHash = await walletClient.writeContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'addDelegate',
         args: [userId, walletClient.account.address],
       });
 
-      console.log(`Added ${walletClient.account.address} as delegate for user ${userId}`);
+      console.log(
+        `Adding ${walletClient.account.address} as delegate for user ${userId}, waiting for block confirmation...`,
+      );
+
+      await publicClient.waitForTransactionReceipt({
+        confirmations: 1,
+        hash: delegateTxHash,
+      });
+
+      console.log(`Delegate Added`);
 
       // Transfer TlId to user
       transaction = await walletClient.writeContract({
