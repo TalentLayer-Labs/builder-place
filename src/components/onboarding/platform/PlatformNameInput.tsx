@@ -1,7 +1,7 @@
 import { ErrorMessage, Field, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { slugify } from '../../../modules/BuilderPlace/utils';
-import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
+import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 interface IFormWithNameAndHandle {
   name: string;
@@ -15,8 +15,8 @@ export function PlatformNameInput({
   initialValue: string;
   existingPlatformName?: string;
 }) {
-  const talentLayerClient = useTalentLayerClient();
   const { values, setFieldValue, setFieldError } = useFormikContext<IFormWithNameAndHandle>();
+  const checkAvailability = useCheckAvailability();
 
   useEffect(() => {
     if (!existingPlatformName) {
@@ -26,26 +26,21 @@ export function PlatformNameInput({
   }, [values.name, existingPlatformName, setFieldValue]);
 
   useEffect(() => {
-    async function checkAvailability() {
-      if (
-        values.talentLayerPlatformName.length >= 5 &&
-        values.talentLayerPlatformName !== initialValue
-      ) {
-        const data = await talentLayerClient?.graphQlClient.get(`
-          {
-            platforms(where: {name: "${values.talentLayerPlatformName}"}, first: 1) {
-              id
-            }
-          }
-        `);
-        if (data.data.platforms.length !== 0) {
-          setFieldError('talentLayerPlatformName', 'Name already taken');
-        }
+    const validateName = async () => {
+      const isTaken = await checkAvailability(
+        values.talentLayerPlatformName,
+        initialValue,
+        'platform',
+      );
+      if (isTaken) {
+        setFieldError('talentLayerPlatformName', 'Name already taken');
+      } else {
+        setFieldError('talentLayerPlatformName', '');
       }
-    }
+    };
 
-    checkAvailability();
-  }, [values.talentLayerPlatformName, setFieldError]);
+    validateName();
+  }, [values.talentLayerPlatformName, initialValue, setFieldError]);
 
   return (
     <>

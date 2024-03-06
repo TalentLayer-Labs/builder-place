@@ -1,7 +1,7 @@
 import { Field, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { slugify } from '../../modules/BuilderPlace/utils';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import { useCheckAvailability } from '../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 interface IFormWithNameAndHandle {
   name: string;
@@ -15,8 +15,8 @@ export function HandleInput({
   initialValue: string;
   existingHandle?: string;
 }) {
-  const talentLayerClient = useTalentLayerClient();
   const { values, setFieldValue, setFieldError } = useFormikContext<IFormWithNameAndHandle>();
+  const checkAvailability = useCheckAvailability();
 
   useEffect(() => {
     if (!existingHandle) {
@@ -26,23 +26,18 @@ export function HandleInput({
   }, [values.name, existingHandle, setFieldValue]);
 
   useEffect(() => {
-    async function checkAvailability() {
-      if (values.talentLayerHandle.length >= 5 && values.talentLayerHandle !== initialValue) {
-        const data = await talentLayerClient?.graphQlClient.get(`
-          {
-            users(where: {handle: "${values.talentLayerHandle}"}, first: 1) {
-              id
-            }
-          }
-        `);
-        if (data.data.users.length !== 0) {
-          setFieldError('talentLayerHandle', 'Handle already taken');
-        }
+    const validateName = async () => {
+      const isTaken = await checkAvailability(values.talentLayerHandle, initialValue, 'handle');
+      console.log('isTaken', isTaken);
+      if (isTaken) {
+        setFieldError('talentLayerHandle', 'Handle already taken');
+      } else {
+        setFieldError('talentLayerHandle', '');
       }
-    }
+    };
 
-    checkAvailability();
-  }, [values.talentLayerHandle, setFieldError]);
+    validateName();
+  }, [values.talentLayerHandle, initialValue, setFieldError]);
 
   return (
     <>

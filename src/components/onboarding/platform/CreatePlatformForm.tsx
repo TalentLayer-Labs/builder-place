@@ -13,6 +13,7 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
+import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -45,6 +46,7 @@ export interface ICreatePlatform
 function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
+  const checkAvailability = useCheckAvailability();
   const existingPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
 
@@ -65,6 +67,21 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
       .required('Enter your platform name'),
   });
 
+  const validatePlatformName = async (values: ICreatePlatformFormValues) => {
+    const errors: Record<string, string> = {};
+    if (values.talentLayerPlatformName) {
+      const isNameTaken = await checkAvailability(
+        values.talentLayerPlatformName,
+        initialValues.name,
+        'platform',
+      );
+      if (isNameTaken) {
+        errors.talentLayerPlatformName = 'Name already taken';
+      }
+    }
+    return errors;
+  };
+
   const handleSubmit = async (
     values: ICreatePlatformFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
@@ -77,6 +94,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
       }
 
       await createNewPlatform(values, user, existingPlatform);
+      //TODO add get like user ?
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
@@ -106,7 +124,9 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         initialValues={initialValues}
         enableReinitialize={true}
         onSubmit={handleSubmit}
-        validationSchema={validationSchema}>
+        validationSchema={validationSchema}
+        validate={validatePlatformName}
+        validateOnBlur={false}>
         {({ isSubmitting, setFieldValue, values }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>

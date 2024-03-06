@@ -11,6 +11,7 @@ import { HandleInput } from '../../Form/HandleInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import { EntityStatus } from '@prisma/client';
+import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 export interface ICreateUserFormValues {
   name: string;
@@ -44,6 +45,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
+  const checkAvailability = useCheckAvailability();
   const { createNewUser } = useCreateUser();
 
   /**
@@ -70,6 +72,21 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your handle'),
   });
+
+  const validateHandle = async (values: ICreateUserFormValues) => {
+    const errors: Record<string, string> = {};
+    if (values.talentLayerHandle) {
+      const isHandleTaken = await checkAvailability(
+        values.talentLayerHandle,
+        initialValues.name,
+        'handle',
+      );
+      if (isHandleTaken) {
+        errors.talentLayerHandle = 'Handle already taken';
+      }
+    }
+    return errors;
+  };
 
   const handleSubmit = async (
     values: ICreateUserFormValues,
@@ -105,7 +122,9 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
         initialValues={initialValues}
         enableReinitialize={true}
         onSubmit={handleSubmit}
-        validationSchema={validationSchema}>
+        validationSchema={validationSchema}
+        validate={validateHandle}
+        validateOnBlur={false}>
         {({ isSubmitting, setFieldValue, values }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
