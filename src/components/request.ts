@@ -139,6 +139,25 @@ export const delegateMintID = async (
   }
 };
 
+export const delegatePlatformMint = async (
+  platformName: string,
+  address: string,
+  chainId: number,
+  signature: `0x${string}` | Uint8Array,
+): Promise<any> => {
+  try {
+    return await axios.post('/api/delegate/platform', {
+      platformName,
+      address,
+      chainId,
+      signature,
+    });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
 export const sendPlatformMarketingWeb3mail = async (
   emailSubject: string,
   emailContent: string,
