@@ -15,37 +15,67 @@ import '../styles/globals.css';
 import '../styles/markdown.css';
 import Layout from './Layout';
 import { Analytics } from '@vercel/analytics/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import posthog from 'posthog-js';
+import { PostHogProvider } from 'posthog-js/react';
 import { UserProvider } from '../modules/BuilderPlace/context/UserContext';
 
 // react-query client
 const queryClient = new QueryClient();
 
+// Check that PostHog is client-side
+if (typeof window !== 'undefined') {
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com',
+    persistence: 'memory',
+    property_blacklist: ['$ip'],
+    // Enable debug mode in development
+    loaded: posthog => {
+      if (process.env.NODE_ENV === 'development') posthog.debug();
+    },
+  });
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
   console.log('MyApp', { pageProps });
+
+  const router = useRouter();
+  useEffect(() => {
+    const handleRouteChange = () => posthog.capture('$pageview');
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, []);
+
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
-        <Web3Modal>
-          <BuilderPlaceProvider data={pageProps.builderPlace}>
-            <UserProvider>
-              <TalentLayerProvider>
-                <CustomPalette />
-                <XmtpContextProvider>
-                  <MessagingProvider>
-                    <Layout>
-                      <Component {...pageProps} />
-                    </Layout>
-                  </MessagingProvider>
-                </XmtpContextProvider>
-                <ToastContainer position='bottom-right' />
-              </TalentLayerProvider>
-            </UserProvider>
-          </BuilderPlaceProvider>
-        </Web3Modal>
-      </QueryClientProvider>
-      <SpeedInsights />
-      <Analytics />
+      <PostHogProvider client={posthog}>
+        <QueryClientProvider client={queryClient}>
+          <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
+          <Web3Modal>
+            <BuilderPlaceProvider data={pageProps.builderPlace}>
+              <UserProvider>
+                <TalentLayerProvider>
+                  <CustomPalette />
+                  <XmtpContextProvider>
+                    <MessagingProvider>
+                      <Layout>
+                        <Component {...pageProps} />
+                      </Layout>
+                    </MessagingProvider>
+                  </XmtpContextProvider>
+                  <ToastContainer position='bottom-right' />
+                </TalentLayerProvider>
+              </UserProvider>
+            </BuilderPlaceProvider>
+          </Web3Modal>
+        </QueryClientProvider>
+        <SpeedInsights />
+        <Analytics />
+      </PostHogProvider>
     </>
   );
 }
