@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { useAccount, useWalletClient } from 'wagmi';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
 import { useChainId } from '../hooks/useChainId';
-import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
+import { getUserBy } from '../modules/BuilderPlace/request';
 import { getUserByAddress } from '../queries/users';
 import { IAccount, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
@@ -48,7 +48,6 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const account = useAccount();
   const [canUseDelegation, setCanUseDelegation] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [workerDataLoading, setWorkerDataLoading] = useState(false);
   const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
 
@@ -136,20 +135,16 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     fetchData();
   }, [chainId, account.address, talentLayerClient]);
 
-  const getWorkerProfile = async (userId: string) => {
+  const getWorkerProfile = async () => {
     try {
       setLoading(true);
-      const response = await getWorkerProfileByOwnerId(userId);
 
-      if (response.status !== 200) {
-        console.error('Error while fetching worker profile');
+      const response = await getUserBy({ address: account.address });
+      if (!response) {
+        console.error('Error while fetching user profile');
         return;
       }
-
-      const data = await response.json();
-      if (data) {
-        setWorkerProfile(data);
-      }
+      setWorkerProfile(response);
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err);
@@ -162,10 +157,8 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const refreshWorkerProfile = async () => {
     try {
       setLoading(true);
-      if (user?.id) {
-        console.log('refreshing worker data');
-        await getWorkerProfile(user.id);
-      }
+      console.log('refreshing worker data');
+      await getWorkerProfile();
       return true;
     } catch (err: any) {
       // eslint-disable-next-line no-console
@@ -180,7 +173,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
     const completionScores = getCompletionScores(user);
     setCompletionScores(completionScores);
-    getWorkerProfile(user.id);
+    getWorkerProfile();
   }, [user]);
 
   const value = useMemo(() => {
