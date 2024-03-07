@@ -248,7 +248,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
         id: Number(builderPlaceId),
         collaborators: {
           some: {
-            address: address.toLocaleLowerCase(),
+            address: address,
           },
         },
       },
