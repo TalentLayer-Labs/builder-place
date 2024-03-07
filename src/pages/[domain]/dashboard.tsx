@@ -11,12 +11,10 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import DelegationNotification from '../../components/DelegationNotification';
 import { toast } from 'react-toastify';
-import VerifyUserAccountNotification from '../../components/VerifyUserAccountNotification';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -81,7 +79,6 @@ function Dashboard() {
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
-                <EmailModal />
                 {!isComingFromHirerOnboarding && (
                   <VerifyEmailNotification
                     callback={() => {
@@ -89,11 +86,6 @@ function Dashboard() {
                     }}
                   />
                 )}
-                <VerifyUserAccountNotification
-                  callback={() => {
-                    toast.success('Account verified!');
-                  }}
-                />
                 <Notification
                   title='personalize your space!'
                   text='customize your Platform to match your brand'
@@ -111,15 +103,9 @@ function Dashboard() {
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              <EmailModal />
               <VerifyEmailNotification
                 callback={() => {
                   toast.success('Verification email sent!');
-                }}
-              />
-              <VerifyUserAccountNotification
-                callback={() => {
-                  toast.success('Account verified!');
                 }}
               />
               {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && <DelegationNotification />}

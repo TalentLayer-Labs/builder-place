@@ -6,7 +6,6 @@ import { ICreatePlatform } from '../../../components/onboarding/platform/CreateP
 import prisma from '../../../postgre/postgreClient';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
-import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
 
 export interface PlatformsFilters {
   id?: string | null;
