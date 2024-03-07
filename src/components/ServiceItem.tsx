@@ -12,15 +12,17 @@ function limitText(text: string, maxLength: number) {
 function ServiceItem({
   service,
   embedded,
-  view,
+  view = 1,
 }: {
   service: IService;
   embedded?: boolean;
-  view?: number;
+  view: number;
 }) {
   const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;
   const daysAgo = formatDaysAgo(createdAt);
+
+  console.log('ServiceItem');
 
   return (
     <>
