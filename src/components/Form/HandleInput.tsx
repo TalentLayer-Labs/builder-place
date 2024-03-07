@@ -1,7 +1,7 @@
-import { Field, useFormikContext } from 'formik';
+import { ErrorMessage, Field, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { slugify } from '../../modules/BuilderPlace/utils';
-import { useCheckAvailability } from '../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
+import { useCheckNameAvailability } from '../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 interface IFormWithNameAndHandle {
   name: string;
@@ -15,29 +15,31 @@ export function HandleInput({
   initialValue: string;
   existingHandle?: string;
 }) {
-  const { values, setFieldValue, setFieldError } = useFormikContext<IFormWithNameAndHandle>();
-  const checkAvailability = useCheckAvailability();
+  const { values, setFieldValue, setFieldError, setFieldTouched } =
+    useFormikContext<IFormWithNameAndHandle>();
+  const checkAvailability = useCheckNameAvailability();
 
   useEffect(() => {
     if (!existingHandle) {
       const slugifiedName = slugify(values.name);
       setFieldValue('talentLayerHandle', slugifiedName);
     }
-  }, [values.name, existingHandle, setFieldValue]);
+  }, [values.name, existingHandle]);
 
   useEffect(() => {
     const validateName = async () => {
-      const isTaken = await checkAvailability(values.talentLayerHandle, initialValue, 'handle');
+      const isTaken = await checkAvailability(values.talentLayerHandle, initialValue, 'users');
       console.log('isTaken', isTaken);
       if (isTaken) {
         setFieldError('talentLayerHandle', 'Handle already taken');
+        setFieldTouched('talentLayerHandle', true);
       } else {
-        setFieldError('talentLayerHandle', '');
+        setFieldError('talentLayerHandle', undefined);
       }
     };
 
     validateName();
-  }, [values.talentLayerHandle, initialValue, setFieldError]);
+  }, [values.talentLayerHandle]);
 
   return (
     <>
@@ -50,7 +52,6 @@ export function HandleInput({
           !!existingHandle && 'text-gray-400'
         } rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50`}
         placeholder='your handle'
-        initialvalue={initialValue}
       />
       {!!existingHandle && (
         <p className='font-alt text-xs font-normal opacity-80 text-gray-500'>
@@ -58,6 +59,18 @@ export function HandleInput({
           handle, use another Ethereum account.
         </p>
       )}
+      <span className='text-red-500'>
+        <ErrorMessage name='talentLayerHandle' />
+      </span>
+      <p className='font-alt text-xs font-normal'>
+        <span className='text-base-content'>
+          Used to create your onchain identity on{' '}
+          <a href='https://talentlayer.org' target='_blank' className='underline text-info'>
+            TalentLayer
+          </a>
+          .
+        </span>
+      </p>
     </>
   );
 }

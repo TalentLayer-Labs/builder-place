@@ -1,24 +1,23 @@
 import { useCallback } from 'react';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 
-export function useCheckAvailability() {
+export function useCheckNameAvailability() {
   const talentLayerClient = useTalentLayerClient();
 
   return useCallback(
-    async (entityName: string, initialValue: string, entityType: 'platform' | 'handle') => {
-      if (entityName.length >= 5 && entityName !== initialValue) {
-        const queryType = entityType === 'platform' ? 'platforms' : 'users';
-        const fieldName = entityType === 'platform' ? 'name' : 'handle';
+    async (value: string, initialValue: string, entity: 'platforms' | 'users') => {
+      if (value.length >= 5 && value !== initialValue) {
+        const fieldName = entity === 'platforms' ? 'name' : 'handle';
 
         const data = await talentLayerClient?.graphQlClient.get(`
         {
-          ${queryType}(where: {${fieldName}: "${entityName}"}, first: 1) {
+          ${entity}(where: {${fieldName}: "${value}"}, first: 1) {
             id
           }
         }
       `);
 
-        return data && data.data[queryType].length !== 0;
+        return data && data.data[entity].length !== 0;
       }
       return false;
     },

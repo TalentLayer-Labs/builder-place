@@ -16,7 +16,7 @@ function ServiceItem({
 }: {
   service: IService;
   embedded?: boolean;
-  view: number;
+  view?: number;
 }) {
   const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;

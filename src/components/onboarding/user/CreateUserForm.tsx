@@ -11,7 +11,6 @@ import { HandleInput } from '../../Form/HandleInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import { EntityStatus } from '@prisma/client';
-import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 export interface ICreateUserFormValues {
   name: string;
@@ -45,7 +44,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const checkAvailability = useCheckAvailability();
   const { createNewUser } = useCreateUser();
 
   /**
@@ -72,21 +70,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your handle'),
   });
-
-  const validateHandle = async (values: ICreateUserFormValues) => {
-    const errors: Record<string, string> = {};
-    if (values.talentLayerHandle) {
-      const isHandleTaken = await checkAvailability(
-        values.talentLayerHandle,
-        initialValues.name,
-        'handle',
-      );
-      if (isHandleTaken) {
-        errors.talentLayerHandle = 'Handle already taken';
-      }
-    }
-    return errors;
-  };
 
   const handleSubmit = async (
     values: ICreateUserFormValues,
@@ -123,9 +106,8 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
         enableReinitialize={true}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
-        validate={validateHandle}
         validateOnBlur={false}>
-        {({ isSubmitting, setFieldValue, values }) => (
+        {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
               <label className='block'>
@@ -148,21 +130,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
                   initialValue={initialValues.talentLayerHandle}
                   existingHandle={talentLayerUser?.handle}
                 />
-                <span className='text-red-500'>
-                  <ErrorMessage name='talentLayerHandle' />
-                </span>
-                <p className='font-alt text-xs font-normal'>
-                  <span className='text-base-content'>
-                    Used to create your onchain identity on{' '}
-                    <a
-                      href='https://talentlayer.org'
-                      target='_blank'
-                      className='underline text-info'>
-                      TalentLayer
-                    </a>
-                    .
-                  </span>
-                </p>
               </label>
 
               <label className='block'>
@@ -199,7 +166,10 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
                   {address ? (
                     <button
                       type='submit'
-                      className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                      disabled={!(isValid && dirty)}
+                      className={`grow px-5 py-2 rounded-xl text-white ${
+                        !(isValid && dirty) ? 'bg-gray-500' : 'bg-pink-500'
+                      }`}>
                       create my profile
                     </button>
                   ) : (

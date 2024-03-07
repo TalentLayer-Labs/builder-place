@@ -13,7 +13,6 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
-import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -46,7 +45,6 @@ export interface ICreatePlatform
 function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const checkAvailability = useCheckAvailability();
   const existingPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
 
@@ -66,21 +64,6 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your platform name'),
   });
-
-  const validatePlatformName = async (values: ICreatePlatformFormValues) => {
-    const errors: Record<string, string> = {};
-    if (values.talentLayerPlatformName) {
-      const isNameTaken = await checkAvailability(
-        values.talentLayerPlatformName,
-        initialValues.name,
-        'platform',
-      );
-      if (isNameTaken) {
-        errors.talentLayerPlatformName = 'Name already taken';
-      }
-    }
-    return errors;
-  };
 
   const handleSubmit = async (
     values: ICreatePlatformFormValues,
@@ -125,7 +108,6 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         enableReinitialize={true}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
-        validate={validatePlatformName}
         validateOnBlur={false}>
         {({ isSubmitting, setFieldValue, values }) => (
           <Form>

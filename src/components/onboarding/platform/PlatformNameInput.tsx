@@ -1,7 +1,7 @@
 import { ErrorMessage, Field, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { slugify } from '../../../modules/BuilderPlace/utils';
-import { useCheckAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
+import { useCheckNameAvailability } from '../../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 
 interface IFormWithNameAndHandle {
   name: string;
@@ -15,8 +15,9 @@ export function PlatformNameInput({
   initialValue: string;
   existingPlatformName?: string;
 }) {
-  const { values, setFieldValue, setFieldError } = useFormikContext<IFormWithNameAndHandle>();
-  const checkAvailability = useCheckAvailability();
+  const { values, setFieldValue, setFieldError, setFieldTouched } =
+    useFormikContext<IFormWithNameAndHandle>();
+  const checkAvailability = useCheckNameAvailability();
 
   useEffect(() => {
     if (!existingPlatformName) {
@@ -30,12 +31,13 @@ export function PlatformNameInput({
       const isTaken = await checkAvailability(
         values.talentLayerPlatformName,
         initialValue,
-        'platform',
+        'platforms',
       );
       if (isTaken) {
         setFieldError('talentLayerPlatformName', 'Name already taken');
+        setFieldTouched('talentLayerPlatformName', true);
       } else {
-        setFieldError('talentLayerPlatformName', '');
+        setFieldError('talentLayerPlatformName', undefined);
       }
     };
 
