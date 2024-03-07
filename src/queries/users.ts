@@ -1,5 +1,5 @@
 import { processRequest } from '../utils/graphql';
-import { IWeb3mailPreferences } from '../types';
+import { IEmailPreferences } from '../types';
 
 export const getUsers = (
   chainId: number,
@@ -168,7 +168,7 @@ export const getUserByIds = (chainId: number, ids: string[]): Promise<any> => {
 export const getUserWeb3mailPreference = (
   chainId: number,
   address: string,
-  web3mailPreference: keyof IWeb3mailPreferences,
+  web3mailPreference: keyof IEmailPreferences,
 ): Promise<any> => {
   const query = `
     {
@@ -186,7 +186,7 @@ export const getUserWeb3mailPreference = (
 export const getUsersWeb3MailPreference = (
   chainId: number,
   addresses: string[],
-  web3mailPreference: keyof IWeb3mailPreferences,
+  web3mailPreference: keyof IEmailPreferences,
 ): Promise<any> => {
   const query = `
     {
@@ -213,7 +213,7 @@ export const getUsersWeb3MailPreference = (
 export const getWeb3mailUsersForNewServices = (
   chainId: number,
   addresses: string[],
-  web3mailPreference: keyof IWeb3mailPreferences,
+  web3mailPreference: keyof IEmailPreferences,
 ): Promise<any> => {
   const query = `
     {

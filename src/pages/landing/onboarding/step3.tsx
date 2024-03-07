@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import CustomDomain from '../../../components/CustomDomain';
+import SubdomainInput from '../../../components/Form/SubdomainInput';
 import DefaultPalettes from '../../../components/DefaultPalettes';
 import HirerProfileLayout from '../../../components/HirerProfileLayout';
 import UploadImage from '../../../components/UploadImage';
@@ -92,7 +92,7 @@ function onboardingStep3() {
         /**
          * @dev: send validation email to owner to validate email
          */
-        if (workerProfile) {
+        if (workerProfile?.email) {
           await sendVerificationEmail(
             workerProfile.email,
             userId as string,
@@ -150,7 +150,7 @@ function onboardingStep3() {
           {({ isSubmitting, setFieldValue, values }) => (
             <Form>
               <div className='grid grid-cols-1 gap-6'>
-                <CustomDomain />
+                <SubdomainInput />
 
                 <UploadImage
                   fieldName='logo'
