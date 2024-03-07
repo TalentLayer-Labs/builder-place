@@ -9,10 +9,11 @@ export const getFilteredServicesByKeywords = async (
   offset?: number,
   searchQuery?: string,
   platformId?: string,
+  platformName?: string,
   chainId?: number,
 ): Promise<any> => {
   try {
-    return await axios.get('/api/services/filtered', {
+    return await axios.get('/api/services', {
       params: {
         serviceStatus,
         buyerId,
@@ -21,6 +22,7 @@ export const getFilteredServicesByKeywords = async (
         offset,
         searchQuery,
         platformId,
+        platformName,
         chainId,
       },
     });

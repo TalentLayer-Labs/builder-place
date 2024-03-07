@@ -18,7 +18,8 @@ function OrganizationHeader() {
     '',
     '',
     10,
-    process.env.NEXT_PUBLIC_PLATFORM_ID,
+    builderPlace?.talentLayerPlatformId,
+    builderPlace?.talentLayerPlatformName,
   );
 
   if (!builderPlace) return <Loading />;
