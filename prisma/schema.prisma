@@ -10,26 +10,26 @@ datasource db {
 // ********************* BuilderPlace *********************
 
 model BuilderPlace {
-  id                       Int          @id @default(autoincrement())
-  status                   EntityStatus @default(PENDING)
-  name                     String
-  subdomain                String?      @unique
-  customDomain             String?      @unique
-  talentLayerPlatformId    String?      @unique
-  talentLayerPlatformName  String?      @unique
-  owner                    User?        @relation(fields: [ownerId], references: [id])
-  ownerId                  Int?         @unique
-  collaborators            User[]       @relation("BuilderPlaceCollaborators")
-  baseline                 String?
-  about                    String?
-  aboutTech                String?
-  presentation             String?
-  logo                     String?
-  icon                     String?
-  cover                    String?
-  palette                  Json
-  jobPostingConditions     Json?
-  preferredWorkTypes       WorkType[]
+  id                      Int          @id @default(autoincrement())
+  status                  EntityStatus @default(PENDING)
+  name                    String
+  subdomain               String?      @unique
+  customDomain            String?      @unique
+  talentLayerPlatformId   String?      @unique
+  talentLayerPlatformName String?      @unique
+  owner                   User?        @relation(fields: [ownerId], references: [id])
+  ownerId                 Int?         @unique
+  collaborators           User[]       @relation("BuilderPlaceCollaborators")
+  baseline                String?
+  about                   String?
+  aboutTech               String?
+  presentation            String?
+  logo                    String?
+  icon                    String?
+  cover                   String?
+  palette                 Json
+  jobPostingConditions    Json?        @default("{\"allowPosts\": false, \"conditions\": []}")
+  preferredWorkTypes      WorkType[]
 }
 
 model User {
