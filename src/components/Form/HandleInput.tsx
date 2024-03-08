@@ -27,18 +27,20 @@ export function HandleInput({
   }, [values.name, existingHandle]);
 
   useEffect(() => {
-    const validateName = async () => {
-      const isTaken = await checkAvailability(values.talentLayerHandle, initialValue, 'users');
-      console.log('isTaken', isTaken);
-      if (isTaken) {
-        setFieldError('talentLayerHandle', 'Handle already taken');
-        setFieldTouched('talentLayerHandle', true);
-      } else {
-        setFieldError('talentLayerHandle', undefined);
-      }
-    };
+    if (!existingHandle) {
+      const validateName = async () => {
+        const isTaken = await checkAvailability(values.talentLayerHandle, initialValue, 'users');
+        console.log('isTaken', isTaken);
+        if (isTaken) {
+          setFieldError('talentLayerHandle', 'Handle already taken');
+          setFieldTouched('talentLayerHandle', true);
+        } else {
+          setFieldError('talentLayerHandle', undefined);
+        }
+      };
 
-    validateName();
+      validateName();
+    }
   }, [values.talentLayerHandle]);
 
   return (

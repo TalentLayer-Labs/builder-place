@@ -27,21 +27,23 @@ export function PlatformNameInput({
   }, [values.name, existingPlatformName, setFieldValue]);
 
   useEffect(() => {
-    const validateName = async () => {
-      const isTaken = await checkAvailability(
-        values.talentLayerPlatformName,
-        initialValue,
-        'platforms',
-      );
-      if (isTaken) {
-        setFieldError('talentLayerPlatformName', 'Name already taken');
-        setFieldTouched('talentLayerPlatformName', true);
-      } else {
-        setFieldError('talentLayerPlatformName', undefined);
-      }
-    };
+    if (!existingPlatformName) {
+      const validateName = async () => {
+        const isTaken = await checkAvailability(
+          values.talentLayerPlatformName,
+          initialValue,
+          'platforms',
+        );
+        if (isTaken) {
+          setFieldError('talentLayerPlatformName', 'Name already taken');
+          setFieldTouched('talentLayerPlatformName', true);
+        } else {
+          setFieldError('talentLayerPlatformName', undefined);
+        }
+      };
 
-    validateName();
+      validateName();
+    }
   }, [values.talentLayerPlatformName, initialValue, setFieldError]);
 
   return (
