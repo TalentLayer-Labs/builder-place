@@ -3,7 +3,7 @@ import MultiStepsTransactionToast from '../../../../components/onboarding/user/M
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
 import { useMutation } from 'react-query';
-import { useChainId, useWalletClient } from 'wagmi';
+import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
   ICreateUser,
   ICreateUserFormValues,
@@ -14,10 +14,12 @@ import useMintFee from '../../../../hooks/useMintFee';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import UserContext from '../../context/UserContext';
 import { createVerificationEmailToast } from '../../utils/toast';
+import TalentLayerID from '../../../../contracts/ABI/TalentLayerID.json';
 
 const useCreateUser = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
+  const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { calculateMintFee } = useMintFee();
@@ -29,7 +31,7 @@ const useCreateUser = () => {
   );
 
   const createNewUser = async (values: ICreateUserFormValues) => {
-    if (!walletClient || !address) {
+    if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
     }
 
@@ -40,6 +42,8 @@ const useCreateUser = () => {
       autoClose: false,
       closeOnClick: false,
     });
+
+    let userId = talentLayerUser?.id;
 
     try {
       /**
@@ -69,9 +73,21 @@ const useCreateUser = () => {
             signature,
             process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
           );
+          userId;
         } else {
           if (talentLayerClient) {
-            const tx = await talentLayerClient.profile.create(values.talentLayerHandle);
+            const txHash = await talentLayerClient.profile.create(values.talentLayerHandle);
+            await publicClient.waitForTransactionReceipt({
+              confirmations: 1,
+              hash: txHash,
+            });
+            const id = await publicClient.readContract({
+              address: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.address,
+              abi: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.abi,
+              functionName: 'ids',
+              args: [walletClient.account.address],
+            });
+            userId = id as unknown as string;
           }
         }
       }
@@ -87,6 +103,7 @@ const useCreateUser = () => {
         data: {
           name: values.name,
           talentLayerHandle: values.talentLayerHandle,
+          talentLayerId: userId as string,
           email: values.email,
           picture: values.picture || undefined,
           address: address,

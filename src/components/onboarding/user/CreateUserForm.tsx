@@ -23,6 +23,7 @@ export interface ICreateUser
   extends IMutation<
     ICreateUserFormValues & {
       address: string;
+      talentLayerId: string;
     }
   > {}
 

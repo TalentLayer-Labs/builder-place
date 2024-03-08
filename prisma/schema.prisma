@@ -13,10 +13,10 @@ model BuilderPlace {
   id                      Int          @id @default(autoincrement())
   status                  EntityStatus @default(PENDING)
   name                    String
-  subdomain               String?      @unique
+  subdomain               String       @unique
   customDomain            String?      @unique
   talentLayerPlatformId   String?      @unique
-  talentLayerPlatformName String?      @unique
+  talentLayerPlatformName String       @unique
   owner                   User?        @relation(fields: [ownerId], references: [id])
   ownerId                 Int?         @unique
   collaborators           User[]       @relation("BuilderPlaceCollaborators")
@@ -38,8 +38,8 @@ model User {
   name                     String
   email                    String         @unique
   address                  String         @unique
-  talentLayerId            String?        @unique
-  talentLayerHandle        String?        @unique
+  talentLayerId            String         @unique
+  talentLayerHandle        String         @unique
   isEmailVerified          Boolean        @default(false)
   about                    String?
   picture                  String?
