@@ -15,6 +15,7 @@ function MenuBottom({
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { enrichedWorkerNavigation: workerNavigation } = useEnrichMenu(
     builderPlace?.jobPostingConditions?.allowPosts,
+    !isBuilderPlaceCollaborator,
   );
   const navigation = isBuilderPlaceCollaborator ? hirerNavigation : workerNavigation;
 
