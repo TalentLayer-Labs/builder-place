@@ -57,7 +57,11 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
 
   const validationSchema = Yup.object({
     name: Yup.string().min(5).max(20).required('Enter your company name'),
-    subdomain: Yup.string().required('subdomain is required'),
+    subdomain: Yup.string()
+      .min(3)
+      .max(20)
+      .matches(/^[a-z0-9][a-z0-9-]*$/, 'Only a-z, 0-9 and - allowed, and cannot begin with -')
+      .required('subdomain is required'),
     talentLayerPlatformName: Yup.string()
       .min(5)
       .max(20)
