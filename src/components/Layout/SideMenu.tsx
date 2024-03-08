@@ -7,6 +7,7 @@ import {
   hirerNavigation,
   ownerAdminNavigation,
   PlatformAdminNavigation,
+  workerNavigation,
 } from './navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,8 +17,9 @@ function SideMenu() {
   const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);
-  const { enrichedWorkerNavigation: workerNavigation } = useEnrichMenu(
+  const { enrichedWorkerNavigation, menuLoading } = useEnrichMenu(
     builderPlace?.jobPostingConditions?.allowPosts,
+    !isBuilderPlaceCollaborator,
   );
 
   return (
@@ -73,15 +75,25 @@ function SideMenu() {
 
           {!isBuilderPlaceCollaborator && (
             <nav className='space-y-1 mt-6'>
-              {workerNavigation.map(item => (
-                <SideLink key={item.name} href={item.href}>
-                  <item.icon
-                    className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
-                    aria-hidden='true'
-                  />
-                  {item.name}
-                </SideLink>
-              ))}
+              {menuLoading
+                ? workerNavigation.map(item => (
+                    <SideLink key={item.name} href={item.href}>
+                      <item.icon
+                        className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
+                        aria-hidden='true'
+                      />
+                      {item.name}
+                    </SideLink>
+                  ))
+                : enrichedWorkerNavigation.map(item => (
+                    <SideLink key={item.name} href={item.href}>
+                      <item.icon
+                        className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
+                        aria-hidden='true'
+                      />
+                      {item.name}
+                    </SideLink>
+                  ))}
             </nav>
           )}
 
