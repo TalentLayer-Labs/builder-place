@@ -2,7 +2,7 @@ import { User } from '.prisma/client';
 import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
 import { useChainId } from '../hooks/useChainId';
 import { getUserBy } from '../modules/BuilderPlace/request';
@@ -42,6 +42,7 @@ const TalentLayerContext = createContext<iTalentLayerContext>({
 
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
+  const { switchNetwork } = useSwitchNetwork();
   const { data: walletClient } = useWalletClient();
   const [user, setUser] = useState<IUser | undefined>();
   const [workerProfile, setWorkerProfile] = useState<User>();
@@ -53,6 +54,13 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
   // automatically switch to the default chain is the current one is not part of the config
   useEffect(() => {
+    if (
+      switchNetwork &&
+      chainId !== (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number)
+    ) {
+      switchNetwork(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number);
+    }
+
     const talentLayerClient = new TalentLayerClient({
       chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
       ipfsConfig: {
@@ -78,8 +86,11 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      console.log('fetching data', chainId, account.address);
-      const userResponse = await getUserByAddress(chainId, account.address);
+      console.log('fetching data', account.address);
+      const userResponse = await getUserByAddress(
+        process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
+        account.address,
+      );
 
       if (userResponse?.data?.data?.users?.length == 0) {
         setLoading(false);
