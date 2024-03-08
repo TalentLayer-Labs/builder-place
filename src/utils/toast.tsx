@@ -92,7 +92,7 @@ export const showErrorTransactionToast = (error: any) => {
     errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
   }
-  toast.error(errorMessage);
+  toast.error(`An error happened: ${errorMessage}.`);
 };
 
 export const createTalentLayerIdTransactionToast = async (
