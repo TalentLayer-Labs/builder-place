@@ -109,7 +109,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
         validateOnBlur={false}>
-        {({ isSubmitting, setFieldValue, values }) => (
+        {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
               <label className='block'>
@@ -156,7 +156,10 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
                   {address ? (
                     <button
                       type='submit'
-                      className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                      disabled={!(isValid && dirty)}
+                      className={`grow px-5 py-2 rounded-xl text-white ${
+                        !(isValid && dirty) ? 'bg-gray-500' : 'bg-pink-500'
+                      }`}>
                       create my platform
                     </button>
                   ) : (
