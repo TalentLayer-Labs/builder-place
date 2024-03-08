@@ -21,8 +21,8 @@ function CreateService() {
   const { userExists } = useContext(MessagingContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { returnedPostingConditions, isLoading, canPost } = useCheckJobPostConditions(
-    builderPlace?.jobPostingConditions.allowPosts,
-    builderPlace?.jobPostingConditions.conditions,
+    builderPlace?.jobPostingConditions?.allowPosts,
+    builderPlace?.jobPostingConditions?.conditions,
   );
 
   if (isLoading) {
