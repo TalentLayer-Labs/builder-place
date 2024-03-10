@@ -14,7 +14,7 @@ import useMintFee from '../../../../hooks/useMintFee';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import UserContext from '../../context/UserContext';
 import { createVerificationEmailToast } from '../../utils/toast';
-import TalentLayerID from '../../../../contracts/ABI/TalentLayerID.json';
+import { wait } from '../../../../utils/toast';
 
 const useCreateUser = () => {
   const chainId = useChainId();
@@ -43,6 +43,8 @@ const useCreateUser = () => {
       closeOnClick: false,
     });
 
+    await wait(2);
+
     let userId = talentLayerUser?.id;
 
     try {
@@ -65,15 +67,16 @@ const useCreateUser = () => {
 
         if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true') {
           const handlePrice = calculateMintFee(values.talentLayerHandle);
-          const response2 = await delegateMintID(
+          const tx = await delegateMintID(
             chainId,
             values.talentLayerHandle,
             String(handlePrice),
             address,
             signature,
-            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
+            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true',
           );
-          userId;
+
+          userId = tx.data.userId;
         } else {
           if (talentLayerClient) {
             const txHash = await talentLayerClient.profile.create(values.talentLayerHandle);
@@ -99,7 +102,7 @@ const useCreateUser = () => {
       /**
        * @dev Post a new user to DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
-      const response = await userMutation.mutateAsync({
+      await userMutation.mutateAsync({
         data: {
           name: values.name,
           talentLayerHandle: values.talentLayerHandle,
