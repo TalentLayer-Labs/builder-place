@@ -105,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    res.status(200).json({ userId, transaction: transaction });
+    res.status(200).json({ userId: String(userId), transaction: transaction });
   } catch (error) {
     console.error('errorDebug', error);
     res.status(500).json({ error: error });
