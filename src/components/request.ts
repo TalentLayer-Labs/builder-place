@@ -121,11 +121,11 @@ export const delegateMintID = async (
   handle: string,
   handlePrice: string,
   userAddress: string,
-  signature?: string,
+  signature: string,
   addDelegateAndTransferId = false,
 ): Promise<any> => {
   try {
-    return await axios.post('/api/delegate/mint-id', {
+    return await axios.post('/api/delegate/user', {
       chainId,
       handle,
       handlePrice,
