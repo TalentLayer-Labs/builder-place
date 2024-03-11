@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useCallback, useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useChainId, useWalletClient } from 'wagmi';
+import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
   ICreatePlatform,
   ICreatePlatformFormValues,
@@ -18,6 +18,7 @@ import { delegatePlatformMint } from '../../../../components/request';
 
 const useCreatePlatform = () => {
   const chainId = useChainId();
+  const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useContext(UserContext);
   const talentLayerClient = useTalentLayerClient();
@@ -46,6 +47,8 @@ const useCreatePlatform = () => {
 
     await wait(2);
 
+    let platformId = existingPlatform?.id;
+
     try {
       /**
        * @dev Sign message to prove ownership of the address
@@ -66,7 +69,8 @@ const useCreatePlatform = () => {
             chainId,
             signature,
           );
-          await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
+
+          platformId = tx.data.platformId;
         } else {
           const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
           await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
@@ -86,6 +90,7 @@ const useCreatePlatform = () => {
           name: values.name,
           subdomain: subdomain,
           talentLayerPlatformName: values.talentLayerPlatformName,
+          talentLayerPlatformId: platformId as string,
           logo: values.logo,
           palette: themes['lisboa'],
           ownerId: user.id,
