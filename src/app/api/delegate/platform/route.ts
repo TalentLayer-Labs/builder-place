@@ -25,6 +25,10 @@ export async function POST(req: Request) {
   console.log('json', body);
   const config = getConfig(body.chainId);
 
+  if (process.env.NEXT_PUBLIC_ACTIVE_DELEGATE !== 'true') {
+    return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
+  }
+
   // @TODO: move it to a middleware and apply to all POST and PUT ?
   const signatureAddress = await recoverMessageAddress({
     message: `connect with ${body.address}`,
@@ -42,10 +46,6 @@ export async function POST(req: Request) {
 
   if (signatureAddress !== body.address) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
-  }
-
-  if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT !== 'true') {
-    return Response.json({ error: 'Delegation is not activated' }, { status: 401 });
   }
 
   try {
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 
     console.log('MintFee', mintFee);
 
-    const transaction = await walletClient.writeContract({
+    const txHash = await walletClient.writeContract({
       address: config.contracts.talentLayerPlatformId,
       abi: TalentLayerPlatformID.abi,
       functionName: 'mintForAddress',
@@ -75,7 +75,25 @@ export async function POST(req: Request) {
       value: mintFee as bigint,
     });
 
-    return Response.json({ id: transaction }, { status: 201 });
+    console.log('tx hash', txHash);
+
+    await publicClient.waitForTransactionReceipt({
+      confirmations: 1,
+      hash: txHash,
+    });
+
+    const id = await publicClient.readContract({
+      address: config.contracts.talentLayerPlatformId,
+      abi: TalentLayerPlatformID.abi,
+      functionName: 'ids',
+      args: [body.address],
+    });
+
+    console.log('Platform id', id);
+
+    const platformId = id as unknown as string;
+
+    return Response.json({ transaction: txHash, platformId: String(platformId) }, { status: 201 });
   } catch (error: any) {
     // @TODO: move error handle to a middleware ? or factorize it ?
     let message = 'Failed to create plaform';
