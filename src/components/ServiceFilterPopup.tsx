@@ -21,7 +21,7 @@ function ServiceFilterPopup({
   return (
     <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 right-0  z-50'>
       <div className='flex flex-col'>
-        <label className='text-sm mt-1 font-bold'>Rate</label>
+        {/* <label className='text-sm mt-1 font-bold'>Rate</label>
         <div className='flex flex-row gap-2'>
           <input
             type='number'
@@ -37,7 +37,7 @@ function ServiceFilterPopup({
             className='border border-3 border-gray-300 p-2 rounded w-24'
             placeholder='Max'
           />
-        </div>
+        </div> */}
         <label className='text-sm mt-3 font-bold'>Token</label>
         <div className='flex flex-col'>
           {allowedTokens.map((token: IToken) => (
@@ -46,6 +46,7 @@ function ServiceFilterPopup({
                 type='radio'
                 name='token'
                 value={token.address}
+                checked={selectedToken === token.address}
                 onChange={e => {
                   const tokenName = e.target.value;
                   if (e.target.checked) {
@@ -57,7 +58,7 @@ function ServiceFilterPopup({
             </div>
           ))}
         </div>
-        <label className='text-sm mt-3 font-bold'>Rating</label>
+        {/* <label className='text-sm mt-3 font-bold'>Rating</label>
         <div className='flex flex-col'>
           {Array.from({ length: 5 }, (_, i) => i + 1).map((rating, i) => (
             <div className='flex items-center gap-2' key={i}>
@@ -79,7 +80,7 @@ function ServiceFilterPopup({
               </label>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
       <div className='mt-4'>
         <button className='px-5 py-2 border border-black rounded-lg' onClick={handleReset}>

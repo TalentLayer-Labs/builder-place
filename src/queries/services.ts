@@ -1,8 +1,9 @@
-import { ServiceStatusEnum } from '../types';
+import { IToken, ServiceStatusEnum } from '../types';
 import { processRequest } from '../utils/graphql';
 
 interface IProps {
   serviceStatus?: ServiceStatusEnum;
+  allowedTokens?: any;
   buyerId?: string;
   sellerId?: string;
   numberPerPage?: number;
@@ -11,6 +12,9 @@ interface IProps {
   platformId?: string;
   keywordList?: string[];
   selectedToken?: string;
+  minRate?: string; 
+  maxRate?: string;
+  selectedRatings?: string[];
 }
 
 const serviceQueryFields = `
@@ -72,7 +76,32 @@ const getFilteredServiceCondition = (params: IProps) => {
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
   if (params.platformId) condition += `platform: "${params.platformId}",`;
   if (params.selectedToken) condition += `description_: {rateToken_contains: "${params.selectedToken}"},`;
+  // if (params.selectedRatings) {
+  //   const ratingList = params.selectedRatings.map(rating => `"${rating}"`).join(', ');
+  //   condition += `description_: {rating_in: [${ratingList}]},`;
+  // }
+  //LOGIC FOR RATE FILTER TO WORK ALONG WITH TOKEN FILTER
+
+  // if (params.selectedToken && (minRate || maxRate)) {
+  //   params.allowedTokens.forEach((token: IToken) => {
+  //     if (token.address === params.selectedToken) {
+  //       let rateCondition = `description_: { rateToken_contains: "${params.selectedToken}", AND: [`;
   
+  //       if (minRate) {
+  //         rateCondition += `{rateAmount_gte: "${minRate * Math.pow(10, token.decimals)}"},`;
+  //       }
+  
+  //       if (maxRate) {
+  //         rateCondition += `{rateAmount_lte: "${maxRate * Math.pow(10, token.decimals)}"},`;
+  //       }
+  
+  //       rateCondition += `]},`;
+  
+  //       condition += rateCondition;
+  //     }
+  //   });
+  // }
+
   let keywordFilter = '';
 
   if (params.keywordList && params.keywordList.length > 0) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IService, ServiceStatusEnum } from '../types';
 import { getFilteredServicesByKeywords } from '../pages/api/services/request';
 import { useChainId } from 'wagmi';
+import useAllowedTokens from './useAllowedTokens';
 
 const useFilteredServices = (
   serviceStatus?: ServiceStatusEnum,
@@ -10,6 +11,9 @@ const useFilteredServices = (
   searchQuery?: string,
   numberPerPage?: number,
   selectedToken?: string,
+  minRate?: string,
+  maxRate?: string,
+  selectedRatings?: string[],
   platformId?: string,
 ): {
   hasMoreData: boolean;
@@ -22,6 +26,7 @@ const useFilteredServices = (
   const [loading, setLoading] = useState(false);
   const [offset, setOffset] = useState(0);
   const chainId = useChainId();
+  const allowedTokens = useAllowedTokens();
 
   useEffect(() => {
     setServices([]);
@@ -37,6 +42,7 @@ const useFilteredServices = (
 
         response = await getFilteredServicesByKeywords(
           serviceStatus,
+          allowedTokens,
           buyerId,
           sellerId,
           numberPerPage,
@@ -45,6 +51,9 @@ const useFilteredServices = (
           platformId,
           chainId,
           selectedToken,
+          minRate,
+          maxRate,
+          selectedRatings,
         );
 
         newServices = response?.data?.services;
@@ -67,7 +76,7 @@ const useFilteredServices = (
       }
     };
     fetchData();
-  }, [numberPerPage, offset, searchQuery, selectedToken]);
+  }, [numberPerPage, offset, searchQuery, selectedToken, selectedRatings?.length,minRate,maxRate]);
 
   const loadMore = () => {
     numberPerPage ? setOffset(offset + numberPerPage) : '';

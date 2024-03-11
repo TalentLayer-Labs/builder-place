@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useRouter } from 'next/router';
 import useFilteredServices from '../hooks/useFilteredServices';
-import { IService, IToken, ServiceStatusEnum } from '../types';
+import { IService, ServiceStatusEnum } from '../types';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
@@ -27,8 +27,10 @@ function ServiceList() {
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
     selectedToken,
+    minRate,
+    maxRate,
+    selectedRatings
   );
-
   const handleResetFilter = () => {
     setMinRate('');
     setMaxRate('');
