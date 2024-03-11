@@ -91,6 +91,12 @@ export const showErrorTransactionToast = (error: any) => {
   } else if (error.response && error.response.status === 500) {
     errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
+  } else {
+    //@dev: Case Viem insufficient gas error
+    const spreadError = { ...error };
+    if (spreadError.shortMessage) {
+      errorMessage = spreadError.shortMessage;
+    }
   }
   toast.error(`An error happened: ${errorMessage}.`);
 };
