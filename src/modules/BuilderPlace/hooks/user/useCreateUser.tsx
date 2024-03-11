@@ -84,6 +84,7 @@ const useCreateUser = () => {
               confirmations: 1,
               hash: txHash,
             });
+            //@dev Return value as native browser bigint
             const id = await publicClient.readContract({
               address: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.address,
               abi: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.abi,
@@ -106,7 +107,7 @@ const useCreateUser = () => {
         data: {
           name: values.name,
           talentLayerHandle: values.talentLayerHandle,
-          talentLayerId: userId as string,
+          talentLayerId: String(userId),
           email: values.email,
           picture: values.picture || undefined,
           address: address,
