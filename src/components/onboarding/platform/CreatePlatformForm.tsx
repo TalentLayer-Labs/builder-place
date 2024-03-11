@@ -26,6 +26,7 @@ export interface ICreatePlatform
     ICreatePlatformFormValues & {
       palette: iBuilderPlacePalette;
       ownerId: number;
+      talentLayerPlatformId: string;
     }
   > {}
 
