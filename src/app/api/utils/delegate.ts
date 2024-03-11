@@ -11,7 +11,7 @@ export async function isPlatformAllowedToDelegate(
 ): Promise<boolean> {
   const getUser = await getUserByAddress(chainId, userAddress);
   const delegateAddresses: string[] = getUser.data?.data?.users[0]?.delegates.map((delegate: any) =>
-    delegate.address.toLowerCase(),
+    delegate.toLowerCase(),
   );
 
   return !(
