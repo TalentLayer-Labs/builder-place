@@ -12,15 +12,32 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import useEnrichMenu from '../../hooks/useEnrichMenu';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 function SideMenu() {
   const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);
-  const { enrichedWorkerNavigation, menuLoading } = useEnrichMenu(
-    builderPlace?.jobPostingConditions?.allowPosts,
-    !isBuilderPlaceCollaborator,
-  );
+  // const { enrichedWorkerNavigation } = useEnrichMenu(
+  //   builderPlace?.jobPostingConditions?.allowPosts,
+  //   !isBuilderPlaceCollaborator,
+  // );
+  const enrichedWorkerNavigation = builderPlace?.jobPostingConditions?.allowPosts
+    ? [
+        ...workerNavigation,
+        {
+          name: 'new mission',
+          href: '/work/create',
+          icon: PlusCircleIcon,
+          current: false,
+        },
+      ]
+    : workerNavigation;
 
   return (
     <>
@@ -75,25 +92,15 @@ function SideMenu() {
 
           {!isBuilderPlaceCollaborator && (
             <nav className='space-y-1 mt-6'>
-              {menuLoading
-                ? workerNavigation.map(item => (
-                    <SideLink key={item.name} href={item.href}>
-                      <item.icon
-                        className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
-                        aria-hidden='true'
-                      />
-                      {item.name}
-                    </SideLink>
-                  ))
-                : enrichedWorkerNavigation.map(item => (
-                    <SideLink key={item.name} href={item.href}>
-                      <item.icon
-                        className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
-                        aria-hidden='true'
-                      />
-                      {item.name}
-                    </SideLink>
-                  ))}
+              {enrichedWorkerNavigation.map(item => (
+                <SideLink key={item.name} href={item.href}>
+                  <item.icon
+                    className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
+                    aria-hidden='true'
+                  />
+                  {item.name}
+                </SideLink>
+              ))}
             </nav>
           )}
 
