@@ -10,7 +10,6 @@ const useFilteredServices = (
   searchQuery?: string,
   numberPerPage?: number,
   platformId?: string,
-  platformName?: string,
 ): {
   hasMoreData: boolean;
   loading: boolean;

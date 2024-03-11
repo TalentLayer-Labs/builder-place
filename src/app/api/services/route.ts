@@ -9,11 +9,11 @@ export interface ServicesFilters {
   offset?: number | null;
   searchQuery?: string | null;
   platformId?: string | null;
-  platformName?: string | null;
   keywordList?: string[];
 }
 
 export async function GET(request: Request) {
+  console.log('GET');
   const { searchParams } = new URL(request.url);
   const chainId = Number(searchParams.get('chainId'));
   const filters: ServicesFilters = {
@@ -24,7 +24,6 @@ export async function GET(request: Request) {
     offset: Number(searchParams.get('offset')),
     searchQuery: searchParams.get('searchQuery'),
     platformId: searchParams.get('platformId'),
-    platformName: searchParams.get('platformName'),
     keywordList: searchParams.get('keywordList')?.split(','),
   };
   const response = await getServices(chainId, filters);

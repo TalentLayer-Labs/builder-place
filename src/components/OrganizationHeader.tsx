@@ -19,7 +19,6 @@ function OrganizationHeader() {
     '',
     10,
     builderPlace?.talentLayerPlatformId,
-    builderPlace?.talentLayerPlatformName,
   );
 
   if (!builderPlace) return <Loading />;

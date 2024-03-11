@@ -9,7 +9,6 @@ export const getFilteredServicesByKeywords = async (
   offset?: number,
   searchQuery?: string,
   platformId?: string,
-  platformName?: string,
   chainId?: number,
 ): Promise<any> => {
   try {
@@ -22,7 +21,6 @@ export const getFilteredServicesByKeywords = async (
         offset,
         searchQuery,
         platformId,
-        platformName,
         chainId,
       },
     });

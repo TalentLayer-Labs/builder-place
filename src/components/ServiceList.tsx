@@ -22,7 +22,6 @@ function ServiceList() {
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
     builderPlace?.talentLayerPlatformId,
-    builderPlace?.talentLayerPlatformName,
   );
 
   return (

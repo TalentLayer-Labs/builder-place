@@ -58,8 +58,7 @@ const getFilteredServiceCondition = (params: ServicesFilters) => {
   if (params.serviceStatus) condition += `status: "${params.serviceStatus}",`;
   if (params.buyerId) condition += `buyer: "${params.buyerId}",`;
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
-  if (params.platformId) condition += `platform: "${params.platformId}",`;
-  if (params.platformName) condition += `platform_: {name: "${params.platformName}"}`;
+  if (params.platformId) condition += `platform_: {id: "${params.platformId}"}`;
 
   let keywordFilter = '';
 
@@ -96,8 +95,7 @@ const getFilteredServiceDescriptionCondition = (params: ServicesFilters) => {
   condition += params.serviceStatus ? `service_: {status:"${params.serviceStatus}"}` : '';
   condition += params.buyerId ? `, buyer: "${params.buyerId}"` : '';
   condition += params.sellerId ? `, seller: "${params.sellerId}"` : '';
-  condition += params.platformId ? `, platform: "${params.platformId}"` : '';
-  condition += params.platformName ? `, platform_: {name: "${params.platformName}"}` : '';
+  condition += params.platformId ? `, platform_: {id: "${params.platformId}"}` : '';
   condition += '}';
   return condition === ', where: {}' ? '' : condition;
 };
