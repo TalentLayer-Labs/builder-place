@@ -15,7 +15,7 @@ model BuilderPlace {
   name                    String
   subdomain               String       @unique
   customDomain            String?      @unique
-  talentLayerPlatformId   String?      @unique
+  talentLayerPlatformId   String       @unique
   talentLayerPlatformName String       @unique
   owner                   User?        @relation(fields: [ownerId], references: [id])
   ownerId                 Int?         @unique
