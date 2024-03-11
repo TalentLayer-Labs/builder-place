@@ -69,6 +69,20 @@ export const workerNavigation: MenuItem[] = [
   { name: 'chat', href: '/messaging', icon: ChatBubbleBottomCenterIcon, current: false },
 ];
 
+export const getWorkerNavigation = (allowPosts: boolean = false): MenuItem[] => {
+  return allowPosts
+    ? [
+        ...workerNavigation,
+        {
+          name: 'new mission',
+          href: '/work/create',
+          icon: PlusCircleIcon,
+          current: false,
+        },
+      ]
+    : workerNavigation;
+};
+
 export const PlatformAdminNavigation: MenuItem[] = [
   {
     name: 'presentation',
