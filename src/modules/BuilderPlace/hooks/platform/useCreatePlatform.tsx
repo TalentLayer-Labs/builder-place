@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
@@ -9,7 +9,7 @@ import {
 } from '../../../../components/onboarding/platform/CreatePlatformForm';
 import MultiStepsTransactionToast from '../../../../components/onboarding/platform/MultiStepsTransactionToast';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { IPlatform, IUser } from '../../../../types';
+import { IPlatform } from '../../../../types';
 import { themes } from '../../../../utils/themes';
 import { wait } from '../../../../utils/toast';
 import UserContext from '../../context/UserContext';
@@ -72,8 +72,24 @@ const useCreatePlatform = () => {
 
           platformId = tx.data.platformId;
         } else {
-          const tx = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
-          await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({ hash: tx });
+          if (talentLayerClient) {
+            const txHash = await talentLayerClient.platform.mint(values.talentLayerPlatformName);
+            await talentLayerClient.viemClient.publicClient.waitForTransactionReceipt({
+              hash: txHash,
+            });
+            await publicClient.waitForTransactionReceipt({
+              confirmations: 1,
+              hash: txHash,
+            });
+            const id = await publicClient.readContract({
+              address:
+                talentLayerClient.getChainConfig(chainId).contracts.talentLayerPlatformId.address,
+              abi: talentLayerClient.getChainConfig(chainId).contracts.talentLayerPlatformId.abi,
+              functionName: 'ids',
+              args: [walletClient.account.address],
+            });
+            platformId = id as unknown as string;
+          }
         }
       }
 
@@ -90,7 +106,7 @@ const useCreatePlatform = () => {
           name: values.name,
           subdomain: subdomain,
           talentLayerPlatformName: values.talentLayerPlatformName,
-          talentLayerPlatformId: platformId as string,
+          talentLayerPlatformId: String(platformId),
           logo: values.logo,
           palette: themes['lisboa'],
           ownerId: user.id,
