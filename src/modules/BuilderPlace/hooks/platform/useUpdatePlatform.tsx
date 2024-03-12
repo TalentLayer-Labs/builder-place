@@ -10,7 +10,9 @@ import {
   IConfigurePlace,
   IConfigurePlaceFormValues,
 } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
-import TwoStepsTransactionToast from '../../../../components/onboarding/platform/TwoStepsTransactionToast';
+import TwoStepsTransactionToast, {
+  IMessages,
+} from '../../../../components/TwoStepsTransactionToast';
 
 const useUpdatePlatform = () => {
   const chainId = useChainId();
@@ -31,7 +33,11 @@ const useUpdatePlatform = () => {
     /**
      * @dev Create a multistep toast to inform the user about the process
      */
-    const toastId = toast(<TwoStepsTransactionToast currentStep={1} />, {
+    const messages: IMessages = {
+      step1: 'Sign a message to authenticate with your wallet',
+      step2: 'Update your platform',
+    };
+    const toastId = toast(<TwoStepsTransactionToast currentStep={1} messages={messages} />, {
       autoClose: false,
       closeOnClick: false,
     });
@@ -48,7 +54,7 @@ const useUpdatePlatform = () => {
       });
 
       toast.update(toastId, {
-        render: <TwoStepsTransactionToast currentStep={2} />,
+        render: <TwoStepsTransactionToast currentStep={2} messages={messages} />,
       });
 
       /**

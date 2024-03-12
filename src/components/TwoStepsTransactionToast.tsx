@@ -1,4 +1,4 @@
-import ToastStep from '../../ToastStep';
+import ToastStep from './ToastStep';
 
 interface Step {
   title: string;
@@ -6,14 +6,25 @@ interface Step {
   render?: () => JSX.Element;
 }
 
-function TwoStepsTransactionToast({ currentStep }: { currentStep: number }) {
+export interface IMessages {
+  step1: string;
+  step2: string;
+}
+
+function TwoStepsTransactionToast({
+  currentStep,
+  messages,
+}: {
+  currentStep: number;
+  messages: IMessages;
+}) {
   const steps: Step[] = [
     {
-      title: 'Sign a message to authenticate with your wallet',
+      title: messages.step1,
       status: currentStep > 1 ? 'complete' : 'current',
     },
     {
-      title: 'Update your platform',
+      title: messages.step2,
       status: currentStep > 2 ? 'complete' : currentStep == 2 ? 'current' : 'upcoming',
     },
   ];
