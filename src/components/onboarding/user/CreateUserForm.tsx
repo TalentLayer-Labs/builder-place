@@ -107,7 +107,8 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
         enableReinitialize={true}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
-        validateOnBlur={false}>
+        validateOnBlur={true}
+        validateOnChange={true}>
         {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
@@ -176,8 +177,9 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
                   ) : (
                     <button
                       className='grow px-5 py-2 rounded-xl bg-black text-white'
-                      onClick={() => {
+                      onClick={e => {
                         openConnectModal();
+                        e.preventDefault();
                       }}>
                       connect your wallet first
                     </button>
