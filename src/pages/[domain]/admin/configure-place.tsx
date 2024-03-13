@@ -36,6 +36,7 @@ interface IFormValues {
   aboutTech: string;
   icon?: string;
   cover?: string;
+  discordWebhookUrl?: string;
 }
 
 const validationSchema = Yup.object({
@@ -67,6 +68,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
     aboutTech: builderPlace?.aboutTech || '',
     icon: builderPlace?.icon || '',
     cover: builderPlace?.cover || '',
+    discordWebhookUrl: builderPlace?.discordWebhookUrl || '',
   };
 
   useEffect(() => {
@@ -147,6 +149,7 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
           cover: values.cover,
           palette,
           signature,
+          discordWebhookUrl: values.discordWebhookUrl,
         });
 
         if (response?.error) {
@@ -264,6 +267,22 @@ function ConfigurePlace(props: InferGetServerSidePropsType<typeof getServerSideP
                 </div>
 
                 <SubdomainInput />
+
+                <div>
+                  <label className='block'>
+                    <span className='font-bold text-md'>discord webhook url</span>
+                    <Field
+                      type='text'
+                      id='discordWebhookUrl'
+                      name='discordWebhookUrl'
+                      className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                      placeholder="enter your discord webhook url. So we can notify your community, when new job's are posted"
+                    />
+                  </label>
+                  <span className='text-red-500'>
+                    <ErrorMessage name='baseline' />
+                  </span>
+                </div>
 
                 <UploadImage
                   fieldName='logo'

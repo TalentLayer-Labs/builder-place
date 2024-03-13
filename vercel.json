@@ -1,24 +1,28 @@
 {
-  "crons":[
+  "crons": [
     {
-      "path":"/api/email/new-proposal",
-      "schedule":"*/5 * * * *"
+      "path": "/api/email/new-proposal",
+      "schedule": "*/5 * * * *"
     },
     {
-      "path":"/api/email/proposal-validated",
-      "schedule":"*/5 * * * *"
+      "path": "/api/email/proposal-validated",
+      "schedule": "*/5 * * * *"
     },
     {
-      "path":"/api/email/fund-release",
-      "schedule":"*/5 * * * *"
+      "path": "/api/email/fund-release",
+      "schedule": "*/5 * * * *"
     },
     {
-      "path":"/api/email/review",
-      "schedule":"*/5 * * * *"
+      "path": "/api/email/review",
+      "schedule": "*/5 * * * *"
     },
     {
-      "path":"/api/email/new-service",
-      "schedule":"*/5 * * * *"
+      "path": "/api/email/new-service",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/run-notification-query",
+      "schedule": "* * * * *"
     }
   ]
 }

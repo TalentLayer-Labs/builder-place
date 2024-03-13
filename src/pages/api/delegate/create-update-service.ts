@@ -4,15 +4,19 @@ import TalentLayerService from '../../../contracts/ABI/TalentLayerService.json';
 import { getServiceSignature } from '../../../utils/signature';
 import { getDelegationSigner, isPlatformAllowedToDelegate } from '../utils/delegate';
 import { getConfig } from '../../../config';
+
 import { getUserByTalentLayerId } from '../../../modules/BuilderPlace/actions/user';
 import { checkUserEmailVerificationStatus } from '../../../modules/BuilderPlace/actions/email';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../modules/BuilderPlace/actions/transactionCounter';
+import { sendNewServiceNotification } from '../../../modules/Notifications/discord';
+import prisma from '../../../postgre/postgreClient';
+import { createDiscordNotificationEntry } from '../../../modules/Notifications/action';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { userId, userAddress, cid, chainId, existingService } = req.body;
+  const { userId, userAddress, cid, chainId, existingService, builderPlaceId } = req.body;
   const config = getConfig(chainId);
 
   // @dev : you can add here all the check you need to confirm the delegation for a user
@@ -52,6 +56,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           functionName: 'createService',
           args: [userId, process.env.NEXT_PUBLIC_PLATFORM_ID, cid, signature],
         });
+
+        await createDiscordNotificationEntry(cid, builderPlaceId);
       }
 
       await incrementWeeklyTransactionCounter(worker, res);

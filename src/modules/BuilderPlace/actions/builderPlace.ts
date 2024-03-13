@@ -32,6 +32,7 @@ import {
   validDomainRegex,
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
+import { sendWelcomeMessage } from '../../Notifications/discord';
 import { handleApiError } from '../utils/error';
 
 /**
@@ -485,6 +486,10 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
 export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   let errorMessage = '';
   try {
+
+    const welcomeMessageResult = await sendWelcomeMessage(builderPlace.builderPlaceId, builderPlace.discordWebhookUrl);
+    console.log("welcome message", welcomeMessageResult);
+
     const updatedBuilderPlace = await prisma.builderPlace.update({
       where: {
         id: Number(builderPlace.builderPlaceId),
@@ -501,8 +506,11 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
         palette: { ...builderPlace.palette },
         preferredWorkTypes: builderPlace.preferredWorkTypes,
         presentation: builderPlace.presentation,
+        profilePicture: builderPlace.profilePicture,
+        discordWebhookUrl: builderPlace.discordWebhookUrl,
       },
     });
+
     return {
       message: 'BuilderPlace updated successfully',
       id: updatedBuilderPlace.id,
@@ -510,6 +518,7 @@ export const updateBuilderPlace = async (builderPlace: UpdateBuilderPlace) => {
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_UPDATING_BUILDERPLACE);
   }
+
 };
 
 export const deleteBuilderPlace = async (id: string) => {

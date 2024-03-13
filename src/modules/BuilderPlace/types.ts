@@ -34,6 +34,7 @@ export interface UpdateBuilderPlace {
   cover?: string;
   profilePicture?: string;
   signature: `0x${string}` | Uint8Array;
+  discordWebhookUrl?: string;
 }
 export interface ValidateBuilderPlaceAndOwner {
   builderPlaceId: string;
@@ -257,6 +258,14 @@ export type IBuilderPlace = {
   palette?: iBuilderPlacePalette;
   jobPostingConditions: JobPostingConditions;
   preferredWorkTypes: WorkType[];
+  presentation?: string;
+  profilePicture?: string;
+  status: EntityStatus;
+  ownerId?: string;
+  // ownerAddress?: string;
+  // ownerTalentLayerId?: string;
+  subdomain?: string;
+  discordWebhookUrl: string;
 };
 
 interface JobPostingConditions {
@@ -295,7 +304,7 @@ export interface IWorkerProfile extends IUserProfile {
   skills?: string[];
 }
 
-export interface IHirerProfile extends IUserProfile {}
+export interface IHirerProfile extends IUserProfile { }
 
 // From https://vercel.com/docs/rest-api/endpoints#get-a-project-domain
 export interface DomainResponse {
