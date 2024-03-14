@@ -12,7 +12,7 @@ import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
 import { IEmailPreferences, EmailNotificationType } from '../../types';
-import { postToIPFS } from '../../utils/ipfs';
+import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
@@ -101,7 +101,7 @@ function EmailPreferencesForm() {
           });
         }
       } else if (user && publicClient && walletClient) {
-        const cid = await postToIPFS(
+        const cid = await postToIPFSwithQuickNode(
           JSON.stringify({
             title: userDescription?.title,
             role: userDescription?.role,

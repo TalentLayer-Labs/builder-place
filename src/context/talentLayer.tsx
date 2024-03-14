@@ -64,8 +64,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     const talentLayerClient = new TalentLayerClient({
       chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
       ipfsConfig: {
-        clientId: process.env.NEXT_PUBLIC_INFURA_ID as string,
-        clientSecret: process.env.NEXT_PUBLIC_INFURA_SECRET as string,
+        clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
         baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
       },
       platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
