@@ -67,9 +67,6 @@ const verifyEmail = () => {
               <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
                 Your email is validated!
               </p>
-              <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
-                You can now access cool features such as 50 free transactions per week.
-              </p>
               <button
                 className='bg-pink-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
                 onClick={() => goToDashboard()}>
