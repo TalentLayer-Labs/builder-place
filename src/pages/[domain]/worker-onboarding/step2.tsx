@@ -13,6 +13,12 @@ import {
   PROFILE_ALREADY_HAS_OWNER,
   PROFILE_DOES_NOT_EXIST,
 } from '../../../modules/BuilderPlace/apiResponses';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 function workerOnboardingStep2() {
   const { account, loading, user, refreshWorkerProfile } = useContext(TalentLayerContext);

@@ -6,6 +6,12 @@ import OnboardingSteps from '../../../components/OnboardingSteps';
 import { verifyAccount } from '../../../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../../../utils/toast';
 import Loading from '../../../components/Loading';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 function onboardingStep3() {
   const { account, workerProfile, loading, refreshWorkerProfile } = useContext(TalentLayerContext);

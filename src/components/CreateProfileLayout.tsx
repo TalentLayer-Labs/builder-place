@@ -16,7 +16,7 @@ function CreateProfileLayout({ children, className, step }: ContainerProps) {
     <>
       <OnboardingSteps currentStep={step} type='worker' />
       <div className={`${className}`}>
-        <div className='text-stone-800'>
+        <div className=''>
           <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-6 text-center'>
             Create your contributor profile
           </p>

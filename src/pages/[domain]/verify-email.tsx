@@ -6,6 +6,12 @@ import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
 } from '../../modules/BuilderPlace/apiResponses';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 const verifyEmail = () => {
   const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
