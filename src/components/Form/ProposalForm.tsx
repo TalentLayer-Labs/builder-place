@@ -186,7 +186,7 @@ function ProposalForm({
       onSubmit={onSubmit}
       validationSchema={validationSchema}
       enableReinitialize={true}>
-      {({ isSubmitting }) => (
+      {({ isSubmitting, values }) => (
         <Form>
           <h2 className='mb-2 text-base-content font-bold'>the mission</h2>
           <ServiceItem service={service} />
@@ -221,6 +221,17 @@ function ProposalForm({
                   name='rateAmount'
                   className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
+                  min={() => {
+                    const selectToken = allowedTokenList.find(
+                      token => token.address === values.rateToken,
+                    );
+                    if (!selectToken || !selectToken.minimumTransactionAmount) return null;
+
+                    return (
+                      BigInt(selectToken.minimumTransactionAmount) /
+                      10n ** BigInt(selectToken.decimals)
+                    );
+                  }}
                 />
                 <span className='text-alone-error'>
                   <ErrorMessage name='rateAmount' />
