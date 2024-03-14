@@ -33,6 +33,7 @@ export async function GET(request: Request) {
   return Response.json({ services });
 }
 
-export async function POST(request: Request) {
-  //TODO: Implement
-}
+/**
+ * @notice: Handled through delegation
+ */
+export async function POST(request: Request) {}

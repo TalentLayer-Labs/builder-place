@@ -1,23 +1,28 @@
-import { getUserByAddress } from '../../../queries/users';
+import { getUserByAddress } from '../../queries/users';
 import { mnemonicToAccount } from 'viem/accounts';
 import { createPublicClient, createWalletClient, http, PublicClient } from 'viem';
-import { getViemFormattedChain } from '../../../chains';
+import { getViemFormattedChain } from '../../chains';
 import { WalletClient } from 'wagmi';
-import { NetworkEnum } from '../../../types';
+import { NetworkEnum } from '../../types';
 
 export async function isPlatformAllowedToDelegate(
   chainId: number,
   userAddress: string,
-): Promise<boolean> {
+): Promise<Response | void> {
   const getUser = await getUserByAddress(chainId, userAddress);
   const delegateAddresses: string[] = getUser.data?.data?.users[0]?.delegates.map((delegate: any) =>
     delegate.toLowerCase(),
   );
 
-  return !(
-    process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
-    delegateAddresses.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()) === -1
-  );
+  if (
+    !process.env.NEXT_PUBLIC_DELEGATE_ADDRESS ||
+    (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
+      delegateAddresses.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS?.toLowerCase()) === -1)
+  )
+    return Response.json(
+      { error: 'Delegation is Not activated for this address' },
+      { status: 401 },
+    );
 }
 
 export async function getDelegationSigner(): Promise<WalletClient | null> {
