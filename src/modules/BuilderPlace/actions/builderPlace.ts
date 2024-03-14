@@ -444,7 +444,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress.toLocaleLowerCase(),
+        address: body.newCollaboratorAddress,
       },
     });
 
