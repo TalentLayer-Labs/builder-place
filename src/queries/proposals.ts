@@ -63,7 +63,7 @@ export const getAllProposalsByUsers = (
 ): Promise<any> => {
   const query = `
       {
-        proposals(where: {seller: "${sellerId}", buyer: "${buyerId}", status: "Pending"}) {
+        proposals(where: {seller: "${sellerId}", service_: { buyer: "${buyerId}" }, status: "Pending"}) {
           id
           rateAmount
           rateToken {
