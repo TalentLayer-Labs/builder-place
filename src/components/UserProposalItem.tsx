@@ -33,7 +33,7 @@ function UserProposalItem({ proposal }: { proposal: IProposal }) {
               </p>
             </div>
 
-            <span className='absolute right-[-25px] top-[-25px] inline-flex items-center rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-content'>
+            <span className='absolute right-[-25px] top-[-25px] inline-flex items-center rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-800'>
               {proposal.status}
             </span>
           </div>
