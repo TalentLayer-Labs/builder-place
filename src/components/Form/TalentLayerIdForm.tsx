@@ -147,7 +147,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             <div className='px-6 flex items-center justify-center w-full gap-2'>
               <Field
                 type='text'
-                className='text-base-content opacity-50 py-2 focus:ring-0 outline-none text-sm border-0 rounded-xl h-[40px]'
+                className='text-black py-2 focus:ring-0 outline-none text-sm border-0 rounded-xl h-[40px]'
                 placeholder='choose your handle'
                 id='handle'
                 name='handle'
