@@ -144,7 +144,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             full control of your reputation.
           </p>
           <div className='flex bg-base-300 py-4 px-4 sm:px-0 justify-center items-center flex-col drop-shadow-lg rounded'>
-            <div className='px-6 flex items-center justify-center w-full gap-2'>
+            <div className='px-6 sm:flex items-center justify-center sm:w-full gap-2'>
               <Field
                 type='text'
                 className='text-black py-2 focus:ring-0 outline-none text-sm border-0 rounded-xl h-[40px]'
