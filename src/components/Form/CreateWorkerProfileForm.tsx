@@ -67,8 +67,8 @@ function CreateWorkerProfileForm({ callback }: { callback?: () => void }) {
             : router.query.domain;
 
         if (domain) {
-          await sendVerificationEmail(values.email, response.id, values.name, domain);
-          createVerificationEmailToast();
+          // await sendVerificationEmail(values.email, response.id, values.name, domain);
+          // createVerificationEmailToast();
         }
         router.query.id = response.id;
         router.push({
