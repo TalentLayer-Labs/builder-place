@@ -63,7 +63,7 @@ function onboardingStep3() {
       ) : (
         <div>
           <OnboardingSteps currentStep={3} type='worker' />
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-10 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Almost there !

@@ -59,7 +59,7 @@ const verifyEmail = () => {
     <>
       {pageResponse === EMAIL_VERIFIED_SUCCESSFULLY ? (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-10 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Congratulations! 🎉
@@ -77,7 +77,7 @@ const verifyEmail = () => {
         </div>
       ) : pageResponse === EMAIL_ALREADY_VERIFIED ? (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-10 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Email Already Verified! 🦝
@@ -98,7 +98,7 @@ const verifyEmail = () => {
         </div>
       ) : (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-10 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Oops! 😕
