@@ -161,18 +161,14 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
                 <div className='sm:pl-2 sm:pr-4 sm:space-x-4 relative'>
                   <SubmitButton isSubmitting={isSubmitting} />
                   <HelpPopover>
-                    <h3 className='font-semibold text-base-content dark:text-base-content'>
-                      What is a TalentLayerID?
-                    </h3>
+                    <h3 className='font-semibold text-base-content'>What is a TalentLayerID?</h3>
                     <p>
                       TalentLayerID is a work identity that allows ownership and growth of
                       reputation across many marketplaces. Anon IDs are ERC-721 NFTs that live
                       inside crypto wallets; this means that reputation is self-custodied by the
                       wallet owner and lives separately from integrated platforms.
                     </p>
-                    <h3 className='font-semibold text-base-content dark:text-base-content'>
-                      What is the handle?
-                    </h3>
+                    <h3 className='font-semibold text-base-content'>What is the handle?</h3>
                     <p>
                       Your TalentLayerID Handle is a unique string of characters and numbers that
                       you can choose when you create your TalentLayerID. This handle is how others
@@ -182,7 +178,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
                     <a
                       target='_blank'
                       href='https://docs.talentlayer.org/basics/elements/what-is-talentlayer-id'
-                      className='flex items-center font-medium text-info dark:text-info dark:hover:text-info hover:text-info'>
+                      className='flex items-center font-medium text-info hover:text-info'>
                       Read more{' '}
                       <svg
                         className='w-4 h-4 ml-1'

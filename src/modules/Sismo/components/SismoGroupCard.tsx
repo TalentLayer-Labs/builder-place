@@ -32,9 +32,7 @@ function SismoGroupCard({
               <p className='text-base-content font-medium break-all'>{sismoGroupData.name}</p>
             </div>
             <SismoHelpPopover>
-              <h3 className='font-semibold text-base-content dark:text-base-content'>
-                How to get this Badge ?
-              </h3>
+              <h3 className='font-semibold text-base-content '>How to get this Badge ?</h3>
               <p>
                 <strong>Description:</strong> {sismoGroupData.description}
                 <br />
