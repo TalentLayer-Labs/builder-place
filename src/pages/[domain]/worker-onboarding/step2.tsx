@@ -32,6 +32,7 @@ function workerOnboardingStep2() {
 
   useEffect(() => {
     const setOwner = async () => {
+      console.log('setOwner', { account, user, id });
       if (account?.isConnected && account.address && user?.id && id) {
         setIsSettingOwner(true);
         try {
