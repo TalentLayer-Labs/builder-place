@@ -28,7 +28,7 @@ function MultiStepsTransactionToast({
 
   const steps = [
     {
-      title: 'Execute the transaction',
+      title: 'Execute the transaction (do not close this tab)',
       status: currentStep > 1 ? 'complete' : 'current',
       render: renderTransaction,
     },
