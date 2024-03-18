@@ -22,15 +22,15 @@ function EmailModal() {
     <>
       {!workerProfile?.email && (
         <div>
-          <Notification
+          {/* <Notification
             title='Verify your email !'
-            text='Tired of paying gas fees ? Verify your email and get gassless transactions !'
+            text=''
             link=''
             linkText={'Add my email'}
             color='success'
             imageUrl={user?.description?.image_url}
             callback={onAddMail}
-          />
+          /> */}
           <div
             className={`${
               !show ? 'hidden' : ''
