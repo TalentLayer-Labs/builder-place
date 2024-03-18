@@ -18,6 +18,7 @@ const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationPr
   const [showNotification, setShowNotification] = useState(true);
 
   const onVerifyAccount = async () => {
+    console.log('onVerifyAccount', { walletClient, workerProfile, account });
     if (walletClient && workerProfile?.id && workerProfile?.id && account?.address) {
       try {
         /**
