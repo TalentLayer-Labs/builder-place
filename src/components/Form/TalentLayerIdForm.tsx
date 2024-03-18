@@ -142,6 +142,12 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             that reputation is self-custodied by the wallet owner and lives separately from
             integrated platforms; meaning you can use it across any integrated platform and retain
             full control of your reputation.
+            <a
+              target='_blank'
+              href='https://docs.talentlayer.org/basics/elements/what-is-talentlayer-id'
+              className='text-underline'>
+              Read more{' '}
+            </a>
           </p>
           <div className='flex bg-base-300 py-4 px-4 sm:px-0 justify-center items-center flex-col drop-shadow-lg rounded'>
             <div className='px-6 sm:flex items-center justify-center sm:w-full gap-2'>
@@ -160,39 +166,6 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
               <div>
                 <div className='sm:pl-2 sm:pr-4 sm:space-x-4 relative'>
                   <SubmitButton isSubmitting={isSubmitting} />
-                  <HelpPopover>
-                    <h3 className='font-semibold text-base-content'>What is a TalentLayerID?</h3>
-                    <p>
-                      TalentLayerID is a work identity that allows ownership and growth of
-                      reputation across many marketplaces. Anon IDs are ERC-721 NFTs that live
-                      inside crypto wallets; this means that reputation is self-custodied by the
-                      wallet owner and lives separately from integrated platforms.
-                    </p>
-                    <h3 className='font-semibold text-base-content'>What is the handle?</h3>
-                    <p>
-                      Your TalentLayerID Handle is a unique string of characters and numbers that
-                      you can choose when you create your TalentLayerID. This handle is how others
-                      can search for your reputation. You can have a maximum of 10 characters in
-                      your TalentLayerID.
-                    </p>
-                    <a
-                      target='_blank'
-                      href='https://docs.talentlayer.org/basics/elements/what-is-talentlayer-id'
-                      className='flex items-center font-medium text-info hover:text-info'>
-                      Read more{' '}
-                      <svg
-                        className='w-4 h-4 ml-1'
-                        aria-hidden='true'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                        xmlns='http://www.w3.org/2000/svg'>
-                        <path
-                          fillRule='evenodd'
-                          d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
-                          clipRule='evenodd'></path>
-                      </svg>
-                    </a>
-                  </HelpPopover>
                 </div>
               </div>
             </div>
