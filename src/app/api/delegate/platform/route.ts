@@ -6,7 +6,7 @@ import {
   getDelegationSigner,
   getPublicClient,
   isPlatformAllowedToDelegate,
-} from '../../utils/delegate';
+} from '../../../utils/delegate';
 
 export interface IPlatformMintForAddress {
   platformName: string;
