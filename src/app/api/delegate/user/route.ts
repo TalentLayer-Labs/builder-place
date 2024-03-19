@@ -1,7 +1,7 @@
 import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { getConfig } from '../../../../config';
-import { getDelegationSigner, getPublicClient } from '../../utils/delegate';
+import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
 import TalentLayerID from '../../../../contracts/ABI/TalentLayerID.json';
 
 export interface IUserMintForAddress {
@@ -22,8 +22,8 @@ export async function POST(req: Request) {
   console.log('json', body);
   const config = getConfig(body.chainId);
 
-  if (process.env.NEXT_PUBLIC_ACTIVE_DELEGATE !== 'true') {
-    return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
+  if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT !== 'true') {
+    return Response.json({ message: 'Delegation for Mint is not activated' }, { status: 500 });
   }
 
   // @TODO: move it to a middleware and apply to all POST and PUT ?
