@@ -15,10 +15,10 @@ const useCreateService = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseDelegation } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
-  console.log('canUseDelegation', canUseDelegation);
+  console.log('canUseBackendDelegate', canUseBackendDelegate);
   const createNewService = async (values: ICreateServiceFormValues, token: IToken) => {
     if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
@@ -28,12 +28,15 @@ const useCreateService = () => {
 
     if (
       // account?.isConnected === true &&
+      user?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
+      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
       let tx, cid;
+
       try {
         const parsedRateAmount = await parseRateAmount(
           values.rateAmount.toString(),
@@ -43,7 +46,7 @@ const useCreateService = () => {
 
         const parsedRateAmountString = parsedRateAmount.toString();
 
-        if (canUseDelegation && builderPlace?.owner?.talentLayerId) {
+        if (canUseBackendDelegate) {
           console.log('DELEGATION');
           await wait(2);
 
@@ -65,12 +68,9 @@ const useCreateService = () => {
 
           let response;
 
-          //TODO problème ici: si le user n'est pas delegate il doit poster en son nom avec son Id... Il peut pas
-          // utiliser celle du owner car il n'est pas delegate.
-          // ====> Si delegate alors c'est le backend qui le fait donc pas de pb.Juste in ne peux pas poster sans le backend.
           response = await delegateCreateService({
             chainId,
-            userId: builderPlace.owner.talentLayerId,
+            userId: usedId,
             userAddress: address,
             cid,
             platformId: builderPlace.talentLayerPlatformId,
@@ -92,7 +92,7 @@ const useCreateService = () => {
               rateToken: values.rateToken,
               rateAmount: parsedRateAmountString,
             },
-            builderPlace.owner.talentLayerId,
+            usedId,
             parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
           );
           cid = serviceResponse.cid;

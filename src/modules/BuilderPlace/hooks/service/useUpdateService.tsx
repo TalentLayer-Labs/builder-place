@@ -15,10 +15,10 @@ const useUpdateService = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseDelegation } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
-  console.log('canUseDelegation', canUseDelegation);
+  console.log('canUseDelegation', canUseBackendDelegate);
   const updateService = async (
     values: ICreateServiceFormValues,
     token: IToken,
@@ -32,12 +32,15 @@ const useUpdateService = () => {
 
     if (
       // account?.isConnected === true &&
+      user?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
+      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
       let tx, cid;
+
       try {
         const parsedRateAmount = await parseRateAmount(
           values.rateAmount.toString(),
@@ -47,7 +50,7 @@ const useUpdateService = () => {
 
         const parsedRateAmountString = parsedRateAmount.toString();
 
-        if (canUseDelegation && builderPlace?.owner?.talentLayerId) {
+        if (canUseBackendDelegate) {
           console.log('DELEGATION');
           await wait(2);
 
@@ -72,7 +75,7 @@ const useUpdateService = () => {
           response = await delegateUpdateService(
             {
               chainId,
-              userId: builderPlace.owner.talentLayerId,
+              userId: usedId,
               userAddress: address,
               cid,
               signature,
