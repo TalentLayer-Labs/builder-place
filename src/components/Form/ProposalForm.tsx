@@ -44,7 +44,7 @@ function ProposalForm({
   const chainId = useChainId();
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { canUseBackendDelegate, refreshWorkerProfile, account } = useContext(TalentLayerContext);
+  const { account } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const currentChain = chains.find(chain => chain.id === chainId);
   const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
@@ -101,7 +101,6 @@ function ProposalForm({
 
           setSubmitting(false);
           resetForm();
-          router.reload();
           if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
             createWeb3mailToast();
           }
@@ -109,7 +108,8 @@ function ProposalForm({
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        if (canUseBackendDelegate) await refreshWorkerProfile();
+        // if (canUseBackendDelegate) await refreshWorkerProfile();
+        router.reload();
       }
     } else {
       openConnectModal();

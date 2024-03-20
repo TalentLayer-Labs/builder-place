@@ -8,7 +8,7 @@ import { createMultiStepsTransactionToast, wait } from '../../../../utils/toast'
 import { parseRateAmount } from '../../../../utils/currency';
 import { IToken } from '../../../../types';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
-import { ICreateProposalFormValues } from '../../../../components/Form/ProposalForm';
+import { IProposalFormValues } from '../../../../components/Form/ProposalForm';
 
 const useCreateProposal = () => {
   const chainId = useChainId();
@@ -20,7 +20,7 @@ const useCreateProposal = () => {
   const talentLayerClient = useTalentLayerClient();
   console.log('canUseBackendDelegate', canUseBackendDelegate);
   const createNewProposal = async (
-    values: ICreateProposalFormValues,
+    values: IProposalFormValues,
     token: IToken,
     serviceId: string,
   ) => {
