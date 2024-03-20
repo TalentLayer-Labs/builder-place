@@ -37,7 +37,7 @@ function Layout({ children, className }: ContainerProps) {
   }
 
   console.log('Layout render', {
-    builderPlace,
+    builderPlaceName: builderPlace?.name,
     account,
     isBuilderPlaceCollaborator,
     workerProfile,
