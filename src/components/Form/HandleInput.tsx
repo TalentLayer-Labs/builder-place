@@ -32,9 +32,11 @@ export function HandleInput({
 
   const validateName = useCallback(
     async (value: string) => {
-      const isAvailable = await checkAvailability(value, initialValue, 'users');
-      if (isAvailable === false) {
-        return 'Handle already taken';
+      if (existingHandle !== value) {
+        const isAvailable = await checkAvailability(value, initialValue, 'users');
+        if (!isAvailable) {
+          return 'Handle already taken';
+        }
       }
       return;
     },
