@@ -116,6 +116,35 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
         managedPlaces: true,
       },
     });
+    console.log('Fetched user name', userProfile?.name);
+    if (!userProfile) {
+      return null;
+    }
+
+    return userProfile;
+  } catch (error: any) {
+    handleApiError(error, errorMessage, ERROR_FETCHING_USER, res);
+  }
+};
+
+export const getUserByTalentLayerHandle = async (
+  talentLayerHandle: string,
+  res?: NextApiResponse,
+) => {
+  let errorMessage = '';
+  try {
+    console.log('Getting Worker Profile with TalentLayer handle:', talentLayerHandle);
+    const userProfile = await prisma.user.findUnique({
+      where: {
+        talentLayerHandle: talentLayerHandle,
+      },
+      include: {
+        workerProfile: true,
+        hirerProfile: true,
+        ownedBuilderPlace: true,
+        managedPlaces: true,
+      },
+    });
     console.log(userProfile);
     if (!userProfile) {
       return null;
@@ -148,7 +177,7 @@ export const getUsersBy = async (filters: UsersFilters) => {
       managedPlaces: true,
     },
   });
-  console.log('Fetched User Profile: ', userProfile);
+  console.log('Fetched User Profile: ', userProfile[0]?.name);
   return userProfile;
 };
 
