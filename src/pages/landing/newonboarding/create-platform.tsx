@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
 import Header from '../../../components/onboarding/Header';
 import Steps from '../../../components/onboarding/platform/Steps';
 import CreatePlatformForm from '../../../components/onboarding/platform/CreatePlatformForm';

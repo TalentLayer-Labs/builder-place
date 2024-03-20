@@ -108,7 +108,7 @@ function Dashboard() {
                   toast.success('Verification email sent!');
                 }}
               />
-              {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && <DelegationNotification />}
+              {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>

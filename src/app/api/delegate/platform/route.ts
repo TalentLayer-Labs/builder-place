@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   console.log('json', body);
   const config = getConfig(body.chainId);
 
-  if (process.env.NEXT_PUBLIC_ACTIVE_DELEGATE !== 'true') {
+  if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE !== 'true') {
     return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
   }
 

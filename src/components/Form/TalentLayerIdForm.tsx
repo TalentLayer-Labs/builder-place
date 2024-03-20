@@ -200,7 +200,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
                 </div>
               </div>
             </div>
-            {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE_MINT === 'true' && (
+            {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true' && (
               <div className='flex items-center justify-center w-full mt-4'>
                 <Field
                   type='checkbox'
