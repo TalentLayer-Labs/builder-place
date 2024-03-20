@@ -12,9 +12,7 @@ function OrganizationHeader() {
 
   const { services } = useFilteredServices(
     ServiceStatusEnum.Opened,
-    !!builderPlace?.owner?.talentLayerId
-      ? builderPlace?.owner?.talentLayerId?.toString()
-      : undefined,
+    undefined,
     '',
     '',
     10,
