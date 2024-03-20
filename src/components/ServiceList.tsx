@@ -17,7 +17,7 @@ function ServiceList() {
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
-    builderPlace?.owner?.talentLayerId?.toString(),
+    undefined,
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
