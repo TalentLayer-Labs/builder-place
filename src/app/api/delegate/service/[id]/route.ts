@@ -29,8 +29,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const config = getConfig(chainId);
 
   if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE !== 'true') {
-    throw new Error('Delegation is not activated');
-    // return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
+    return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
   }
 
   const signatureAddress = await recoverMessageAddress({
