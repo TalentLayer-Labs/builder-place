@@ -13,6 +13,7 @@ import MessagingContext from '../../../../modules/Messaging/context/messging';
 import { ProposalStatusEnum, ServiceStatusEnum } from '../../../../types';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AccessDenied from '../../../../components/AccessDenied';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -33,6 +34,14 @@ function CreateOrEditProposal() {
 
   if (!service) {
     return <NotFound />;
+  }
+
+  if (builderPlace?.talentLayerPlatformId !== service?.platform?.id) {
+    return <NotFound />;
+  }
+
+  if (user?.id === service.buyer.id) {
+    return <AccessDenied customText={"You can't post a proposal for your own service."} />;
   }
 
   if (!user) {
@@ -72,7 +81,7 @@ function CreateOrEditProposal() {
         account?.isConnected &&
         user &&
         service.status === ServiceStatusEnum.Opened && (
-          <ProposalForm user={user} service={service} existingProposal={existingProposal} />
+          <ProposalForm service={service} existingProposal={existingProposal} />
         )}
     </div>
   );
