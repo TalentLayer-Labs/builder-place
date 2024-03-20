@@ -10,7 +10,7 @@ function AccessDenied() {
           Access denied
         </h1>
         <p className='mt-6 text-base-content leading-7 text-base-content'>
-          Sorry, only the owner of this place can access this page.
+          Sorry, only the owner can access this page.
         </p>
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           <Link
