@@ -3,16 +3,14 @@ import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import SideLink from './SideLink';
 import {
+  getWorkerNavigation,
   hirerAdminNavigation,
   hirerNavigation,
   ownerAdminNavigation,
   PlatformAdminNavigation,
-  workerNavigation,
 } from './navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import useEnrichMenu from '../../hooks/useEnrichMenu';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import { GetServerSidePropsContext } from 'next';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 
@@ -23,21 +21,7 @@ function SideMenu() {
   const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);
-  // const { enrichedWorkerNavigation } = useEnrichMenu(
-  //   builderPlace?.jobPostingConditions?.allowPosts,
-  //   !isBuilderPlaceCollaborator,
-  // );
-  const enrichedWorkerNavigation = builderPlace?.jobPostingConditions?.allowPosts
-    ? [
-        ...workerNavigation,
-        {
-          name: 'new mission',
-          href: '/work/create',
-          icon: PlusCircleIcon,
-          current: false,
-        },
-      ]
-    : workerNavigation;
+  const workerNavigation = getWorkerNavigation(builderPlace?.jobPostingConditions?.allowPosts);
 
   return (
     <>
@@ -92,7 +76,7 @@ function SideMenu() {
 
           {!isBuilderPlaceCollaborator && (
             <nav className='space-y-1 mt-6'>
-              {enrichedWorkerNavigation.map(item => (
+              {workerNavigation.map(item => (
                 <SideLink key={item.name} href={item.href}>
                   <item.icon
                     className='mr-3 h-5 w-5 flex-shrink-0 text-base-content'
