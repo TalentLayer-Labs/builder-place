@@ -19,9 +19,8 @@ import TokenAmount from './TokenAmount';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 
 function ServiceDetail({ service }: { service: IService }) {
-  const chainId = useChainId();
   const { account, user, workerProfile } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { reviews } = useReviewsByService(service.id);
   const proposals = useProposalsByService(service.id);
   const payments = usePaymentsByService(service.id);
@@ -31,6 +30,11 @@ function ServiceDetail({ service }: { service: IService }) {
   const hasReviewed = !!reviews.find(review => {
     return review.to.id !== user?.id;
   });
+
+  const canEditService =
+    (isBuilderPlaceCollaborator && service.buyer.id === builderPlace?.owner.talentLayerId) ||
+    user?.id === service.buyer.id;
+
   const userProposal = proposals.find(proposal => {
     return proposal.seller.id === user?.id;
   });
@@ -55,7 +59,7 @@ function ServiceDetail({ service }: { service: IService }) {
                   {formatDate(Number(service.createdAt) * 1000)}
                 </p>
               </div>
-              {service.status === ServiceStatusEnum.Opened && isBuilderPlaceCollaborator && (
+              {service.status === ServiceStatusEnum.Opened && canEditService && (
                 <Link
                   href={`/work/${service.id}/edit`}
                   className='px-5 py-2 rounded-xl bg-primary text-primary'>
@@ -109,7 +113,7 @@ function ServiceDetail({ service }: { service: IService }) {
                     href={
                       workerProfile
                         ? `/work/${service.id}/proposal`
-                        : `/worker-onboarding?serviceId=${service.id}`
+                        : `/newonboarding?serviceId=${service.id}`
                     }>
                     Create proposal
                   </Link>
