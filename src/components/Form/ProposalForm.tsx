@@ -48,7 +48,7 @@ function ProposalForm({
   const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const talentLayerClient = useTalentLayerClient();
 
@@ -117,7 +117,7 @@ function ProposalForm({
 
         cid = await talentLayerClient?.proposal?.upload(proposal);
 
-        if (canUseDelegation) {
+        if (canUseBackendDelegate) {
           const proposalResponse = await delegateCreateOrUpdateProposal(
             chainId,
             user.id,
@@ -175,7 +175,7 @@ function ProposalForm({
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
+        if (canUseBackendDelegate) await refreshWorkerProfile();
       }
     }
   };

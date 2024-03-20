@@ -30,7 +30,7 @@ const initialValues: IFormValues = {
 function ReviewForm({ serviceId }: { serviceId: string }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { user, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
@@ -59,7 +59,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
         );
 
         let tx;
-        if (canUseDelegation) {
+        if (canUseBackendDelegate) {
           const response = await delegateMintReview(
             chainId,
             isBuilderPlaceCollaborator ? builderPlace.owner?.talentLayerId : user.id,
@@ -100,7 +100,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
+        if (canUseBackendDelegate) await refreshWorkerProfile();
       }
     } else {
       openConnectModal();

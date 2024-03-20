@@ -29,7 +29,7 @@ function ReleaseForm({
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { user, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
@@ -54,7 +54,7 @@ function ReleaseForm({
         service.transaction.id,
         percentToToken,
         isBuyer,
-        canUseDelegation,
+        canUseBackendDelegate,
         talentLayerClient,
         service.id,
         refreshWorkerProfile,

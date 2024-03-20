@@ -24,7 +24,7 @@ function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseDelegation, refreshData, workerProfile, loading } =
+  const { user, canUseBackendDelegate, refreshData, workerProfile, loading } =
     useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { data: walletClient } = useWalletClient({ chainId });
@@ -122,7 +122,7 @@ function EmailPreferencesForm() {
         );
 
         let tx;
-        if (canUseDelegation) {
+        if (canUseBackendDelegate) {
           const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {

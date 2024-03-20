@@ -1,6 +1,6 @@
 import { User } from '.prisma/client';
 import { TalentLayerClient } from '@talentlayer/client';
-import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
@@ -9,10 +9,11 @@ import { getUserBy } from '../modules/BuilderPlace/request';
 import { getUserByAddress } from '../queries/users';
 import { IAccount, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
+import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export type iTalentLayerContext = {
   loading: boolean;
-  canUseDelegation: boolean;
+  canUseBackendDelegate: boolean;
   refreshData: () => Promise<boolean>;
   refreshWorkerProfile: () => Promise<boolean>;
   user?: IUser;
@@ -31,7 +32,7 @@ export type iTalentLayerContext = {
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
-  canUseDelegation: false,
+  canUseBackendDelegate: false,
   refreshData: async () => {
     return false;
   },
@@ -44,10 +45,11 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
   const { switchNetwork } = useSwitchNetwork();
   const { data: walletClient } = useWalletClient();
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const [user, setUser] = useState<IUser | undefined>();
   const [workerProfile, setWorkerProfile] = useState<User>();
   const account = useAccount();
-  const [canUseDelegation, setCanUseDelegation] = useState(false);
+  const [canUseBackendDelegate, setCanUseBackendDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
   const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
@@ -110,14 +112,33 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
           process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase(),
         ) !== -1;
 
+      console.log('userHasDelegatedToPlatform', userHasDelegatedToPlatform);
+      console.log(
+        'userResponse.data.data.users[0].delegates',
+        userResponse.data.data.users[0].delegates,
+      );
+      console.log(
+        'process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()',
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS?.toLowerCase(),
+      );
+
       const userHasReachedDelegationLimit =
         (workerProfile?.weeklyTransactionCounter || 0) > MAX_TRANSACTION_AMOUNT;
 
-      setCanUseDelegation(
+      setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
           userHasDelegatedToPlatform &&
           !userHasReachedDelegationLimit,
       );
+      console.log(
+        "process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&\n" +
+          '          userHasDelegatedToPlatform &&\n' +
+          '          !userHasReachedDelegationLimit,',
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
+          userHasDelegatedToPlatform &&
+          !userHasReachedDelegationLimit,
+      );
+      console.log('canUseBackendDelegate', canUseBackendDelegate);
 
       setUser(currentUser);
 
@@ -191,7 +212,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       user,
       account: account ? account : undefined,
       workerProfile,
-      canUseDelegation,
+      canUseBackendDelegate,
       refreshData: fetchData,
       refreshWorkerProfile: refreshWorkerProfile,
       loading,
@@ -201,7 +222,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   }, [
     account.address,
     user?.id,
-    canUseDelegation,
+    canUseBackendDelegate,
     workerProfile,
     loading,
     completionScores,
