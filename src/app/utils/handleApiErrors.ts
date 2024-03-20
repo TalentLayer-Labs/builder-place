@@ -1,4 +1,8 @@
-export const handleApiError = (caughtError: any, customErrorMessage: string, status: number) => {
+export const handleApiError = (
+  caughtError: any,
+  customErrorMessage: string,
+  status: number,
+): Response => {
   let errorMessage = '';
   //TODO do it cleaner with type check
   if (caughtError?.name?.includes('Prisma')) {

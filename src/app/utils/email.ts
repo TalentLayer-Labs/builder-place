@@ -9,7 +9,7 @@ import {
 } from '../../modules/BuilderPlace/apiResponses';
 import { handleApiError } from './handleApiErrors';
 
-export async function checkOrResetTransactionCounter(user: User): Promise<void> {
+export async function checkOrResetTransactionCounter(user: User): Promise<Response | void> {
   let status = 500;
   try {
     const nowMilliseconds = new Date().getTime();
@@ -37,11 +37,11 @@ export async function checkOrResetTransactionCounter(user: User): Promise<void> 
     }
     console.log('Delegating transaction');
   } catch (error: any) {
-    handleApiError(error, ERROR_CHECKING_TRANSACTION_COUNTER, status);
+    return handleApiError(error, ERROR_CHECKING_TRANSACTION_COUNTER, status);
   }
 }
 
-export async function incrementWeeklyTransactionCounter(user: User): Promise<void> {
+export async function incrementWeeklyTransactionCounter(user: User): Promise<Response | void> {
   let status = 500;
   try {
     // Increment the counter
@@ -56,7 +56,7 @@ export async function incrementWeeklyTransactionCounter(user: User): Promise<voi
     });
     console.log('Transaction counter incremented', newWeeklyTransactionCounter);
   } catch (error: any) {
-    handleApiError(error, ERROR_INCREMENTING_TRANSACTION_COUNTER, status);
+    return handleApiError(error, ERROR_INCREMENTING_TRANSACTION_COUNTER, status);
   }
 }
 

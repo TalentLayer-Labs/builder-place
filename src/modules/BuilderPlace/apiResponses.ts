@@ -37,6 +37,7 @@ export const ERROR_FETCHING_USERS = 'Error fetching Users';
 export const ERROR_FETCHING_EMAILS = 'Error fetching User Emails';
 export const TRANSACTION_LIMIT_REACHED = 'Transaction limit reached for the week';
 export const ERROR_INCREMENTING_TRANSACTION_COUNTER = 'Error incrementing transaction counter';
+export const ERROR_EMAIL_NOT_VERIFIED = 'Email not verified';
 export const ERROR_CHECKING_TRANSACTION_COUNTER = 'Error checking transaction counter';
 export const DOMAIN_CONTAINS_BUILDER_PLACE = 'Domain contains builder.place';
 export const INVALID_CUSTOM_DOMAIN = 'Invalid custom domain';
