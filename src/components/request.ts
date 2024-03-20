@@ -1,20 +1,35 @@
 /* eslint-disable no-console */
 import axios from 'axios';
+import { ICreateService } from '../app/api/delegate/service/route';
+import { IUpdateService } from '../app/api/delegate/service/[id]/route';
 
-export const delegateCreateOrUpdateService = async (
-  chainId: number,
-  userId: string,
-  userAddress: string,
-  cid: string,
-  existingService: boolean,
+export const delegateCreateService = async (body: ICreateService): Promise<any> => {
+  try {
+    return await axios.post('/api/delegate/service', {
+      chainId: body.chainId,
+      userId: body.userId,
+      userAddress: body.userAddress,
+      cid: body.cid,
+      platformId: body.platformId,
+      signature: body.signature,
+    });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+export const delegateUpdateService = async (
+  body: IUpdateService,
+  serviceId: string,
 ): Promise<any> => {
   try {
-    return await axios.post('/api/delegate/create-update-service', {
-      chainId,
-      userId,
-      userAddress,
-      cid,
-      existingService,
+    return await axios.put(`/api/delegate/service/${serviceId}`, {
+      chainId: body.chainId,
+      userId: body.userId,
+      userAddress: body.userAddress,
+      cid: body.cid,
+      signature: body.signature,
     });
   } catch (err) {
     console.error(err);

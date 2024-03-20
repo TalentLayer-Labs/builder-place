@@ -9,6 +9,9 @@ const serviceQueryFields = `
   transaction {
     id
   }
+  platform {
+    id
+  }
   buyer {
     id
     handle
