@@ -85,9 +85,11 @@ export const showErrorTransactionToast = (error: any) => {
   if (typeof error === 'string') {
     errorMessage = error;
   } else if (error.name === 'AxiosError') {
-    errorMessage = `${error.message} ${
-      error.response.data.message ? '. More: ' + error.response.data.message : ''
-    }`;
+    errorMessage =
+      error.response?.data?.error?.details ||
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message;
   } else if (error.response && error.response.status === 500) {
     errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
