@@ -1,33 +1,34 @@
 import { recoverMessageAddress } from 'viem';
-import { getConfig } from '../../../../config';
+import { getConfig } from '../../../../../config';
 import {
   getDelegationSigner,
   getPublicClient,
   isPlatformAllowedToDelegate,
-} from '../../../utils/delegate';
-import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getServiceSignature } from '../../../../utils/signature';
-import { checkUserEmailVerificationStatus } from '../../../utils/email';
-import { getPlatformPostingFees } from '../../../../queries/platform';
-import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
+} from '../../../../utils/delegate';
+import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
+import { checkUserEmailVerificationStatus } from '../../../../utils/email';
+import { getUserByTalentLayerId } from '../../../../../modules/BuilderPlace/actions/user';
 
-export interface ICreateService {
+export interface IUpdateProposal {
   chainId: number;
   userId: string;
   userAddress: string;
+  rateToken: string;
+  rateAmount: string;
+  expirationDate: string;
   cid: string;
-  platformId: string;
   signature: `0x${string}` | Uint8Array;
 }
 
 /**
- * POST /api/delegate/service
+ * POST /api/delegate/proposal
  */
-export async function POST(req: Request) {
-  console.log('POST');
-  const body: ICreateService = await req.json();
+export async function PUT(req: Request, { params }: { params: { id: string } }) {
+  console.log('PUT');
+  const body: IUpdateProposal = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, platformId, signature } = body;
+  const { chainId, userId, userAddress, cid, rateAmount, rateToken, expirationDate, signature } =
+    body;
 
   const config = getConfig(chainId);
 
@@ -35,7 +36,6 @@ export async function POST(req: Request) {
     return Response.json({ message: 'Delegation is not activated' }, { status: 500 });
   }
 
-  // @TODO: move it to a middleware and apply to all POST and PUT ?
   const signatureAddress = await recoverMessageAddress({
     message: `connect with ${userAddress}`,
     signature: signature,
@@ -78,24 +78,12 @@ export async function POST(req: Request) {
 
       let transaction;
 
-      //TODO: V2 - RPC call instead ?
-      const platformFeesResponse = await getPlatformPostingFees(chainId, platformId);
-      let servicePostingFee = platformFeesResponse?.data?.data?.platform.servicePostingFee;
-      servicePostingFee = BigInt(Number(servicePostingFee) || '0');
-
-      const signature = await getServiceSignature({
-        profileId: Number(userId),
-        cid: cid,
-      });
-
-      console.log('Creating service with args', userId, platformId, cid, signature);
-
+      console.log('Updating proposal with args', userId, cid, signature);
       transaction = await walletClient.writeContract({
         address: config.contracts.serviceRegistry,
         abi: TalentLayerService.abi,
-        functionName: 'createService',
-        args: [userId, platformId, cid, signature],
-        value: servicePostingFee,
+        functionName: 'updateProposal',
+        args: [userId, params.id, rateToken, rateAmount, cid, expirationDate],
       });
 
       // await incrementWeeklyTransactionCounter(user);
@@ -103,7 +91,7 @@ export async function POST(req: Request) {
       return Response.json({ transaction: transaction }, { status: 201 });
     }
   } catch (error: any) {
-    let message = 'Failed to create service';
+    let message = 'Failed to update proposal';
     return Response.json({ message, error }, { status: 500 });
   }
 }
