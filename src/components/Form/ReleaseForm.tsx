@@ -2,11 +2,11 @@ import { Field, Form, Formik } from 'formik';
 import { useContext, useMemo, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import TalentLayerContext from '../../context/talentLayer';
-import { executePayment } from '../../contracts/executePayment';
 import { IService, IToken, ServiceStatusEnum } from '../../types';
 import { renderTokenAmount } from '../../utils/conversion';
 import { useChainId } from '../../hooks/useChainId';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import useExecutePayment from '../../modules/BuilderPlace/hooks/payment/useExecutePayment';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
@@ -29,10 +29,11 @@ function ReleaseForm({
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
+  const { executePayment } = useExecutePayment();
 
   const [percent, setPercentage] = useState(0);
 
@@ -45,19 +46,21 @@ function ReleaseForm({
     }
     const percentToToken = (totalInEscrow * BigInt(percent)) / BigInt(100);
 
-    if (talentLayerClient) {
+    if (
+      talentLayerClient &&
+      builderPlace?.owner?.talentLayerId &&
+      builderPlace?.talentLayerPlatformId
+    ) {
+      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+
       await executePayment(
         chainId,
         user.address,
-        publicClient,
-        user.id,
+        usedId,
         service.transaction.id,
         percentToToken,
         isBuyer,
-        canUseBackendDelegate,
-        talentLayerClient,
         service.id,
-        refreshWorkerProfile,
       );
     }
 
