@@ -69,7 +69,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
         baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
       },
-      platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+      platformId: parseInt(builderPlace?.talentLayerPlatformId as string),
       signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
       walletConfig: walletClient
         ? {
