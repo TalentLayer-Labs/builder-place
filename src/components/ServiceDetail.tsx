@@ -113,7 +113,7 @@ function ServiceDetail({ service }: { service: IService }) {
                     href={
                       workerProfile
                         ? `/work/${service.id}/proposal`
-                        : `/newonboarding?serviceId=${service.id}`
+                        : `/newonboarding/create-profile?serviceId=${service.id}`
                     }>
                     Create proposal
                   </Link>
