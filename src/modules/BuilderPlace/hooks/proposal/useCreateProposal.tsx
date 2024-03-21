@@ -18,7 +18,7 @@ const useCreateProposal = () => {
   const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
-  console.log('canUseBackendDelegate', canUseBackendDelegate);
+
   const createNewProposal = async (
     values: IProposalFormValues,
     token: IToken,
@@ -31,7 +31,6 @@ const useCreateProposal = () => {
     await wait(2);
 
     if (
-      // account?.isConnected === true &&
       user?.id &&
       publicClient &&
       talentLayerClient &&
@@ -70,9 +69,6 @@ const useCreateProposal = () => {
             message: `connect with ${address}`,
             account: address,
           });
-
-          console.log('signature', signature);
-          console.log('address', address);
 
           proposalResponse = await delegateCreateProposal({
             chainId,
