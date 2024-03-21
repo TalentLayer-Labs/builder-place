@@ -30,7 +30,7 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
 
   useEffect(() => {
     fetchBuilderPlaceOwner();
-  }, [chainId, data?.ownerId]);
+  }, [chainId, data?.ownerId, account]);
 
   useEffect(() => {
     if (!ownerTalentLayerHandle) return;
