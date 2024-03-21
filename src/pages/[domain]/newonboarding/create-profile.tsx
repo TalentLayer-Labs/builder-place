@@ -7,11 +7,12 @@ import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPl
 function createProfile() {
   //TODO: Contexte pas initialisé ici => "undefined"
   const { builderPlace } = useContext(BuilderPlaceContext);
+  const serviceId = new URL(window.location.href).searchParams.get('serviceId');
   const router = useRouter();
 
   const onSuccess = () => {
     console.log('*DEBUG* onSuccess REDIRECT');
-    router.push(`/dashboard`);
+    serviceId ? router.push(`/work/${serviceId}`) : router.push(`/dashboard`);
   };
 
   return (
