@@ -1,18 +1,13 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
-import { postToIPFSwithQuickNode } from '../../utils/ipfs';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
+import { showErrorTransactionToast } from '../../utils/toast';
 import SubmitButton from './SubmitButton';
-import { delegateMintReview } from '../request';
-import { useChainId } from '../../hooks/useChainId';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import useRecordReview from '../../modules/BuilderPlace/hooks/review/useRecordReview';
 
-interface IFormValues {
+export interface IFormValues {
   content: string;
   rating: number;
 }
@@ -28,13 +23,9 @@ const initialValues: IFormValues = {
 };
 
 function ReviewForm({ serviceId }: { serviceId: string }) {
-  const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
-  const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
-  const talentLayerClient = useTalentLayerClient();
+  const { account, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { recordReview } = useRecordReview();
 
   /**
    * @dev If the user is a Collaborator, use the owner's TalentLayerId
@@ -49,52 +40,9 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (user && publicClient && walletClient && builderPlace?.owner?.talentLayerId) {
+    if (account?.isConnected === true) {
       try {
-        const uri = await postToIPFSwithQuickNode(
-          JSON.stringify({
-            content: values.content,
-            rating: values.rating,
-          }),
-        );
-
-        let tx;
-        if (canUseBackendDelegate) {
-          const response = await delegateMintReview(
-            chainId,
-            isBuilderPlaceCollaborator ? builderPlace.owner?.talentLayerId : user.id,
-            user.address,
-            serviceId,
-            uri,
-            values.rating,
-          );
-          tx = response.data.transaction;
-        } else {
-          if (talentLayerClient) {
-            const res = await talentLayerClient.review.create(
-              {
-                rating: values.rating,
-                content: values.content,
-              },
-              serviceId,
-              isBuilderPlaceCollaborator ? builderPlace.owner?.talentLayerId : user.id,
-            );
-            tx = res.tx;
-          }
-        }
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Creating your review...',
-            success: 'Congrats! Your review has been posted',
-            error: 'An error occurred while creating your review',
-          },
-          publicClient,
-          tx,
-          'review',
-          uri,
-        );
+        await recordReview(values, serviceId);
         setSubmitting(false);
         resetForm();
       } catch (error) {

@@ -5,6 +5,7 @@ import { IUpdateService } from '../app/api/delegate/service/[id]/route';
 import { ICreateProposal } from '../app/api/delegate/proposal/route';
 import { IUpdateProposal } from '../app/api/delegate/proposal/[id]/route';
 import { IExecutePayment } from '../app/api/delegate/payment/route';
+import { IReview } from '../app/api/delegate/review/route';
 
 export const delegateCreateService = async (body: ICreateService): Promise<any> => {
   try {
@@ -185,6 +186,22 @@ export const delegateMintReview = async (
       serviceId,
       uri,
       valuesRating,
+    });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+export const delegateReview = async (body: IReview): Promise<any> => {
+  try {
+    return await axios.post('/api/delegate/review', {
+      chainId: body.chainId,
+      userId: body.userId,
+      userAddress: body.userAddress,
+      serviceId: body.serviceId,
+      uri: body.cid,
+      rating: body.rating,
+      signature: body.signature,
     });
   } catch (err) {
     console.error(err);
