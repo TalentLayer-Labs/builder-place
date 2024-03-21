@@ -246,7 +246,7 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
                 onClick={() => setShow(false)}
                 type='button'
                 className='text-base-content bg-base-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl border text-sm font-medium px-5 py-2.5 hover:text-base-content focus:z-10 '>
-                Decline
+                Close
               </button>
               <ContactButton
                 userAddress={proposal.seller.address}
