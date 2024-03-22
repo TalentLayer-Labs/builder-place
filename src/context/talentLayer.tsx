@@ -123,7 +123,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       );
 
       const userHasReachedDelegationLimit =
-        (workerProfile?.weeklyTransactionCounter || 0) > MAX_TRANSACTION_AMOUNT;
+        (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
 
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
