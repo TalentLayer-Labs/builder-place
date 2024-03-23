@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
-import TalentLayerIdForm from './Form/TalentLayerIdForm';
+import OnboardingRedirectButton from './RedirectToOnboardingButton';
 
 function Steps({ handle }: { handle?: string }) {
   const { account, loading, user } = useContext(TalentLayerContext);
@@ -19,7 +19,8 @@ function Steps({ handle }: { handle?: string }) {
             <ConnectBlock />
           </div>
         )}
-        {account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}
+        {/*{account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}*/}
+        {account?.isConnected && !user && <OnboardingRedirectButton />}
       </div>
     </div>
   );
