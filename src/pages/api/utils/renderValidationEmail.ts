@@ -400,5 +400,5 @@ Validate my email
 };
 
 export const generateUrl = (userId: string, domain?: string) => {
-  return `https://${domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN}/verify-email?id=${userId}`;
+  return `http://${domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN}/verify-email?id=${userId}`;
 };
