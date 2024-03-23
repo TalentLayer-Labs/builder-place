@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
 import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
-import Header from '../../../components/onboarding/Header';
-import { useContext } from 'react';
-import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 function createProfile() {
-  //TODO: Contexte pas initialisé ici => "undefined"
-  const { builderPlace } = useContext(BuilderPlaceContext);
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
   const router = useRouter();
 
@@ -17,8 +17,6 @@ function createProfile() {
 
   return (
     <div className=''>
-      <Header logoUrl={builderPlace?.logo} />
-
       <div className='text-stone-800'>
         <div className='pb-16 max-w-3xl transition-all duration-300 rounded-md mx-auto'>
           <div className='p-6 mx-auto'>
