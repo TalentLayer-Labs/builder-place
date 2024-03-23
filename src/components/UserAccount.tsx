@@ -21,7 +21,7 @@ function UserAccount() {
   if (!account?.isConnected) {
     return (
       <div className='flex justify-between'>
-        <div className='px-4 flex items-center'>
+        <div className='pr-4 flex items-center'>
           <ConnectBlock />
         </div>
       </div>
@@ -30,7 +30,7 @@ function UserAccount() {
 
   return (
     <div className='flex justify-between'>
-      <div className='px-4 flex items-center'>
+      <div className='pr-4 flex items-center'>
         <Menu as='div' className='relative'>
           <div>
             <div className='flex items-center relative group'>

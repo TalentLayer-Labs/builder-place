@@ -10,6 +10,7 @@ import UserAccount from '../components/UserAccount';
 import TalentLayerContext from '../context/talentLayer';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import Loading from '../components/Loading';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 interface ContainerProps {
   children: ReactNode;
@@ -19,7 +20,8 @@ interface ContainerProps {
 function Layout({ children, className }: ContainerProps) {
   const router = useRouter();
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
-  const { account, workerProfile } = useContext(TalentLayerContext);
+  const { account } = useContext(TalentLayerContext);
+  const { user, loading: userLoading } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,7 @@ function Layout({ children, className }: ContainerProps) {
     setLoading(false);
   }, []);
 
-  if (loading) {
+  if (loading || userLoading) {
     return (
       <div className='pt-16'>
         <Loading />
@@ -40,7 +42,7 @@ function Layout({ children, className }: ContainerProps) {
     builderPlaceName: builderPlace?.name,
     account,
     isBuilderPlaceCollaborator,
-    workerProfile,
+    user,
   });
 
   if (router.asPath.includes('web3mail')) {
@@ -76,7 +78,7 @@ function Layout({ children, className }: ContainerProps) {
       );
     }
 
-    if ((!isBuilderPlaceCollaborator && !workerProfile) || router.asPath.includes('embed/')) {
+    if ((!isBuilderPlaceCollaborator && !user) || router.asPath.includes('embed/')) {
       return (
         <div className={'dashboard pb-[110px] text-base-content bg-base-200 min-h-screen'}>
           <div className='flex flex-1 flex-col '>
@@ -87,7 +89,7 @@ function Layout({ children, className }: ContainerProps) {
                 </div>
               </div>
               <NetworkSwitch />
-              <UserAccount />
+              {user && <UserAccount />}
             </div>
 
             <main>
@@ -175,7 +177,7 @@ function Layout({ children, className }: ContainerProps) {
                 </div>
               </div>
               <NetworkSwitch />
-              <UserAccount />
+              {user && <UserAccount />}
             </div>
 
             <main>
