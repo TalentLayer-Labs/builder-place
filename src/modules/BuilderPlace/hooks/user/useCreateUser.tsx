@@ -15,6 +15,7 @@ import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import UserContext from '../../context/UserContext';
 import { createVerificationEmailToast } from '../../utils/toast';
 import { wait } from '../../../../utils/toast';
+import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useCreateUser = () => {
   const chainId = useChainId();
@@ -22,6 +23,7 @@ const useCreateUser = () => {
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { calculateMintFee } = useMintFee();
   const talentLayerClient = useTalentLayerClient();
   const userMutation = useMutation(
@@ -33,6 +35,10 @@ const useCreateUser = () => {
   const createNewUser = async (values: ICreateUserFormValues) => {
     if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
+    }
+
+    if (!builderPlace?.talentLayerPlatformId) {
+      throw new Error('No PlatformId found');
     }
 
     /**
@@ -72,6 +78,7 @@ const useCreateUser = () => {
             values.talentLayerHandle,
             String(handlePrice),
             address,
+            builderPlace?.talentLayerPlatformId,
             signature,
             process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true',
           );
@@ -79,7 +86,10 @@ const useCreateUser = () => {
           userId = tx.data.userId;
         } else {
           if (talentLayerClient) {
+            //TODO: invalid Bigint syntax :/
+            console.log('ic !', values.talentLayerHandle);
             const txHash = await talentLayerClient.profile.create(values.talentLayerHandle);
+            console.log('ic !', txHash);
             await publicClient.waitForTransactionReceipt({
               confirmations: 1,
               hash: txHash,

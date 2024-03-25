@@ -214,6 +214,7 @@ export const delegateMintID = async (
   handle: string,
   handlePrice: string,
   userAddress: string,
+  platformId: string,
   signature: string,
   addDelegateAndTransferId = false,
 ): Promise<any> => {
@@ -223,6 +224,7 @@ export const delegateMintID = async (
       handle,
       handlePrice,
       userAddress,
+      platformId,
       signature,
       addDelegateAndTransferId,
     });

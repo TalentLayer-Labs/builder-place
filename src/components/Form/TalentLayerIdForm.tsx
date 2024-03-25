@@ -14,6 +14,7 @@ import Loading from '../Loading';
 import { delegateMintID } from '../request';
 import { HandlePrice } from './HandlePrice';
 import SubmitButton from './SubmitButton';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   handle: string;
@@ -24,6 +25,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const { account, refreshData, loading } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
@@ -56,6 +58,10 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
   ) => {
     if (account && account.address && account.isConnected && publicClient && walletClient) {
       try {
+        if (!builderPlace?.talentLayerPlatformId) {
+          throw new Error('No PlatformId found');
+        }
+
         let tx;
         const handlePrice = calculateMintFee(submittedValues.handle);
 
@@ -73,6 +79,7 @@ function TalentLayerIdForm({ handle, callback }: { handle?: string; callback?: (
             submittedValues.handle,
             String(handlePrice),
             account.address,
+            builderPlace?.talentLayerPlatformId,
             signature,
             process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true'
               ? submittedValues.activateGassless

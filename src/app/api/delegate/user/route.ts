@@ -9,6 +9,7 @@ export interface IUserMintForAddress {
   handle: string;
   handlePrice: string;
   userAddress: string;
+  platformId: string;
   signature: `0x${string}` | Uint8Array;
   addDelegateAndTransferId?: boolean;
 }
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'mint',
-        args: [process.env.NEXT_PUBLIC_PLATFORM_ID, body.handle],
+        args: [body.platformId, body.handle],
         value: BigInt(body.handlePrice),
       });
 
@@ -111,7 +112,7 @@ export async function POST(req: Request) {
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'mintForAddress',
-        args: [body.userAddress, process.env.NEXT_PUBLIC_PLATFORM_ID, body.handle],
+        args: [body.userAddress, body.platformId, body.handle],
         value: BigInt(body.handlePrice),
       });
 
