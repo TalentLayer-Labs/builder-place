@@ -39,7 +39,7 @@ export interface ICreateUser
  *      ELSE
  *          Let the user complete the form, we will create a profile in DB (and a TalentLayerID if the wallet don't have one yet)
  *  ELSE
- *     let the user complete the form and ask him to conenct on submit
+ *     let the user complete the form and ask him to connect on submit
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
@@ -80,14 +80,16 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       setSubmitting(true);
 
       await createNewUser(values);
+      console.log('before get user');
       await getUser();
+      console.log('after get user');
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
        */
       onSuccess();
     } catch (error: any) {
-      console.log('CATCH error', error);
+      // console.log('CATCH error', error);
       showErrorTransactionToast(error);
     } finally {
       setTimeout(() => {
