@@ -7,7 +7,10 @@ import {
 } from '../../../../utils/delegate';
 import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
 import { checkUserEmailVerificationStatus } from '../../../../utils/email';
-import { getUserByTalentLayerId } from '../../../../../modules/BuilderPlace/actions/user';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../../modules/BuilderPlace/actions/user';
 
 export interface IUpdateProposal {
   chainId: number;
@@ -41,7 +44,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     signature: signature,
   });
 
-  if (signatureAddress !== userAddress) {
+  const user = await getUserByAddress(signatureAddress);
+
+  if (user?.talentLayerId !== userId) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 

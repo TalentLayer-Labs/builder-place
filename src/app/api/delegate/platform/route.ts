@@ -7,10 +7,12 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
+import { getUserByAddress } from '../../../../modules/BuilderPlace/actions/user';
 
 export interface IPlatformMintForAddress {
   platformName: string;
   address: string;
+  userTalentLayerId: string;
   chainId: number;
   signature: `0x${string}` | Uint8Array;
 }
@@ -35,6 +37,12 @@ export async function POST(req: Request) {
     signature: body.signature,
   });
 
+  const user = await getUserByAddress(signatureAddress);
+
+  if (user?.talentLayerId !== body.userTalentLayerId) {
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
+  }
+
   const canDelegate = await isPlatformAllowedToDelegate(body.chainId, body.address);
 
   if (!canDelegate) {
@@ -42,10 +50,6 @@ export async function POST(req: Request) {
       { error: 'Delegation is Not activated for this address' },
       { status: 401 },
     );
-  }
-
-  if (signatureAddress !== body.address) {
-    return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   try {

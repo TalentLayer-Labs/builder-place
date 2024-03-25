@@ -6,7 +6,10 @@ import {
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
 import { checkUserEmailVerificationStatus } from '../../../utils/email';
-import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../modules/BuilderPlace/actions/user';
 import TalentLayerEscrow from '../../../../contracts/ABI/TalentLayerEscrow.json';
 
 export interface IExecutePayment {
@@ -28,9 +31,6 @@ export async function POST(req: Request) {
   console.log('json', body);
   const { chainId, userId, userAddress, amount, isBuyer, transactionId, signature } = body;
 
-  console.log('signature', signature);
-  console.log('userAddress', userAddress);
-
   const config = getConfig(chainId);
 
   if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE !== 'true') {
@@ -42,7 +42,9 @@ export async function POST(req: Request) {
     signature: signature,
   });
 
-  if (signatureAddress !== userAddress) {
+  const user = await getUserByAddress(signatureAddress);
+
+  if (user?.talentLayerId !== userId) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 

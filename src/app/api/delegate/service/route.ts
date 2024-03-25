@@ -13,7 +13,10 @@ import {
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
 import { getPlatformPostingFees } from '../../../../queries/platform';
-import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../modules/BuilderPlace/actions/user';
 
 export interface ICreateService {
   chainId: number;
@@ -45,7 +48,9 @@ export async function POST(req: Request) {
     signature: signature,
   });
 
-  if (signatureAddress !== userAddress) {
+  const user = await getUserByAddress(signatureAddress);
+
+  if (user?.talentLayerId !== userId) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 

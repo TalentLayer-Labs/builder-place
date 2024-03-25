@@ -237,6 +237,7 @@ export const delegateMintID = async (
 export const delegatePlatformMint = async (
   platformName: string,
   address: string,
+  userTalentLayerId: string,
   chainId: number,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {
@@ -244,6 +245,7 @@ export const delegatePlatformMint = async (
     return await axios.post('/api/delegate/platform', {
       platformName,
       address,
+      userTalentLayerId,
       chainId,
       signature,
     });

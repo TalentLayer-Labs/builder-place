@@ -6,7 +6,10 @@ import {
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
 import { checkUserEmailVerificationStatus } from '../../../utils/email';
-import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../modules/BuilderPlace/actions/user';
 import TalentLayerReview from '../../../../contracts/ABI/TalentLayerReview.json';
 
 export interface IReview {
@@ -41,7 +44,9 @@ export async function POST(req: Request) {
     signature: signature,
   });
 
-  if (signatureAddress !== userAddress) {
+  const user = await getUserByAddress(signatureAddress);
+
+  if (user?.talentLayerId !== userId) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
