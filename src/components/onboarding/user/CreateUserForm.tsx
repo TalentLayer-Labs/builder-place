@@ -43,7 +43,7 @@ export interface ICreateUser
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
-  const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { createNewUser } = useCreateUser();
 
@@ -80,9 +80,9 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       setSubmitting(true);
 
       await createNewUser(values);
-      console.log('before get user');
       await getUser();
-      console.log('after get user');
+      // TODO: not sure if useful, probably not indexed yet
+      await refreshData();
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
