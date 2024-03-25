@@ -19,25 +19,25 @@ import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceCon
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function ServiceDetail({ service }: { service: IService }) {
-  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const { account } = useContext(TalentLayerContext);
   const { user } = useContext(UserContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { reviews } = useReviewsByService(service.id);
   const proposals = useProposalsByService(service.id);
   const payments = usePaymentsByService(service.id);
 
-  const isBuyer = talentLayerUser?.id === service.buyer.id;
-  const isSeller = talentLayerUser?.id === service.seller?.id;
+  const isBuyer = user?.talentLayerId === service.buyer.id;
+  const isSeller = user?.talentLayerId === service.seller?.id;
   const hasReviewed = !!reviews.find(review => {
-    return review.to.id !== talentLayerUser?.id;
+    return review.to.id !== user?.talentLayerId;
   });
 
   const canEditService =
     (isBuilderPlaceCollaborator && service.buyer.id === builderPlace?.owner.talentLayerId) ||
-    talentLayerUser?.id === service.buyer.id;
+    user?.talentLayerId === service.buyer.id;
 
   const userProposal = proposals.find(proposal => {
-    return proposal.seller.id === talentLayerUser?.id;
+    return proposal.seller.id === user?.talentLayerId;
   });
 
   const validatedProposal = proposals.find(proposal => {
@@ -119,7 +119,7 @@ function ServiceDetail({ service }: { service: IService }) {
                     Create proposal
                   </Link>
                 )}
-                {talentLayerUser && (
+                {account && (
                   <ContactButton
                     userAddress={service.buyer?.address}
                     userHandle={service.buyer.handle}
