@@ -14,6 +14,7 @@ import usePlatform from '../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 import { ZERO_ADDRESS } from '../../../utils/constant';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -21,8 +22,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminDispute() {
   const { user, loading } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const config = useConfig();
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const [arbitratorPrice, setArbitratorPrice] = useState<number>(0);
   let availableArbitrators: { value: string; label: string }[] = [];
   const talentLayerClient = useTalentLayerClient();
@@ -85,7 +87,7 @@ function AdminDispute() {
             contractAddress: config.contracts.talentLayerPlatformId,
             contractAbi: TalentLayerPlatformID.abi,
             contractEntity: 'platform',
-            contractInputs: process.env.NEXT_PUBLIC_PLATFORM_ID,
+            contractInputs: builderPlace?.talentLayerPlatformId,
           }}
           valueName={'Choose your dispute strategy'}
           callback={fetchArbitrationPrice}
@@ -122,7 +124,7 @@ function AdminDispute() {
             contractAddress: config.contracts.talentLayerArbitrator,
             contractAbi: TalentLayerArbitrator.abi,
             contractEntity: 'disputes',
-            contractInputs: process.env.NEXT_PUBLIC_PLATFORM_ID,
+            contractInputs: builderPlace?.talentLayerPlatformId,
           }}
           valueName={'Arbitration price (in Matic)'}
         />

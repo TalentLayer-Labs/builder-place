@@ -7,7 +7,6 @@ import MenuBottom from '../components/Layout/MenuBottom';
 import SideMenu from '../components/Layout/SideMenu';
 import NetworkSwitch from '../components/NetworkSwitch';
 import UserAccount from '../components/UserAccount';
-import TalentLayerContext from '../context/talentLayer';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import Loading from '../components/Loading';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
@@ -20,7 +19,6 @@ interface ContainerProps {
 function Layout({ children, className }: ContainerProps) {
   const router = useRouter();
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
-  const { account } = useContext(TalentLayerContext);
   const { user, loading: userLoading } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -40,7 +38,6 @@ function Layout({ children, className }: ContainerProps) {
 
   console.log('Layout render', {
     builderPlaceName: builderPlace?.name,
-    account,
     isBuilderPlaceCollaborator,
     user,
   });
@@ -185,7 +182,7 @@ function Layout({ children, className }: ContainerProps) {
             </main>
           </div>
         </div>
-        <MenuBottom setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
+        {user && <MenuBottom setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />}
       </>
     );
   }

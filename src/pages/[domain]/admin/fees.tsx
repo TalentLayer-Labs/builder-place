@@ -8,13 +8,13 @@ import Loading from '../../../components/Loading';
 import Steps from '../../../components/Steps';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
 import { FEE_RATE_DIVIDER } from '../../../config';
-import TalentLayerContext from '../../../context/talentLayer';
 import TalentLayerPlatformID from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { useConfig } from '../../../hooks/useConfig';
 import usePlatform from '../../../hooks/usePlatform';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { chains } from '../../../context/web3modal';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -22,10 +22,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminFees() {
   const chainId = useChainId();
-  const { user, loading } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { user, loading } = useContext(UserContext);
+  const { isBuilderPlaceOwner, builderPlace } = useContext(BuilderPlaceContext);
   const config = useConfig();
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const currentChain = chains.find(chain => chain.id === chainId);
 
   if (loading) {
@@ -34,7 +34,7 @@ function AdminFees() {
   if (!user) {
     return <Steps />;
   }
-  if (!isBuilderPlaceCollaborator) {
+  if (!isBuilderPlaceOwner) {
     return <UserNeedsMoreRights />;
   }
 
@@ -63,7 +63,7 @@ function AdminFees() {
             contractAddress: config.contracts.talentLayerPlatformId,
             contractAbi: TalentLayerPlatformID.abi,
             contractEntity: 'platform',
-            contractInputs: process.env.NEXT_PUBLIC_PLATFORM_ID,
+            contractInputs: builderPlace?.talentLayerPlatformId,
           }}
           valueName={'Fees (in %) on escrow for bringing the service'}
         />
@@ -84,7 +84,7 @@ function AdminFees() {
             contractAddress: config.contracts.talentLayerPlatformId,
             contractAbi: TalentLayerPlatformID.abi,
             contractEntity: 'platform',
-            contractInputs: process.env.NEXT_PUBLIC_PLATFORM_ID,
+            contractInputs: builderPlace?.talentLayerPlatformId,
           }}
           valueName={`Fees (in ${currentChain?.nativeCurrency.symbol}) asked by the platform to post a service on the platform`}
         />

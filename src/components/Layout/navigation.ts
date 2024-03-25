@@ -45,15 +45,15 @@ export const hirerAdminNavigation: MenuItem[] = [
     icon: CodeBracketSquareIcon,
     current: false,
   },
+];
+
+export const ownerAdminNavigation: MenuItem[] = [
   {
     name: 'configure fees',
     href: '/admin/fees',
     icon: CurrencyDollarIcon,
     current: false,
   },
-];
-
-export const ownerAdminNavigation: MenuItem[] = [
   {
     name: 'add collaborators',
     href: '/admin/collaborators',

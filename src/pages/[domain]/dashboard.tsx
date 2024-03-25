@@ -15,18 +15,20 @@ import { useRouter } from 'next/router';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import DelegationNotification from '../../components/DelegationNotification';
 import { toast } from 'react-toastify';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user, workerProfile } = useContext(TalentLayerContext);
+  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const router = useRouter();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const isComingFromHirerOnboarding = router.asPath.includes('platformonboarding');
 
-  if (!user) {
+  if (!talentLayerUser || !user) {
     return (
       <>
         {isComingFromHirerOnboarding ? (
@@ -70,7 +72,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {account?.isConnected && user && (
+      {account?.isConnected && talentLayerUser && (
         <div>
           {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
@@ -92,12 +94,12 @@ function Dashboard() {
                   link='/admin/configure-platform'
                   linkText='personalize my platform'
                   color='success'
-                  imageUrl={user?.description?.image_url}
+                  imageUrl={talentLayerUser?.description?.image_url}
                 />
               </div>
 
               <div className='mb-12'>
-                <UserServices user={user} type='buyer' />
+                <UserServices user={talentLayerUser} type='buyer' />
               </div>
             </>
           )}
@@ -118,19 +120,19 @@ function Dashboard() {
                     Edit
                   </Link>
                 </h2>
-                <UserDetail user={user} />
+                <UserDetail user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserPayments user={user} />
+                <UserPayments user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserGains user={user} />
+                <UserGains user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserServices user={user} type='seller' />
+                <UserServices user={talentLayerUser} type='seller' />
               </div>
               <div className='mb-12'>
-                <UserProposals user={user} />
+                <UserProposals user={talentLayerUser} />
               </div>
             </>
           )}

@@ -14,8 +14,8 @@ const useCreateService = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { address, user } = useContext(UserContext);
+  const { canUseBackendDelegate } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
   console.log('canUseBackendDelegate', canUseBackendDelegate);
@@ -28,13 +28,15 @@ const useCreateService = () => {
 
     if (
       // account?.isConnected === true &&
-      user?.id &&
+      user?.talentLayerId &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
-      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : user.talentLayerId;
       let tx, cid;
 
       try {
@@ -79,7 +81,6 @@ const useCreateService = () => {
 
           tx = response.data.transaction;
         } else {
-          //TODO Good
           let serviceResponse;
           /**
            * @dev: Create a service on behalf of Platform owner
@@ -93,7 +94,7 @@ const useCreateService = () => {
               rateAmount: parsedRateAmountString,
             },
             usedId,
-            parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+            parseInt(builderPlace.talentLayerPlatformId, 10),
           );
           cid = serviceResponse.cid;
           tx = serviceResponse.tx;

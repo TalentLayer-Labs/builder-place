@@ -2,10 +2,10 @@ import Notification from './Notification';
 import { verifyAccount } from '../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
-import TalentLayerContext from '../context/talentLayer';
 import { useChainId } from '../hooks/useChainId';
 import { useWalletClient } from 'wagmi';
 import { EntityStatus } from '@prisma/client';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 type VerifyAccountNotificationProps = {
   callback?: () => void | Promise<void>;
@@ -14,21 +14,21 @@ type VerifyAccountNotificationProps = {
 const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationProps) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { account, user, workerProfile } = useContext(TalentLayerContext);
+  const { address, user } = useContext(UserContext);
   const [showNotification, setShowNotification] = useState(true);
 
   const onVerifyAccount = async () => {
-    if (walletClient && workerProfile?.id && workerProfile?.id && account?.address) {
+    if (walletClient && user?.id && user?.id && address) {
       try {
         /**
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          account: account.address,
-          message: workerProfile.id.toString(),
+          account: address,
+          message: user.id.toString(),
         });
 
-        const resp = await verifyAccount(workerProfile.id.toString(), signature);
+        const resp = await verifyAccount(user.id.toString(), signature);
 
         if (resp.error) {
           throw new Error(resp.error);
@@ -44,7 +44,7 @@ const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationPr
     }
   };
 
-  if (workerProfile?.status === EntityStatus.VALIDATED || !showNotification) {
+  if (user?.status === EntityStatus.VALIDATED || !showNotification) {
     return null;
   }
 
@@ -55,7 +55,7 @@ const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationPr
       link=''
       linkText={'Verify my account'}
       color='success'
-      imageUrl={user?.description?.image_url}
+      imageUrl={user?.picture}
       callback={onVerifyAccount}
     />
   );

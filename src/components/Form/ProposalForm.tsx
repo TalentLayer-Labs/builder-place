@@ -17,6 +17,7 @@ import useCreateProposal from '../../modules/BuilderPlace/hooks/proposal/useCrea
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
 import { useChainId } from '../../hooks/useChainId';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export interface IProposalFormValues {
   about: string;
@@ -45,9 +46,10 @@ function ProposalForm({
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const { account } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const proposalPostingFee = platform?.proposalPostingFee || 0;
   const proposalPostingFeeFormat = proposalPostingFee
     ? Number(formatUnits(BigInt(proposalPostingFee), Number(currentChain?.nativeCurrency.decimals)))

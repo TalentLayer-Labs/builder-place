@@ -14,8 +14,8 @@ const useUpdateService = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { address, user } = useContext(UserContext);
+  const { canUseBackendDelegate } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
   console.log('canUseDelegation', canUseBackendDelegate);
@@ -32,13 +32,15 @@ const useUpdateService = () => {
 
     if (
       // account?.isConnected === true &&
-      user?.id &&
+      user?.talentLayerId &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
-      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : user.talentLayerId;
       let tx, cid;
 
       try {

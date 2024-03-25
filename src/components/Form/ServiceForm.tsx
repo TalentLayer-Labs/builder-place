@@ -18,6 +18,7 @@ import { chains } from '../../context/web3modal';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
 import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export interface ICreateServiceFormValues {
   title: string;
@@ -38,12 +39,12 @@ function ServiceForm({
   const { open: openConnectModal } = useWeb3Modal();
   const { account, refreshWorkerProfile, canUseBackendDelegate } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-
   const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const servicePostingFee = platform?.servicePostingFee || 0;
   const servicePostingFeeFormat = servicePostingFee
     ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
@@ -262,7 +263,11 @@ function ServiceForm({
               </label>
             </div>
 
-            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Update' : 'Post'} />
+            <SubmitButton
+              isSubmitting={isSubmitting}
+              label={existingService ? 'Update' : 'Post'}
+              checkEmailStatus={true}
+            />
           </div>
         </Form>
       )}

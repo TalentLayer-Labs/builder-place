@@ -11,27 +11,32 @@ import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
-import { IEmailPreferences, EmailNotificationType } from '../../types';
+import { EmailNotificationType, IEmailPreferences } from '../../types';
 import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useUpdateEmailNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailNotificationPreferencesMutation';
 import { toast } from 'react-toastify';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseBackendDelegate, refreshData, workerProfile, loading } =
-    useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const {
+    canUseBackendDelegate,
+    refreshData,
+    loading: talentLayerDataLoading,
+  } = useContext(TalentLayerContext);
+  const { user, loading } = useContext(UserContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
-  const web2MailPreferences = workerProfile?.emailPreferences as IEmailPreferences;
+  const userDescription = user?.talentLayerId
+    ? useUserById(user?.talentLayerId)?.description
+    : null;
+  const web2MailPreferences = user?.emailPreferences as IEmailPreferences;
   const emailNotificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
@@ -39,7 +44,7 @@ function EmailPreferencesForm() {
   const { mutateAsync: updateEmailNotificationPreferencesAsync } =
     useUpdateEmailNotificationPreferencesMutation();
 
-  if (!user?.id || loading || !workerProfile) {
+  if (!user?.talentLayerId || talentLayerDataLoading || loading || !user) {
     return <Loading />;
   }
 
@@ -69,12 +74,7 @@ function EmailPreferencesForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      if (
-        emailNotificationType === EmailNotificationType.WEB2 &&
-        walletClient &&
-        workerProfile &&
-        address
-      ) {
+      if (emailNotificationType === EmailNotificationType.WEB2 && walletClient && user && address) {
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -85,7 +85,7 @@ function EmailPreferencesForm() {
 
         const response = await updateEmailNotificationPreferencesAsync({
           preferences: values,
-          userId: workerProfile.id.toString(),
+          userId: user.talentLayerId,
           address,
           signature,
         });
@@ -122,15 +122,20 @@ function EmailPreferencesForm() {
         );
 
         let tx;
-        if (canUseBackendDelegate) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
+        if (canUseBackendDelegate && address) {
+          const response = await delegateUpdateProfileData(
+            chainId,
+            user.talentLayerId,
+            address,
+            cid,
+          );
           tx = response.data.transaction;
         } else {
           tx = await walletClient.writeContract({
             address: config.contracts.talentLayerId,
             abi: TalentLayerID.abi,
             functionName: 'updateProfileData',
-            args: [user.id, cid],
+            args: [user.talentLayerId, cid],
             account: address,
           });
         }

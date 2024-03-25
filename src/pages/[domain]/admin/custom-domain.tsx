@@ -2,11 +2,11 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useContext, useEffect, useState } from 'react';
 import { useChainId, useWalletClient } from 'wagmi';
 import AccessDenied from '../../../components/AccessDenied';
-import TalentLayerContext from '../../../context/talentLayer';
 import DomainConfiguration from '../../../modules/BuilderPlace/components/DomainConfiguration';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useUpdateBuilderPlaceDomain } from '../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlaceDomain';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -17,7 +17,7 @@ export default function CustomDomain(
 ) {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { account } = useContext(TalentLayerContext);
+  const { address } = useContext(UserContext);
 
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const [customDomain, setCustomDomain] = useState('');
@@ -31,13 +31,13 @@ export default function CustomDomain(
   const updateBuilderPlaceDomainMutation = useUpdateBuilderPlaceDomain();
 
   const handleUpdateDomainClick = async () => {
-    if (!walletClient || !account?.address || !builderPlace) return;
+    if (!walletClient || !address || !builderPlace) return;
     try {
       /**
        * @dev Sign message to prove ownership of the address
        */
       const signature = await walletClient.signMessage({
-        account: account.address,
+        account: address,
         message: builderPlace.id.toString(),
       });
       updateBuilderPlaceDomainMutation.mutate({

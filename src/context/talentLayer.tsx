@@ -100,10 +100,13 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
       const currentUser = userResponse.data.data.users[0];
 
-      const platform = await talentLayerClient.platform.getOne(
-        process.env.NEXT_PUBLIC_PLATFORM_ID as string,
-      );
-      currentUser.isAdmin = platform?.address === currentUser?.address;
+      if (builderPlace?.talentLayerPlatformId) {
+        const platform = await talentLayerClient.platform.getOne(
+          // process.env.NEXT_PUBLIC_PLATFORM_ID as string,
+          builderPlace?.talentLayerPlatformId,
+        );
+        currentUser.isAdmin = platform?.address === currentUser?.address;
+      }
 
       const userHasDelegatedToPlatform =
         process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
@@ -128,7 +131,8 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
           userHasDelegatedToPlatform &&
-          !userHasReachedDelegationLimit,
+          !userHasReachedDelegationLimit &&
+          !!workerProfile?.isEmailVerified,
       );
       console.log(
         "process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&\n" +
@@ -172,6 +176,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
       const response = await getUserBy({ address: account.address });
       if (!response) {
+        setWorkerProfile(undefined);
         console.error('Error while fetching user profile');
         return;
       }

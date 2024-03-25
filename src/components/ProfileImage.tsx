@@ -2,7 +2,7 @@ import React from 'react';
 
 type ProfileImageProps = {
   size: number;
-  url?: string;
+  url?: string | null;
 };
 
 function ProfileImage({ size, url }: ProfileImageProps) {

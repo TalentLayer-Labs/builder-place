@@ -7,7 +7,11 @@ import {
 } from '../../../utils/delegate';
 import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
 import { getServiceSignature } from '../../../../utils/signature';
-import { checkUserEmailVerificationStatus } from '../../../utils/email';
+import {
+  checkOrResetTransactionCounter,
+  checkUserEmailVerificationStatus,
+  incrementWeeklyTransactionCounter,
+} from '../../../utils/email';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
 
@@ -58,7 +62,7 @@ export async function POST(req: Request) {
 
       const responses = await Promise.all([
         //TODO problem with database value: need to switch to date => Bigint Not serializable
-        // checkOrResetTransactionCounter(user),
+        checkOrResetTransactionCounter(user),
         isPlatformAllowedToDelegate(chainId, userAddress),
       ]);
 
@@ -98,7 +102,7 @@ export async function POST(req: Request) {
         value: servicePostingFee,
       });
 
-      // await incrementWeeklyTransactionCounter(user);
+      await incrementWeeklyTransactionCounter(user);
 
       return Response.json({ transaction: transaction }, { status: 201 });
     }

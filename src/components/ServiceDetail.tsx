@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
-import { useChainId } from '../hooks/useChainId';
 import usePaymentsByService from '../hooks/usePaymentsByService';
 import useProposalsByService from '../hooks/useProposalsByService';
 import useReviewsByService from '../hooks/useReviewsByService';
@@ -17,26 +16,28 @@ import ReviewItem from './ReviewItem';
 import ServiceStatus from './ServiceStatus';
 import TokenAmount from './TokenAmount';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function ServiceDetail({ service }: { service: IService }) {
-  const { account, user, workerProfile } = useContext(TalentLayerContext);
+  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { reviews } = useReviewsByService(service.id);
   const proposals = useProposalsByService(service.id);
   const payments = usePaymentsByService(service.id);
 
-  const isBuyer = user?.id === service.buyer.id;
-  const isSeller = user?.id === service.seller?.id;
+  const isBuyer = talentLayerUser?.id === service.buyer.id;
+  const isSeller = talentLayerUser?.id === service.seller?.id;
   const hasReviewed = !!reviews.find(review => {
-    return review.to.id !== user?.id;
+    return review.to.id !== talentLayerUser?.id;
   });
 
   const canEditService =
     (isBuilderPlaceCollaborator && service.buyer.id === builderPlace?.owner.talentLayerId) ||
-    user?.id === service.buyer.id;
+    talentLayerUser?.id === service.buyer.id;
 
   const userProposal = proposals.find(proposal => {
-    return proposal.seller.id === user?.id;
+    return proposal.seller.id === talentLayerUser?.id;
   });
 
   const validatedProposal = proposals.find(proposal => {
@@ -111,14 +112,14 @@ function ServiceDetail({ service }: { service: IService }) {
                   <Link
                     className='text-primary bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md relative'
                     href={
-                      workerProfile
+                      user
                         ? `/work/${service.id}/proposal`
                         : `/newonboarding/create-profile?serviceId=${service.id}`
                     }>
                     Create proposal
                   </Link>
                 )}
-                {user && (
+                {talentLayerUser && (
                   <ContactButton
                     userAddress={service.buyer?.address}
                     userHandle={service.buyer.handle}

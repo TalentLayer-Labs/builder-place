@@ -3,11 +3,13 @@ import TalentLayerContext from '../context/talentLayer';
 import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
 import OnboardingRedirectButton from './RedirectToOnboardingButton';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function Steps({ handle }: { handle?: string }) {
-  const { account, loading, user } = useContext(TalentLayerContext);
+  const { account, loading: talentLayerDataLoading } = useContext(TalentLayerContext);
+  const { user, loading } = useContext(UserContext);
 
-  if (loading) {
+  if (loading || talentLayerDataLoading) {
     return <Loading />;
   }
 
