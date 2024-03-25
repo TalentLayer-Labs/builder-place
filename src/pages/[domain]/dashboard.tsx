@@ -94,7 +94,7 @@ function Dashboard() {
                   link='/admin/configure-platform'
                   linkText='personalize my platform'
                   color='success'
-                  imageUrl={talentLayerUser?.description?.image_url}
+                  imageUrl={user.picture}
                 />
               </div>
 
