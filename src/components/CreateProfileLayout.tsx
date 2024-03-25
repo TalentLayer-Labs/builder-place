@@ -10,7 +10,7 @@ interface ContainerProps {
 }
 
 function CreateProfileLayout({ children, className, step }: ContainerProps) {
-  const { account, user } = useContext(TalentLayerContext);
+  const { account } = useContext(TalentLayerContext);
 
   return (
     <>
