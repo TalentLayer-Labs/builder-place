@@ -37,7 +37,9 @@ function AsyncButton({
         <button
           type='button'
           onClick={onClick}
-          className={`grow px-5 py-2 rounded-xl bg-primary text-primary ${buttonCss}`}>
+          className={`${
+            buttonCss ? buttonCss : `grow px-5 py-2 rounded-xl bg-primary text-primary`
+          }`}>
           {label}
         </button>
       )}

@@ -1,4 +1,4 @@
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ArrowTopRightOnSquareIcon, CheckIcon } from '@heroicons/react/24/outline'; // Step 1: Import ArrowPathIcon
 import { useState } from 'react';
 import { renderTokenAmount } from '../../utils/conversion';
 import { IPayment, IService, PaymentTypeEnum, ServiceStatusEnum } from '../../types';
@@ -9,10 +9,12 @@ interface IPaymentModalProps {
   service: IService;
   payments: IPayment[];
   isBuyer: boolean;
+  refreshPayments: () => Promise<void>;
 }
 
-function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
+function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentModalProps) {
   const [show, setShow] = useState(false);
+  const [showCheckIcon, setShowCheckIcon] = useState(false);
   const rateToken = service.validatedProposal[0].rateToken;
   const rateAmount = service.validatedProposal[0].rateAmount;
   const network = useNetwork();
@@ -22,6 +24,12 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
   }, BigInt('0'));
 
   const totalInEscrow = BigInt(rateAmount) - totalPayments;
+
+  const handleRefreshPayments = async (): Promise<void> => {
+    setShowCheckIcon(true);
+    await refreshPayments();
+    setTimeout(() => setShowCheckIcon(false), 1000);
+  };
 
   return (
     <>
@@ -74,6 +82,17 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
             </div>
             <div className='p-6 space-y-6'>
               <div className='flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-base-200 space-y-6 text-base-content'>
+                {/* Icon for refreshing data */}
+                <div className='flex justify-end'>
+                  {showCheckIcon ? (
+                    <CheckIcon className='w-6 h-6 text-success' />
+                  ) : (
+                    <ArrowPathIcon
+                      className='w-6 h-6 text-base-content cursor-pointer hover:text-info'
+                      onClick={handleRefreshPayments}
+                    />
+                  )}
+                </div>
                 {service.status === ServiceStatusEnum.Confirmed && (
                   <h3 className='text-xl font-semibold leading-5 text-base-content'>
                     Payments summary
@@ -93,9 +112,7 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
                           className='flex'
                           href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
                           target='_blank'>
-                          {payment.paymentType == PaymentTypeEnum.Release
-                            ? 'Realease'
-                            : 'Reimburse'}
+                          {payment.paymentType == PaymentTypeEnum.Release ? 'Release' : 'Reimburse'}
                           <ArrowTopRightOnSquareIcon className='ml-2 w-4 h-4' />
                         </a>
                       </p>
@@ -123,11 +140,12 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
 
             {totalInEscrow > 0 && show && (
               <ReleaseForm
-                totalInEscrow={totalInEscrow}
+                totalInServiceAmount={BigInt(rateAmount)}
                 rateToken={rateToken}
                 service={service}
                 isBuyer={isBuyer}
                 closeModal={() => setShow(false)}
+                refreshPayments={refreshPayments}
               />
             )}
           </div>

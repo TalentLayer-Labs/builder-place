@@ -18,7 +18,6 @@ const useExecutePayment = () => {
   const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
-  console.log('canUseBackendDelegate', canUseBackendDelegate);
   const executePayment = async (
     chainId: number,
     userAddress: string,

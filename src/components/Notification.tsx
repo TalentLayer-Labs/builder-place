@@ -23,7 +23,7 @@ function Notification({
 }: NotificationProps) {
   return (
     <div
-      className={`bg-${color}-50 border border-${color} text-content py-4 px-4 flex flex-wrap  items-center justify-between rounded-xl`}>
+      className={`bg-${color}-50 border border-${color} text-content py-4 px-4 flex flex-wrap items-center justify-between rounded-xl`}>
       <div className='flex items-center'>
         <div className='flex items-center justify-center relative'>
           <ProfileImage size={50} url={imageUrl} />

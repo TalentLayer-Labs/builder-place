@@ -24,7 +24,7 @@ function ServiceDetail({ service }: { service: IService }) {
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { reviews } = useReviewsByService(service.id);
   const proposals = useProposalsByService(service.id);
-  const payments = usePaymentsByService(service.id);
+  const { payments, refreshPayments } = usePaymentsByService(service.id);
 
   const isBuyer = user?.talentLayerId === service.buyer.id;
   const isSeller = user?.talentLayerId === service.seller?.id;
@@ -136,7 +136,12 @@ function ServiceDetail({ service }: { service: IService }) {
                 />
               )}
             {account && (isBuyer || isSeller) && service.status !== ServiceStatusEnum.Opened && (
-              <PaymentModal service={service} payments={payments} isBuyer={isBuyer} />
+              <PaymentModal
+                service={service}
+                payments={payments}
+                isBuyer={isBuyer}
+                refreshPayments={refreshPayments}
+              />
             )}
           </div>
         </div>
