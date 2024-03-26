@@ -81,21 +81,23 @@ function Dashboard() {
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
+                {/*{!isComingFromHirerOnboarding && (*/}
+                {/*  <VerifyEmailNotification*/}
+                {/*    callback={() => {*/}
+                {/*      toast.success('Verification email sent!');*/}
+                {/*    }}*/}
+                {/*  />*/}
+                {/*)}*/}
                 {!isComingFromHirerOnboarding && (
-                  <VerifyEmailNotification
-                    callback={() => {
-                      toast.success('Verification email sent!');
-                    }}
+                  <Notification
+                    title='personalize your space!'
+                    text='customize your Platform to match your brand'
+                    link='/admin/configure-platform'
+                    linkText='personalize my platform'
+                    color='success'
+                    imageUrl={user.picture}
                   />
                 )}
-                <Notification
-                  title='personalize your space!'
-                  text='customize your Platform to match your brand'
-                  link='/admin/configure-platform'
-                  linkText='personalize my platform'
-                  color='success'
-                  imageUrl={user.picture}
-                />
               </div>
 
               <div className='mb-12'>
@@ -127,6 +129,9 @@ function Dashboard() {
               </div>
               <div className='mb-12'>
                 <UserGains user={talentLayerUser} />
+              </div>
+              <div className='mb-12'>
+                <UserServices user={talentLayerUser} type='contributor' />
               </div>
               <div className='mb-12'>
                 <UserServices user={talentLayerUser} type='seller' />

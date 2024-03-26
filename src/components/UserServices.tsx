@@ -8,7 +8,7 @@ import ServiceItem from './ServiceItem';
 
 interface IProps {
   user: IUser;
-  type: 'buyer' | 'seller';
+  type: 'buyer' | 'seller' | 'contributor';
 }
 
 function UserServices({ user, type }: IProps) {
@@ -16,7 +16,7 @@ function UserServices({ user, type }: IProps) {
 
   const { services, loading } = useServices(
     undefined,
-    builderPlace?.owner.talentLayerId || undefined,
+    type == 'contributor' ? user.id : builderPlace?.owner.talentLayerId || undefined,
     type == 'seller' ? user.id : undefined,
   );
 
@@ -47,7 +47,7 @@ function UserServices({ user, type }: IProps) {
   return (
     <>
       <h2 className='pb-4 text-base font-bold break-all'>
-        {type == 'buyer' ? 'my posts' : 'posts applied to'}
+        {type == 'buyer' || 'contributor' ? 'my posts' : 'posts applied to'}
       </h2>
       <div className='grid grid-cols-1 gap-4'>
         {services.map((service, i) => {
