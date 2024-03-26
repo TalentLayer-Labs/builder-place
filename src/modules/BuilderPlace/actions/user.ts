@@ -34,7 +34,7 @@ export const getUserByAddress = async (userAddress: string, res?: NextApiRespons
     console.log('Getting User Profile with address:', userAddress);
     const userProfile = await prisma.user.findUnique({
       where: {
-        address: userAddress.toLocaleLowerCase(),
+        address: userAddress,
       },
       include: {
         workerProfile: true,
