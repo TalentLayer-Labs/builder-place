@@ -9,7 +9,7 @@ import ValidateProposalModal from './Modal/ValidateProposalModal';
 import ProfileImage from './ProfileImage';
 
 function ProposalItem({ proposal }: { proposal: IProposal }) {
-  const { user, account } = useContext(TalentLayerContext);
+  const { user, account, refreshData } = useContext(TalentLayerContext);
   const { service } = useServiceById(proposal.service.id);
 
   if (!service) {
@@ -61,7 +61,11 @@ function ProposalItem({ proposal }: { proposal: IProposal }) {
             {renderTokenAmount(proposal.rateToken, proposal.rateAmount)}
           </p>
           {account && isBuyer && proposal.status === ProposalStatusEnum.Pending && (
-            <ValidateProposalModal proposal={proposal} account={account} />
+            <ValidateProposalModal
+              proposal={proposal}
+              account={account}
+              callBack={() => refreshData()}
+            />
           )}
         </div>
         {account &&
