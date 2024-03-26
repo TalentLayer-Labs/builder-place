@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useChainId } from '../hooks/useChainId';
 import { IService } from '../types';
 import { formatDaysAgo } from '../utils/dates';
 import TokenAmount from './TokenAmount';
@@ -18,17 +17,19 @@ function ServiceItem({
   embedded?: boolean;
   view?: number;
 }) {
-  const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;
   const daysAgo = formatDaysAgo(createdAt);
-
-  console.log('ServiceItem');
 
   return (
     <>
       {/* LIST VIEW */}
       {view === 1 && (
         <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent mb-5'>
+          {service.proposals && (
+            <div className='absolute top-[-10px] right-[-10px] bg-primary text-white text-xs rounded-full px-3 py-1'>
+              {service.proposals.length}
+            </div>
+          )}
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
             <div className='flex items-center justify-between gap-4'>
               <p className='font-bold break-all'>{service.description?.title}</p>
