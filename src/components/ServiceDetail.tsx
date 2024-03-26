@@ -77,7 +77,7 @@ function ServiceDetail({ service }: { service: IService }) {
                 <Link
                   className='text-sm text-base-content mt-4'
                   href={`/profiles/${service.seller.id}`}>
-                  Work handle by <span className='text-base-content'>{service.seller.handle}</span>
+                  Handled by <span className='text-base-content'>{service.seller.handle}</span>
                 </Link>
               )}
               <div className='markdown-body text-sm text-base-content mt-4'>
