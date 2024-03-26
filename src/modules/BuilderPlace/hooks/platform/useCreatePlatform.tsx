@@ -66,6 +66,7 @@ const useCreatePlatform = () => {
           const tx = await delegatePlatformMint(
             values.talentLayerPlatformName,
             address,
+            user.talentLayerId,
             chainId,
             signature,
           );

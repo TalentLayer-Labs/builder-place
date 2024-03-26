@@ -18,7 +18,6 @@ const useCreateService = () => {
   const { canUseBackendDelegate } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
-  console.log('canUseBackendDelegate', canUseBackendDelegate);
   const createNewService = async (values: ICreateServiceFormValues, token: IToken) => {
     if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
@@ -27,7 +26,6 @@ const useCreateService = () => {
     await wait(2);
 
     if (
-      // account?.isConnected === true &&
       user?.talentLayerId &&
       publicClient &&
       talentLayerClient &&
