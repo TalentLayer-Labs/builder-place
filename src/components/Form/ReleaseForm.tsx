@@ -114,7 +114,7 @@ function ReleaseForm({
               Min
             </button>
           </div>
-          <div className='items-center  rounded-b border-info '>
+          <div className='items-center rounded-b border-info '>
             <button
               type='button'
               onClick={releaseMax}

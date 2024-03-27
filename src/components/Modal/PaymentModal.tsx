@@ -82,22 +82,23 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
             </div>
             <div className='p-6 space-y-6'>
               <div className='flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-base-200 space-y-6 text-base-content'>
-                {/* Icon for refreshing data */}
-                <div className='flex justify-end'>
-                  {showCheckIcon ? (
-                    <CheckIcon className='w-6 h-6 text-success' />
-                  ) : (
-                    <ArrowPathIcon
-                      className='w-6 h-6 text-base-content cursor-pointer hover:text-info'
-                      onClick={handleRefreshPayments}
-                    />
+                <div className='flex flex-row justify-between'>
+                  {service.status === ServiceStatusEnum.Confirmed && (
+                    <h3 className='text-xl font-semibold leading-5 text-base-content'>
+                      Payments summary
+                    </h3>
                   )}
+                  <div className='flex items-center gap-2'>
+                    {showCheckIcon ? (
+                      <CheckIcon className='w-6 h-6 text-success' />
+                    ) : (
+                      <ArrowPathIcon
+                        className='w-6 h-6 text-base-content cursor-pointer hover:text-info'
+                        onClick={handleRefreshPayments}
+                      />
+                    )}
+                  </div>
                 </div>
-                {service.status === ServiceStatusEnum.Confirmed && (
-                  <h3 className='text-xl font-semibold leading-5 text-base-content'>
-                    Payments summary
-                  </h3>
-                )}
                 <div className='flex justify-center items-center w-full space-y-4 flex-col border-info border-b pb-4'>
                   <div className='flex justify-between w-full'>
                     <p className='text-base-content leading-4 text-base-content'>Rate</p>
