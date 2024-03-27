@@ -99,29 +99,35 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
                     )}
                   </div>
                 </div>
-                <div className='flex justify-center items-center w-full space-y-4 flex-col border-info border-b pb-4'>
-                  <div className='flex justify-between w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>Rate</p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      {renderTokenAmount(rateToken, rateAmount)}
-                    </p>
-                  </div>
-                  {payments.map((payment, index) => (
-                    <div key={index} className='flex justify-between w-full'>
-                      <p className='text-base-content leading-4 text-base-content'>
-                        <a
-                          className='flex'
-                          href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
-                          target='_blank'>
-                          {payment.paymentType == PaymentTypeEnum.Release ? 'Release' : 'Reimburse'}
-                          <ArrowTopRightOnSquareIcon className='ml-2 w-4 h-4' />
-                        </a>
-                      </p>
+                <div className='max-h-40 overflow-y-scroll'>
+                  <div className='flex justify-center items-center w-full space-y-4 flex-col border-info border-b pb-4 pr-2'>
+                    <div className='flex justify-between w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>Rate</p>
                       <p className='text-base-content  leading-4 text-base-content'>
-                        -{renderTokenAmount(rateToken, payment.amount)}
+                        {renderTokenAmount(rateToken, rateAmount)}
                       </p>
                     </div>
-                  ))}
+
+                    {payments.map((payment, index) => (
+                      <div key={index} className='flex justify-between w-full'>
+                        <p className='text-base-content leading-4 text-base-content'>
+                          <a
+                            className='flex'
+                            href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
+                            target='_blank'
+                            rel='noopener noreferrer'>
+                            {payment.paymentType === PaymentTypeEnum.Release
+                              ? 'Release'
+                              : 'Reimburse'}
+                            <ArrowTopRightOnSquareIcon className='ml-2 w-4 h-4' />
+                          </a>
+                        </p>
+                        <p className='text-base-content leading-4 text-base-content'>
+                          -{renderTokenAmount(rateToken, payment.amount)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className='flex justify-between items-center w-full'>
                   <p className='text-base-content font-semibold leading-4 text-base-content'>
