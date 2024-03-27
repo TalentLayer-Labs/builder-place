@@ -83,11 +83,12 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
             <div className='p-6 space-y-6'>
               <div className='flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-base-200 space-y-6 text-base-content'>
                 <div className='flex flex-row justify-between'>
-                  {service.status === ServiceStatusEnum.Confirmed && (
-                    <h3 className='text-xl font-semibold leading-5 text-base-content'>
-                      Payments summary
-                    </h3>
-                  )}
+                  {service.status === ServiceStatusEnum.Confirmed ||
+                    (ServiceStatusEnum.Finished && (
+                      <h3 className='text-xl font-semibold leading-5 text-base-content'>
+                        Payments summary
+                      </h3>
+                    ))}
                   <div className='flex items-center gap-2'>
                     {showCheckIcon ? (
                       <CheckIcon className='w-6 h-6 text-success' />
