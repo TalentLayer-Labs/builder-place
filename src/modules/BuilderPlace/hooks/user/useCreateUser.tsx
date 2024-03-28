@@ -37,10 +37,6 @@ const useCreateUser = () => {
       throw new Error('Please connect your wallet');
     }
 
-    if (!builderPlace?.talentLayerPlatformId) {
-      throw new Error('No PlatformId found');
-    }
-
     /**
      * @dev Create a multistep toast to inform the user about the process
      */
