@@ -41,7 +41,12 @@ export async function POST(req: Request) {
   try {
     const builderPlace = await prisma.builderPlace.create({
       data: {
-        ...body.data,
+        subdomain: body.data.subdomain,
+        name: body.data.name,
+        logo: body.data.logo,
+        ownerId: body.data.ownerTalentLayerId,
+        talentLayerPlatformId: body.data.talentLayerPlatformId,
+        talentLayerPlatformName: body.data.talentLayerPlatformName,
         palette: body.data.palette as unknown as JsonNull | InputJsonValue,
         status: EntityStatus.VALIDATED,
       },
@@ -53,15 +58,16 @@ export async function POST(req: Request) {
       },
       data: {
         collaborators: {
-          set: { id: Number(body.data.ownerId) },
+          set: { id: Number(body.data.ownerTalentLayerId) },
         },
       },
     });
 
     return Response.json({ id: builderPlace.id }, { status: 201 });
   } catch (error: any) {
+    console.log('errrrrrrrrrrrrrrrrrror', error);
     // @TODO: move error handle to a middleware ? or factorize it ?
-    let message = 'Failed to create plaform';
+    let message = 'Failed to create platform';
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const target = (error.meta?.target as string)[0] || 'data';
