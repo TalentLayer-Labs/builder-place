@@ -31,6 +31,9 @@ function ServiceItem({
             </div>
           )}
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
+            <div className='flex items-center justify-between gap-4'>
+              <p className='font-bold break-all'>{service.description?.title}</p>
+            </div>
             {/* {service.description?.about && (
               <div className='flex flex-col justify-start items-start gap-4'>
                 <div className='flex items-center justify-start'>
