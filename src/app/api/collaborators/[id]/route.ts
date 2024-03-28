@@ -1,5 +1,4 @@
 import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/[domain]/admin/collaborator-card';
-import { removeBuilderPlaceCollaborator } from '../../../../modules/BuilderPlace/actions/builderPlace';
 import { User } from '.prisma/client';
 import { checkOwnerSignature, isCollaboratorExists } from '../../../utils/domain';
 import prisma from '../../../../postgre/postgreClient';
