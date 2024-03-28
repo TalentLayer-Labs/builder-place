@@ -53,33 +53,24 @@ export const checkOwnerSignature = async (
   signature: `0x${string}` | Uint8Array,
   address: `0x${string}`,
 ) => {
-  try {
-    const signatureAddress = await recoverMessageAddress({
-      message: `connect with ${address}`,
-      signature: signature,
-    });
+  const signatureAddress = await recoverMessageAddress({
+    message: `connect with ${address}`,
+    signature: signature,
+  });
 
-    const builderPlace = await getBuilderPlaceByOwnerTlIdAndId(ownerId, builderPlaceId);
+  const builderPlace = await getBuilderPlaceByOwnerTlIdAndId(ownerId, builderPlaceId);
 
-    /**
-     * Check whether the signature is from the BuilderPlace owner
-     */
-    if (
-      builderPlace &&
-      signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()
-    ) {
-      return Response.json({ error: 'Not BuilderPlace owner' }, { status: 401 });
-    }
-
-    return { builderPlace, address: signatureAddress };
-  } catch (error) {
-    console.error('Error in checkSignature:', error);
-
-    return Response.json(
-      { error: 'An error occurred while verifying the signature' },
-      { status: 500 },
-    );
+  /**
+   * Check whether the signature is from the BuilderPlace owner
+   */
+  if (
+    builderPlace &&
+    signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()
+  ) {
+    throw new Error('Not Platform Owner');
   }
+
+  return { builderPlace, address: signatureAddress };
 };
 
 export const isCollaboratorExists = (

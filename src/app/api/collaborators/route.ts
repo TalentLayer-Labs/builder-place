@@ -2,11 +2,9 @@ import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/c
 import { checkOwnerSignature, isCollaboratorExists } from '../../utils/domain';
 import { EntityStatus, User } from '.prisma/client';
 import prisma from '../../../postgre/postgreClient';
-import { handleApiError } from '../../utils/handleApiErrors';
+import { logAndReturnApiError } from '../../utils/handleApiErrors';
 import {
-  COLLABORATOR_NOT_FOUND,
   ERROR_ADDING_COLLABORATOR,
-  ERROR_REMOVING_BUILDERPLACE_OWNER,
   USER_NOT_FOUND,
   USER_PROFILE_NOT_VERIFIED,
 } from '../../../modules/BuilderPlace/apiResponses';
@@ -24,12 +22,6 @@ export async function POST(req: Request) {
       body.address,
     );
 
-    console.log('response', response instanceof Response);
-
-    if (response instanceof Response) {
-      return response;
-    }
-
     /**
      * @dev: Check whether the collaborator exists
      */
@@ -42,53 +34,46 @@ export async function POST(req: Request) {
 
     console.log('Adding collaborator', body.data.collaboratorAddress);
 
-    let errorMessage = ERROR_ADDING_COLLABORATOR;
-    let status = 500;
-    let collaborator: User | null = null;
+    const newCollaborator = await prisma.user.findUnique({
+      where: {
+        address: body.data.collaboratorAddress,
+      },
+    });
 
-    try {
-      const newCollaborator = await prisma.user.findUnique({
-        where: {
-          address: body.data.collaboratorAddress,
-        },
-      });
-
-      if (!newCollaborator) {
-        errorMessage = USER_NOT_FOUND;
-        throw new Error(USER_NOT_FOUND);
-      }
-
-      //TODO still useful?
-      if (newCollaborator?.status === EntityStatus.PENDING) {
-        errorMessage = USER_PROFILE_NOT_VERIFIED;
-        throw new Error(USER_PROFILE_NOT_VERIFIED);
-      }
-
-      await prisma.builderPlace.update({
-        where: {
-          id: Number(body.data.builderPlaceId),
-        },
-        data: {
-          collaborators: {
-            connect: [{ id: newCollaborator.id }],
-          },
-        },
-      });
-
-      console.log('Collaborator added successfully', body.data.collaboratorAddress);
-    } catch (error: any) {
-      handleApiError(error, errorMessage, status);
+    if (!newCollaborator) {
+      console.log(USER_NOT_FOUND);
+      return Response.json({ error: USER_NOT_FOUND }, { status: 400 });
     }
+
+    //TODO still useful?
+    if (newCollaborator?.status === EntityStatus.PENDING) {
+      console.log(USER_PROFILE_NOT_VERIFIED);
+      return Response.json({ error: USER_PROFILE_NOT_VERIFIED }, { status: 400 });
+    }
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(body.data.builderPlaceId),
+      },
+      data: {
+        collaborators: {
+          connect: [{ id: newCollaborator.id }],
+        },
+      },
+    });
+
+    console.log('Collaborator added successfully', body.data.collaboratorAddress);
 
     return Response.json(
       {
         message: 'Collaborator added successfully',
-        // address: newCollaborator?.address,
-        // id: newCollaborator?.id,
+        address: newCollaborator?.address,
+        id: newCollaborator?.id,
       },
       { status: 200 },
     );
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 400 });
+  } catch (e: any) {
+    const error = logAndReturnApiError(e, ERROR_ADDING_COLLABORATOR);
+    return Response.json({ error: error }, { status: 500 });
   }
 }

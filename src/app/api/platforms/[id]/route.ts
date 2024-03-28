@@ -6,6 +6,8 @@ import prisma from '../../../../postgre/postgreClient';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
 import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
+import { logAndReturnApiError } from '../../../utils/handleApiErrors';
+import { ERROR_REMOVING_BUILDERPLACE_OWNER } from '../../../../modules/BuilderPlace/apiResponses';
 
 export async function GET(req: Request) {
   // TODO: implement GET
@@ -49,8 +51,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     });
 
     return Response.json({ id: builderPlace?.id }, { status: 200 });
-  } catch (error: any) {
-    let message = 'Failed to update platform';
-    return Response.json({ message, error }, { status: 500 });
+  } catch (e: any) {
+    const error = logAndReturnApiError(e, ERROR_REMOVING_BUILDERPLACE_OWNER);
+    return Response.json({ error: error }, { status: 500 });
   }
 }

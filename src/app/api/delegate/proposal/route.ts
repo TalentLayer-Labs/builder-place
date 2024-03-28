@@ -7,12 +7,12 @@ import {
 } from '../../../utils/delegate';
 import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
 import { getProposalSignature } from '../../../../utils/signature';
-import { checkUserEmailVerificationStatus } from '../../../utils/email';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../modules/BuilderPlace/actions/user';
+import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 
 export interface ICreateProposal {
   chainId: number;
@@ -68,31 +68,28 @@ export async function POST(req: Request) {
     const user = await getUserByTalentLayerId(userId);
 
     if (user) {
-      // return checkUserEmailVerificationStatus(user);
-      const emailResponse = checkUserEmailVerificationStatus(user);
-
-      if (emailResponse) {
-        return emailResponse;
+      if (!user.isEmailVerified) {
+        console.log('Email not verified');
+        return Response.json({ error: ERROR_EMAIL_NOT_VERIFIED }, { status: 401 });
       }
 
-      const responses = await Promise.all([
-        //TODO problem with database value: need to switch to date => Bigint Not serializable
-        // checkOrResetTransactionCounter(user),
-        isPlatformAllowedToDelegate(chainId, userAddress),
-      ]);
+      // await checkOrResetTransactionCounter(user);
+      const canDelegate = await isPlatformAllowedToDelegate(chainId, userAddress);
 
-      if (responses[0]) {
-        return responses[0];
+      if (!canDelegate) {
+        Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
       const walletClient = await getDelegationSigner();
       if (!walletClient) {
-        return;
+        console.log('Wallet client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
       }
 
       const publicClient = getPublicClient();
       if (!publicClient) {
-        return;
+        console.log('Public client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
       }
 
       let transaction;

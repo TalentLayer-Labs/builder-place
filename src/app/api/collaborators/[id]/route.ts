@@ -2,8 +2,11 @@ import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/[domain]/admi
 import { User } from '.prisma/client';
 import { checkOwnerSignature, isCollaboratorExists } from '../../../utils/domain';
 import prisma from '../../../../postgre/postgreClient';
-import { ERROR_REMOVING_BUILDERPLACE_OWNER } from '../../../../modules/BuilderPlace/apiResponses';
-import { handleApiError } from '../../../utils/handleApiErrors';
+import {
+  COLLABORATOR_NOT_FOUND,
+  ERROR_REMOVING_BUILDERPLACE_OWNER,
+} from '../../../../modules/BuilderPlace/apiResponses';
+import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 
 export async function GET(req: Request) {}
 
@@ -21,12 +24,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       body.address,
     );
 
-    console.log('response', response instanceof Response);
-
-    if (response instanceof Response) {
-      return response;
-    }
-
     /**
      * @dev: Check whether the collaborator is not the BuilderPlace owner
      */
@@ -41,42 +38,37 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     const existingCollaborators: User[] = response?.builderPlace?.collaborators || [];
 
     if (!isCollaboratorExists(existingCollaborators, body.data.collaboratorAddress)) {
-      console.log('Collaborator does not exist');
-      return Response.json({ error: 'Not a collaborator' }, { status: 400 });
+      console.log(COLLABORATOR_NOT_FOUND);
+      return Response.json({ error: COLLABORATOR_NOT_FOUND }, { status: 400 });
     }
 
     console.log('Removing collaborator', body.data.collaboratorAddress);
 
-    let status = 500;
     let collaborator: User | null = null;
 
-    try {
-      collaborator = await prisma.user.findUnique({
-        where: {
-          address: body.data.collaboratorAddress,
-        },
-      });
+    collaborator = await prisma.user.findUnique({
+      where: {
+        address: body.data.collaboratorAddress,
+      },
+    });
 
-      if (!collaborator) {
-        status = 400;
-        throw new Error('Collaborator not found');
-      }
-
-      await prisma.builderPlace.update({
-        where: {
-          id: Number(body.data.builderPlaceId),
-        },
-        data: {
-          collaborators: {
-            disconnect: [{ id: collaborator.id }],
-          },
-        },
-      });
-
-      console.log('Collaborator removed successfully', body.data.collaboratorAddress);
-    } catch (error: any) {
-      handleApiError(error, ERROR_REMOVING_BUILDERPLACE_OWNER, status);
+    if (!collaborator) {
+      console.log(COLLABORATOR_NOT_FOUND);
+      return Response.json({ error: COLLABORATOR_NOT_FOUND }, { status: 400 });
     }
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(body.data.builderPlaceId),
+      },
+      data: {
+        collaborators: {
+          disconnect: [{ id: collaborator.id }],
+        },
+      },
+    });
+
+    console.log('Collaborator removed successfully', body.data.collaboratorAddress);
 
     return Response.json(
       {
@@ -86,7 +78,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       },
       { status: 200 },
     );
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 400 });
+  } catch (e: any) {
+    const error = logAndReturnApiError(e, ERROR_REMOVING_BUILDERPLACE_OWNER);
+    return Response.json({ error: error }, { status: 500 });
   }
 }

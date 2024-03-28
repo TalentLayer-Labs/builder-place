@@ -3,13 +3,11 @@ import { MAX_TRANSACTION_AMOUNT } from '../../config';
 import prisma from '../../postgre/postgreClient';
 import {
   ERROR_CHECKING_TRANSACTION_COUNTER,
-  ERROR_EMAIL_NOT_VERIFIED,
-  ERROR_INCREMENTING_TRANSACTION_COUNTER,
   TRANSACTION_LIMIT_REACHED,
 } from '../../modules/BuilderPlace/apiResponses';
-import { handleApiError } from './handleApiErrors';
+import { logAndReturnApiError } from './handleApiErrors';
 
-export async function checkOrResetTransactionCounter(user: User): Promise<Response | void> {
+export async function checkOrResetTransactionCounter(user: User): Promise<void> {
   let status = 500;
   try {
     const nowMilliseconds = new Date().getTime();
@@ -36,13 +34,13 @@ export async function checkOrResetTransactionCounter(user: User): Promise<Respon
       });
     }
     console.log('Delegating transaction');
-  } catch (error: any) {
-    return handleApiError(error, ERROR_CHECKING_TRANSACTION_COUNTER, status);
+  } catch (e: any) {
+    const error = logAndReturnApiError(e, ERROR_CHECKING_TRANSACTION_COUNTER);
+    throw new Error(error);
   }
 }
 
 export async function incrementWeeklyTransactionCounter(user: User): Promise<Response | void> {
-  let status = 500;
   try {
     // Increment the counter
     const newWeeklyTransactionCounter = (user.weeklyTransactionCounter || 0) + 1;
@@ -55,14 +53,8 @@ export async function incrementWeeklyTransactionCounter(user: User): Promise<Res
       },
     });
     console.log('Transaction counter incremented', newWeeklyTransactionCounter);
-  } catch (error: any) {
-    return handleApiError(error, ERROR_INCREMENTING_TRANSACTION_COUNTER, status);
-  }
-}
-
-export function checkUserEmailVerificationStatus(user: User): void | Response {
-  if (!user.isEmailVerified) {
-    console.log('Email not verified');
-    return Response.json({ error: ERROR_EMAIL_NOT_VERIFIED }, { status: 401 });
+  } catch (e: any) {
+    const error = logAndReturnApiError(e, ERROR_CHECKING_TRANSACTION_COUNTER);
+    throw new Error(error);
   }
 }
