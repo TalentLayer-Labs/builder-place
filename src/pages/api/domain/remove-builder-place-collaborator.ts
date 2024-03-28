@@ -41,6 +41,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
       return res.status(400).json({ error: 'Not a collaborator' });
     }
 
+    // @ts-ignore
     const result = await removeBuilderPlaceCollaborator(body);
     res.status(200).json({ message: result?.message, address: result?.address, id: result?.id });
   } catch (error: any) {
