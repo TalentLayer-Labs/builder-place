@@ -14,7 +14,7 @@ function Stars({ rating, numReviews }: { rating: number; numReviews: number }) {
         </svg>
       ))}
 
-      <span className='bg-base-200 text-base-content text-xs font-semibold mr-2 pr-2.5 py-0.5 rounded-xl ml-3'>
+      <span className='bg-base-200 text-base-content text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-xl ml-3'>
         {rating}/5
       </span>
       <span className='text-xs font-medium'>
