@@ -154,7 +154,7 @@ function ReleaseForm({
                   isSubmitting={submitting}
                   onClick={() => handleSubmit()}
                   label={isBuyer ? 'Release the selected amount' : 'Reimburse the selected amount'}
-                  buttonCss={'hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'}
+                  validateButtonCss={'hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'}
                 />
               )}
               <button

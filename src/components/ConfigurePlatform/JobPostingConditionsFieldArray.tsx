@@ -179,7 +179,7 @@ function JobPostingConditionsFieldArray({
                     <AsyncButton
                       label={'Add NFT Condition'}
                       isSubmitting={nftSubmitting}
-                      buttonCss={'w-52'}
+                      validateButtonCss={'w-52 grow px-5 py-2 rounded-xl bg-primary text-primary'}
                       onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'NFT',
@@ -230,7 +230,7 @@ function JobPostingConditionsFieldArray({
                     <AsyncButton
                       label={'Add Token Condition'}
                       isSubmitting={tokenSubmitting}
-                      buttonCss={'w-52'}
+                      validateButtonCss={'w-52 grow px-5 py-2 rounded-xl bg-primary text-primary'}
                       onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'Token',

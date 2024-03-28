@@ -79,11 +79,12 @@ const useCreateProposal = () => {
             rateAmount: parsedRateAmountString,
             expirationDate: convertExpirationDateString,
             cid,
-            platformId: builderPlace.talentLayerPlatformId,
+            platformId: process.env.NEXT_PUBLIC_PLATFORM_ID as string,
             signature,
           });
           tx = proposalResponse.data.transaction;
         } else {
+          //TODO: update SDK - add platformId in params
           proposalResponse = await talentLayerClient?.proposal.create(
             proposal,
             user.id,

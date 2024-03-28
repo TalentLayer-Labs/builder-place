@@ -12,6 +12,7 @@ import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlace
 import { toggleDelegation } from '../../contracts/toggleDelegation';
 import { useConfig } from '../../hooks/useConfig';
 import { ETH_ADDRESS_LENGTH, ETH_ADDRESS_REGEX } from '../../utils';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 interface IFormValues {
   collaborator: string;
@@ -33,6 +34,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
   const { mutateAsync: addBuilderPlaceCollaboratorAsync } = useAddBuilderPlaceCollaborator();
   const { data: walletClient } = useWalletClient({ chainId });
   const { user, account, refreshData } = useContext(TalentLayerContext);
+  const { getUser } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
 
@@ -106,7 +108,9 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
       console.log(error);
       showErrorTransactionToast(error.message);
     } finally {
+      //TODO no effect
       refreshData();
+      getUser();
       setSubmitting(false);
     }
   };

@@ -33,6 +33,7 @@ import {
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
+import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
@@ -404,13 +405,13 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
   }
 };
 
-export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
-  console.log('Removing collaborator', body.collaboratorAddress);
+export const removeBuilderPlaceCollaborator = async (body: IRemoveBuilderPlaceCollaborator) => {
+  console.log('Removing collaborator', body.data.collaboratorAddress);
   let errorMessage = '';
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
-        address: body.collaboratorAddress.toLocaleLowerCase(),
+        address: body.data.collaboratorAddress.toLocaleLowerCase(),
       },
     });
 
@@ -420,7 +421,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
 
     await prisma.builderPlace.update({
       where: {
-        id: Number(body.builderPlaceId),
+        id: Number(body.data.builderPlaceId),
       },
       data: {
         collaborators: {
@@ -428,7 +429,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
         },
       },
     });
-    console.log('Collaborator removed successfully', body.collaboratorAddress);
+    console.log('Collaborator removed successfully', body.data.collaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
       address: collaborator?.address?.toLocaleLowerCase(),

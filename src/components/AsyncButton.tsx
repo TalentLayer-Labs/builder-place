@@ -2,12 +2,16 @@ function AsyncButton({
   isSubmitting,
   label = 'Create',
   onClick,
-  buttonCss,
+  validateButtonCss,
+  loadingButtonCss,
+  disabled = false,
 }: {
   isSubmitting: boolean;
   label?: string;
   onClick: () => Promise<void>;
-  buttonCss?: string;
+  validateButtonCss?: string;
+  loadingButtonCss?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className='flex flex-row justify-between items-center'>
@@ -15,7 +19,11 @@ function AsyncButton({
         <button
           type='button'
           disabled
-          className={`py-2 px-5 bg-primary text-primary opacity-50 rounded-xl border inline-flex items-center ${buttonCss}`}>
+          className={`${
+            loadingButtonCss
+              ? loadingButtonCss
+              : `py-2 px-5 bg-primary text-primary opacity-50 rounded-xl border inline-flex items-center`
+          }`}>
           <svg
             role='status'
             className='inline mr-2 w-4 h-4 text-base-content animate-spin '
@@ -37,8 +45,11 @@ function AsyncButton({
         <button
           type='button'
           onClick={onClick}
+          disabled={disabled}
           className={`${
-            buttonCss ? buttonCss : `grow px-5 py-2 rounded-xl bg-primary text-primary`
+            validateButtonCss
+              ? validateButtonCss
+              : `grow px-5 py-2 rounded-xl bg-primary text-primary`
           }`}>
           {label}
         </button>

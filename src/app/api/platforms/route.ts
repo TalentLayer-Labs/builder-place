@@ -41,12 +41,7 @@ export async function POST(req: Request) {
   try {
     const builderPlace = await prisma.builderPlace.create({
       data: {
-        subdomain: body.data.subdomain,
-        name: body.data.name,
-        logo: body.data.logo,
-        ownerId: body.data.ownerTalentLayerId,
-        talentLayerPlatformId: body.data.talentLayerPlatformId,
-        talentLayerPlatformName: body.data.talentLayerPlatformName,
+        ...body.data,
         palette: body.data.palette as unknown as JsonNull | InputJsonValue,
         status: EntityStatus.VALIDATED,
       },
@@ -58,7 +53,7 @@ export async function POST(req: Request) {
       },
       data: {
         collaborators: {
-          set: { id: Number(body.data.ownerTalentLayerId) },
+          set: { id: Number(body.data.ownerId) },
         },
       },
     });

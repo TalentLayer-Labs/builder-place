@@ -47,9 +47,13 @@ function UserDetail({ user }: { user: IUser }) {
         </p>
       </div>
 
+      {/*TOTO: change where this is / how this is displayed*/}
       {currentUser?.id === user.id && process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && (
-        <div className=' border-t border-info pt-4 w-full mt-4'>
-          <div className='flex flex-row gap-4 justify-end items-center'>
+        <div className='border-t border-info pt-4 w-full mt-4'>
+          <div className='flex flex-row gap-4 justify-between items-center'>
+            <p className='text-sm text-base-content'>
+              You have granted delegation to the platform, which is necessary for gasless.
+            </p>
             <DelegateModal />
           </div>
         </div>
