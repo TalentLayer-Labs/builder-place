@@ -9,6 +9,7 @@ export const PROFILE_DOES_NOT_EXIST = "Profile doesn't exist";
 export const NO_TALENTLAYER_ID_ERROR = 'Your address does not own a TalentLayer Id';
 export const ALREADY_HAVE_PROFILE = 'You already have a profile';
 export const COLLABORATOR_NOT_FOUND = 'Collaborator not found';
+export const USER_NOT_FOUND = 'User not found';
 export const USER_PROFILE_NOT_VERIFIED = 'The user profile is not verified';
 export const ERROR_ADDING_COLLABORATOR = 'Error adding collaborator';
 export const ERROR_REMOVING_COLLABORATOR = 'Error removing collaborator';

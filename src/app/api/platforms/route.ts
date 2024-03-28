@@ -60,8 +60,9 @@ export async function POST(req: Request) {
 
     return Response.json({ id: builderPlace.id }, { status: 201 });
   } catch (error: any) {
+    console.log('errrrrrrrrrrrrrrrrrror', error);
     // @TODO: move error handle to a middleware ? or factorize it ?
-    let message = 'Failed to create plaform';
+    let message = 'Failed to create platform';
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const target = (error.meta?.target as string)[0] || 'data';

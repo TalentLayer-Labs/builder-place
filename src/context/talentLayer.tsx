@@ -98,6 +98,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (userResponse?.data?.data?.users?.length == 0) {
+        setUser(undefined);
         setLoading(false);
         return false;
       }
@@ -111,42 +112,6 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         );
         currentUser.isAdmin = platform?.address === currentUser?.address;
       }
-
-      const userHasDelegatedToPlatform =
-        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
-        userResponse.data.data.users[0].delegates &&
-        userResponse.data.data.users[0].delegates.indexOf(
-          process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase(),
-        ) !== -1;
-
-      console.log('userHasDelegatedToPlatform', userHasDelegatedToPlatform);
-      console.log(
-        'userResponse.data.data.users[0].delegates',
-        userResponse.data.data.users[0].delegates,
-      );
-      console.log(
-        'process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()',
-        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS?.toLowerCase(),
-      );
-
-      const userHasReachedDelegationLimit =
-        (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
-
-      setCanUseBackendDelegate(
-        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
-          userHasDelegatedToPlatform &&
-          !userHasReachedDelegationLimit &&
-          !!workerProfile?.isEmailVerified,
-      );
-      console.log(
-        "process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&\n" +
-          '          userHasDelegatedToPlatform &&\n' +
-          '          !userHasReachedDelegationLimit,',
-        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
-          userHasDelegatedToPlatform &&
-          !userHasReachedDelegationLimit,
-      );
-      console.log('canUseBackendDelegate', canUseBackendDelegate);
 
       setUser(currentUser);
 
@@ -169,6 +134,26 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
   };
+
+  // Check whether all conditions are met to use the backend delegate
+  useEffect(() => {
+    if (user && workerProfile) {
+      const userHasDelegatedToPlatform =
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
+        user.delegates &&
+        user.delegates.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()) !== -1;
+
+      const userHasReachedDelegationLimit =
+        (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
+
+      setCanUseBackendDelegate(
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
+          !!userHasDelegatedToPlatform &&
+          !userHasReachedDelegationLimit &&
+          !!workerProfile?.isEmailVerified,
+      );
+    }
+  }, [user, workerProfile]);
 
   useEffect(() => {
     fetchData();

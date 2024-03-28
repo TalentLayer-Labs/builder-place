@@ -32,6 +32,7 @@ function DelegateModal() {
   }, [user, show]);
 
   const onSubmit = async (validateState: boolean) => {
+    //TODO add try catch toast here
     if (walletClient && publicClient && user && delegateAddress) {
       await toggleDelegation(
         chainId,

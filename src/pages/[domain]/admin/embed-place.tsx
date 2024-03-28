@@ -29,13 +29,13 @@ export default function EmbedPlace() {
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
 
-  if (loading) {
-    return (
-      <div className='flex justify-center items-center gap-10 flex-col pb-5 mt-5'>
-        <Loading />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className='flex justify-center items-center gap-10 flex-col pb-5 mt-5'>
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   if (!isBuilderPlaceCollaborator) {
     return <AccessDenied />;

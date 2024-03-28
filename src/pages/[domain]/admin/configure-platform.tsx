@@ -17,6 +17,7 @@ function ConfigurePlatform(props: InferGetServerSidePropsType<typeof getServerSi
   const { loading } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
 
+  //TODO a delete ?
   if (loading) {
     console.log('no data');
     return (
