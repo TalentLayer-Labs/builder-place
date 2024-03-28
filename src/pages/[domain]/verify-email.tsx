@@ -6,6 +6,12 @@ import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
 } from '../../modules/BuilderPlace/apiResponses';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 const verifyEmail = () => {
   const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
@@ -53,16 +59,13 @@ const verifyEmail = () => {
     <>
       {pageResponse === EMAIL_VERIFIED_SUCCESSFULLY ? (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Congratulations! 🎉
               </p>
               <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
                 Your email is validated!
-              </p>
-              <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
-                You can now access cool features such as 50 free transactions per week.
               </p>
               <button
                 className='bg-pink-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
@@ -74,7 +77,7 @@ const verifyEmail = () => {
         </div>
       ) : pageResponse === EMAIL_ALREADY_VERIFIED ? (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Email Already Verified! 🦝
@@ -95,7 +98,7 @@ const verifyEmail = () => {
         </div>
       ) : (
         <div className='bg-base-100'>
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Oops! 😕

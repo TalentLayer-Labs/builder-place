@@ -28,7 +28,7 @@ function UserSubMenu() {
         </div>
         <div className='mt-3' role='none'>
           <h6
-            className='font-heading text-base-content opacity-50 text-sm font-medium dark:text-base-content'
+            className='font-heading text-base-content opacity-50 text-sm font-medium '
             role='none'>
             {' '}
             {user?.handle}{' '}

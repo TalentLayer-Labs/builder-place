@@ -67,7 +67,7 @@ function EmailForm({ user, callback }: { user: IUser; callback?: () => void }) {
           throw new Error(response.error);
         }
 
-        createVerificationEmailToast();
+        // createVerificationEmailToast();
 
         await refreshWorkerProfile();
 
