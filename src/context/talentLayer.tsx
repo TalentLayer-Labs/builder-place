@@ -63,15 +63,17 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       switchNetwork(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number);
     }
 
+    const platformId = parseInt(
+      builderPlace?.talentLayerPlatformId || (process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+    );
+
     const talentLayerClient = new TalentLayerClient({
       chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
       ipfsConfig: {
         clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
         baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
       },
-      platformId: parseInt(
-        builderPlace?.talentLayerPlatformId || (process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-      ),
+      platformId: platformId,
       signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
       walletConfig: walletClient
         ? {
