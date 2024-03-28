@@ -80,10 +80,6 @@ function Dashboard() {
           {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
-                <h2 className='pb-4 text-base-content break-all flex justify-between items-center'>
-                  <span className='flex-1 font-bold'>your BuilderPlace</span>
-                </h2>
-
                 {isComingFromHirerOnboarding && (
                   <Notification
                     title='personalize your space!'
