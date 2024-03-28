@@ -116,7 +116,7 @@ function ServiceDetail({ service }: { service: IService }) {
                         ? `/work/${service.id}/proposal`
                         : `/newonboarding/create-profile?serviceId=${service.id}`
                     }>
-                    Create proposal
+                    {user ? 'Create proposal' : 'Create an account to create proposal'}
                   </Link>
                 )}
                 {account && (
