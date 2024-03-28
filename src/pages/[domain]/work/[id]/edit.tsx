@@ -20,7 +20,11 @@ function EditService() {
   const { id } = router.query;
   const { service, isLoading } = useServiceById(id as string);
   const { account, user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+
+  const canEditService =
+    (isBuilderPlaceCollaborator && service?.buyer.id === builderPlace?.owner.talentLayerId) ||
+    user?.id === service?.buyer.id;
 
   if (isLoading) {
     return <Loading />;
@@ -30,7 +34,7 @@ function EditService() {
     return <Steps />;
   }
 
-  if (!isBuilderPlaceCollaborator) {
+  if (!canEditService) {
     return <AccessDenied />;
   }
 

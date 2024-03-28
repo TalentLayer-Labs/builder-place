@@ -1,7 +1,6 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useEffect } from 'react';
-import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../../context/talentLayer';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
@@ -24,6 +23,7 @@ export interface ICreateUser
   extends IMutation<
     ICreateUserFormValues & {
       address: string;
+      talentLayerId: string;
     }
   > {}
 
@@ -39,13 +39,11 @@ export interface ICreateUser
  *      ELSE
  *          Let the user complete the form, we will create a profile in DB (and a TalentLayerID if the wallet don't have one yet)
  *  ELSE
- *     let the user complete the form and ask him to conenct on submit
+ *     let the user complete the form and ask him to connect on submit
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({ chainId });
-  const { loading: isLoadingUser, user, address } = useContext(UserContext);
-  const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
+  const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { createNewUser } = useCreateUser();
 
@@ -60,7 +58,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
   const initialValues: ICreateUserFormValues = {
     name: user?.name || talentLayerUser?.description?.name || talentLayerUser?.handle || '',
-    talentLayerHandle: user?.talentLayerHandle || talentLayerUser?.handle || '',
+    talentLayerHandle: talentLayerUser?.handle || user?.talentLayerHandle || '',
     email: user?.email || '',
   };
 
@@ -82,13 +80,16 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       setSubmitting(true);
 
       await createNewUser(values);
+      await getUser();
+      // TODO: not sure if useful, probably not indexed yet
+      await refreshData();
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
        */
       onSuccess();
     } catch (error: any) {
-      console.log('CATCH error', error);
+      // console.log('CATCH error', error);
       showErrorTransactionToast(error);
     } finally {
       setTimeout(() => {
@@ -107,8 +108,10 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
         initialValues={initialValues}
         enableReinitialize={true}
         onSubmit={handleSubmit}
-        validationSchema={validationSchema}>
-        {({ isSubmitting, setFieldValue, values }) => (
+        validationSchema={validationSchema}
+        validateOnBlur={true}
+        validateOnChange={true}>
+        {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
               <label className='block'>
@@ -127,22 +130,10 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
               <label className='block'>
                 <span className='font-bold text-md'>handle* </span>
-                <HandleInput initiaValue={initialValues.talentLayerHandle} />
-                <span className='text-red-500'>
-                  <ErrorMessage name='talentLayerHandle' />
-                </span>
-                <p className='font-alt text-xs font-normal'>
-                  <span className='text-base-content'>
-                    Used to create your onchain identity on{' '}
-                    <a
-                      href='https://talentlayer.org'
-                      target='_blank'
-                      className='underline text-info'>
-                      TalentLayer
-                    </a>
-                    .
-                  </span>
-                </p>
+                <HandleInput
+                  initialValue={initialValues.talentLayerHandle}
+                  existingHandle={talentLayerUser?.handle}
+                />
               </label>
 
               <label className='block'>
@@ -179,14 +170,18 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
                   {address ? (
                     <button
                       type='submit'
-                      className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                      disabled={!(isValid && dirty)}
+                      className={`grow px-5 py-2 rounded-xl text-white ${
+                        !(isValid && dirty) ? 'bg-gray-500' : 'bg-pink-500'
+                      }`}>
                       create my profile
                     </button>
                   ) : (
                     <button
                       className='grow px-5 py-2 rounded-xl bg-black text-white'
-                      onClick={() => {
+                      onClick={e => {
                         openConnectModal();
+                        e.preventDefault();
                       }}>
                       connect your wallet first
                     </button>

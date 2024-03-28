@@ -2,12 +2,14 @@ import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
-import TalentLayerIdForm from './Form/TalentLayerIdForm';
+import OnboardingRedirectButton from './RedirectToOnboardingButton';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function Steps({ handle }: { handle?: string }) {
-  const { account, loading, user } = useContext(TalentLayerContext);
+  const { account, loading: talentLayerDataLoading } = useContext(TalentLayerContext);
+  const { user, loading } = useContext(UserContext);
 
-  if (loading) {
+  if (loading || talentLayerDataLoading) {
     return <Loading />;
   }
 
@@ -19,7 +21,8 @@ function Steps({ handle }: { handle?: string }) {
             <ConnectBlock />
           </div>
         )}
-        {account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}
+        {/*{account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}*/}
+        {account?.isConnected && !user && <OnboardingRedirectButton />}
       </div>
     </div>
   );

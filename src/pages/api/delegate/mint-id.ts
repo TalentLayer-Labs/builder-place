@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
     }
 
-    let transaction;
+    let transaction, userId;
 
     /**
      * If addDelegateAndTransferId is true, we mint the TlId for the user, add the delegator address as delegate, then transfer it to them.
@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Get Minted UserId
       console.log('walletClient.account.address', walletClient.account.address);
-      const userId = await publicClient.readContract({
+      userId = await publicClient.readContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'ids',
@@ -68,14 +68,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log(`Minted id: ${userId} for user ${userAddress}`);
 
       // Add delegate
-      await walletClient.writeContract({
+      const delegateTxHash = await walletClient.writeContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'addDelegate',
         args: [userId, walletClient.account.address],
       });
 
-      console.log(`Added ${walletClient.account.address} as delegate for user ${userId}`);
+      console.log(
+        `Adding ${walletClient.account.address} as delegate for user ${userId}, waiting for block confirmation...`,
+      );
+
+      await publicClient.waitForTransactionReceipt({
+        confirmations: 1,
+        hash: delegateTxHash,
+      });
+
+      console.log(`Delegate Added`);
 
       // Transfer TlId to user
       transaction = await walletClient.writeContract({
@@ -96,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    res.status(200).json({ transaction: transaction });
+    res.status(200).json({ userId: String(userId), transaction: transaction });
   } catch (error) {
     console.error('errorDebug', error);
     res.status(500).json({ error: error });

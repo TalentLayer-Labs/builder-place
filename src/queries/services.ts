@@ -1,16 +1,5 @@
-import { ServiceStatusEnum } from '../types';
 import { processRequest } from '../utils/graphql';
-
-interface IProps {
-  serviceStatus?: ServiceStatusEnum;
-  buyerId?: string;
-  sellerId?: string;
-  numberPerPage?: number;
-  offset?: number;
-  searchQuery?: string;
-  platformId?: string;
-  keywordList?: string[];
-}
+import { ServicesFilters } from '../app/api/services/route';
 
 const serviceQueryFields = `
   id
@@ -18,6 +7,9 @@ const serviceQueryFields = `
   createdAt
   cid
   transaction {
+    id
+  }
+  platform {
     id
   }
   buyer {
@@ -63,13 +55,13 @@ const serviceDescriptionQueryFields = `
   }
 `;
 
-const getFilteredServiceCondition = (params: IProps) => {
+const getFilteredServiceCondition = (params: ServicesFilters) => {
   let condition = 'where: {';
 
   if (params.serviceStatus) condition += `status: "${params.serviceStatus}",`;
   if (params.buyerId) condition += `buyer: "${params.buyerId}",`;
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
-  if (params.platformId) condition += `platform: "${params.platformId}",`;
+  if (params.platformId) condition += `platform_: {id: "${params.platformId}"}`;
 
   let keywordFilter = '';
 
@@ -101,17 +93,17 @@ const getFilteredServiceCondition = (params: IProps) => {
   return condition === 'where: {}' ? '' : `, ${condition}`;
 };
 
-const getFilteredServiceDescriptionCondition = (params: IProps) => {
+const getFilteredServiceDescriptionCondition = (params: ServicesFilters) => {
   let condition = ', where: {';
   condition += params.serviceStatus ? `service_: {status:"${params.serviceStatus}"}` : '';
   condition += params.buyerId ? `, buyer: "${params.buyerId}"` : '';
   condition += params.sellerId ? `, seller: "${params.sellerId}"` : '';
-  condition += params.platformId ? `, platform: "${params.platformId}"` : '';
+  condition += params.platformId ? `, platform_: {id: "${params.platformId}"}` : '';
   condition += '}';
   return condition === ', where: {}' ? '' : condition;
 };
 
-export const getServices = (chainId: number, params: IProps): Promise<any> => {
+export const getServices = (chainId: number, params: ServicesFilters): Promise<any> => {
   const pagination = params.numberPerPage
     ? 'first: ' + params.numberPerPage + ', skip: ' + params.offset
     : '';
@@ -130,7 +122,7 @@ export const getServices = (chainId: number, params: IProps): Promise<any> => {
   return processRequest(chainId, query);
 };
 
-export const searchServices = (chainId: number, params: IProps): Promise<any> => {
+export const searchServices = (chainId: number, params: ServicesFilters): Promise<any> => {
   const pagination = params.numberPerPage
     ? 'first: ' + params.numberPerPage + ' skip: ' + params.offset
     : '';

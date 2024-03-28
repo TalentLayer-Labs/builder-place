@@ -120,7 +120,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
       {({ isSubmitting }) => (
         <Form>
           <div className='grid grid-cols-1 gap-6'>
-            <div className='block border border-base-300 rounded-lg border p-10'>
+            <div className='block border border-base-300 rounded-lg p-10'>
               <span className='text-base-content font-bold'>
                 Invite new members by wallet address
               </span>

@@ -1,11 +1,7 @@
-import { TalentLayerClient } from '@talentlayer/client';
 import { Connector } from 'wagmi';
-import { ICompletionScores } from './utils/profile';
-import { IWorkerProfile } from './modules/BuilderPlace/types';
 import { IExecDataProtector } from '@iexec/dataprotector';
 import { IExecWeb3mail } from '@iexec/web3mail';
 import * as sgMail from '@sendgrid/mail';
-import { User } from '.prisma/client';
 
 export type IUser = {
   id: string;

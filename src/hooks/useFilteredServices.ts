@@ -32,7 +32,6 @@ const useFilteredServices = (
       try {
         setLoading(true);
         let response;
-        let newServices: IService[] = [];
 
         response = await getFilteredServicesByKeywords(
           serviceStatus,
@@ -42,10 +41,11 @@ const useFilteredServices = (
           offset,
           searchQuery,
           platformId,
+          platformName,
           chainId,
         );
 
-        newServices = response?.data?.services;
+        const newServices = response?.data?.services;
 
         if (offset === 0) {
           setServices(newServices || []);

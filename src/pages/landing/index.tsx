@@ -112,7 +112,7 @@ function Home() {
 
                   <div className='flex justify-center md:justify-start gap-4'>
                     <a
-                      href='/onboarding'
+                      href='/newonboarding/create-profile'
                       className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
                       create a <br />
                       BuilderPlace
@@ -1222,7 +1222,7 @@ function Home() {
                   register for <br></br>beta
                 </a> */}
                 <a
-                  href='/onboarding'
+                  href='/newonboarding/create-profile'
                   className='max-w-[186px] flex-1 rounded-md text-center bg-landingprimary py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-medium text-white font-bold hover:bg-opacity-60'>
                   launch my <br></br>BuilderPlace
                 </a>

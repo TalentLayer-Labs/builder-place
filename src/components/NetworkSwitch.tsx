@@ -40,7 +40,7 @@ function NetworkSwitch() {
   }
 
   return (
-    <Menu as='div' className='relative text-left flex items-center'>
+    <Menu as='div' className='relative px-4 text-left flex items-center'>
       <Menu.Button
         type='button'
         className='hover:ring-muted-700 border-info bg-muted-800 ring-offset-muted-900 flex h-9 w-9 items-center justify-center rounded-full border bg-base-300 ring-1 ring-transparent transition-all duration-300 hover:ring-offset-4'>

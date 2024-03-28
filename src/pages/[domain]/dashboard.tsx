@@ -11,24 +11,24 @@ import UserServices from '../../components/UserServices';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-import EmailModal from '../../components/Modal/EmailModal';
 import { useRouter } from 'next/router';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import DelegationNotification from '../../components/DelegationNotification';
 import { toast } from 'react-toastify';
-import VerifyUserAccountNotification from '../../components/VerifyUserAccountNotification';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user, workerProfile } = useContext(TalentLayerContext);
+  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const router = useRouter();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
-  const isComingFromHirerOnboarding = router.asPath.includes('hireronboarding');
+  const isComingFromHirerOnboarding = router.asPath.includes('platformonboarding');
 
-  if (!user) {
+  if (!talentLayerUser || !user) {
     return (
       <>
         {isComingFromHirerOnboarding ? (
@@ -72,7 +72,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {account?.isConnected && user && (
+      {account?.isConnected && talentLayerUser && (
         <div>
           {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
@@ -81,48 +81,38 @@ function Dashboard() {
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
-                <EmailModal />
+                {/*{!isComingFromHirerOnboarding && (*/}
+                {/*  <VerifyEmailNotification*/}
+                {/*    callback={() => {*/}
+                {/*      toast.success('Verification email sent!');*/}
+                {/*    }}*/}
+                {/*  />*/}
+                {/*)}*/}
                 {!isComingFromHirerOnboarding && (
-                  <VerifyEmailNotification
-                    callback={() => {
-                      toast.success('Verification email sent!');
-                    }}
+                  <Notification
+                    title='personalize your space!'
+                    text='customize your Platform to match your brand'
+                    link='/admin/configure-platform'
+                    linkText='personalize my platform'
+                    color='success'
+                    imageUrl={user.picture}
                   />
                 )}
-                <VerifyUserAccountNotification
-                  callback={() => {
-                    toast.success('Account verified!');
-                  }}
-                />
-                <Notification
-                  title='personalize your space!'
-                  text='customize your BuilderPlace to match your brand'
-                  link='/admin/configure-place'
-                  linkText='personalize my space'
-                  color='success'
-                  imageUrl={user?.description?.image_url}
-                />
               </div>
 
               <div className='mb-12'>
-                <UserServices user={user} type='buyer' />
+                <UserServices user={talentLayerUser} type='buyer' />
               </div>
             </>
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              <EmailModal />
               <VerifyEmailNotification
                 callback={() => {
                   toast.success('Verification email sent!');
                 }}
               />
-              <VerifyUserAccountNotification
-                callback={() => {
-                  toast.success('Account verified!');
-                }}
-              />
-              {process.env.NEXT_PUBLIC_ACTIVE_DELEGATE === 'true' && <DelegationNotification />}
+              {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>contributor profile</span>
@@ -132,19 +122,22 @@ function Dashboard() {
                     Edit
                   </Link>
                 </h2>
-                <UserDetail user={user} />
+                <UserDetail user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserPayments user={user} />
+                <UserPayments user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserGains user={user} />
+                <UserGains user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserServices user={user} type='seller' />
+                <UserServices user={talentLayerUser} type='contributor' />
               </div>
               <div className='mb-12'>
-                <UserProposals user={user} />
+                <UserServices user={talentLayerUser} type='seller' />
+              </div>
+              <div className='mb-12'>
+                <UserProposals user={talentLayerUser} />
               </div>
             </>
           )}

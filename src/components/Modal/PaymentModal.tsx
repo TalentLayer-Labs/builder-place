@@ -1,4 +1,4 @@
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ArrowTopRightOnSquareIcon, CheckIcon } from '@heroicons/react/24/outline'; // Step 1: Import ArrowPathIcon
 import { useState } from 'react';
 import { renderTokenAmount } from '../../utils/conversion';
 import { IPayment, IService, PaymentTypeEnum, ServiceStatusEnum } from '../../types';
@@ -9,10 +9,12 @@ interface IPaymentModalProps {
   service: IService;
   payments: IPayment[];
   isBuyer: boolean;
+  refreshPayments: () => Promise<void>;
 }
 
-function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
+function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentModalProps) {
   const [show, setShow] = useState(false);
+  const [showCheckIcon, setShowCheckIcon] = useState(false);
   const rateToken = service.validatedProposal[0].rateToken;
   const rateAmount = service.validatedProposal[0].rateAmount;
   const network = useNetwork();
@@ -22,6 +24,12 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
   }, BigInt('0'));
 
   const totalInEscrow = BigInt(rateAmount) - totalPayments;
+
+  const handleRefreshPayments = async (): Promise<void> => {
+    setShowCheckIcon(true);
+    await refreshPayments();
+    setTimeout(() => setShowCheckIcon(false), 1000);
+  };
 
   return (
     <>
@@ -74,36 +82,52 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
             </div>
             <div className='p-6 space-y-6'>
               <div className='flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-base-200 space-y-6 text-base-content'>
-                {service.status === ServiceStatusEnum.Confirmed && (
-                  <h3 className='text-xl font-semibold leading-5 text-base-content'>
-                    Payments summary
-                  </h3>
-                )}
-                <div className='flex justify-center items-center w-full space-y-4 flex-col border-info border-b pb-4'>
-                  <div className='flex justify-between w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>Rate</p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      {renderTokenAmount(rateToken, rateAmount)}
-                    </p>
+                <div className='flex flex-row justify-between'>
+                  {service.status === ServiceStatusEnum.Confirmed && (
+                    <h3 className='text-xl font-semibold leading-5 text-base-content'>
+                      Payments summary
+                    </h3>
+                  )}
+                  <div className='flex items-center gap-2'>
+                    {showCheckIcon ? (
+                      <CheckIcon className='w-6 h-6 text-success' />
+                    ) : (
+                      <ArrowPathIcon
+                        className='w-6 h-6 text-base-content cursor-pointer hover:text-info'
+                        onClick={handleRefreshPayments}
+                      />
+                    )}
                   </div>
-                  {payments.map((payment, index) => (
-                    <div key={index} className='flex justify-between w-full'>
-                      <p className='text-base-content leading-4 text-base-content'>
-                        <a
-                          className='flex'
-                          href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
-                          target='_blank'>
-                          {payment.paymentType == PaymentTypeEnum.Release
-                            ? 'Realease'
-                            : 'Reimburse'}
-                          <ArrowTopRightOnSquareIcon className='ml-2 w-4 h-4' />
-                        </a>
-                      </p>
+                </div>
+                <div className='max-h-40 overflow-y-scroll'>
+                  <div className='flex justify-center items-center w-full space-y-4 flex-col border-info border-b pb-4 pr-2'>
+                    <div className='flex justify-between w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>Rate</p>
                       <p className='text-base-content  leading-4 text-base-content'>
-                        -{renderTokenAmount(rateToken, payment.amount)}
+                        {renderTokenAmount(rateToken, rateAmount)}
                       </p>
                     </div>
-                  ))}
+
+                    {payments.map((payment, index) => (
+                      <div key={index} className='flex justify-between w-full'>
+                        <p className='text-base-content leading-4 text-base-content'>
+                          <a
+                            className='flex'
+                            href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
+                            target='_blank'
+                            rel='noopener noreferrer'>
+                            {payment.paymentType === PaymentTypeEnum.Release
+                              ? 'Release'
+                              : 'Reimburse'}
+                            <ArrowTopRightOnSquareIcon className='ml-2 w-4 h-4' />
+                          </a>
+                        </p>
+                        <p className='text-base-content leading-4 text-base-content'>
+                          -{renderTokenAmount(rateToken, payment.amount)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className='flex justify-between items-center w-full'>
                   <p className='text-base-content font-semibold leading-4 text-base-content'>
@@ -123,11 +147,12 @@ function PaymentModal({ service, payments, isBuyer }: IPaymentModalProps) {
 
             {totalInEscrow > 0 && show && (
               <ReleaseForm
-                totalInEscrow={totalInEscrow}
+                totalInServiceAmount={BigInt(rateAmount)}
                 rateToken={rateToken}
                 service={service}
                 isBuyer={isBuyer}
                 closeModal={() => setShow(false)}
+                refreshPayments={refreshPayments}
               />
             )}
           </div>

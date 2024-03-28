@@ -225,7 +225,7 @@ export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string
         collaborators: true,
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -248,7 +248,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
         id: Number(builderPlaceId),
         collaborators: {
           some: {
-            address: address.toLocaleLowerCase(),
+            address: address,
           },
         },
       },
@@ -276,7 +276,7 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
         },
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -291,21 +291,19 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
   let errorMessage = '';
   try {
     console.log('getting builderPlace ', domain);
-    if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
-      const builderPlace = await prisma.builderPlace.findFirst({
-        where: {
-          OR: [{ subdomain: domain }, { customDomain: domain }],
-        },
-        include: {
-          owner: true,
-          collaborators: true,
-        },
-      });
+    const builderPlace = await prisma.builderPlace.findFirst({
+      where: {
+        OR: [{ subdomain: domain }, { customDomain: domain }],
+      },
+      include: {
+        owner: true,
+        collaborators: true,
+      },
+    });
 
-      console.log('fetched builderPlaces, ', builderPlace);
+    console.log('fetched builderPlaces, ', builderPlace?.subdomain);
 
-      return builderPlace;
-    }
+    return builderPlace;
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
@@ -324,7 +322,7 @@ export const getBuilderPlaceById = async (id: string) => {
         collaborators: true,
       },
     });
-    console.log('Fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('Fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -372,7 +370,7 @@ export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
       //   collaborators: true,
       // },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -446,7 +444,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress.toLocaleLowerCase(),
+        address: body.newCollaboratorAddress,
       },
     });
 

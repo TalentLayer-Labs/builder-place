@@ -127,7 +127,7 @@ function onboardingStep3() {
         }
 
         if (res?.message) {
-          router.push(`${window.location.protocol}//${subdomain}/dashboard?hireronboarding=1`);
+          router.push(`${window.location.protocol}//${subdomain}/dashboard?platformonboarding=1`);
         }
       } catch (error: any) {
         showErrorTransactionToast(error.message);

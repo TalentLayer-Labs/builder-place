@@ -3,26 +3,24 @@ import { formatUnits } from 'viem';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
-import { parseRateAmount } from '../../utils/currency';
+import { showErrorTransactionToast } from '../../utils/toast';
 import SubmitButton from './SubmitButton';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
 import { IService, IToken } from '../../types';
 import { SkillsInput } from './skills-input';
-import { delegateCreateOrUpdateService } from '../request';
 import { useChainId } from '../../hooks/useChainId';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
+import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
-interface IFormValues {
+export interface ICreateServiceFormValues {
   title: string;
   about: string;
   keywords: string;
@@ -39,22 +37,20 @@ function ServiceForm({
 }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, account, refreshWorkerProfile, canUseDelegation } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { account, refreshWorkerProfile, canUseBackendDelegate } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
-  const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-  const talentLayerClient = useTalentLayerClient();
-
   const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const servicePostingFee = platform?.servicePostingFee || 0;
   const servicePostingFeeFormat = servicePostingFee
     ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
     : 0;
+  const { createNewService } = useCreateService();
+  const { updateService } = useUpdateService();
 
   const getFormattedTokenAmount = () => {
     const token = allowedTokenList.find(
@@ -68,7 +64,7 @@ function ServiceForm({
     );
   };
 
-  const initialValues: IFormValues = {
+  const initialValues: ICreateServiceFormValues = {
     title: existingService?.description?.title || '',
     about: existingService?.description?.about || '',
     keywords: existingService?.description?.keywords_raw || '',
@@ -112,117 +108,38 @@ function ServiceForm({
    * @param setSubmitting
    * @param resetForm
    */
-  const onSubmit = async (
-    values: IFormValues,
+  const handleSubmit = async (
+    values: ICreateServiceFormValues,
     {
       setSubmitting,
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (
-      account?.isConnected === true &&
-      publicClient &&
-      walletClient &&
-      token &&
-      user &&
-      talentLayerClient &&
-      builderPlace?.owner?.talentLayerId
-    ) {
+    if (account?.isConnected === true) {
       try {
-        const parsedRateAmount = await parseRateAmount(
-          values.rateAmount.toString(),
-          values.rateToken,
-          token.decimals,
-        );
-        const parsedRateAmountString = parsedRateAmount.toString();
+        const token = allowedTokenList.find(token => token.address === values.rateToken);
+        if (token) {
+          const newId = existingService
+            ? await updateService(values, token, existingService)
+            : await createNewService(values, token);
 
-        let tx, cid;
-        if (canUseDelegation) {
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
-            title: values.title,
-            about: values.about,
-            keywords: values.keywords,
-            rateToken: values.rateToken,
-            rateAmount: parsedRateAmountString,
-          });
-          const response = await delegateCreateOrUpdateService(
-            chainId,
-            existingService?.buyer.id
-              ? existingService.buyer.id
-              : builderPlace.owner?.talentLayerId,
-            user.address.toLowerCase(),
-            cid,
-            !!existingService,
-          );
-          tx = response.data.transaction;
-        } else {
-          if (talentLayerClient) {
-            let serviceResponse;
-            if (!existingService) {
-              serviceResponse = await talentLayerClient.service.create(
-                {
-                  title: values.title,
-                  about: values.about,
-                  keywords: values.keywords,
-                  rateToken: values.rateToken,
-                  rateAmount: parsedRateAmountString,
-                },
-                builderPlace.owner?.talentLayerId,
-                parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-              );
-              cid = serviceResponse.cid;
-              tx = serviceResponse.tx;
-            } else {
-              cid = await talentLayerClient.service.updloadServiceDataToIpfs({
-                title: values.title,
-                about: values.about,
-                keywords: values.keywords,
-                rateToken: values.rateToken,
-                rateAmount: parsedRateAmountString,
-              });
-
-              //TODO: Replace by SDK function when implemented
-              tx = await talentLayerClient.viemClient.writeContract(
-                'talentLayerService',
-                'updateServiceData',
-                [existingService.buyer.id, existingService.id, cid],
-              );
-            }
-          } else {
-            throw new Error('TL client not initialised');
+          if (callback) {
+            callback();
           }
-        }
 
-        const newId = await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Creating your project...',
-            success: 'Congrats! Your open-source post has been created',
-            error: 'An error occurred while creating your post',
-          },
-          publicClient,
-          tx,
-          'service',
-          cid,
-        );
-
-        if (callback) {
-          callback();
-        }
-
-        setSubmitting(false);
-        resetForm();
-        if (newId) {
-          router.push(`/work/${newId}`);
-        }
-        if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-          createWeb3mailToast();
+          setSubmitting(false);
+          resetForm();
+          if (newId) {
+            router.push(`/work/${newId}`);
+          }
+          if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
+            createWeb3mailToast();
+          }
         }
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
+        if (canUseBackendDelegate) await refreshWorkerProfile();
       }
     } else {
       openConnectModal();
@@ -232,7 +149,7 @@ function ServiceForm({
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       validationSchema={validationSchema}
       enableReinitialize={true}>
       {({ isSubmitting, setFieldValue }) => (
@@ -346,7 +263,11 @@ function ServiceForm({
               </label>
             </div>
 
-            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Update' : 'Post'} />
+            <SubmitButton
+              isSubmitting={isSubmitting}
+              label={existingService ? 'Update' : 'Post'}
+              checkEmailStatus={true}
+            />
           </div>
         </Form>
       )}

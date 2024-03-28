@@ -1,15 +1,32 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
+import { sendVerificationEmail } from '../../modules/BuilderPlace/request';
+import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
+import { useContext } from 'react';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 function SubmitButton({
   isSubmitting,
   label = 'Create',
+  checkEmailStatus = false,
 }: {
   isSubmitting: boolean;
   label?: string;
+  checkEmailStatus?: boolean;
 }) {
   const { isConnected } = useAccount();
   const { open: openConnectModal } = useWeb3Modal();
+  const { user } = useContext(UserContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
+
+  const handleSendVerificationEmail = async () => {
+    const domain = builderPlace?.subdomain || builderPlace?.customDomain;
+    if (user && domain) {
+      await sendVerificationEmail(user.email, user.id.toString(), user.name, domain);
+      await createVerificationEmailToast();
+    }
+  };
 
   return (
     <div className='flex flex-row justify-between items-center'>
@@ -36,9 +53,21 @@ function SubmitButton({
           Loading...
         </button>
       ) : isConnected ? (
-        <button type='submit' className='grow px-5 py-2 rounded-xl bg-primary text-primary'>
-          {label}
-        </button>
+        <div className='flex flex-col w-full'>
+          <button type='submit' className='w-full px-5 py-2 rounded-xl bg-primary text-primary'>
+            {label}
+          </button>
+          {checkEmailStatus && !user?.isEmailVerified && (
+            <p className={'mt-1 text-base-content font-alt text-xs font-normal opacity-60'}>
+              Want gassless experience?&nbsp;
+              <button
+                onClick={() => handleSendVerificationEmail()}
+                className='text-base-content font-alt text-xs font-normal opacity-70 hover:opacity-50 focus:outline-none focus:underline'>
+                Verify your email !
+              </button>
+            </p>
+          )}
+        </div>
       ) : (
         <button
           onClick={() => {

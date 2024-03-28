@@ -14,6 +14,7 @@ import usePlatform from '../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   about: string;
@@ -32,7 +33,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminPresentation() {
   const { user, loading } = useContext(TalentLayerContext);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const { builderPlace } = useContext(BuilderPlaceContext);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const platformDescription = platform?.description;
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();

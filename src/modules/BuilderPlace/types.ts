@@ -1,5 +1,7 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
 import { IEmailPreferences } from '../../types';
+import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
+import { iexec } from '../../chains';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -259,22 +261,37 @@ export type IBuilderPlace = {
   preferredWorkTypes: WorkType[];
 };
 
-interface JobPostingConditions {
+export interface JobPostingConditions {
   allowPosts: boolean;
   conditions?: PostingCondition[];
 }
 
-type PostingCondition = NFTCondition | TokenCondition;
+export type PostingCondition = NFTCondition | TokenCondition;
 
-interface NFTCondition {
+export interface NFTCondition {
   type: 'NFT';
-  address: string;
+  chainId: JobConditionsChainIdEnum; // Chain ID of the NFT contract
+  address: string; // Address of the NFT contract
+  name: string; // Name of the NFT contract
 }
 
-interface TokenCondition {
+export interface TokenCondition {
   type: 'Token';
-  address: string;
-  minimumAmount: number;
+  chainId: number; // Chain ID of the token contract
+  chainName: string;
+  address: string; // Address of the token contract
+  name: string; // Name of the NFT contract
+  symbol: string; // Token sign
+  minimumAmount: number; // Minimum amount of tokens required for frontend display
+  parsedMinimumAmount: string; // Minimum amount of tokens required in the smallest smart contract uint
+}
+
+export enum JobConditionsChainIdEnum {
+  ETHEREUM = mainnet.id,
+  ARBITRUM = arbitrum.id,
+  IEXEC = iexec.id,
+  POLYGON = polygon.id,
+  BNB = opBNB.id,
 }
 
 export interface IUserProfile {
