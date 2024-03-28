@@ -8,24 +8,17 @@ import { NetworkEnum } from '../../types';
 export async function isPlatformAllowedToDelegate(
   chainId: number,
   userAddress: string,
-): Promise<Response | boolean> {
+): Promise<boolean> {
   const user = await getUserByAddress(chainId, userAddress);
   const delegateAddresses: string[] = user.data?.data?.users[0]?.delegates.map((delegate: any) =>
     delegate.toLowerCase(),
   );
 
-  if (
+  return !(
     !process.env.NEXT_PUBLIC_DELEGATE_ADDRESS ||
     (process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
       delegateAddresses.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS?.toLowerCase()) === -1)
-  )
-    return Response.json(
-      { error: 'Delegation is Not activated for this address' },
-      { status: 401 },
-    );
-  else {
-    return true;
-  }
+  );
 }
 
 export async function getDelegationSigner(): Promise<WalletClient | null> {

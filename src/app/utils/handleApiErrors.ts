@@ -1,8 +1,4 @@
-export const handleApiError = (
-  caughtError: any,
-  customErrorMessage: string,
-  status: number,
-): Response => {
+export const logAndReturnApiError = (caughtError: any, customErrorMessage: string): string => {
   let errorMessage = '';
   //TODO do it cleaner with type check
   if (caughtError?.name?.includes('Prisma')) {
@@ -12,5 +8,5 @@ export const handleApiError = (
     errorMessage = caughtError.message;
   }
   console.log(caughtError.message);
-  return Response.json({ error: errorMessage }, { status: status });
+  return errorMessage;
 };

@@ -40,12 +40,14 @@ export async function POST(req: Request) {
   try {
     const walletClient = await getDelegationSigner();
     if (!walletClient) {
-      return;
+      console.log('Wallet client not found');
+      return Response.json({ error: 'Server Error' }, { status: 500 });
     }
 
     const publicClient = getPublicClient();
     if (!publicClient) {
-      return;
+      console.log('Public client not found');
+      return Response.json({ error: 'Server Error' }, { status: 500 });
     }
 
     let transaction, userId;
