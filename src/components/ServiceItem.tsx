@@ -31,14 +31,6 @@ function ServiceItem({
             </div>
           )}
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
-            <div className='flex items-center justify-between gap-4'>
-              <p className='font-bold break-all'>{service.description?.title}</p>
-              <div className='flex flex-row justify-end items-center'>
-                <button className='bg-info px-3 py-1.5 text-info text-xs rounded-full' disabled>
-                  Gig
-                </button>
-              </div>
-            </div>
             {/* {service.description?.about && (
               <div className='flex flex-col justify-start items-start gap-4'>
                 <div className='flex items-center justify-start'>
