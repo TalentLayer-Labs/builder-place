@@ -33,7 +33,7 @@ function UserServices({ user, type }: IProps) {
             title='post your first missions!'
             text='post something your team needs help with'
             link='/work/create'
-            linkText='post a missions'
+            linkText='post a mission'
             color='primary'
             imageUrl={user?.description?.image_url}
           />

@@ -4,6 +4,12 @@ import { useContext } from 'react';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useRouter } from 'next/router';
 import { EntityStatus } from '@prisma/client';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 function workerOnboardingStep1() {
   const router = useRouter();

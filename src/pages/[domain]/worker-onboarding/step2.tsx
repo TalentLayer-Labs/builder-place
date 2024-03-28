@@ -13,6 +13,12 @@ import {
   PROFILE_ALREADY_HAS_OWNER,
   PROFILE_DOES_NOT_EXIST,
 } from '../../../modules/BuilderPlace/apiResponses';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 function workerOnboardingStep2() {
   const { account, loading, user, refreshWorkerProfile } = useContext(TalentLayerContext);
@@ -26,6 +32,7 @@ function workerOnboardingStep2() {
 
   useEffect(() => {
     const setOwner = async () => {
+      console.log('setOwner', { account, user, id });
       if (account?.isConnected && account.address && user?.id && id) {
         setIsSettingOwner(true);
         try {
@@ -88,7 +95,7 @@ function workerOnboardingStep2() {
       ) : (
         <>
           <div className='bg-base-100'>
-            <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
+            <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
               <div className='flex flex-col items-center justify-center gap-10'>
                 <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
                   {error}

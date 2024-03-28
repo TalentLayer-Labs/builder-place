@@ -20,7 +20,8 @@ function SubmitButton({
   const { user } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
 
-  const handleSendVerificationEmail = async () => {
+  const handleSendVerificationEmail = async (e: any) => {
+    e.preventDefault();
     const domain = builderPlace?.subdomain || builderPlace?.customDomain;
     if (user && domain) {
       await sendVerificationEmail(user.email, user.id.toString(), user.name, domain);
@@ -61,7 +62,7 @@ function SubmitButton({
             <p className={'mt-1 text-base-content font-alt text-xs font-normal opacity-60'}>
               Want gassless experience?&nbsp;
               <button
-                onClick={() => handleSendVerificationEmail()}
+                onClick={e => handleSendVerificationEmail(e)}
                 className='text-base-content font-alt text-xs font-normal opacity-70 hover:opacity-50 focus:outline-none focus:underline'>
                 Verify your email !
               </button>

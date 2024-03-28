@@ -361,6 +361,7 @@ export const createHirerProfile = async (data: CreateHirerProfileAction) => {
   let errorMessage = '';
   try {
     const user = await prisma.user.create({
+      // @ts-ignore
       data: {
         email: data.email,
         name: data.name,
@@ -386,6 +387,7 @@ export const createWorkerProfile = async (data: CreateWorkerProfileAction) => {
   let errorMessage = '';
   try {
     const user = await prisma.user.create({
+      // @ts-ignore
       data: {
         email: data.email,
         name: data.name,
@@ -485,7 +487,7 @@ export const removeOwnerFromUser = async (userId: string) => {
         id: Number(userId),
       },
       data: {
-        talentLayerId: null,
+        talentLayerId: undefined,
       },
     });
     return {

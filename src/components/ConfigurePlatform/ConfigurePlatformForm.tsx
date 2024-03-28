@@ -1,22 +1,21 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import SubdomainInput from '../Form/SubdomainInput';
-import UploadImage from '../UploadImage';
-import DefaultPalettes from '../DefaultPalettes';
-import { themes } from '../../utils/themes';
-import CustomizePalette from '../CustomizePalette';
-import { slugify } from '../../modules/BuilderPlace/utils';
+import { useContext, useEffect, useState } from 'react';
+import { useColor } from 'react-color-palette';
+import * as Yup from 'yup';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import useUpdatePlatform from '../../modules/BuilderPlace/hooks/platform/useUpdatePlatform';
 import {
   JobConditionsChainIdEnum,
-  iBuilderPlacePalette,
   JobPostingConditions,
+  iBuilderPlacePalette,
 } from '../../modules/BuilderPlace/types';
 import { IMutation } from '../../types';
-import * as Yup from 'yup';
-import { useContext, useState } from 'react';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useColor } from 'react-color-palette';
+import { themes } from '../../utils/themes';
 import { showErrorTransactionToast } from '../../utils/toast';
-import useUpdatePlatform from '../../modules/BuilderPlace/hooks/platform/useUpdatePlatform';
+import CustomizePalette from '../CustomizePalette';
+import DefaultPalettes from '../DefaultPalettes';
+import SubdomainInput from '../Form/SubdomainInput';
+import UploadImage from '../UploadImage';
 import JobPostingConditionsFieldArray, { TempFormValues } from './JobPostingConditionsFieldArray';
 
 export interface IConfigurePlaceFormValues {
@@ -80,9 +79,8 @@ const ConfigurePlatformForm = () => {
 
   const initialValues: IConfigurePlaceFormValues = {
     subdomain:
-      //TODO why ??
-      //   builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
-      builderPlace?.subdomain || (builderPlace?.name && slugify(builderPlace.name)) || '',
+      builderPlace?.subdomain?.replace(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN as string}`, '') ||
+      '',
     logo: builderPlace?.logo || '',
     palette,
     name: builderPlace?.name || '',
@@ -105,6 +103,42 @@ const ConfigurePlatformForm = () => {
       tempTokenChainId: JobConditionsChainIdEnum.ETHEREUM,
     },
   };
+
+  useEffect(() => {
+    let timeoutId: string | number | NodeJS.Timeout | undefined;
+    // Prevents max stack depth being called
+    const delayedEffect = () => {
+      setPalette(prevPalette => {
+        if (!prevPalette) return;
+        return { ...prevPalette, [colorName]: color.hex };
+      });
+    };
+
+    timeoutId = setTimeout(delayedEffect, 10);
+    return () => clearTimeout(timeoutId);
+  }, [color]);
+
+  useEffect(() => {
+    if (!palette) return;
+
+    document.documentElement.style.setProperty('--primary', palette.primary);
+    document.documentElement.style.setProperty('--primary-50', palette.primary + '60');
+    document.documentElement.style.setProperty('--primary-focus', palette.primaryFocus);
+    document.documentElement.style.setProperty('--primary-content', palette.primaryContent);
+    document.documentElement.style.setProperty('--base-100', palette.base100);
+    document.documentElement.style.setProperty('--base-200', palette.base200);
+    document.documentElement.style.setProperty('--base-300', palette.base300);
+    document.documentElement.style.setProperty('--base-content', palette.baseContent);
+    document.documentElement.style.setProperty('--info', palette.info);
+    document.documentElement.style.setProperty('--info-content', palette.infoContent);
+    document.documentElement.style.setProperty('--success', palette.success);
+    document.documentElement.style.setProperty('--success-50', palette.success + '60');
+    document.documentElement.style.setProperty('--success-content', palette.successContent);
+    document.documentElement.style.setProperty('--warning', palette.warning);
+    document.documentElement.style.setProperty('--warning-content', palette.warningContent);
+    document.documentElement.style.setProperty('--error', palette.error);
+    document.documentElement.style.setProperty('--error-content', palette.errorContent);
+  }, [palette]);
 
   const handleSubmit = async (
     values: IConfigurePlaceFormValues,

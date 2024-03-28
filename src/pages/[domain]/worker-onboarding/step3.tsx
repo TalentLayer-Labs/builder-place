@@ -6,6 +6,12 @@ import OnboardingSteps from '../../../components/OnboardingSteps';
 import { verifyAccount } from '../../../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../../../utils/toast';
 import Loading from '../../../components/Loading';
+import { GetServerSidePropsContext } from 'next';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 
 function onboardingStep3() {
   const { account, workerProfile, loading, refreshWorkerProfile } = useContext(TalentLayerContext);
@@ -57,7 +63,7 @@ function onboardingStep3() {
       ) : (
         <div>
           <OnboardingSteps currentStep={3} type='worker' />
-          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 py-20'>
+          <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Almost there !
