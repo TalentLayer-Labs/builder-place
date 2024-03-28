@@ -60,9 +60,10 @@ const useUpdatePlatform = () => {
       /**
        * @dev Update the platform in DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
+      const subdomain = `${values.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
       await platformMutation.mutateAsync({
         data: {
-          subdomain: values.subdomain,
+          subdomain: subdomain,
           palette: values.palette,
           logo: values.logo,
           name: values.name,
