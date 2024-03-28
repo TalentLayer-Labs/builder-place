@@ -47,16 +47,8 @@ function Dashboard() {
             </div>
           </div>
         ) : (
-          !account?.isConnected && (
+          !user && (
             <div className='max-w-7xl mx-auto text-base-content text-center'>
-              <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
-                <div className='py-2 px-6 sm:px-0 w-full mb-8'>
-                  <p className='text-2xl font-bold flex-1 mt-6'>
-                    <span className='text-base-content ml-1'> Connect your wallet </span>
-                  </p>
-                  <p>You need first to connect your wallet to access your dashboard</p>
-                </div>
-              </div>
               <Steps />
             </div>
           )
