@@ -213,13 +213,20 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
   }
 };
 
-export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
+export const getBuilderPlaceByOwnerTlIdAndId = async (
+  ownerTalentLayerId: string,
+  builderPlaceId: string,
+) => {
   let errorMessage = '';
   try {
-    console.log("getting builderPlace with owner's TlId & postgres id:", ownerTalentLayerId, id);
+    console.log(
+      "getting builderPlace with owner's TlId & postgres id:",
+      ownerTalentLayerId,
+      builderPlaceId,
+    );
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
-        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(id) }],
+        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(builderPlaceId) }],
       },
       include: {
         owner: true,

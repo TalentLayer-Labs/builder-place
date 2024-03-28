@@ -11,31 +11,8 @@ export async function GET(req: Request) {}
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
   const body: IRemoveBuilderPlaceCollaborator = await req.json();
-  //TODO clean this
-  // // Check if the signature is valid
-  // const signatureAddress = await recoverMessageAddress({
-  //   message: `connect with ${body.address}`,
-  //   signature: body.signature,
-  // });
-  //
-  // const user = await getUserByAddress(signatureAddress);
-  //
-  // console.log('user', user?.talentLayerId);
-  // console.log('body', body.data.ownerTalentLayerId);
-  //
-  // if (user?.talentLayerId !== body.data.ownerTalentLayerId) {
-  //   return Response.json({ error: 'Invalid signature' }, { status: 401 });
-  // }
-  //
-  // // Check if the address is owner or collaborator
-  // const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(
-  //   signatureAddress,
-  //   body.data.builderPlaceId,
-  // );
-  //
-  // if (!builderPlace) {
-  //   return Response.json({ error: 'The signer is not owner or collaborator' }, { status: 401 });
-  // }
+  console.log('params', params);
+  console.log('json', body);
 
   try {
     const response = await checkOwnerSignature(
@@ -73,6 +50,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     let status = 500;
     let collaborator: User | null = null;
+
     try {
       collaborator = await prisma.user.findUnique({
         where: {
@@ -95,6 +73,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
           },
         },
       });
+
       console.log('Collaborator removed successfully', body.data.collaboratorAddress);
     } catch (error: any) {
       handleApiError(error, ERROR_REMOVING_BUILDERPLACE_OWNER, status);

@@ -59,6 +59,7 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
 
   const onAddBackendDelegate = async () => {
     try {
+      //TODO add Database route + hook
       setAddCollaboratorSubmitting(true);
       if (collaborator.address && walletClient && publicClient) {
         await toggleDelegation(

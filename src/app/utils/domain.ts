@@ -61,6 +61,9 @@ export const checkOwnerSignature = async (
 
     const builderPlace = await getBuilderPlaceByOwnerTlIdAndId(ownerId, builderPlaceId);
 
+    /**
+     * Check whether the signature is from the BuilderPlace owner
+     */
     if (
       builderPlace &&
       signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()

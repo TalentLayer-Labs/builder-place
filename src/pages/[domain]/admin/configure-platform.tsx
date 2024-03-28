@@ -60,6 +60,7 @@ function ConfigurePlatform(props: InferGetServerSidePropsType<typeof getServerSi
     document.documentElement.style.setProperty('--error-content', palette.errorContent);
   }, [palette]);
 
+  //TODO a delete ?
   if (loading) {
     console.log('no data');
     return (

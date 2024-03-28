@@ -40,6 +40,9 @@ const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
 const validationSchema = Yup.object({
   subdomain: Yup.string().required('Subdomain is required'),
+  //TODO check Yup, try to make the JobConditions work ? Problème, quand on push on ne submit pas,
+  // donc en théorie ça ne passera pas. Faut juste essayer de faire en sorte que
+  // les err messages ne reset pas à chaque change. Un genre de prevent default ?
 
   // tempFormValues: Yup.object({
   //   tempNftAddress: Yup.string().matches(ethAddressRegex, 'Invalid Ethereum address').notRequired(),
