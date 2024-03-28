@@ -16,6 +16,7 @@ import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import DelegationNotification from '../../components/DelegationNotification';
 import { toast } from 'react-toastify';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import ConnectBlock from '../../components/ConnectBlock';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -41,6 +42,9 @@ function Dashboard() {
                 <p>Please connect your wallet to your new custom domain to access your dashboard</p>
               </div>
             </div>
+            <div className='p-8 flex flex-col items-center'>
+              <ConnectBlock />
+            </div>
           </div>
         ) : (
           !account?.isConnected && (
@@ -53,11 +57,10 @@ function Dashboard() {
                   <p>You need first to connect your wallet to access your dashboard</p>
                 </div>
               </div>
+              <Steps />
             </div>
           )
         )}
-
-        <Steps />
       </>
     );
   }
@@ -81,14 +84,7 @@ function Dashboard() {
                   <span className='flex-1 font-bold'>your BuilderPlace</span>
                 </h2>
 
-                {/*{!isComingFromHirerOnboarding && (*/}
-                {/*  <VerifyEmailNotification*/}
-                {/*    callback={() => {*/}
-                {/*      toast.success('Verification email sent!');*/}
-                {/*    }}*/}
-                {/*  />*/}
-                {/*)}*/}
-                {!isComingFromHirerOnboarding && (
+                {isComingFromHirerOnboarding && (
                   <Notification
                     title='personalize your space!'
                     text='customize your Platform to match your brand'
