@@ -91,7 +91,7 @@ export const removeBuilderSubdomain = async (builderPlaceId: number) => {
         id: builderPlaceId,
       },
       data: {
-        subdomain: null,
+        subdomain: undefined,
       },
     });
     return {
@@ -385,6 +385,7 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
   let errorMessage = '';
   try {
     const newBuilderPlace = await prisma.builderPlace.create({
+      // @ts-ignore
       data: {
         name: data.name,
         about: data.about,

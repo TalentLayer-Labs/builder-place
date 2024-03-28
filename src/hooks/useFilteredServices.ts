@@ -41,7 +41,6 @@ const useFilteredServices = (
           offset,
           searchQuery,
           platformId,
-          platformName,
           chainId,
         );
 

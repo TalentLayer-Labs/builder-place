@@ -13,7 +13,7 @@ import TalentLayerID from '../../../contracts/ABI/TalentLayerID.json';
 import { useChainId } from '../../../hooks/useChainId';
 import { useConfig } from '../../../hooks/useConfig';
 import useUserById from '../../../hooks/useUserById';
-import { IWeb3mailPreferences } from '../../../types';
+import { IEmailPreferences } from '../../../types';
 import { postToIPFSwithQuickNode } from '../../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
 import Web3mailCard from './Web3mailCard';
@@ -23,7 +23,7 @@ function Web3mailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseDelegation, refreshData } = useContext(TalentLayerContext);
+  const { user, canUseBackendDelegate, refreshData } = useContext(TalentLayerContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
@@ -33,7 +33,7 @@ function Web3mailPreferencesForm() {
     return <Loading />;
   }
 
-  const initialValues: IWeb3mailPreferences = {
+  const initialValues: IEmailPreferences = {
     activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService || true,
     activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal || true,
     activeOnProposalValidated:
@@ -45,7 +45,7 @@ function Web3mailPreferencesForm() {
   };
 
   const onSubmit = async (
-    values: IWeb3mailPreferences,
+    values: IEmailPreferences,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     if (user && publicClient && walletClient) {
@@ -71,7 +71,7 @@ function Web3mailPreferencesForm() {
         );
 
         let tx;
-        if (canUseDelegation) {
+        if (canUseBackendDelegate) {
           const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
           tx = response.data.transaction;
         } else {
