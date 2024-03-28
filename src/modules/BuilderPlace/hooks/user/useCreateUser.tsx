@@ -74,7 +74,7 @@ const useCreateUser = () => {
             values.talentLayerHandle,
             String(handlePrice),
             address,
-            builderPlace?.talentLayerPlatformId,
+            builderPlace?.talentLayerPlatformId || (process.env.NEXT_PUBLIC_PLATFORM_ID as string),
             signature,
             process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true',
           );
