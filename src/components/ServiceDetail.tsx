@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { useContext } from 'react';
-import TalentLayerContext from '../context/talentLayer';
 import usePaymentsByService from '../hooks/usePaymentsByService';
 import useProposalsByService from '../hooks/useProposalsByService';
 import useReviewsByService from '../hooks/useReviewsByService';
+import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ContactButton from '../modules/Messaging/components/ContactButton';
 import { IService, ProposalStatusEnum, ServiceStatusEnum } from '../types';
 import { formatDate } from '../utils/dates';
@@ -15,11 +16,8 @@ import ProposalItem from './ProposalItem';
 import ReviewItem from './ReviewItem';
 import ServiceStatus from './ServiceStatus';
 import TokenAmount from './TokenAmount';
-import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function ServiceDetail({ service }: { service: IService }) {
-  const { account } = useContext(TalentLayerContext);
   const { user } = useContext(UserContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { reviews } = useReviewsByService(service.id);
@@ -119,7 +117,7 @@ function ServiceDetail({ service }: { service: IService }) {
                     {user ? 'Create proposal' : 'Create an account to create proposal'}
                   </Link>
                 )}
-                {account && (
+                {user && (
                   <ContactButton
                     userAddress={service.buyer?.address}
                     userHandle={service.buyer.handle}
@@ -135,7 +133,7 @@ function ServiceDetail({ service }: { service: IService }) {
                   userToReview={isBuyer ? service.seller : service.buyer}
                 />
               )}
-            {account && (isBuyer || isSeller) && service.status !== ServiceStatusEnum.Opened && (
+            {user && (isBuyer || isSeller) && service.status !== ServiceStatusEnum.Opened && (
               <PaymentModal
                 service={service}
                 payments={payments}

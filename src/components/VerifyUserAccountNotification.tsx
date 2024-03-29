@@ -18,7 +18,7 @@ const VerifyUserAccountNotification = ({ callback }: VerifyAccountNotificationPr
   const [showNotification, setShowNotification] = useState(true);
 
   const onVerifyAccount = async () => {
-    if (walletClient && user?.id && user?.id && address) {
+    if (walletClient && user?.id && address) {
       try {
         /**
          * @dev Sign message to prove ownership of the address

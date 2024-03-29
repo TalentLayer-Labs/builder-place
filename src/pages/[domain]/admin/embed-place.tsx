@@ -2,8 +2,6 @@ import { CheckCircle, ClipboardCopy } from 'heroicons-react';
 import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import AccessDenied from '../../../components/AccessDenied';
-import Loading from '../../../components/Loading';
-import TalentLayerContext from '../../../context/talentLayer';
 import useCopyToClipBoard from '../../../hooks/useCopyToClipBoard';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
@@ -16,7 +14,6 @@ const BASE_URL = global?.location?.origin;
 const IFRAME_PATH = 'embed/work';
 
 const generateEmbedWorkUrl = (title: string) => {
-  // ?title=${title}
   return `${BASE_URL}/${IFRAME_PATH}`;
 };
 
@@ -25,17 +22,8 @@ const generateServicesEmbedIframeCode = (embedUrl: string): string => {
 };
 
 export default function EmbedPlace() {
-  const { loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
-
-  // if (loading) {
-  //   return (
-  //     <div className='flex justify-center items-center gap-10 flex-col pb-5 mt-5'>
-  //       <Loading />
-  //     </div>
-  //   );
-  // }
 
   if (!isBuilderPlaceCollaborator) {
     return <AccessDenied />;

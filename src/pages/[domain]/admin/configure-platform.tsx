@@ -5,8 +5,8 @@ import AccessDenied from '../../../components/AccessDenied';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
 import ConfigurePlatformForm from '../../../components/ConfigurePlatform/ConfigurePlatformForm';
 import Loading from '../../../components/Loading';
-import TalentLayerContext from '../../../context/talentLayer';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -14,7 +14,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function ConfigurePlatform(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { loading } = useContext(TalentLayerContext);
+  const { loading } = useContext(UserContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
 
   //TODO a delete ?

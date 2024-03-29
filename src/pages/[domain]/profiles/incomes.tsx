@@ -24,7 +24,7 @@ function Incomes() {
         </p>
       </div>
       <div>
-        <div className='mb-6'>{user?.id && <UserIncomes id={user.talentLayerId} />}</div>
+        <div className='mb-6'>{user?.talentLayerId && <UserIncomes id={user.talentLayerId} />}</div>
       </div>
     </div>
   );

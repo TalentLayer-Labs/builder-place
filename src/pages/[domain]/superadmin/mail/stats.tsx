@@ -4,12 +4,11 @@ import { GetServerSidePropsContext } from 'next';
 import dynamic from 'next/dynamic';
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
-import Steps from '../../../../components/Steps';
 import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
+import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import useEmailStats from '../../../../modules/Web3mail/hooks/useEmailStats';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -23,17 +22,14 @@ const EmailNotificationsChart = dynamic(
 );
 
 function EmailNotificationsStats() {
-  const { user, loading } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { emailStats, loading: statsLoading } = useEmailStats();
 
-  if (loading || !emailStats) {
+  if (loading || !emailStats || !talentLayerUser) {
     return <Loading />;
   }
-  if (!user) {
-    return <Steps />;
-  }
-  if (user?.id != builderPlace?.owner.talentLayerId) {
+  if (talentLayerUser?.id != builderPlace?.owner.talentLayerId) {
     return <UserNeedsMoreRights />;
   }
 

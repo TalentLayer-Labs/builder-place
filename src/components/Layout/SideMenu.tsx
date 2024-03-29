@@ -18,7 +18,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 function SideMenu() {
-  const { user } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);
   const workerNavigation = getWorkerNavigation(builderPlace?.jobPostingConditions?.allowPosts);

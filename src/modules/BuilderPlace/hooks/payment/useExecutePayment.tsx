@@ -15,7 +15,7 @@ const useExecutePayment = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
   const executePayment = async (
@@ -35,13 +35,15 @@ const useExecutePayment = () => {
 
     if (
       // account?.isConnected === true &&
-      user?.id &&
+      talentLayerUser?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
-      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : talentLayerUser.id;
       let tx: Address;
 
       try {

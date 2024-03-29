@@ -1,28 +1,27 @@
 import { useContext } from 'react';
-import TalentLayerContext from '../context/talentLayer';
+import { useAccount } from 'wagmi';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
 import OnboardingRedirectButton from './OnboardingRedirectButton';
-import UserContext from '../modules/BuilderPlace/context/UserContext';
 
-function Steps({ handle }: { handle?: string }) {
-  const { account, loading: talentLayerDataLoading } = useContext(TalentLayerContext);
+function Steps() {
+  const { isConnected } = useAccount();
   const { user, loading } = useContext(UserContext);
 
-  if (loading || talentLayerDataLoading) {
+  if (loading) {
     return <Loading />;
   }
 
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       <div className='flex items-center justify-center w-full flex-col'>
-        {!account?.isConnected && (
+        {!isConnected && (
           <div className='p-8 flex flex-col items-center'>
             <ConnectBlock />
           </div>
         )}
-        {/*{account?.isConnected && !user && <TalentLayerIdForm handle={handle} />}*/}
-        {account?.isConnected && !user && <OnboardingRedirectButton />}
+        {isConnected && !user && <OnboardingRedirectButton />}
       </div>
     </div>
   );

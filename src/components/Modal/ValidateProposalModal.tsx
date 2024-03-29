@@ -1,32 +1,31 @@
 import { Check, X } from 'heroicons-react';
 import { useState } from 'react';
-import { useBalance } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import { FEE_RATE_DIVIDER } from '../../config';
 import { validateProposal } from '../../contracts/acceptProposal';
 import useFees from '../../hooks/useFees';
 import ContactButton from '../../modules/Messaging/components/ContactButton';
-import { IAccount, IProposal } from '../../types';
-import { renderTokenAmount } from '../../utils/conversion';
-import Step from '../Step';
+import { IProposal } from '../../types';
 import { ZERO_ADDRESS } from '../../utils/constant';
+import { renderTokenAmount } from '../../utils/conversion';
 import AsyncButton from '../AsyncButton';
+import Step from '../Step';
 
 function ValidateProposalModal({
   proposal,
-  account,
   callBack,
 }: {
   proposal: IProposal;
-  account: IAccount;
   callBack?: () => void;
 }) {
+  const { address } = useAccount();
   const [show, setShow] = useState(false);
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
 
-  const { data: ethBalance } = useBalance({ address: account.address });
+  const { data: ethBalance } = useBalance({ address: address });
   const isProposalUseEth: boolean = proposal.rateToken.address === ZERO_ADDRESS;
   const { data: tokenBalance } = useBalance({
-    address: account.address,
+    address: address,
     enabled: !isProposalUseEth,
     token: proposal.rateToken.address,
   });

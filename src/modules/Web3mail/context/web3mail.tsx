@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useChainId } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import TalentLayerContext from '../../../context/talentLayer';
 import { NetworkEnum } from '../../../types';
 import { log } from '../../../utils/log';
@@ -31,7 +31,7 @@ const Web3MailContext = createContext<{
 });
 
 const Web3MailProvider = ({ children }: { children: ReactNode }) => {
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
   const chainId = useChainId();
   const [platformHasAccess, setPlatformHasAccess] = useState(false);
   const [emailIsProtected, setEmailIsProtected] = useState(false);

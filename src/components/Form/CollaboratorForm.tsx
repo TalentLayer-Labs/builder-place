@@ -1,5 +1,6 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
 import { showErrorTransactionToast } from '../../utils/toast';
@@ -28,10 +29,10 @@ const initialValues: IFormValues = {
   collaborator: '',
 };
 export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
-  const { user } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, } = useContext(TalentLayerContext);
   const { addCollaborator } = useAddCollaborator();
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
 

@@ -1,32 +1,30 @@
 import { ChartBarIcon } from '@heroicons/react/24/outline';
 import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
+import { useAccount } from 'wagmi';
 import { ContactListForm } from '../../../../components/Form/ContactSelectForm';
 import Loading from '../../../../components/Loading';
-import Steps from '../../../../components/Steps';
 import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { EmailNotificationType } from '../../../../types';
+import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Mail() {
-  const { user, account, loading } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const emailNotificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
       : EmailNotificationType.WEB2;
 
-  if (loading) {
+  if (loading || !talentLayerUser) {
     return <Loading />;
-  }
-  if (!user) {
-    return <Steps />;
   }
   if (!isBuilderPlaceCollaborator) {
     return <UserNeedsMoreRights />;
@@ -54,7 +52,7 @@ function Mail() {
       {builderPlace && (
         <ContactListForm
           builderPlaceId={builderPlace?.id}
-          userId={user.id}
+          userId={talentLayerUser.id}
           address={account?.address}
         />
       )}

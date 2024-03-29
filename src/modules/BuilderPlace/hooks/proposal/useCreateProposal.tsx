@@ -15,7 +15,7 @@ const useCreateProposal = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
 
@@ -31,7 +31,7 @@ const useCreateProposal = () => {
     await wait(2);
 
     if (
-      user?.id &&
+      talentLayerUser?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
@@ -72,7 +72,7 @@ const useCreateProposal = () => {
 
           proposalResponse = await delegateCreateProposal({
             chainId,
-            userId: user.id,
+            userId: talentLayerUser.id,
             userAddress: address,
             serviceId,
             rateToken: values.rateToken,
@@ -87,7 +87,7 @@ const useCreateProposal = () => {
           //TODO: update SDK - add platformId in params
           proposalResponse = await talentLayerClient?.proposal.create(
             proposal,
-            user.id,
+            talentLayerUser.id,
             serviceId,
             values.rateToken,
             parsedRateAmountString,
@@ -102,7 +102,7 @@ const useCreateProposal = () => {
           chainId,
           {
             pending: 'Transaction processing...',
-            success: 'Congrats! Your open-source post has been created',
+            success: 'Congrats! Your proposal has been created',
             error: 'An error occurred while creating your post',
           },
           publicClient,
