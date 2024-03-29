@@ -41,10 +41,6 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
     try {
       setRemoveCollaboratorSubmitting(!!address);
 
-      console.log('delegates', delegates);
-      console.log('address', address);
-      console.log('userId', userId);
-
       await removeCollaborator(address, delegates, collaborator.id.toString(), userId);
       toast.success('Collaborator removed');
     } catch (error) {
@@ -59,7 +55,6 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
 
   const onAddBackendDelegate = async () => {
     try {
-      //TODO add Database route + hook
       setAddCollaboratorSubmitting(true);
       if (collaborator.address && walletClient && publicClient) {
         await toggleDelegation(

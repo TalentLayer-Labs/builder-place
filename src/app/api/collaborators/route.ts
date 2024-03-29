@@ -1,17 +1,18 @@
-import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
 import { checkOwnerSignature, isCollaboratorExists } from '../../utils/domain';
 import { EntityStatus, User } from '.prisma/client';
 import prisma from '../../../postgre/postgreClient';
 import { logAndReturnApiError } from '../../utils/handleApiErrors';
 import {
+  COLLABORATOR_ALREADY_EXISTS,
+  COLLABORATOR_NOT_FOUND,
   ERROR_ADDING_COLLABORATOR,
-  USER_NOT_FOUND,
   USER_PROFILE_NOT_VERIFIED,
 } from '../../../modules/BuilderPlace/apiResponses';
+import { IAddBuilderPlaceCollaborator } from '../../../components/Form/CollaboratorForm';
 
 export async function POST(req: Request) {
   console.log('POST');
-  const body: IRemoveBuilderPlaceCollaborator = await req.json();
+  const body: IAddBuilderPlaceCollaborator = await req.json();
   console.log('json', body);
 
   try {
@@ -22,17 +23,12 @@ export async function POST(req: Request) {
       body.address,
     );
 
-    /**
-     * @dev: Check whether the collaborator exists
-     */
     const existingCollaborators: User[] = response?.builderPlace?.collaborators || [];
 
     if (isCollaboratorExists(existingCollaborators, body.data.collaboratorAddress)) {
-      console.log('Collaborator already exists');
-      return Response.json({ error: 'Already a collaborator' }, { status: 400 });
+      console.log(COLLABORATOR_ALREADY_EXISTS);
+      return Response.json({ error: COLLABORATOR_ALREADY_EXISTS }, { status: 400 });
     }
-
-    console.log('Adding collaborator', body.data.collaboratorAddress);
 
     const newCollaborator = await prisma.user.findUnique({
       where: {
@@ -41,11 +37,10 @@ export async function POST(req: Request) {
     });
 
     if (!newCollaborator) {
-      console.log(USER_NOT_FOUND);
-      return Response.json({ error: USER_NOT_FOUND }, { status: 400 });
+      console.log(COLLABORATOR_NOT_FOUND);
+      return Response.json({ error: COLLABORATOR_NOT_FOUND }, { status: 400 });
     }
 
-    //TODO still useful?
     if (newCollaborator?.status === EntityStatus.PENDING) {
       console.log(USER_PROFILE_NOT_VERIFIED);
       return Response.json({ error: USER_PROFILE_NOT_VERIFIED }, { status: 400 });

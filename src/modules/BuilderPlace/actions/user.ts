@@ -27,6 +27,7 @@ import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { IQueryData } from '../../../pages/api/domain/get-verified-users-email-notification-data';
 import { UsersFilters } from '../../../app/api/users/route';
+import { User } from '@prisma/client';
 
 export const getUserByAddress = async (userAddress: string, res?: NextApiResponse) => {
   let errorMessage = '';
@@ -185,7 +186,7 @@ export const getUserById = async (id: string) => {
   let errorMessage = '';
   try {
     console.log('Getting User Profile with id:', id);
-    const userProfile = await prisma.user.findUnique({
+    const userProfile: User = await prisma.user.findUnique({
       where: {
         id: Number(id),
       },
