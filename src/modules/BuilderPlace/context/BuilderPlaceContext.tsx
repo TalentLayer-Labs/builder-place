@@ -20,6 +20,7 @@ const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; childre
   const [isBuilderPlaceCollaborator, setIsBuilderPlaceCollaborator] = useState<boolean>(false);
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
   const ownerTalentLayerHandle = data?.owner?.talentLayerHandle;
+
   const fetchBuilderPlaceOwner = async () => {
     if (!ownerTalentLayerHandle) {
       return;

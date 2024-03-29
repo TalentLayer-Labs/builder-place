@@ -88,7 +88,7 @@ function SideMenu() {
             </nav>
           )}
 
-          {user?.isAdmin && (
+          {/* {user?.isAdmin && (
             <div className='pt-4'>
               <h2 className='text-base-content font-bold ml-3 mt-6'>PLATFORM</h2>
               <nav className='space-y-1 mt-6'>
@@ -103,7 +103,7 @@ function SideMenu() {
                 ))}
               </nav>
             </div>
-          )}
+          )} */}
         </nav>
       </div>
       <div className='mt-8 flex flex-1 flex-col items-center justify-end pb-4'>
