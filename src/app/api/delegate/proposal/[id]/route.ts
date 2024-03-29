@@ -28,7 +28,7 @@ export interface IUpdateProposal {
 }
 
 /**
- * POST /api/delegate/proposal
+ * PUT /api/delegate/proposal
  */
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');

@@ -5,7 +5,7 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../../utils/delegate';
-import TalentLayerId from '../../../../../contracts/ABI/TalentLayerId.json';
+import TalentLayerId from '../../../../../contracts/ABI/TalentLayerID.json';
 import {
   getUserByAddress,
   getUserByTalentLayerId,

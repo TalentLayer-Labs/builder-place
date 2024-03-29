@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { formatUnits } from 'viem';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
