@@ -14,24 +14,24 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Profile() {
   const router = useRouter();
   const { id } = router.query;
-  const user = useUserById(id as string);
+  const talentLayerUser = useUserById(id as string);
 
-  if (!user) {
+  if (!talentLayerUser) {
     return <Loading />;
   }
 
   return (
     <div className='mx-auto text-base-content'>
-      {user && (
+      {talentLayerUser && (
         <>
           <div className='mb-6'>
-            <WorkerPublicDetail user={user} />
+            <WorkerPublicDetail talentLayerUser={talentLayerUser} />
           </div>
           <div className='mb-6'>
-            <UserServices user={user} type='seller' />
+            <UserServices user={talentLayerUser} type='seller' />
           </div>
           <div className='mb-6'>
-            <LensModule address={user.address} />
+            <LensModule address={talentLayerUser.address} />
           </div>
         </>
       )}
