@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import ConnectBlock from './ConnectBlock';
 import Loading from './Loading';
-import OnboardingRedirectButton from './RedirectToOnboardingButton';
+import OnboardingRedirectButton from './OnboardingRedirectButton';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function Steps({ handle }: { handle?: string }) {

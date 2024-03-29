@@ -2,13 +2,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { useDisconnect } from 'wagmi';
-import TalentLayerContext from '../context/talentLayer';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { truncateAddress } from '../utils';
-import ProfileImage from './ProfileImage';
 import DelegatedTransactionCounter from './DelegatedTransactionCounter';
+import ProfileImage from './ProfileImage';
 
 function UserSubMenu() {
-  const { account, user } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const router = useRouter();
   const { disconnect } = useDisconnect();
 
@@ -24,17 +24,17 @@ function UserSubMenu() {
         <div
           className='relative mx-auto flex h-20 w-20 items-center justify-center rounded-full'
           role='none'>
-          <ProfileImage size={50} url={user?.description?.image_url} />
+          <ProfileImage size={50} url={user?.picture} />
         </div>
         <div className='mt-3' role='none'>
           <h6
             className='font-heading text-base-content opacity-50 text-sm font-medium '
             role='none'>
             {' '}
-            {user?.handle}{' '}
+            {user?.name}{' '}
           </h6>
           <p className='text-base-content mb-4 font-sans text-xs' role='none'>
-            {account?.address && truncateAddress(account.address)}
+            {user?.address && truncateAddress(user.address)}
           </p>
           {user && (
             <div>
