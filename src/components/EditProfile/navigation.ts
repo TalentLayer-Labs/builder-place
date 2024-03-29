@@ -20,13 +20,13 @@ export const navigation = () => {
     //   icon: StarIcon,
     //   current: false,
     // },
-    // {
-    //   name: 'notifications',
-    //   href: '/profiles/edit/privacy',
-    //   icon: BellAlertIcon,
-    //   current: false,
-    //   completitonKey: 'web3mail',
-    // },
+    {
+      name: 'notifications',
+      href: '/profiles/edit/privacy',
+      icon: BellAlertIcon,
+      current: false,
+      completitonKey: 'web3mail',
+    },
     // {
     //   name: 'Settings',
     //   href: '/profiles/edit/settings',
