@@ -34,7 +34,7 @@ export default function Collaborators() {
       <AdminSettingsLayout title={'Collaborators'}>
         <div className={'flex flex-col'}>
           <CollaboratorForm />
-          {builderPlace?.collaborators?.length > 1 && (
+          {builderPlace?.collaborators && builderPlace.collaborators.length > 1 && (
             <div className='mt-10'>
               <span className='text-base-content font-bold border-base-300 pb-2'>
                 Collaborators
