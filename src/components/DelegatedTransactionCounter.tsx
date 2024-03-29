@@ -12,10 +12,10 @@ const renderTxNumber = (sentTransactionsNumber: number) => {
 };
 
 const getWaitingPeriodInDays = (lastTxTime: number) => {
-  const oneWeekAgoMilliseconds = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000).getTime();
-  const differenceInMilliseconds = lastTxTime - oneWeekAgoMilliseconds;
+  const oneWeekAgoSeconds = Math.floor((new Date().getTime() - 7 * 24 * 60 * 60 * 1000) / 1000);
+  const differenceInSeconds = lastTxTime - oneWeekAgoSeconds;
 
-  return Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
+  return Math.ceil(differenceInSeconds / (60 * 60 * 24));
 };
 
 const renderWaitPeriod = (lastTxTime: number) => {

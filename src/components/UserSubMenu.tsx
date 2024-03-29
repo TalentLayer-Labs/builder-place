@@ -6,11 +6,20 @@ import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { truncateAddress } from '../utils';
 import DelegatedTransactionCounter from './DelegatedTransactionCounter';
 import ProfileImage from './ProfileImage';
+import TalentLayerContext from '../context/talentLayer';
 
 function UserSubMenu() {
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { user } = useContext(UserContext);
   const router = useRouter();
   const { disconnect } = useDisconnect();
+
+  const canUseBackendDelegation =
+    user?.isEmailVerified &&
+    process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
+    talentLayerUser?.delegates &&
+    talentLayerUser.delegates.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()) !==
+      -1;
 
   if (!user) {
     return null;
@@ -44,7 +53,9 @@ function UserSubMenu() {
                 role='none'>
                 manage account
               </Link>
-              {process.env.NEXT_PUBLIC_DELEGATE_ADDRESS && <DelegatedTransactionCounter />}
+              {process.env.NEXT_PUBLIC_DELEGATE_ADDRESS && canUseBackendDelegation && (
+                <DelegatedTransactionCounter />
+              )}
             </div>
           )}
         </div>

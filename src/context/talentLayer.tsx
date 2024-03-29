@@ -138,6 +138,10 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   // Check whether all conditions are met to use the backend delegate
   useEffect(() => {
     if (user && workerProfile) {
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
+      const counterWillReset = workerProfile.counterStartDate < oneWeekAgoSeconds;
+
       const userHasDelegatedToPlatform =
         process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
         user.delegates &&
@@ -149,7 +153,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
           !!userHasDelegatedToPlatform &&
-          !userHasReachedDelegationLimit &&
+          (!userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset)) &&
           !!workerProfile?.isEmailVerified,
       );
     }
