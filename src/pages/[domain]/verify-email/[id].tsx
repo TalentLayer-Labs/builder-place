@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useVerifyEmailMutation } from '../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
-import Loading from '../../components/Loading';
+import { useVerifyEmailMutation } from '../../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
+import Loading from '../../../components/Loading';
 import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
-} from '../../modules/BuilderPlace/apiResponses';
+} from '../../../modules/BuilderPlace/apiResponses';
 import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -16,9 +16,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const verifyEmail = () => {
   const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
   const router = useRouter();
+  const { query } = router;
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [pageResponse, setPageResponse] = useState('Missing Id');
+
+  console.log('verifyEmail', { id, query });
+  console.log('verifyEmail', { router });
 
   useEffect(() => {
     if (id) {
