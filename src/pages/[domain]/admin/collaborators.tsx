@@ -15,21 +15,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function Collaborators() {
-  const { user } = useContext(TalentLayerContext);
-  const delegates = user?.delegates;
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const delegates = talentLayerUser?.delegates;
   const config = useConfig();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const [filter, setFilter] = useState('');
 
-  if (user?.id != builderPlace?.owner.talentLayerId) {
+  if (talentLayerUser?.id != builderPlace?.owner.talentLayerId) {
     return <AccessDenied />;
   }
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
-
-  console.log(delegates);
 
   return (
     <div>
@@ -61,7 +59,7 @@ export default function Collaborators() {
                 return (
                   <CollaboratorCard
                     collaborator={collaborator}
-                    userId={user.id}
+                    userId={talentLayerUser.id}
                     delegates={delegates}
                     config={config}
                   />

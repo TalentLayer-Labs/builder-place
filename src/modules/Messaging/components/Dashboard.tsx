@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
-import { useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import Steps from '../../../components/Steps';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
@@ -13,10 +13,12 @@ import { ChatMessageStatus, XmtpChatMessage } from '../utils/types';
 import CardHeader from './CardHeader';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
+import UserContext from '../../BuilderPlace/context/UserContext';
 
 function Dashboard() {
   const chainId = useChainId();
-  const { account, user } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user } = useContext(UserContext);
   const { data: walletClient } = useWalletClient({
     chainId,
   });

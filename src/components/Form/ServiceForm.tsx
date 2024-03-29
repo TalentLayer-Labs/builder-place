@@ -19,6 +19,7 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
 import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { useAccount } from 'wagmi';
 
 export interface ICreateServiceFormValues {
   title: string;
@@ -37,7 +38,8 @@ function ServiceForm({
 }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { account, refreshWorkerProfile, canUseBackendDelegate } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { refreshWorkerProfile, canUseBackendDelegate } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const router = useRouter();

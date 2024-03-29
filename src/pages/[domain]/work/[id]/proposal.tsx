@@ -1,32 +1,34 @@
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
+import { useAccount } from 'wagmi';
+import AccessDenied from '../../../../components/AccessDenied';
 import ProposalForm from '../../../../components/Form/ProposalForm';
 import Loading from '../../../../components/Loading';
 import NotFound from '../../../../components/NotFound';
 import Steps from '../../../../components/Steps';
-import TalentLayerContext from '../../../../context/talentLayer';
 import useProposalById from '../../../../hooks/useProposalById';
 import useServiceById from '../../../../hooks/useServiceById';
+import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../../../modules/BuilderPlace/context/UserContext';
 import ConnectButton from '../../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../../modules/Messaging/context/messging';
 import { ProposalStatusEnum, ServiceStatusEnum } from '../../../../types';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import AccessDenied from '../../../../components/AccessDenied';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function CreateOrEditProposal() {
-  const { account, user } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { userExists } = useContext(MessagingContext);
   const router = useRouter();
   const { id } = router.query;
   const { service, isLoading } = useServiceById(id as string);
-  const existingProposal = useProposalById(`${id}-${user?.id}`);
+  const existingProposal = useProposalById(`${id}-${user?.talentLayerId}`);
 
   if (isLoading) {
     return <Loading />;
@@ -40,7 +42,7 @@ function CreateOrEditProposal() {
     return <NotFound />;
   }
 
-  if (user?.id === service.buyer.id) {
+  if (user?.talentLayerId === service.buyer.id) {
     return <AccessDenied customText={"You can't post a proposal for your own service."} />;
   }
 

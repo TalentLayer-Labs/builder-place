@@ -1,6 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useRouter } from 'next/router';
+import { useContext, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { useAccount } from 'wagmi';
+import ConnectBlock from '../../components/ConnectBlock';
+import DelegationNotification from '../../components/DelegationNotification';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
 import UserDetail from '../../components/UserDetail';
@@ -8,28 +13,25 @@ import UserGains from '../../components/UserGains';
 import UserPayments from '../../components/UserPayments';
 import UserProposals from '../../components/UserProposals';
 import UserServices from '../../components/UserServices';
+import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-import { useRouter } from 'next/router';
-import VerifyEmailNotification from '../../components/VerifyEmailNotification';
-import DelegationNotification from '../../components/DelegationNotification';
-import { toast } from 'react-toastify';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import ConnectBlock from '../../components/ConnectBlock';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Dashboard() {
-  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user: talentLayerUser } = useContext(TalentLayerContext); // Add refreshData
   const { user } = useContext(UserContext);
   const router = useRouter();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const isComingFromHirerOnboarding = router.asPath.includes('platformonboarding');
 
-  if (!talentLayerUser || !user) {
+  if (!user) {
     return (
       <>
         {isComingFromHirerOnboarding ? (
@@ -99,14 +101,14 @@ function Dashboard() {
               {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
-                  <span className='flex-1 font-bold'>contributor profile</span>
+                  <span className='flex-1 font-bold'>your profile</span>
                   <Link
                     className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm  rounded-xl'
                     href={`/profiles/edit`}>
                     Edit
                   </Link>
                 </h2>
-                <UserDetail user={talentLayerUser} />
+                <UserDetail />
               </div>
               <div className='mb-12'>
                 <UserPayments user={talentLayerUser} />

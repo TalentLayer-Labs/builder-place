@@ -16,6 +16,7 @@ import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 interface IFormValues {
   title?: string;
@@ -34,25 +35,32 @@ const validationSchema = Yup.object({
 function ProfileForm({ callback }: { callback?: () => void }) {
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseBackendDelegate, refreshData, refreshWorkerProfile } =
-    useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
+  const {
+    user: talentLayerUser,
+    canUseBackendDelegate,
+    refreshData,
+    refreshWorkerProfile,
+  } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const [aiLoading, setAiLoading] = useState(false);
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
+  const userDescription = talentLayerUser?.id
+    ? useUserById(talentLayerUser?.id)?.description
+    : null;
   const talentLayerClient = useTalentLayerClient();
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
 
   const initialValues: IFormValues = {
     title: userDescription?.title || '',
     role: userDescription?.role || '',
-    image_url: userDescription?.image_url || '',
+    image_url: userDescription?.image_url || user?.picture || '',
     video_url: userDescription?.video_url || '',
-    name: userDescription?.name || '',
+    name: userDescription?.name || user?.name || '',
     about: userDescription?.about || '',
     skills: userDescription?.skills_raw || '',
   };
@@ -71,7 +79,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && walletClient && publicClient && talentLayerClient) {
+    if (talentLayerUser && walletClient && publicClient && talentLayerClient) {
       try {
         const profile = {
           title: values.title,
@@ -81,17 +89,22 @@ function ProfileForm({ callback }: { callback?: () => void }) {
           name: values.name,
           about: values.about,
           skills: values.skills,
-          web3mailPreferences: user.description?.web3mailPreferences,
+          web3mailPreferences: talentLayerUser.description?.web3mailPreferences,
         };
 
         let cid = await talentLayerClient.profile.upload(profile);
 
         let tx;
         if (canUseBackendDelegate) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
+          const response = await delegateUpdateProfileData(
+            chainId,
+            talentLayerUser.id,
+            talentLayerUser.address,
+            cid,
+          );
           tx = response.data.transaction;
         } else {
-          const res = await talentLayerClient?.profile.update(profile, user.id);
+          const res = await talentLayerClient?.profile.update(profile, talentLayerUser.id);
 
           tx = res.tx;
           cid = res.cid;

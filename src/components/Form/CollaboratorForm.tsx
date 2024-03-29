@@ -1,6 +1,6 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
 import { useChainId } from '../../hooks/useChainId';
@@ -33,12 +33,13 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
   const config = useConfig();
   const { mutateAsync: addBuilderPlaceCollaboratorAsync } = useAddBuilderPlaceCollaborator();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { user, account, refreshData } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
+  const { address } = useAccount();
   const { getUser } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
 
@@ -50,7 +51,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      if (walletClient && account?.address && builderPlace?.id) {
+      if (walletClient && address && builderPlace?.id) {
         setSubmitting(true);
 
         if (
@@ -63,8 +64,8 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
          * @dev Sign message to prove ownership of the address
          */
         const signature = await walletClient.signMessage({
-          account: account.address,
-          message: `connect with ${account.address}`,
+          account: address,
+          message: `connect with ${address}`,
         });
 
         /**
@@ -72,10 +73,10 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
          * The collaborator must have a BuilderPlace profile & TalentLayer Id
          */
         const response = await addBuilderPlaceCollaboratorAsync({
-          ownerId: user.id,
+          ownerId: talentLayerUser.id,
           builderPlaceId: builderPlace.id,
           newCollaboratorAddress: values.collaborator,
-          address: account.address,
+          address: address,
           signature,
         });
         if (response?.error) {
@@ -83,13 +84,13 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
         }
 
         // if address is not delegated yet on chain
-        if (!user.delegates?.includes(values.collaborator.toLowerCase())) {
+        if (!talentLayerUser.delegates?.includes(values.collaborator.toLowerCase())) {
           /**
            * @dev Add the new collaborator as a delegate to the BuilderPlace owner
            */
           await toggleDelegation(
             chainId,
-            user.id,
+            talentLayerUser.id,
             config,
             values.collaborator,
             publicClient,

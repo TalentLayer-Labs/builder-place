@@ -32,7 +32,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function AdminPresentation() {
-  const { user, loading } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const platformDescription = platform?.description;
@@ -45,10 +45,7 @@ function AdminPresentation() {
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
-    return <Steps />;
-  }
-  if (!user.isAdmin) {
+  if (!talentLayerUser?.isAdmin) {
     return <UserNeedsMoreRights />;
   }
 
@@ -63,7 +60,7 @@ function AdminPresentation() {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && publicClient && walletClient && talentLayerClient) {
+    if (talentLayerUser && publicClient && walletClient && talentLayerClient) {
       try {
         const { tx, cid } = await talentLayerClient.platform.update({
           about: values.about,

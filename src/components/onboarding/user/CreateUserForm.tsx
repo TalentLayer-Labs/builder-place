@@ -81,7 +81,6 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
 
       await createNewUser(values);
       await getUser();
-      // TODO: not sure if useful, probably not indexed yet
       await refreshData();
 
       /**
