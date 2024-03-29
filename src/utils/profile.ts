@@ -26,7 +26,7 @@ const pointsByUserDetailsFields = {
 };
 
 const pointsByWeb3mailFields = {
-  activeOnNewProposal: 50,
+  activeOnNewProposal: 0,
 };
 
 export const getCompletionScores = (user: IUser): ICompletionScores => {
