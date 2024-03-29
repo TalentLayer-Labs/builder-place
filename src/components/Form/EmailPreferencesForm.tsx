@@ -13,7 +13,11 @@ import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
 import { EmailNotificationType, IEmailPreferences } from '../../types';
 import { postToIPFSwithQuickNode } from '../../utils/ipfs';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
+import {
+  createMultiStepsTransactionToast,
+  showErrorTransactionToast,
+  wait,
+} from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
 import { useUpdateEmailNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailNotificationPreferencesMutation';
@@ -123,11 +127,26 @@ function EmailPreferencesForm() {
 
         let tx;
         if (canUseBackendDelegate && address) {
+          console.log('DELEGATION');
+
+          await wait(2);
+
+          /**
+           * @dev Sign message to prove ownership of the address
+           */
+          const signature = await walletClient.signMessage({
+            account: address,
+            message: `connect with ${address}`,
+          });
+
           const response = await delegateUpdateProfileData(
-            chainId,
+            {
+              chainId,
+              userAddress: address,
+              cid,
+              signature,
+            },
             user.talentLayerId,
-            address,
-            cid,
           );
           tx = response.data.transaction;
         } else {
