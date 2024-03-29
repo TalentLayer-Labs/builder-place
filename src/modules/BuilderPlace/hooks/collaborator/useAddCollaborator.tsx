@@ -6,8 +6,8 @@ import { useConfig } from '../../../../hooks/useConfig';
 import { useMutation } from 'react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/[domain]/admin/collaborator-card';
 import TalentLayerContext from '../../../../context/talentLayer';
+import { IAddBuilderPlaceCollaborator } from '../../../../components/Form/CollaboratorForm';
 
 const useAddCollaborator = () => {
   const chainId = useChainId();
@@ -19,7 +19,7 @@ const useAddCollaborator = () => {
   const { address } = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const collaboratorMutation = useMutation(
-    async (body: IRemoveBuilderPlaceCollaborator): Promise<AxiosResponse<{ id: string }>> => {
+    async (body: IAddBuilderPlaceCollaborator): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.post(`/api/collaborators`, body);
     },
   );

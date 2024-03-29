@@ -11,6 +11,8 @@ import { IMutation } from '../../types';
 
 export interface IAddBuilderPlaceCollaborator
   extends IMutation<{
+    ownerTalentLayerId: string;
+    builderPlaceId: string;
     collaboratorAddress: string;
   }> {}
 interface IFormValues {
