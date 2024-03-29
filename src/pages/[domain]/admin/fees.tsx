@@ -50,7 +50,7 @@ function AdminFees() {
         <SingleValueForm
           validationData={{
             validationSchema: Yup.object({
-              'Fees (in %) on escrow for bringing the service': Yup.number()
+              'Fees (in %) on escrow transaction': Yup.number()
                 .required('value is required')
                 .min(0)
                 .max(100),
@@ -65,13 +65,13 @@ function AdminFees() {
             contractEntity: 'platform',
             contractInputs: builderPlace?.talentLayerPlatformId,
           }}
-          valueName={'Fees (in %) on escrow for bringing the service'}
+          valueName={'Fees (in %) on escrow transaction'}
         />
 
         <SingleValueForm
           validationData={{
             validationSchema: Yup.object({
-              [`Fees (in ${currentChain?.nativeCurrency.symbol}) asked by the platform to post a service on the platform`]:
+              [`Fees (in ${currentChain?.nativeCurrency.symbol}) asked to post a service on the platform`]:
                 Yup.number().required('value is required'),
             }),
             valueType: 'number',
@@ -86,7 +86,7 @@ function AdminFees() {
             contractEntity: 'platform',
             contractInputs: builderPlace?.talentLayerPlatformId,
           }}
-          valueName={`Fees (in ${currentChain?.nativeCurrency.symbol}) asked by the platform to post a service on the platform`}
+          valueName={`Fees (in ${currentChain?.nativeCurrency.symbol}) asked to post a service on the platform`}
         />
       </div>
     </div>

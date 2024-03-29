@@ -55,11 +55,17 @@ export const ownerAdminNavigation: MenuItem[] = [
     current: false,
   },
   {
-    name: 'add collaborators',
-    href: '/admin/collaborators',
-    icon: UserPlusIcon,
+    name: 'dispute',
+    href: `/admin/dispute`,
+    icon: ExclamationCircleIcon,
     current: false,
   },
+  // {
+  //   name: 'add collaborators',
+  //   href: '/admin/collaborators',
+  //   icon: UserPlusIcon,
+  //   current: false,
+  // },
 ];
 
 export const workerNavigation: MenuItem[] = [

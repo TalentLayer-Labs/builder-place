@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useVerifyEmailMutation } from '../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
-import Loading from '../../components/Loading';
+import { useVerifyEmailMutation } from '../../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
+import Loading from '../../../components/Loading';
 import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
-} from '../../modules/BuilderPlace/apiResponses';
+} from '../../../modules/BuilderPlace/apiResponses';
 import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -16,9 +16,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const verifyEmail = () => {
   const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
   const router = useRouter();
+  const { query } = router;
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [pageResponse, setPageResponse] = useState('Missing Id');
+
+  console.log('verifyEmail', { id, query });
+  console.log('verifyEmail', { router });
 
   useEffect(() => {
     if (id) {
@@ -58,7 +62,7 @@ const verifyEmail = () => {
   return (
     <>
       {pageResponse === EMAIL_VERIFIED_SUCCESSFULLY ? (
-        <div className='bg-base-100'>
+        <div className='rounded-xl p-4 border border-info text-base-content bg-base-100'>
           <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
@@ -76,17 +80,14 @@ const verifyEmail = () => {
           </div>
         </div>
       ) : pageResponse === EMAIL_ALREADY_VERIFIED ? (
-        <div className='bg-base-100'>
+        <div className='rounded-xl p-4 border border-info text-base-content bg-base-100'>
           <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Email Already Verified! 🦝
               </p>
-              <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
-                You're ahead of the game!
-              </p>
               <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
-                Looks like you're already all set, you can use your free transactions now !
+                Looks like you're already all set!
               </p>
               <button
                 className='bg-green-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
@@ -97,7 +98,7 @@ const verifyEmail = () => {
           </div>
         </div>
       ) : (
-        <div className='bg-base-100'>
+        <div className='rounded-xl p-4 border border-info text-base-content bg-base-100'>
           <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
