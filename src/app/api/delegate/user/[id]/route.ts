@@ -16,7 +16,7 @@ import {
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
 
-export interface IUpdateProfile {
+export interface IUpdateTalentLayerProfile {
   chainId: number;
   userAddress: string;
   cid: string;
@@ -28,7 +28,7 @@ export interface IUpdateProfile {
  */
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
-  const body: IUpdateProfile = await req.json();
+  const body: IUpdateTalentLayerProfile = await req.json();
   console.log('json', body);
   const { chainId, userAddress, cid, signature } = body;
 

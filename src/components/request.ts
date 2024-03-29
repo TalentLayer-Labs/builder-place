@@ -6,7 +6,7 @@ import { ICreateProposal } from '../app/api/delegate/proposal/route';
 import { IUpdateProposal } from '../app/api/delegate/proposal/[id]/route';
 import { IExecutePayment } from '../app/api/delegate/payment/route';
 import { IReview } from '../app/api/delegate/review/route';
-import { IUpdateProfile } from '../app/api/delegate/user/[id]/route';
+import { IUpdateTalentLayerProfile } from '../app/api/delegate/user/[id]/route';
 
 export const delegateCreateService = async (body: ICreateService): Promise<any> => {
   try {
@@ -43,7 +43,7 @@ export const delegateUpdateService = async (
 };
 
 export const delegateUpdateProfileData = async (
-  body: IUpdateProfile,
+  body: IUpdateTalentLayerProfile,
   userId: string,
 ): Promise<any> => {
   try {

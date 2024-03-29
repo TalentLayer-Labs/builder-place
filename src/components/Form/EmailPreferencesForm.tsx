@@ -13,16 +13,14 @@ import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
 import { EmailNotificationType, IEmailPreferences } from '../../types';
 import { postToIPFSwithQuickNode } from '../../utils/ipfs';
-import {
-  createMultiStepsTransactionToast,
-  showErrorTransactionToast,
-  wait,
-} from '../../utils/toast';
+import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
-import { useUpdateEmailNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailNotificationPreferencesMutation';
 import { toast } from 'react-toastify';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import { useMutation } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { IUpdateProfile } from '../../app/api/users/[id]/route';
 
 function EmailPreferencesForm() {
   const config = useConfig();
@@ -45,8 +43,11 @@ function EmailPreferencesForm() {
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
       : EmailNotificationType.WEB2;
-  const { mutateAsync: updateEmailNotificationPreferencesAsync } =
-    useUpdateEmailNotificationPreferencesMutation();
+  const userMutation = useMutation(
+    async (body: IUpdateProfile): Promise<AxiosResponse<{ id: string }>> => {
+      return await axios.put(`/api/users/${user?.id}`, body);
+    },
+  );
 
   if (!user?.talentLayerId || talentLayerDataLoading || loading || !user) {
     return <Loading />;
@@ -55,14 +56,14 @@ function EmailPreferencesForm() {
   const initialValues: IEmailPreferences =
     emailNotificationType === EmailNotificationType.WEB3
       ? {
-          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService || true,
-          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal || true,
+          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
+          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
           activeOnProposalValidated:
-            userDescription?.web3mailPreferences?.activeOnProposalValidated || true,
-          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease || true,
-          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview || true,
+            userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
+          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
+          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
           activeOnPlatformMarketing:
-            userDescription?.web3mailPreferences?.activeOnPlatformMarketing || false,
+            userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
         }
       : {
           activeOnNewService: web2MailPreferences?.activeOnNewService,
@@ -87,23 +88,19 @@ function EmailPreferencesForm() {
           message: `connect with ${address}`,
         });
 
-        const response = await updateEmailNotificationPreferencesAsync({
-          preferences: values,
-          userId: user.talentLayerId,
-          address,
-          signature,
+        await userMutation.mutateAsync({
+          data: {
+            emailPreferences: values,
+          },
+          signature: signature,
+          address: address,
+          domain: window.location.hostname + ':' + window.location.port,
         });
 
-        if (response.error) {
-          showErrorTransactionToast(response.error);
-        }
-
-        if (response.message) {
-          toast.success(response.message, {
-            autoClose: 5000,
-            closeOnClick: true,
-          });
-        }
+        toast.success('Email preferences updated successfully', {
+          autoClose: 5000,
+          closeOnClick: true,
+        });
       } else if (user && publicClient && walletClient) {
         const cid = await postToIPFSwithQuickNode(
           JSON.stringify({
@@ -128,8 +125,6 @@ function EmailPreferencesForm() {
         let tx;
         if (canUseBackendDelegate && address) {
           console.log('DELEGATION');
-
-          await wait(2);
 
           /**
            * @dev Sign message to prove ownership of the address

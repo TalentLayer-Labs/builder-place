@@ -14,7 +14,6 @@ import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import { IMutation } from '../../types';
 import useUpdateUser from '../../modules/BuilderPlace/hooks/user/useUpdateUser';
 
 export interface IUpdateProfileFormValues {
@@ -26,8 +25,6 @@ export interface IUpdateProfileFormValues {
   about?: string;
   skills?: string;
 }
-
-export interface IUpdateProfile extends IMutation<IUpdateProfileFormValues> {}
 
 const validationSchema = Yup.object({
   title: Yup.string().required('title is required'),

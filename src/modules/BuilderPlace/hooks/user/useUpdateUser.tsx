@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { createMultiStepsTransactionToast, wait } from '../../../../utils/toast';
+import { createMultiStepsTransactionToast } from '../../../../utils/toast';
 import { IUpdateProfileFormValues } from '../../../../components/Form/ProfileForm';
 import { delegateUpdateProfileData } from '../../../../components/request';
 
@@ -18,8 +18,6 @@ const useUpdateUser = () => {
     if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
     }
-
-    await wait(2);
 
     try {
       if (talentLayerUser?.id) {
@@ -39,7 +37,6 @@ const useUpdateUser = () => {
 
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
-          await wait(2);
 
           /**
            * @dev Sign message to prove ownership of the address
