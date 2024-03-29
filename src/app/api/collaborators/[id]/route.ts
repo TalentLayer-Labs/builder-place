@@ -8,8 +8,14 @@ import {
 } from '../../../../modules/BuilderPlace/apiResponses';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 
+/**
+ * GET /api/collaborators/
+ */
 export async function GET() {}
 
+/**
+ * PUT /api/collaborators/
+ */
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
   const body: IRemoveBuilderPlaceCollaborator = await req.json();

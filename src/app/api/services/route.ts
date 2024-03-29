@@ -12,6 +12,9 @@ export interface ServicesFilters {
   keywordList?: string[];
 }
 
+/**
+ * GET /api/services
+ */
 export async function GET(request: Request) {
   console.log('GET');
   const { searchParams } = new URL(request.url);

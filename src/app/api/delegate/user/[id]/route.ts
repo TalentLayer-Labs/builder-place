@@ -5,7 +5,7 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../../utils/delegate';
-import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
+import TalentLayerId from '../../../../../contracts/ABI/TalentLayerID.json';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
@@ -16,26 +16,21 @@ import {
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
 
-export interface IUpdateProposal {
+export interface IUpdateTalentLayerProfile {
   chainId: number;
-  userId: string;
   userAddress: string;
-  rateToken: string;
-  rateAmount: string;
-  expirationDate: string;
   cid: string;
   signature: `0x${string}` | Uint8Array;
 }
 
 /**
- * PUT /api/delegate/proposal
+ * PUT /api/delegate/user
  */
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
-  const body: IUpdateProposal = await req.json();
+  const body: IUpdateTalentLayerProfile = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, rateAmount, rateToken, expirationDate, signature } =
-    body;
+  const { chainId, userAddress, cid, signature } = body;
 
   const config = getConfig(chainId);
 
@@ -50,12 +45,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   const user = await getUserByAddress(signatureAddress);
 
-  if (user?.talentLayerId !== userId) {
+  if (user?.talentLayerId !== params.id) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   try {
-    const user = await getUserByTalentLayerId(userId);
+    const user = await getUserByTalentLayerId(params.id);
 
     if (user) {
       if (!user.isEmailVerified) {
@@ -84,12 +79,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
       let transaction;
 
-      console.log('Updating proposal with args', userId, cid, signature);
+      console.log('Updating profile with args', params.id, cid, signature);
       transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'updateProposal',
-        args: [userId, params.id, rateToken, rateAmount, cid, expirationDate],
+        address: config.contracts.talentLayerId,
+        abi: TalentLayerId.abi,
+        functionName: 'updateProfileData',
+        args: [params.id, cid],
       });
 
       await incrementWeeklyTransactionCounter(user);

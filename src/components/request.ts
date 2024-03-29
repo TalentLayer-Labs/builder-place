@@ -6,6 +6,7 @@ import { ICreateProposal } from '../app/api/delegate/proposal/route';
 import { IUpdateProposal } from '../app/api/delegate/proposal/[id]/route';
 import { IExecutePayment } from '../app/api/delegate/payment/route';
 import { IReview } from '../app/api/delegate/review/route';
+import { IUpdateTalentLayerProfile } from '../app/api/delegate/user/[id]/route';
 
 export const delegateCreateService = async (body: ICreateService): Promise<any> => {
   try {
@@ -42,17 +43,15 @@ export const delegateUpdateService = async (
 };
 
 export const delegateUpdateProfileData = async (
-  chainId: number,
+  body: IUpdateTalentLayerProfile,
   userId: string,
-  userAddress: string,
-  cid: string,
 ): Promise<any> => {
   try {
-    return await axios.post('/api/delegate/update-profile-data', {
-      chainId,
-      userId,
-      userAddress,
-      cid,
+    return await axios.put(`/api/delegate/user/${userId}`, {
+      chainId: body.chainId,
+      userAddress: body.userAddress,
+      cid: body.cid,
+      signature: body.signature,
     });
   } catch (err) {
     console.error(err);

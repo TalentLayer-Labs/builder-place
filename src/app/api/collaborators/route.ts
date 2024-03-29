@@ -10,6 +10,9 @@ import {
 } from '../../../modules/BuilderPlace/apiResponses';
 import { IAddBuilderPlaceCollaborator } from '../../../components/Form/CollaboratorForm';
 
+/**
+ * POST /api/collaborators/
+ */
 export async function POST(req: Request) {
   console.log('POST');
   const body: IAddBuilderPlaceCollaborator = await req.json();

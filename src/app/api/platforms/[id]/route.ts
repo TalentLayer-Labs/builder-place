@@ -13,6 +13,9 @@ export async function GET(req: Request) {
   // TODO: implement GET
 }
 
+/**
+ * PUT /api/platforms
+ */
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
   const body: IConfigurePlace = await req.json();
