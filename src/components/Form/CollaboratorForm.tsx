@@ -6,7 +6,6 @@ import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { ETH_ADDRESS_LENGTH, ETH_ADDRESS_REGEX } from '../../utils';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import useAddCollaborator from '../../modules/BuilderPlace/hooks/collaborator/useAddCollaborator';
 import { IMutation } from '../../types';
 
@@ -29,8 +28,7 @@ const initialValues: IFormValues = {
   collaborator: '',
 };
 export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
-  const { user, refreshData } = useContext(TalentLayerContext);
-  const { getUser } = useContext(UserContext);
+  const { user } = useContext(TalentLayerContext);
   const { addCollaborator } = useAddCollaborator();
 
   if (!user?.id) {
@@ -56,8 +54,6 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
       console.log(error);
       showErrorTransactionToast(error);
     } finally {
-      await refreshData();
-      await getUser();
       setSubmitting(false);
     }
   };

@@ -29,8 +29,6 @@ export default function Collaborators() {
     return <Loading />;
   }
 
-  console.log(delegates);
-
   return (
     <div>
       <AdminSettingsLayout title={'Collaborators'}>
