@@ -6,6 +6,7 @@ import TalentLayerContext from '../../context/talentLayer';
 import { showErrorTransactionToast } from '../../utils/toast';
 import SubmitButton from './SubmitButton';
 import useRecordReview from '../../modules/BuilderPlace/hooks/review/useRecordReview';
+import { useAccount } from 'wagmi';
 
 export interface IFormValues {
   content: string;
@@ -24,7 +25,8 @@ const initialValues: IFormValues = {
 
 function ReviewForm({ serviceId }: { serviceId: string }) {
   const { open: openConnectModal } = useWeb3Modal();
-  const { account, canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { canUseBackendDelegate, refreshWorkerProfile } = useContext(TalentLayerContext);
   const { recordReview } = useRecordReview();
 
   /**

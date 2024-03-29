@@ -32,7 +32,7 @@ function ReleaseForm({
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user } = useContext(TalentLayerContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
@@ -45,7 +45,7 @@ function ReleaseForm({
    * @dev If the user is a Collaborator, use the owner's TalentLayerId
    */
   const handleSubmit = async () => {
-    if (!user || !publicClient) {
+    if (!talentLayerUser || !publicClient) {
       return;
     }
     const percentToToken = (totalInServiceAmount * BigInt(percent)) / BigInt(100);
@@ -56,11 +56,13 @@ function ReleaseForm({
       builderPlace?.talentLayerPlatformId
     ) {
       setSubmitting(true);
-      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : talentLayerUser.id;
 
       await executePayment(
         chainId,
-        user.address,
+        talentLayerUser.address,
         usedId,
         service.transaction.id,
         percentToToken,

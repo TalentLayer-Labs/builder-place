@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { PostingCondition } from '../modules/BuilderPlace/types';
-import { erc20ABI, erc721ABI } from 'wagmi';
+import { erc20ABI, erc721ABI, useAccount } from 'wagmi';
 import TalentLayerContext from '../context/talentLayer';
 import { generateClients } from '../utils/jobPostConditions';
 
@@ -17,7 +17,7 @@ const useCheckJobPostConditions = (
   returnedPostingConditions: IReturnPostingCondition[];
   canPost: boolean;
 } => {
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
   const [isLoading, setIsLoading] = useState(true);
   const [canPost, setCanPost] = useState<boolean>(false);
   const [returnedPostingConditions, setReturnedPostingConditions] = useState<

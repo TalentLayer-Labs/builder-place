@@ -11,13 +11,16 @@ import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProp
 import useCheckJobPostConditions from '../../../hooks/useCheckJobPostConditions';
 import Loading from '../../../components/Loading';
 import ConditionsStatusCard from '../../../components/CreateService/ConditionsStatusCard ';
+import { useAccount } from 'wagmi';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function CreateService() {
-  const { account, user } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user } = useContext(UserContext);
   const { userExists } = useContext(MessagingContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { returnedPostingConditions, isLoading, canPost } = useCheckJobPostConditions(
@@ -25,12 +28,8 @@ function CreateService() {
     builderPlace?.jobPostingConditions?.conditions,
   );
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return <Loading />;
-  }
-
-  if (!user) {
-    return <Steps />;
   }
 
   if (!builderPlace?.jobPostingConditions.allowPosts && !isBuilderPlaceCollaborator) {

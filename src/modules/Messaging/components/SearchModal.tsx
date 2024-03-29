@@ -1,12 +1,12 @@
 import { SearchOutline } from 'heroicons-react';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
-import TalentLayerContext from '../../../context/talentLayer';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
 
 function SearchModal() {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
   const router = useRouter();
 
   const handleChat = () => {

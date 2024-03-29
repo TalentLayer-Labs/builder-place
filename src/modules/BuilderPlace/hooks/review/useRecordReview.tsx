@@ -18,7 +18,7 @@ const useRecordReview = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
   console.log('canUseBackendDelegate', canUseBackendDelegate);
@@ -30,17 +30,19 @@ const useRecordReview = () => {
     await wait(2);
 
     if (
-      user?.id &&
+      talentLayerUser?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
       builderPlace?.talentLayerPlatformId
     ) {
-      const usedId = isBuilderPlaceCollaborator ? builderPlace.owner.talentLayerId : user.id;
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : talentLayerUser.id;
       console.log('usedId', usedId);
 
       try {
-        if (user && publicClient && walletClient && builderPlace?.owner?.talentLayerId) {
+        if (talentLayerUser && publicClient && walletClient && builderPlace?.owner?.talentLayerId) {
           const cid = await postToIPFSwithQuickNode(
             JSON.stringify({
               content: values.content,
@@ -77,7 +79,7 @@ const useRecordReview = () => {
                   content: values.content,
                 },
                 serviceId,
-                isBuilderPlaceCollaborator ? builderPlace.owner?.talentLayerId : user.id,
+                isBuilderPlaceCollaborator ? builderPlace.owner?.talentLayerId : talentLayerUser.id,
               );
               tx = res.tx;
             }

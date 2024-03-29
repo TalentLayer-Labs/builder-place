@@ -15,7 +15,7 @@ const useUpdateProposal = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
-  const { canUseBackendDelegate, user } = useContext(TalentLayerContext);
+  const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
 
@@ -27,7 +27,7 @@ const useUpdateProposal = () => {
     await wait(2);
 
     if (
-      user?.id &&
+      talentLayerUser?.id &&
       publicClient &&
       talentLayerClient &&
       builderPlace?.owner?.talentLayerId &&
@@ -72,7 +72,7 @@ const useUpdateProposal = () => {
           proposalResponse = await delegateUpdateProposal(
             {
               chainId,
-              userId: user.id,
+              userId: talentLayerUser.id,
               userAddress: address,
               rateToken: values.rateToken,
               rateAmount: parsedRateAmountString,
@@ -86,7 +86,7 @@ const useUpdateProposal = () => {
         } else {
           proposalResponse = await talentLayerClient?.proposal.update(
             proposal,
-            user.id,
+            talentLayerUser.id,
             serviceId,
             values.rateToken,
             parsedRateAmountString,
@@ -101,7 +101,7 @@ const useUpdateProposal = () => {
           chainId,
           {
             pending: 'Transaction processing...',
-            success: 'Congrats! Your open-source post has been created',
+            success: 'Congrats! Your proposal has been updated',
             error: 'An error occurred while creating your post',
           },
           publicClient,

@@ -18,6 +18,7 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
 import { useChainId } from '../../hooks/useChainId';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { useAccount } from 'wagmi';
 
 export interface IProposalFormValues {
   about: string;
@@ -45,7 +46,7 @@ function ProposalForm({
   const chainId = useChainId();
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const currentChain = chains.find(chain => chain.id === chainId);
@@ -110,8 +111,7 @@ function ProposalForm({
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        // if (canUseBackendDelegate) await refreshWorkerProfile();
-        router.reload();
+        router.push(`/work/${service.id}`);
       }
     } else {
       openConnectModal();

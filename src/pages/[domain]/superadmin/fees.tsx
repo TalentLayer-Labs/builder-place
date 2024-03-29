@@ -22,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminFees() {
   const chainId = useChainId();
-  const { user, loading } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const config = useConfig();
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
@@ -31,10 +31,7 @@ function AdminFees() {
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
-    return <Steps />;
-  }
-  if (!user.isAdmin) {
+  if (!talentLayerUser?.isAdmin) {
     return <UserNeedsMoreRights />;
   }
 
