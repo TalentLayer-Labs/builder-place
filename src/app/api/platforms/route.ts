@@ -11,6 +11,9 @@ export interface PlatformsFilters {
   id?: string | null;
 }
 
+/**
+ * GET /api/platforms
+ */
 export async function GET(request: Request) {
   console.log('GET');
   const { searchParams } = new URL(request.url);
@@ -23,6 +26,9 @@ export async function GET(request: Request) {
   return Response.json({ platforms });
 }
 
+/**
+ * POST /api/platforms
+ */
 export async function POST(req: Request) {
   console.log('POST');
   const body: ICreatePlatform = await req.json();
