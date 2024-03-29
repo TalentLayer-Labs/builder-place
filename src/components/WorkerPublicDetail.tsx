@@ -64,15 +64,6 @@ function WorkerPublicDetail({ talentLayerUser }: { talentLayerUser: IUser }) {
           </div>
         </div>
       </div>
-
-      {user?.talentLayerId === talentLayerUser.id &&
-        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && (
-          <div className=' border-t border-info pt-4 w-full mt-4'>
-            <div className='flex flex-row gap-4 justify-end items-center'>
-              <DelegateModal />
-            </div>
-          </div>
-        )}
     </div>
   );
 }
