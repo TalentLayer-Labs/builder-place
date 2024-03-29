@@ -36,9 +36,6 @@ const useRemoveCollaborator = () => {
     userId: string,
   ): Promise<void> => {
     //TODO: ajouter le toast ? (2 opérations: onchain et DB)
-    //TODO: extraire le loader de la mutation et s'en servir pour les boutons
-    //TODO: refaire une passe pour la route (check les errors etc)
-    //TODO: faire la route pour add collab
     if (walletClient && collaboratorAddress && builderPlace?.id && address) {
       if (delegates?.includes(collaboratorAddress.toLowerCase())) {
         /**

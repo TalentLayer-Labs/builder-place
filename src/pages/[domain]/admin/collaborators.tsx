@@ -34,38 +34,42 @@ export default function Collaborators() {
       <AdminSettingsLayout title={'Collaborators'}>
         <div className={'flex flex-col'}>
           <CollaboratorForm />
-          <div className='mt-10'>
-            <span className='text-base-content font-bold border-base-300 pb-2'>Collaborators</span>
-            <div className='border-b border-base-300 mt-2 mb-4'></div>
-            <input
-              type='text'
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-              placeholder='Filter by name or address'
-              className='mt-1 mb-1 block w-full rounded-lg border border-info bg-base-200 focus:ring-opacity-50'
-            />
+          {builderPlace?.collaborators && builderPlace.collaborators.length > 1 && (
+            <div className='mt-10'>
+              <span className='text-base-content font-bold border-base-300 pb-2'>
+                Collaborators
+              </span>
+              <div className='border-b border-base-300 mt-2 mb-4'></div>
+              <input
+                type='text'
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+                placeholder='Filter by name or address'
+                className='mt-1 mb-1 block w-full rounded-lg border border-info bg-base-200 focus:ring-opacity-50'
+              />
 
-            {builderPlace?.collaborators
-              ?.filter(
-                collaborator =>
-                  collaborator.name.toLowerCase().includes(filter.toLowerCase()) ||
-                  collaborator.address?.toLowerCase().includes(filter.toLowerCase()),
-              )
-              .map(collaborator => {
-                if (collaborator.id === builderPlace.owner.id) {
-                  return null;
-                }
+              {builderPlace?.collaborators
+                ?.filter(
+                  collaborator =>
+                    collaborator.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    collaborator.address?.toLowerCase().includes(filter.toLowerCase()),
+                )
+                .map(collaborator => {
+                  if (collaborator.id === builderPlace.owner.id) {
+                    return null;
+                  }
 
-                return (
-                  <CollaboratorCard
-                    collaborator={collaborator}
-                    userId={talentLayerUser.id}
-                    delegates={delegates}
-                    config={config}
-                  />
-                );
-              })}
-          </div>
+                  return (
+                    <CollaboratorCard
+                      collaborator={collaborator}
+                      userId={talentLayerUser.id}
+                      delegates={delegates}
+                      config={config}
+                    />
+                  );
+                })}
+            </div>
+          )}
         </div>
       </AdminSettingsLayout>
     </div>

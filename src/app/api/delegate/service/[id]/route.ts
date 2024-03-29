@@ -11,6 +11,10 @@ import {
 } from '../../../../utils/delegate';
 import { recoverMessageAddress } from 'viem';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../../modules/BuilderPlace/apiResponses';
+import {
+  checkOrResetTransactionCounter,
+  incrementWeeklyTransactionCounter,
+} from '../../../../utils/email';
 
 export interface IUpdateService {
   chainId: number;
@@ -55,7 +59,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         return Response.json({ error: ERROR_EMAIL_NOT_VERIFIED }, { status: 401 });
       }
 
-      // await checkOrResetTransactionCounter(user);
+      await checkOrResetTransactionCounter(user);
       const canDelegate = await isPlatformAllowedToDelegate(chainId, userAddress);
 
       if (!canDelegate) {
@@ -85,7 +89,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         args: [userId, params.id, cid],
       });
 
-      // await incrementWeeklyTransactionCounter(user);
+      await incrementWeeklyTransactionCounter(user);
 
       return Response.json({ transaction: transaction }, { status: 201 });
     }

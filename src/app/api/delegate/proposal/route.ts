@@ -13,6 +13,10 @@ import {
   getUserByTalentLayerId,
 } from '../../../../modules/BuilderPlace/actions/user';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
+import {
+  checkOrResetTransactionCounter,
+  incrementWeeklyTransactionCounter,
+} from '../../../utils/email';
 
 export interface ICreateProposal {
   chainId: number;
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
         return Response.json({ error: ERROR_EMAIL_NOT_VERIFIED }, { status: 401 });
       }
 
-      // await checkOrResetTransactionCounter(user);
+      await checkOrResetTransactionCounter(user);
       const canDelegate = await isPlatformAllowedToDelegate(chainId, userAddress);
 
       if (!canDelegate) {
@@ -123,7 +127,7 @@ export async function POST(req: Request) {
         value: proposalPostingFee,
       });
 
-      // await incrementWeeklyTransactionCounter(user);
+      await incrementWeeklyTransactionCounter(user);
 
       return Response.json({ transaction: transaction }, { status: 201 });
     }

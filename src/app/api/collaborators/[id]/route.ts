@@ -8,7 +8,7 @@ import {
 } from '../../../../modules/BuilderPlace/apiResponses';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 
-export async function GET(req: Request) {}
+export async function GET() {}
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   console.log('PUT');
@@ -44,7 +44,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     console.log('Removing collaborator', body.data.collaboratorAddress);
 
-    let collaborator: User | null = null;
+    let collaborator: User | null;
 
     collaborator = await prisma.user.findUnique({
       where: {

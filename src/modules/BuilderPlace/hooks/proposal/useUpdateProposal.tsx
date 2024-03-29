@@ -102,7 +102,7 @@ const useUpdateProposal = () => {
           {
             pending: 'Transaction processing...',
             success: 'Congrats! Your proposal has been updated',
-            error: 'An error occurred while creating your post',
+            error: 'An error occurred while updating your proposal',
           },
           publicClient,
           tx,

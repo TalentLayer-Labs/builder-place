@@ -103,7 +103,7 @@ const useCreateProposal = () => {
           {
             pending: 'Transaction processing...',
             success: 'Congrats! Your proposal has been created',
-            error: 'An error occurred while creating your post',
+            error: 'An error occurred while creating your proposal',
           },
           publicClient,
           tx,

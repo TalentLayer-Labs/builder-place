@@ -5,13 +5,11 @@ import { User } from '.prisma/client';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import useRemoveCollaborator from '../../../modules/BuilderPlace/hooks/collaborator/useRemoveCollaborator';
 import { showErrorTransactionToast } from '../../../utils/toast';
-import { useContext, useState } from 'react';
-import TalentLayerContext from '../../../context/talentLayer';
+import { useState } from 'react';
 import { useChainId } from '../../../hooks/useChainId';
 import { IMutation } from '../../../types';
 import AsyncButton from '../../../components/AsyncButton';
 import { toast } from 'react-toastify';
-import userContext from '../../../modules/BuilderPlace/context/UserContext';
 
 interface ICollaboratorCardProps {
   collaborator: User;
@@ -31,8 +29,6 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { refreshData } = useContext(TalentLayerContext);
-  const { getUser } = useContext(userContext);
   const [removeCollaboratorSubmitting, setRemoveCollaboratorSubmitting] = useState(false);
   const [addCollaboratorSubmitting, setAddCollaboratorSubmitting] = useState(false);
 
@@ -41,25 +37,18 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
     try {
       setRemoveCollaboratorSubmitting(!!address);
 
-      console.log('delegates', delegates);
-      console.log('address', address);
-      console.log('userId', userId);
-
       await removeCollaborator(address, delegates, collaborator.id.toString(), userId);
       toast.success('Collaborator removed');
     } catch (error) {
       console.log(error);
       showErrorTransactionToast(error);
     } finally {
-      await refreshData();
-      await getUser();
       setRemoveCollaboratorSubmitting(false);
     }
   };
 
   const onAddBackendDelegate = async () => {
     try {
-      //TODO add Database route + hook
       setAddCollaboratorSubmitting(true);
       if (collaborator.address && walletClient && publicClient) {
         await toggleDelegation(
@@ -76,8 +65,6 @@ const CollaboratorCard = ({ collaborator, userId, config, delegates }: ICollabor
       console.log(error);
       showErrorTransactionToast(error);
     } finally {
-      await refreshData();
-      await getUser();
       setAddCollaboratorSubmitting(false);
     }
   };

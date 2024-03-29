@@ -8,17 +8,13 @@ import {
 import { logAndReturnApiError } from './handleApiErrors';
 
 export async function checkOrResetTransactionCounter(user: User): Promise<void> {
-  let status = 500;
   try {
-    const nowMilliseconds = new Date().getTime();
-    const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
 
-    if (user.counterStartDate > oneWeekAgoMilliseconds) {
-      // Less than one week since counterStartDate
+    if (user.counterStartDate > oneWeekAgoSeconds) {
       if (user.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
-        // If the counter is already 50, stop the function
         console.log(TRANSACTION_LIMIT_REACHED);
-        status = 403;
         throw new Error(TRANSACTION_LIMIT_REACHED);
       }
     } else {
@@ -28,7 +24,7 @@ export async function checkOrResetTransactionCounter(user: User): Promise<void> 
           id: user.id,
         },
         data: {
-          counterStartDate: nowMilliseconds,
+          counterStartDate: nowSeconds,
           weeklyTransactionCounter: 0,
         },
       });
@@ -40,10 +36,11 @@ export async function checkOrResetTransactionCounter(user: User): Promise<void> 
   }
 }
 
-export async function incrementWeeklyTransactionCounter(user: User): Promise<Response | void> {
+export async function incrementWeeklyTransactionCounter(user: User): Promise<void> {
   try {
-    // Increment the counter
-    const newWeeklyTransactionCounter = (user.weeklyTransactionCounter || 0) + 1;
+    const newWeeklyTransactionCounter = (user.weeklyTransactionCounter = 50
+      ? 1
+      : (user.weeklyTransactionCounter || 0) + 1);
     await prisma.user.update({
       where: {
         id: user.id,
