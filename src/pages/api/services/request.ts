@@ -11,10 +11,13 @@ export const getFilteredServicesByKeywords = async (
   searchQuery?: string,
   platformId?: string,
   chainId?: number,
-  selectedToken?: string,
-  minRate?: string,
-  maxRate?: string,
-  selectedRatings?: string[],
+  filters?: {
+    selectedToken?: string;
+    minRate?: string;
+    maxRate?: string;
+    selectedRatings?: string[];
+    platformId?: string;
+  }
 ): Promise<any> => {
   try {
     console.log(allowedTokens, 'allowedTokens');
@@ -29,10 +32,8 @@ export const getFilteredServicesByKeywords = async (
         searchQuery,
         platformId,
         chainId,
-        selectedToken,
-        minRate,
-        maxRate,
-        selectedRatings: JSON.stringify(selectedRatings),
+        ...filters,
+        selectedRatings: JSON.stringify(filters?.selectedRatings),
       },
     });
   } catch (err) {

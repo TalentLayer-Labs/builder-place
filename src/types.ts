@@ -338,15 +338,26 @@ export interface IMutation<T> {
 }
 
 export interface ServiceFilterPopupProps {
+  filters: {
+    minRate: string;
+    maxRate: string;
+    selectedToken: string;
+    selectedRatings: string[];
+  };
+  setFilters: React.Dispatch<React.SetStateAction<{
+    minRate: string;
+    maxRate: string;
+    selectedToken: string;
+    selectedRatings: string[];
+  }>>;
+  handleResetFilter: () => void;
+}
+
+export interface Filters {
   minRate: string;
   maxRate: string;
   selectedToken: string;
   selectedRatings: string[];
-  setMinRate: (value: string) => void;
-  setMaxRate: (value: string) => void;
-  setSelectedToken: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedRatings: React.Dispatch<React.SetStateAction<string[]>>;
-  handleResetFilter: () => void;
 }
 
 

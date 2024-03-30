@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IService, ServiceStatusEnum } from '../types';
+import { Filters, IService, ServiceStatusEnum } from '../types';
 import { getFilteredServicesByKeywords } from '../pages/api/services/request';
 import { useChainId } from 'wagmi';
 import useAllowedTokens from './useAllowedTokens';
@@ -10,10 +10,7 @@ const useFilteredServices = (
   sellerId?: string,
   searchQuery?: string,
   numberPerPage?: number,
-  selectedToken?: string,
-  minRate?: string,
-  maxRate?: string,
-  selectedRatings?: string[],
+  filters?: Filters,
   platformId?: string,
 ): {
   hasMoreData: boolean;
@@ -50,10 +47,7 @@ const useFilteredServices = (
           searchQuery,
           platformId,
           chainId,
-          selectedToken,
-          minRate,
-          maxRate,
-          selectedRatings,
+          filters
         );
 
         newServices = response?.data?.services;
@@ -69,20 +63,19 @@ const useFilteredServices = (
           setHasMoreData(true);
         }
       } catch (err: any) {
-        // eslint-disable-next-line no-console
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [numberPerPage, offset, searchQuery, selectedToken, selectedRatings?.length,minRate,maxRate]);
+  }, [numberPerPage, offset, searchQuery, filters]);
 
   const loadMore = () => {
     numberPerPage ? setOffset(offset + numberPerPage) : '';
   };
 
-  return { hasMoreData: hasMoreData, services, loading, loadMore };
+  return { hasMoreData, services, loading, loadMore };
 };
 
 export default useFilteredServices;

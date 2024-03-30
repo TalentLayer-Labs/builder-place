@@ -2,24 +2,15 @@ import React from 'react';
 import useAllowedTokens from '../hooks/useAllowedTokens';
 import { IToken, ServiceFilterPopupProps } from '../types';
 
-function ServiceFilterPopup({
-  minRate,
-  maxRate,
-  selectedToken,
-  selectedRatings,
-  setMinRate,
-  setMaxRate,
-  setSelectedToken,
-  setSelectedRatings,
-  handleResetFilter,
-}: ServiceFilterPopupProps) {
+function ServiceFilterPopup({ filters, setFilters, handleResetFilter }: ServiceFilterPopupProps) {
   const allowedTokens = useAllowedTokens();
 
   const handleReset = () => {
     handleResetFilter();
   };
+
   return (
-    <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 right-0  z-50'>
+    <div className='absolute bg-base-200 border border-3 border-gray-300 text-base-content p-4 shadow-lg rounded-lg mt-2 ml-2 right-0 z-50'>
       <div className='flex flex-col'>
         {/* <label className='text-sm mt-1 font-bold'>Rate</label>
         <div className='flex flex-row gap-2'>
@@ -46,12 +37,9 @@ function ServiceFilterPopup({
                 type='radio'
                 name='token'
                 value={token.address}
-                checked={selectedToken === token.address}
-                onChange={e => {
-                  const tokenName = e.target.value;
-                  if (e.target.checked) {
-                    setSelectedToken(tokenName);
-                  }
+                checked={filters.selectedToken === token.address}
+                onChange={() => {
+                  setFilters({ ...filters, selectedToken: token.address });
                 }}
               />
               <label>{token.symbol}</label>

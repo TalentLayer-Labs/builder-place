@@ -16,26 +16,31 @@ function ServiceList() {
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [minRate, setMinRate] = useState<string>('');
-  const [maxRate, setMaxRate] = useState<string>('');
-  const [selectedToken, setSelectedToken] = useState<string>('');
-  const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
+
+  // Consolidated state for filters
+  const [filters, setFilters] = useState({
+    minRate: '',
+    maxRate: '',
+    selectedToken: '',
+    selectedRatings: [''],
+  });
+
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
     builderPlace?.owner?.talentLayerId?.toString(),
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
-    selectedToken,
-    minRate,
-    maxRate,
-    selectedRatings
+    filters
   );
+
   const handleResetFilter = () => {
-    setMinRate('');
-    setMaxRate('');
-    setSelectedToken('');
-    setSelectedRatings([]);
+    setFilters({
+      minRate: '',
+      maxRate: '',
+      selectedToken: '',
+      selectedRatings: [''],
+    });
     setPopupVisible(false);
   };
 
@@ -85,14 +90,8 @@ function ServiceList() {
           </button>
           {isPopupVisible && (
             <ServiceFilterPopup
-              minRate={minRate}
-              maxRate={maxRate}
-              selectedToken={selectedToken}
-              selectedRatings={selectedRatings}
-              setMinRate={setMinRate}
-              setMaxRate={setMaxRate}
-              setSelectedToken={setSelectedToken}
-              setSelectedRatings={setSelectedRatings}
+              filters={filters}
+              setFilters={setFilters}
               handleResetFilter={handleResetFilter}
             />
           )}
