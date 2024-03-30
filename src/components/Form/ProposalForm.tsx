@@ -2,24 +2,24 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { formatUnits } from 'viem';
-import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { useChainId } from '../../hooks/useChainId';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
-import { IProposal, IService, IUser } from '../../types';
-import { parseRateAmount } from '../../utils/currency';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
+import { IProposal, IService } from '../../types';
+import { showErrorTransactionToast } from '../../utils/toast';
 import ServiceItem from '../ServiceItem';
-import { delegateCreateOrUpdateProposal } from '../request';
 import SubmitButton from './SubmitButton';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import usePlatform from '../../hooks/usePlatform';
 import { chains } from '../../context/web3modal';
+import useCreateProposal from '../../modules/BuilderPlace/hooks/proposal/useCreateProposal';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
+import { useChainId } from '../../hooks/useChainId';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { useAccount } from 'wagmi';
 
-interface IFormValues {
+export interface IProposalFormValues {
   about: string;
   rateToken: string;
   rateAmount: number;
@@ -35,29 +35,28 @@ const validationSchema = Yup.object({
 });
 
 function ProposalForm({
-  user,
   service,
   existingProposal,
 }: {
-  user: IUser;
   service: IService;
   existingProposal?: IProposal;
 }) {
+  const { open: openConnectModal } = useWeb3Modal();
   const chainId = useChainId();
-  const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { platformHasAccess } = useContext(Web3MailContext);
-  const talentLayerClient = useTalentLayerClient();
-
   const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const proposalPostingFee = platform?.proposalPostingFee || 0;
   const proposalPostingFeeFormat = proposalPostingFee
     ? Number(formatUnits(BigInt(proposalPostingFee), Number(currentChain?.nativeCurrency.decimals)))
     : 0;
+
+  const { createNewProposal } = useCreateProposal();
+  const { updateProposal } = useUpdateProposal();
 
   if (allowedTokenList.length === 0) {
     return <div>Loading...</div>;
@@ -79,7 +78,7 @@ function ProposalForm({
     );
   }
 
-  const initialValues: IFormValues = {
+  const initialValues: IProposalFormValues = {
     about: existingProposal?.description?.about || '',
     rateToken: existingProposal?.rateToken.address || '',
     rateAmount: existingRateTokenAmount || 0,
@@ -88,95 +87,33 @@ function ProposalForm({
   };
 
   const onSubmit = async (
-    values: IFormValues,
+    values: IProposalFormValues,
     {
       setSubmitting,
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (publicClient && token && walletClient) {
+    if (account?.isConnected === true) {
       try {
-        const parsedRateAmount = await parseRateAmount(
-          values.rateAmount.toString(),
-          values.rateToken,
-          token.decimals,
-        );
-        const now = Math.floor(Date.now() / 1000);
-        const convertExpirationDate = now + 60 * 60 * 24 * values.expirationDate;
-        const convertExpirationDateString = convertExpirationDate.toString();
+        const token = allowedTokenList.find(token => token.address === values.rateToken);
+        if (token) {
+          existingProposal
+            ? await updateProposal(values, token, service.id)
+            : await createNewProposal(values, token, service.id);
 
-        const parsedRateAmountString = parsedRateAmount.toString();
-
-        const proposal = {
-          about: values.about,
-          video_url: values.video_url,
-        };
-
-        let tx, cid, proposalResponse;
-
-        cid = await talentLayerClient?.proposal?.upload(proposal);
-
-        if (canUseDelegation) {
-          const proposalResponse = await delegateCreateOrUpdateProposal(
-            chainId,
-            user.id,
-            user.address,
-            service.id,
-            values.rateToken,
-            parsedRateAmountString,
-            cid || '',
-            convertExpirationDateString,
-            existingProposal?.status,
-          );
-          tx = proposalResponse.data.transaction;
-        } else {
-          if (existingProposal) {
-            proposalResponse = await talentLayerClient?.proposal.update(
-              proposal,
-              user.id,
-              service.id,
-              values.rateToken,
-              parsedRateAmountString,
-              convertExpirationDateString,
-            );
-          } else {
-            proposalResponse = await talentLayerClient?.proposal.create(
-              proposal,
-              user.id,
-              service.id,
-              values.rateToken,
-              parsedRateAmountString,
-              convertExpirationDateString,
-            );
+          setSubmitting(false);
+          resetForm();
+          if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
+            createWeb3mailToast();
           }
-          tx = proposalResponse?.tx;
-          cid = proposalResponse?.cid;
-        }
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Creating your proposal...',
-            success: 'Congrats! Your proposal has been added',
-            error: 'An error occurred while creating your proposal',
-          },
-          publicClient,
-          tx,
-          'proposal',
-          cid,
-        );
-        setSubmitting(false);
-        resetForm();
-        router.push(`/dashboard`);
-        if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-          createWeb3mailToast();
         }
       } catch (error) {
         showErrorTransactionToast(error);
       } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
+        router.push(`/work/${service.id}`);
       }
+    } else {
+      openConnectModal();
     }
   };
 
@@ -186,7 +123,7 @@ function ProposalForm({
       onSubmit={onSubmit}
       validationSchema={validationSchema}
       enableReinitialize={true}>
-      {({ isSubmitting }) => (
+      {({ isSubmitting, values }) => (
         <Form>
           <h2 className='mb-2 text-base-content font-bold'>the mission</h2>
           <ServiceItem service={service} />
@@ -221,6 +158,17 @@ function ProposalForm({
                   name='rateAmount'
                   className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
+                  // min={() => {
+                  //   const selectToken = allowedTokenList.find(
+                  //     token => token.address === values.rateToken,
+                  //   );
+                  //   if (!selectToken || !selectToken.minimumTransactionAmount) return null;
+
+                  //   return (
+                  //     BigInt(selectToken.minimumTransactionAmount) /
+                  //     10n ** BigInt(selectToken.decimals)
+                  //   );
+                  // }}
                 />
                 <span className='text-alone-error'>
                   <ErrorMessage name='rateAmount' />

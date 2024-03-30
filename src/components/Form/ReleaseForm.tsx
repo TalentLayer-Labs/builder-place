@@ -2,37 +2,42 @@ import { Field, Form, Formik } from 'formik';
 import { useContext, useMemo, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import TalentLayerContext from '../../context/talentLayer';
-import { executePayment } from '../../contracts/executePayment';
 import { IService, IToken, ServiceStatusEnum } from '../../types';
 import { renderTokenAmount } from '../../utils/conversion';
 import { useChainId } from '../../hooks/useChainId';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import useExecutePayment from '../../modules/BuilderPlace/hooks/payment/useExecutePayment';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AsyncButton from '../AsyncButton';
 
 interface IFormValues {
   percentField: string;
 }
 
 interface IReleaseFormProps {
-  totalInEscrow: bigint;
+  totalInServiceAmount: bigint;
   rateToken: IToken;
   service: IService;
   isBuyer: boolean;
   closeModal: () => void;
+  refreshPayments: () => Promise<void>;
 }
 
 function ReleaseForm({
-  totalInEscrow,
+  totalInServiceAmount,
   rateToken,
   service,
   closeModal,
+  refreshPayments,
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
+  const { executePayment } = useExecutePayment();
+  const [submitting, setSubmitting] = useState(false);
 
   const [percent, setPercentage] = useState(0);
 
@@ -40,28 +45,35 @@ function ReleaseForm({
    * @dev If the user is a Collaborator, use the owner's TalentLayerId
    */
   const handleSubmit = async () => {
-    if (!user || !publicClient) {
+    if (!talentLayerUser || !publicClient) {
       return;
     }
-    const percentToToken = (totalInEscrow * BigInt(percent)) / BigInt(100);
+    const percentToToken = (totalInServiceAmount * BigInt(percent)) / BigInt(100);
 
-    if (talentLayerClient) {
+    if (
+      talentLayerClient &&
+      builderPlace?.owner?.talentLayerId &&
+      builderPlace?.talentLayerPlatformId
+    ) {
+      setSubmitting(true);
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : talentLayerUser.id;
+
       await executePayment(
         chainId,
-        user.address,
-        publicClient,
-        user.id,
+        talentLayerUser.address,
+        usedId,
         service.transaction.id,
         percentToToken,
         isBuyer,
-        canUseDelegation,
-        talentLayerClient,
         service.id,
-        refreshWorkerProfile,
       );
     }
 
-    closeModal();
+    setSubmitting(false);
+
+    await refreshPayments();
   };
 
   const releaseMax = () => {
@@ -80,7 +92,7 @@ function ReleaseForm({
   };
 
   const amountSelected = useMemo(() => {
-    return percent ? (totalInEscrow * BigInt(percent)) / BigInt(100) : '';
+    return percent ? (totalInServiceAmount * BigInt(percent)) / BigInt(100) : '';
   }, [percent]);
 
   const initialValues: IFormValues = {
@@ -104,7 +116,7 @@ function ReleaseForm({
               Min
             </button>
           </div>
-          <div className='items-center  rounded-b border-info '>
+          <div className='items-center rounded-b border-info '>
             <button
               type='button'
               onClick={releaseMax}
@@ -139,12 +151,13 @@ function ReleaseForm({
               }
             </div>
             <div className='flex items-center pt-6 space-x-2 rounded-b border-info '>
-              {totalInEscrow > 0 && (
-                <button
-                  type='submit'
-                  className=' hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'>
-                  {isBuyer ? 'Release the selected amount' : 'Reimburse the selected amount'}
-                </button>
+              {totalInServiceAmount > 0 && (
+                <AsyncButton
+                  isSubmitting={submitting}
+                  onClick={() => handleSubmit()}
+                  label={isBuyer ? 'Release the selected amount' : 'Reimburse the selected amount'}
+                  validateButtonCss={'hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'}
+                />
               )}
               <button
                 onClick={closeModal}

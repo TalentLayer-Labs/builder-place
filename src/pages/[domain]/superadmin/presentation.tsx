@@ -14,6 +14,7 @@ import usePlatform from '../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 interface IFormValues {
   about: string;
@@ -31,8 +32,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function AdminPresentation() {
-  const { user, loading } = useContext(TalentLayerContext);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const platformDescription = platform?.description;
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
@@ -43,10 +45,7 @@ function AdminPresentation() {
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
-    return <Steps />;
-  }
-  if (!user.isAdmin) {
+  if (!talentLayerUser?.isAdmin) {
     return <UserNeedsMoreRights />;
   }
 
@@ -61,7 +60,7 @@ function AdminPresentation() {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && publicClient && walletClient && talentLayerClient) {
+    if (talentLayerUser && publicClient && walletClient && talentLayerClient) {
       try {
         const { tx, cid } = await talentLayerClient.platform.update({
           about: values.about,

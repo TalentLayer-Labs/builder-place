@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
-import { usePublicClient, useSwitchNetwork, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useSwitchNetwork, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import ConnectBlock from '../../../components/ConnectBlock';
 import SubmitButton from '../../../components/Form/SubmitButton';
@@ -25,16 +25,14 @@ function Web3mailForm() {
   const chainId = useChainId();
   const { switchNetwork } = useSwitchNetwork();
   const { open: openConnectModal } = useWeb3Modal();
-  const { account, loading } = useContext(TalentLayerContext);
+  const account = useAccount();
   const { platformHasAccess, protectEmailAndGrantAccess, emailIsProtected } =
     useContext(Web3MailContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const router = useRouter();
 
-  console.log({ account });
-
-  if (loading) {
+  if (account.isConnecting) {
     return <Loading />;
   }
 

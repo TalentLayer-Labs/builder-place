@@ -19,8 +19,7 @@ export const getFilteredServicesByKeywords = async (
     platformId?: string;
   }
 ): Promise<any> => {
-  try {
-    console.log(allowedTokens, 'allowedTokens');
+  try {  
     return await axios.get('/api/services/filtered', {
       params: {
         serviceStatus,

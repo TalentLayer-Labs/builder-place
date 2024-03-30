@@ -1,16 +1,13 @@
 import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
-import useUserById from '../hooks/useUserById';
-import PohModule from '../modules/Poh/PohModule';
-import { IUser } from '../types';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import Loading from './Loading';
-import DelegateModal from './Modal/DelegateModal';
 import ProfileImage from './ProfileImage';
 import Stars from './Stars';
 
-function UserDetail({ user }: { user: IUser }) {
-  const { user: currentUser } = useContext(TalentLayerContext);
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
+function UserDetail() {
+  const { user } = useContext(UserContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
 
   if (!user?.id) {
     return <Loading />;
@@ -21,39 +18,19 @@ function UserDetail({ user }: { user: IUser }) {
       <div className='w-full'>
         <div className='flex flex-col justify-start items-start gap-4'>
           <div className='flex items-center justify-start mb-4'>
-            <ProfileImage size={50} url={user?.description?.image_url} />
+            <ProfileImage size={50} url={user.picture} />
             <div className='flex flex-col'>
-              <p className='text-base-content font-medium break-all'>
-                {userDescription?.name || user?.handle}
-              </p>
-              <p className='text-base-content text-xs'>{userDescription?.title}</p>
-            </div>
-            <div className=''>
-              <PohModule address={user.address} />
+              <p className='text-base-content font-medium break-all'>{user.name}</p>
             </div>
           </div>
         </div>
-        <Stars rating={Number(user.rating)} numReviews={user.userStats.numReceivedReviews} />
+        {talentLayerUser && (
+          <Stars
+            rating={Number(talentLayerUser.rating)}
+            numReviews={talentLayerUser.userStats.numReceivedReviews}
+          />
+        )}
       </div>
-      <div className=' border-t border-info pt-2 w-full'>
-        <p className='text-sm text-base-content mt-4'>
-          <strong>Skills:</strong>
-
-          {userDescription?.skills_raw?.split(',').map((skill, index) => (
-            <span key={index} className='text-xs border border-base-300 rounded-md px-2 py-1 ml-2'>
-              {skill.trim()}
-            </span>
-          ))}
-        </p>
-      </div>
-
-      {currentUser?.id === user.id && process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && (
-        <div className=' border-t border-info pt-4 w-full mt-4'>
-          <div className='flex flex-row gap-4 justify-end items-center'>
-            <DelegateModal />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

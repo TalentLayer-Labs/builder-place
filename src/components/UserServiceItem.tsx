@@ -6,10 +6,14 @@ import ProfileImage from './ProfileImage';
 import ServiceStatus from './ServiceStatus';
 import TokenAmount from './TokenAmount';
 
-function UserServiceItem({ user, service }: { user: IUser; service: IService }) {
-  const chainId = useChainId();
-
-  const isBuyer = user?.id === service.buyer.id;
+function UserServiceItem({
+  talentLayerUser,
+  service,
+}: {
+  talentLayerUser: IUser;
+  service: IService;
+}) {
+  const isBuyer = talentLayerUser?.id === service.buyer.id;
 
   return (
     <div className='flex flex-row gap-2 rounded-xl p-4 border border-info text-base-content bg-base-100'>

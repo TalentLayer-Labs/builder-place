@@ -44,7 +44,7 @@ export const IntroducationSecion = () => {
         {showVideo && (
           <Dialog.Root open={showVideo} onOpenChange={setShowVideo}>
             <Dialog.Portal>
-              <Dialog.Overlay className='fixed inset-0 z-20 flex items-center justify-center bg-black/50 dark:bg-gray-700/50'>
+              <Dialog.Overlay className='fixed inset-0 z-20 flex items-center justify-center bg-black/50 '>
                 <Dialog.Content className='relative max-h-[90vh] w-[94%] max-w-[76rem] '>
                   <div className='pt-[55%]'>
                     <iframe

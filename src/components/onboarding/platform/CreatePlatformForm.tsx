@@ -1,32 +1,32 @@
-import { EntityStatus } from '@prisma/client';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { useChainId, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../../context/talentLayer';
+import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
+import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { IMutation } from '../../../types';
-import { themes } from '../../../utils/themes';
 import { showErrorTransactionToast } from '../../../utils/toast';
 import SubdomainInput from '../../Form/SubdomainInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
-import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
+import { PlatformNameInput } from './PlatformNameInput';
 
 export interface ICreatePlatformFormValues {
   name: string;
   subdomain: string;
   talentLayerPlatformName: string;
   logo: string;
-  jobPostingConditions?: string;
 }
 
 export interface ICreatePlatform
   extends IMutation<
     ICreatePlatformFormValues & {
-      palette: keyof typeof themes;
+      palette: iBuilderPlacePalette;
+      ownerId: number;
+      talentLayerPlatformId: string;
     }
   > {}
 
@@ -43,24 +43,26 @@ export interface ICreatePlatform
  *  ELSE
  *      Access denied
  */
-function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({ chainId });
+function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
-  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
+  const existingPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',
     subdomain: '',
-    talentLayerPlatformName: '',
+    talentLayerPlatformName: existingPlatform?.name || '',
     logo: '',
   };
 
   const validationSchema = Yup.object({
     name: Yup.string().min(5).max(20).required('Enter your company name'),
-    subdomain: Yup.string().required('subdomain is required'),
+    subdomain: Yup.string()
+      .min(3)
+      .max(20)
+      .matches(/^[a-z0-9][a-z0-9-]*$/, 'Only a-z, 0-9 and - allowed, and cannot begin with -')
+      .required('subdomain is required'),
     talentLayerPlatformName: Yup.string()
       .min(5)
       .max(20)
@@ -75,12 +77,17 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       setSubmitting(true);
 
-      await createNewPlatform(values);
+      if (!user) {
+        throw new Error('Please connect first');
+      }
+
+      await createNewPlatform(values, user, existingPlatform);
+      //TODO add get like user ?
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
        */
-      onSuccess();
+      onSuccess(values.subdomain);
     } catch (error: any) {
       console.log('CATCH error', error);
       showErrorTransactionToast(error);
@@ -95,7 +102,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
     return <Loading />;
   }
 
-  if (user?.status !== EntityStatus.VALIDATED) {
+  if (!user) {
     return <AccessDenied />;
   }
 
@@ -105,8 +112,9 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
         initialValues={initialValues}
         enableReinitialize={true}
         onSubmit={handleSubmit}
-        validationSchema={validationSchema}>
-        {({ isSubmitting, setFieldValue, values }) => (
+        validationSchema={validationSchema}
+        validateOnBlur={false}>
+        {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
               <label className='block'>
@@ -127,16 +135,10 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
 
               <label className='block'>
                 <span className='font-bold text-md'>talentLayerPlatformName*</span>
-                <Field
-                  type='text'
-                  id='talentLayerPlatformName'
-                  name='talentLayerPlatformName'
-                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                  placeholder='your talentLayerPlatformName'
+                <PlatformNameInput
+                  initialValue={initialValues.name}
+                  existingPlatformName={existingPlatform?.name}
                 />
-                <span className='text-red-500'>
-                  <ErrorMessage name='talentLayerPlatformName' />
-                </span>
               </label>
 
               <UploadImage
@@ -159,7 +161,10 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: () => void }) {
                   {address ? (
                     <button
                       type='submit'
-                      className='grow px-5 py-2 rounded-xl bg-pink-500 text-white'>
+                      disabled={!(isValid && dirty)}
+                      className={`grow px-5 py-2 rounded-xl text-white ${
+                        !(isValid && dirty) ? 'bg-gray-500' : 'bg-pink-500'
+                      }`}>
                       create my platform
                     </button>
                   ) : (

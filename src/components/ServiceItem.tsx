@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useChainId } from '../hooks/useChainId';
 import { IService } from '../types';
 import { formatDaysAgo } from '../utils/dates';
 import TokenAmount from './TokenAmount';
@@ -12,13 +11,12 @@ function limitText(text: string, maxLength: number) {
 function ServiceItem({
   service,
   embedded,
-  view,
+  view = 1,
 }: {
   service: IService;
   embedded?: boolean;
   view?: number;
 }) {
-  const chainId = useChainId();
   const createdAt = Number(service.createdAt) * 1000;
   const daysAgo = formatDaysAgo(createdAt);
 
@@ -26,15 +24,15 @@ function ServiceItem({
     <>
       {/* LIST VIEW */}
       {view === 1 && (
-        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent mb-5'>
+        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-base-100 text-base-content bg-base-100 mb-5'>
+          {service.proposals && (
+            <div className='absolute top-[-10px] right-[-10px] bg-primary text-primary text-xs rounded-full px-3 py-1'>
+              {service.proposals.length}
+            </div>
+          )}
           <div className='flex flex-col items-top justify-between gap-4 w-full'>
             <div className='flex items-center justify-between gap-4'>
               <p className='font-bold break-all'>{service.description?.title}</p>
-              <div className='flex flex-row justify-end items-center'>
-                <button className='bg-info px-3 py-1.5 text-info text-xs rounded-full' disabled>
-                  Gig
-                </button>
-              </div>
             </div>
             {/* {service.description?.about && (
               <div className='flex flex-col justify-start items-start gap-4'>
@@ -80,11 +78,11 @@ function ServiceItem({
       {/* TABLE VIEW */}
       {view === 2 && (
         <tr className='bg-base-100 hover:bg-base-200'>
-          <td className='border border-gray-300 p-2 break-all text-left '>
+          <td className='border border-base-200 p-2 break-all text-left '>
             {service.description?.title}
           </td>
-          <td className='border border-gray-300 p-2'>{daysAgo}</td>
-          <td className='border border-gray-300 p-2'>
+          <td className='border border-base-200 p-2'>{daysAgo}</td>
+          <td className='border border-base-200 p-2'>
             {service.description?.rateToken && service.description?.rateAmount && (
               <TokenAmount
                 amount={service.description.rateAmount}
@@ -93,8 +91,8 @@ function ServiceItem({
             )}
           </td>
 
-          <td className='border border-gray-300 p-2'>Gig</td>
-          <td className='border border-gray-300 p-2'>
+          <td className='border border-base-200 p-2'>Gig</td>
+          <td className='border border-base-200 p-2'>
             <Link
               className='text-base-content hover:opacity-70 underline'
               href={`/work/${service.id}`}

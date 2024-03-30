@@ -1,8 +1,7 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { useAccount } from 'wagmi';
 import { useChainId } from '../../../hooks/useChainId';
-import TalentLayerContext from '../../../context/talentLayer';
 
 const BuilderPlaceContext = createContext<{
   builderPlace?: IBuilderPlace;
@@ -17,25 +16,25 @@ const BuilderPlaceContext = createContext<{
 const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; children: ReactNode }) => {
   const account = useAccount();
   const chainId = useChainId();
-  const { user } = useContext(TalentLayerContext);
   const [builderPlace, setBuilderPlace] = useState<IBuilderPlace | undefined>();
   const [isBuilderPlaceCollaborator, setIsBuilderPlaceCollaborator] = useState<boolean>(false);
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
-  const ownerTalentLayerId = data?.owner?.talentLayerId;
+  const ownerTalentLayerHandle = data?.owner?.talentLayerHandle;
+
   const fetchBuilderPlaceOwner = async () => {
-    if (!ownerTalentLayerId) {
+    if (!ownerTalentLayerHandle) {
       return;
     }
-    const isUserBuilderPlaceOwner = user?.id === ownerTalentLayerId.toString();
+    const isUserBuilderPlaceOwner = account?.address === data.owner.address;
     setIsBuilderPlaceOwner(isUserBuilderPlaceOwner || false);
   };
 
   useEffect(() => {
     fetchBuilderPlaceOwner();
-  }, [chainId, data?.ownerId, user?.id]);
+  }, [chainId, data?.ownerId, account]);
 
   useEffect(() => {
-    if (!ownerTalentLayerId) return;
+    if (!ownerTalentLayerHandle) return;
 
     const isBuilderPlaceCollaborator = data?.collaborators?.some(
       collaborator =>

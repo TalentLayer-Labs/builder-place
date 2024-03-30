@@ -33,6 +33,7 @@ import {
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
+import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
@@ -91,7 +92,7 @@ export const removeBuilderSubdomain = async (builderPlaceId: number) => {
         id: builderPlaceId,
       },
       data: {
-        subdomain: null,
+        subdomain: undefined,
       },
     });
     return {
@@ -212,20 +213,27 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
   }
 };
 
-export const getBuilderPlaceByOwnerTlIdAndId = async (ownerTalentLayerId: string, id: string) => {
+export const getBuilderPlaceByOwnerTlIdAndId = async (
+  ownerTalentLayerId: string,
+  builderPlaceId: string,
+) => {
   let errorMessage = '';
   try {
-    console.log("getting builderPlace with owner's TlId & postgres id:", ownerTalentLayerId, id);
+    console.log(
+      "getting builderPlace with owner's TlId & postgres id:",
+      ownerTalentLayerId,
+      builderPlaceId,
+    );
     const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
       where: {
-        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(id) }],
+        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(builderPlaceId) }],
       },
       include: {
         owner: true,
         collaborators: true,
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -248,7 +256,7 @@ export const getBuilderPlaceByCollaboratorAddressAndId = async (
         id: Number(builderPlaceId),
         collaborators: {
           some: {
-            address: address.toLocaleLowerCase(),
+            address: address,
           },
         },
       },
@@ -276,7 +284,7 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
         },
       },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -291,21 +299,19 @@ export const getBuilderPlaceByDomain = async (domain: string) => {
   let errorMessage = '';
   try {
     console.log('getting builderPlace ', domain);
-    if (domain.includes(process.env.NEXT_PUBLIC_ROOT_DOMAIN as string)) {
-      const builderPlace = await prisma.builderPlace.findFirst({
-        where: {
-          OR: [{ subdomain: domain }, { customDomain: domain }],
-        },
-        include: {
-          owner: true,
-          collaborators: true,
-        },
-      });
+    const builderPlace = await prisma.builderPlace.findFirst({
+      where: {
+        OR: [{ subdomain: domain }, { customDomain: domain }],
+      },
+      include: {
+        owner: true,
+        collaborators: true,
+      },
+    });
 
-      console.log('fetched builderPlaces, ', builderPlace);
+    console.log('fetched builderPlaces, ', builderPlace?.subdomain);
 
-      return builderPlace;
-    }
+    return builderPlace;
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
@@ -324,7 +330,7 @@ export const getBuilderPlaceById = async (id: string) => {
         collaborators: true,
       },
     });
-    console.log('Fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('Fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -372,7 +378,7 @@ export const getBuilderPlaceBySubdomain = async (subdomain: string) => {
       //   collaborators: true,
       // },
     });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain);
+    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
     if (builderPlaceSubdomain) {
       return builderPlaceSubdomain;
     }
@@ -387,6 +393,7 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
   let errorMessage = '';
   try {
     const newBuilderPlace = await prisma.builderPlace.create({
+      // @ts-ignore
       data: {
         name: data.name,
         about: data.about,
@@ -406,13 +413,13 @@ export const createBuilderPlace = async (data: CreateBuilderPlaceAction) => {
   }
 };
 
-export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCollaborator) => {
-  console.log('Removing collaborator', body.collaboratorAddress);
+export const removeBuilderPlaceCollaborator = async (body: IRemoveBuilderPlaceCollaborator) => {
+  console.log('Removing collaborator', body.data.collaboratorAddress);
   let errorMessage = '';
   try {
     const collaborator = await prisma.user.findUnique({
       where: {
-        address: body.collaboratorAddress.toLocaleLowerCase(),
+        address: body.data.collaboratorAddress.toLocaleLowerCase(),
       },
     });
 
@@ -422,7 +429,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
 
     await prisma.builderPlace.update({
       where: {
-        id: Number(body.builderPlaceId),
+        id: Number(body.data.builderPlaceId),
       },
       data: {
         collaborators: {
@@ -430,7 +437,7 @@ export const removeBuilderPlaceCollaborator = async (body: RemoveBuilderPlaceCol
         },
       },
     });
-    console.log('Collaborator removed successfully', body.collaboratorAddress);
+    console.log('Collaborator removed successfully', body.data.collaboratorAddress);
     return {
       message: 'Collaborator removed successfully',
       address: collaborator?.address?.toLocaleLowerCase(),
@@ -446,7 +453,7 @@ export const addBuilderPlaceCollaborator = async (body: AddBuilderPlaceCollabora
   try {
     const newCollaborator = await prisma.user.findUnique({
       where: {
-        address: body.newCollaboratorAddress.toLocaleLowerCase(),
+        address: body.newCollaboratorAddress,
       },
     });
 

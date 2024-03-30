@@ -19,18 +19,22 @@ function EditService() {
   const router = useRouter();
   const { id } = router.query;
   const { service, isLoading } = useServiceById(id as string);
-  const { account, user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+
+  const canEditService =
+    (isBuilderPlaceCollaborator && service?.buyer.id === builderPlace?.owner.talentLayerId) ||
+    talentLayerUser?.id === service?.buyer.id;
 
   if (isLoading) {
     return <Loading />;
   }
 
-  if (!user) {
+  if (!talentLayerUser) {
     return <Steps />;
   }
 
-  if (!isBuilderPlaceCollaborator) {
+  if (!canEditService) {
     return <AccessDenied />;
   }
 
@@ -46,7 +50,7 @@ function EditService() {
         </p>
       </div>
 
-      {account?.isConnected && user && <ServiceForm existingService={service} />}
+      {account?.isConnected && talentLayerUser && <ServiceForm existingService={service} />}
     </div>
   );
 }

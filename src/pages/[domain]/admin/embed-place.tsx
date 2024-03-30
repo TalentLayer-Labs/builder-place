@@ -2,8 +2,6 @@ import { CheckCircle, ClipboardCopy } from 'heroicons-react';
 import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import AccessDenied from '../../../components/AccessDenied';
-import Loading from '../../../components/Loading';
-import TalentLayerContext from '../../../context/talentLayer';
 import useCopyToClipBoard from '../../../hooks/useCopyToClipBoard';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
@@ -16,7 +14,6 @@ const BASE_URL = global?.location?.origin;
 const IFRAME_PATH = 'embed/work';
 
 const generateEmbedWorkUrl = (title: string) => {
-  // ?title=${title}
   return `${BASE_URL}/${IFRAME_PATH}`;
 };
 
@@ -25,17 +22,8 @@ const generateServicesEmbedIframeCode = (embedUrl: string): string => {
 };
 
 export default function EmbedPlace() {
-  const { loading } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const { isCopied: isIframeCopied, copyToClipboard: copyIframe } = useCopyToClipBoard();
-
-  if (loading) {
-    return (
-      <div className='flex justify-center items-center gap-10 flex-col pb-5 mt-5'>
-        <Loading />
-      </div>
-    );
-  }
 
   if (!isBuilderPlaceCollaborator) {
     return <AccessDenied />;
@@ -64,14 +52,14 @@ export default function EmbedPlace() {
               <p className='text-sm'>
                 copy the iFrame code below to embed your work board on a page in your website
               </p>
-              <div className='flex flex-row flex-wrap'>
+              <div className='flex flex-row flex-wrap justify-end'>
                 <code className='bg-info text-info rounded-xl p-2 my-4 overflow-hidden'>
                   {builderPlace?.name &&
                     generateServicesEmbedIframeCode(generateEmbedWorkUrl(builderPlace.name))}
                 </code>
                 {!isIframeCopied ? (
                   <button
-                    className='flex items-center justify-center text-primary text-center bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md w-full sm:w-auto'
+                    className='flex items-center justify-center text-primary text-center bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md w-full sm:w-auto ml-auto'
                     onClick={() =>
                       builderPlace?.name &&
                       copyIframe(
@@ -82,7 +70,7 @@ export default function EmbedPlace() {
                     <span>copy</span>
                   </button>
                 ) : (
-                  <button className='flex items-center justify-center text-primary text-center bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md w-full sm:w-auto'>
+                  <button className='flex items-center justify-center text-primary text-center bg-primary hover:opacity-70 px-5 py-2.5 rounded-xl text-md w-full sm:w-auto ml-auto'>
                     <CheckCircle />
                     <span>copied!</span>
                   </button>

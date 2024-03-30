@@ -3,7 +3,7 @@ import MultiStepsTransactionToast from '../../../../components/onboarding/user/M
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
 import { useMutation } from 'react-query';
-import { useChainId, useWalletClient } from 'wagmi';
+import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
   ICreateUser,
   ICreateUserFormValues,
@@ -14,12 +14,16 @@ import useMintFee from '../../../../hooks/useMintFee';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import UserContext from '../../context/UserContext';
 import { createVerificationEmailToast } from '../../utils/toast';
+import { wait } from '../../../../utils/toast';
+import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useCreateUser = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
+  const publicClient = usePublicClient({ chainId });
   const { address } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
   const { calculateMintFee } = useMintFee();
   const talentLayerClient = useTalentLayerClient();
   const userMutation = useMutation(
@@ -29,7 +33,7 @@ const useCreateUser = () => {
   );
 
   const createNewUser = async (values: ICreateUserFormValues) => {
-    if (!walletClient || !address) {
+    if (!walletClient || !talentLayerClient || !address) {
       throw new Error('Please connect your wallet');
     }
 
@@ -40,6 +44,10 @@ const useCreateUser = () => {
       autoClose: false,
       closeOnClick: false,
     });
+
+    await wait(2);
+
+    let userId = talentLayerUser?.id;
 
     try {
       /**
@@ -61,17 +69,35 @@ const useCreateUser = () => {
 
         if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_MINT === 'true') {
           const handlePrice = calculateMintFee(values.talentLayerHandle);
-          const response2 = await delegateMintID(
+          const tx = await delegateMintID(
             chainId,
             values.talentLayerHandle,
             String(handlePrice),
             address,
+            builderPlace?.talentLayerPlatformId || (process.env.NEXT_PUBLIC_PLATFORM_ID as string),
             signature,
-            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true' ? true : false,
+            process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE_ON_MINT === 'true',
           );
+
+          userId = tx.data.userId;
         } else {
           if (talentLayerClient) {
-            const tx = await talentLayerClient.profile.create(values.talentLayerHandle);
+            //TODO: invalid Bigint syntax :/
+            console.log('ic !', values.talentLayerHandle);
+            const txHash = await talentLayerClient.profile.create(values.talentLayerHandle);
+            console.log('ic !', txHash);
+            await publicClient.waitForTransactionReceipt({
+              confirmations: 1,
+              hash: txHash,
+            });
+            //@dev Return value as native browser bigint
+            const id = await publicClient.readContract({
+              address: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.address,
+              abi: talentLayerClient.getChainConfig(chainId).contracts.talentLayerId.abi,
+              functionName: 'ids',
+              args: [walletClient.account.address],
+            });
+            userId = id as unknown as string;
           }
         }
       }
@@ -83,10 +109,11 @@ const useCreateUser = () => {
       /**
        * @dev Post a new user to DB. Everytime we need to create or update an entity, we need to confirm with the signature
        */
-      const response = await userMutation.mutateAsync({
+      await userMutation.mutateAsync({
         data: {
           name: values.name,
           talentLayerHandle: values.talentLayerHandle,
+          talentLayerId: String(userId),
           email: values.email,
           picture: values.picture || undefined,
           address: address,

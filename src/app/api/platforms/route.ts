@@ -1,16 +1,19 @@
+import { Prisma } from '.prisma/client';
 import { BuilderPlace, EntityStatus } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { recoverMessageAddress } from 'viem';
-import { ICreateUser } from '../../../components/onboarding/user/CreateUserForm';
-import { getUsersBy } from '../../../modules/BuilderPlace/actions/user';
-import { sendTransactionalEmailValidation } from '../../../pages/api/utils/sendgrid';
-import prisma from '../../../postgre/postgreClient';
 import { ICreatePlatform } from '../../../components/onboarding/platform/CreatePlatformForm';
+import prisma from '../../../postgre/postgreClient';
+import JsonNull = Prisma.NullTypes.JsonNull;
+import InputJsonValue = Prisma.InputJsonValue;
 
 export interface PlatformsFilters {
   id?: string | null;
 }
 
+/**
+ * GET /api/platforms
+ */
 export async function GET(request: Request) {
   console.log('GET');
   const { searchParams } = new URL(request.url);
@@ -23,6 +26,9 @@ export async function GET(request: Request) {
   return Response.json({ platforms });
 }
 
+/**
+ * POST /api/platforms
+ */
 export async function POST(req: Request) {
   console.log('POST');
   const body: ICreatePlatform = await req.json();
@@ -35,22 +41,37 @@ export async function POST(req: Request) {
   });
 
   if (signatureAddress !== body.address) {
-    return Response.json({ error: 'Signature invalid' }, { status: 401 });
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   try {
     const builderPlace = await prisma.builderPlace.create({
-      data: { ...body.data, status: EntityStatus.VALIDATED },
+      data: {
+        ...body.data,
+        palette: body.data.palette as unknown as JsonNull | InputJsonValue,
+        status: EntityStatus.VALIDATED,
+      },
+    });
+
+    await prisma.builderPlace.update({
+      where: {
+        id: Number(builderPlace.id),
+      },
+      data: {
+        collaborators: {
+          set: { id: Number(body.data.ownerId) },
+        },
+      },
     });
 
     return Response.json({ id: builderPlace.id }, { status: 201 });
   } catch (error: any) {
     // @TODO: move error handle to a middleware ? or factorize it ?
-    let message = 'Failed to create plaform';
+    let message = 'Failed to create platform';
     if (error instanceof PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const target = (error.meta?.target as string)[0] || 'data';
-        message = `A plaform already exist with this ${target}`;
+        message = `A platform already exists with this ${target}`;
       }
     }
 

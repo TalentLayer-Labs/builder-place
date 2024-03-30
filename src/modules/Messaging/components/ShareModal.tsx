@@ -1,12 +1,12 @@
 import { ClipboardDocumentIcon, QrCodeIcon } from '@heroicons/react/24/outline';
 import { QRCodeSVG } from 'qrcode.react';
-import { useContext, useState } from 'react';
-import TalentLayerContext from '../../../context/talentLayer';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
 import { handleCopyClick } from '../../../utils/copyClickHandler';
 
 function ShareModal() {
   const [show, setShow] = useState(false);
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
 
   const shareLink = `${window.location.origin}/messaging/${account?.address}`;
 

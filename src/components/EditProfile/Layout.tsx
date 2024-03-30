@@ -12,9 +12,9 @@ interface ContainerProps {
 }
 
 function Layout({ children, className }: ContainerProps) {
-  const { account, user, completionScores } = useContext(TalentLayerContext);
+  const { account, user: talentLayerUser, completionScores } = useContext(TalentLayerContext);
 
-  if (!account?.isConnected || !user) {
+  if (!account?.isConnected || !talentLayerUser) {
     return <Steps />;
   }
 
@@ -26,7 +26,7 @@ function Layout({ children, className }: ContainerProps) {
             <p className='text-2xl font-bold flex-1 mt-6'>profile management</p>
 
             <Link
-              href={`/profiles/${user.id}`}
+              href={`/profiles/${talentLayerUser.id}`}
               className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm flex items-center rounded-xl'>
               <EyeIcon className='w-[18px] h-[18px] mr-2' />
               view public profile
@@ -34,7 +34,7 @@ function Layout({ children, className }: ContainerProps) {
           </div>
         </div>
 
-        {account?.isConnected && user && (
+        {account?.isConnected && talentLayerUser && (
           <div>
             <div className='min-h-screen overflow-hidden'>
               <div className='grid xl:gap-8 xl:grid-cols-12'>
@@ -44,15 +44,15 @@ function Layout({ children, className }: ContainerProps) {
                       <div className='flex items-center'>
                         <div className='relative inline-flex shrink-0 items-center justify-center outline-none h-12 w-12 rounded-full mr-4'>
                           <div className='flex h-full w-full items-center justify-center overflow-hidden text-center transition-all duration-300 rounded-full'>
-                            <ProfileImage size={50} url={user?.description?.image_url} />
+                            <ProfileImage size={50} url={talentLayerUser?.description?.image_url} />
                           </div>
                         </div>
                         <div className=''>
                           <p className='font-heading text-lg font-medium leading-none'>
-                            {user?.handle}
+                            {talentLayerUser?.handle}
                           </p>
                           <p className='font-alt text-sm font-normal leading-normal text-base-content opacity-50'>
-                            {user?.description?.title}
+                            {talentLayerUser?.description?.title}
                           </p>
                         </div>
                       </div>

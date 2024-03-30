@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
 import Header from '../../../components/onboarding/Header';
 import Steps from '../../../components/onboarding/platform/Steps';
 import CreatePlatformForm from '../../../components/onboarding/platform/CreatePlatformForm';
@@ -7,8 +6,11 @@ import CreatePlatformForm from '../../../components/onboarding/platform/CreatePl
 function createPlatform() {
   const router = useRouter();
 
-  const onSuccess = () => {
+  const onSuccess = (subdomain: string) => {
     console.log('*DEBUG* onSuccess REDIRECT');
+    router.push(
+      `${window.location.protocol}//${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/dashboard?platformonboarding=1`,
+    );
   };
 
   return (

@@ -11,49 +11,59 @@ import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
-import { IEmailPreferences, EmailNotificationType } from '../../types';
-import { postToIPFS } from '../../utils/ipfs';
+import { EmailNotificationType, IEmailPreferences } from '../../types';
+import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useUpdateEmailNotificationPreferencesMutation } from '../../modules/BuilderPlace/hooks/UseUpdateEmailNotificationPreferencesMutation';
 import { toast } from 'react-toastify';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import { useMutation } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { IUpdateProfile } from '../../app/api/users/[id]/route';
 
 function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
-  const { user, canUseDelegation, refreshData, workerProfile, loading } =
-    useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const {
+    canUseBackendDelegate,
+    refreshData,
+    loading: talentLayerDataLoading,
+  } = useContext(TalentLayerContext);
+  const { user, loading } = useContext(UserContext);
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
-  const web2MailPreferences = workerProfile?.emailPreferences as IEmailPreferences;
+  const userDescription = user?.talentLayerId
+    ? useUserById(user?.talentLayerId)?.description
+    : null;
+  const web2MailPreferences = user?.emailPreferences as IEmailPreferences;
   const emailNotificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
       : EmailNotificationType.WEB2;
-  const { mutateAsync: updateEmailNotificationPreferencesAsync } =
-    useUpdateEmailNotificationPreferencesMutation();
+  const userMutation = useMutation(
+    async (body: IUpdateProfile): Promise<AxiosResponse<{ id: string }>> => {
+      return await axios.put(`/api/users/${user?.id}`, body);
+    },
+  );
 
-  if (!user?.id || loading || !workerProfile) {
+  if (!user?.talentLayerId || talentLayerDataLoading || loading || !user) {
     return <Loading />;
   }
 
   const initialValues: IEmailPreferences =
     emailNotificationType === EmailNotificationType.WEB3
       ? {
-          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService || true,
-          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal || true,
+          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
+          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
           activeOnProposalValidated:
-            userDescription?.web3mailPreferences?.activeOnProposalValidated || true,
-          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease || true,
-          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview || true,
+            userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
+          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
+          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
           activeOnPlatformMarketing:
-            userDescription?.web3mailPreferences?.activeOnPlatformMarketing || false,
+            userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
         }
       : {
           activeOnNewService: web2MailPreferences?.activeOnNewService,
@@ -69,12 +79,7 @@ function EmailPreferencesForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      if (
-        emailNotificationType === EmailNotificationType.WEB2 &&
-        walletClient &&
-        workerProfile &&
-        address
-      ) {
+      if (emailNotificationType === EmailNotificationType.WEB2 && walletClient && user && address) {
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -83,25 +88,21 @@ function EmailPreferencesForm() {
           message: `connect with ${address}`,
         });
 
-        const response = await updateEmailNotificationPreferencesAsync({
-          preferences: values,
-          userId: workerProfile.id.toString(),
-          address,
-          signature,
+        await userMutation.mutateAsync({
+          data: {
+            emailPreferences: values,
+          },
+          signature: signature,
+          address: address,
+          domain: window.location.hostname + ':' + window.location.port,
         });
 
-        if (response.error) {
-          showErrorTransactionToast(response.error);
-        }
-
-        if (response.message) {
-          toast.success(response.message, {
-            autoClose: 5000,
-            closeOnClick: true,
-          });
-        }
+        toast.success('Email preferences updated successfully', {
+          autoClose: 5000,
+          closeOnClick: true,
+        });
       } else if (user && publicClient && walletClient) {
-        const cid = await postToIPFS(
+        const cid = await postToIPFSwithQuickNode(
           JSON.stringify({
             title: userDescription?.title,
             role: userDescription?.role,
@@ -122,15 +123,33 @@ function EmailPreferencesForm() {
         );
 
         let tx;
-        if (canUseDelegation) {
-          const response = await delegateUpdateProfileData(chainId, user.id, user.address, cid);
+        if (canUseBackendDelegate && address) {
+          console.log('DELEGATION');
+
+          /**
+           * @dev Sign message to prove ownership of the address
+           */
+          const signature = await walletClient.signMessage({
+            account: address,
+            message: `connect with ${address}`,
+          });
+
+          const response = await delegateUpdateProfileData(
+            {
+              chainId,
+              userAddress: address,
+              cid,
+              signature,
+            },
+            user.talentLayerId,
+          );
           tx = response.data.transaction;
         } else {
           tx = await walletClient.writeContract({
             address: config.contracts.talentLayerId,
             abi: TalentLayerID.abi,
             functionName: 'updateProfileData',
-            args: [user.id, cid],
+            args: [user.talentLayerId, cid],
             account: address,
           });
         }

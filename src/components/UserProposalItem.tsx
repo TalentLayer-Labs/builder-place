@@ -1,21 +1,21 @@
 import Link from 'next/link';
 import { useContext } from 'react';
-import TalentLayerContext from '../context/talentLayer';
 import useServiceById from '../hooks/useServiceById';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { IProposal, ProposalStatusEnum } from '../types';
 import { renderTokenAmount } from '../utils/conversion';
 import { formatDate } from '../utils/dates';
 import ProfileImage from './ProfileImage';
 
 function UserProposalItem({ proposal }: { proposal: IProposal }) {
-  const { user } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const { service } = useServiceById(proposal.service.id);
 
   if (!service) {
     return null;
   }
 
-  const isBuyer = user?.id === proposal.service.buyer.id;
+  const isBuyer = user?.talentLayerId === proposal.service.buyer.id;
 
   return (
     <div className='flex flex-row gap-2 rounded-xl p-4 border border-info text-base-content bg-base-100'>
@@ -33,7 +33,7 @@ function UserProposalItem({ proposal }: { proposal: IProposal }) {
               </p>
             </div>
 
-            <span className='absolute right-[-25px] top-[-25px] inline-flex items-center rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-content'>
+            <span className='absolute right-[-25px] top-[-25px] inline-flex items-center rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-800'>
               {proposal.status}
             </span>
           </div>

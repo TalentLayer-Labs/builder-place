@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // @dev : you can add here all the check you need to confirm the delegation for a user
 
-  if (process.env.NEXT_PUBLIC_ACTIVE_DELEGATE !== 'true') {
+  if (process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE !== 'true') {
     res.status(500).json('Delegation is not activated');
     return null;
   }
@@ -68,6 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           serviceId: Number(serviceId),
         });
 
+        //TODO: Miss Proposal posting cost
         transaction = await walletClient.writeContract({
           address: config.contracts.serviceRegistry,
           abi: TalentLayerService.abi,
