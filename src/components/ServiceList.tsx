@@ -31,7 +31,7 @@ function ServiceList() {
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
-    filters
+    filters,
     builderPlace?.talentLayerPlatformId,
   );
 
