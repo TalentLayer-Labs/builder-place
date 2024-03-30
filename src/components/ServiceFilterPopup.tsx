@@ -1,6 +1,22 @@
 import React from 'react';
 import useAllowedTokens from '../hooks/useAllowedTokens';
-import { IToken, ServiceFilterPopupProps } from '../types';
+import { IToken } from '../types';
+
+interface ServiceFilterPopupProps {
+  filters: {
+    minRate: string;
+    maxRate: string;
+    selectedToken: string;
+    selectedRatings: string[];
+  };
+  setFilters: React.Dispatch<React.SetStateAction<{
+    minRate: string;
+    maxRate: string;
+    selectedToken: string;
+    selectedRatings: string[];
+  }>>;
+  handleResetFilter: () => void;
+}
 
 function ServiceFilterPopup({ filters, setFilters, handleResetFilter }: ServiceFilterPopupProps) {
   const allowedTokens = useAllowedTokens();

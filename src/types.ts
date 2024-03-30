@@ -333,22 +333,6 @@ export interface IMutation<T> {
   domain: string;
 }
 
-export interface ServiceFilterPopupProps {
-  filters: {
-    minRate: string;
-    maxRate: string;
-    selectedToken: string;
-    selectedRatings: string[];
-  };
-  setFilters: React.Dispatch<React.SetStateAction<{
-    minRate: string;
-    maxRate: string;
-    selectedToken: string;
-    selectedRatings: string[];
-  }>>;
-  handleResetFilter: () => void;
-}
-
 export interface Filters {
   minRate: string;
   maxRate: string;
