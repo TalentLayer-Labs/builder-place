@@ -37,33 +37,33 @@ function ServiceList() {
         </p>
       )}
 
-      <div className='flex flex-col md:flex-row mb-5'>
-        <div className='flex mb-2 md:mb-0'>
+      <div className='flex flex-col md:flex-row mb-5 flex-wrap items-center '>
+        <div className='mb-2 md:mb-0 flex-1'>
           <button
             onClick={() => setView(1)}
-            className={`px-4 py-2 rounded-full ${
+            className={`px-2 py-1.5 text-xs rounded-full ${
               view === 1 ? 'bg-primary text-primary' : 'bg-transparent text-base-content'
             }`}>
             List View
           </button>
           <button
             onClick={() => setView(2)}
-            className={`px-4 py-2 rounded-full ml-2 ${
-              view === 2 ? 'bg-primary text-white' : 'bg-transparent text-base-content'
+            className={`px-2 py-1.5 text-xs rounded-full ml-2 ${
+              view === 2 ? 'bg-primary text-primary' : 'bg-transparent text-base-content'
             }`}>
             Table View
           </button>
 
-          <button className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'>
+          <button className='px-4 py-2 rounded-full ml-auto hidden text-base-content border mr-2'>
             Filter
           </button>
         </div>
 
-        <button className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'>
+        <button className='hidden px-4 py-2 rounded-full ml-auto text-base-content border mr-2'>
           Filter
         </button>
 
-        <div className='mt-2 md:mt-0 md:mr-2'>
+        <div className='mt-2 md:mt-0 flex justify-end'>
           <SearchServiceButton value={searchQuery} />
         </div>
       </div>
@@ -82,11 +82,11 @@ function ServiceList() {
         <table className='min-w-full text-center'>
           <thead>
             <tr className='bg-primary text-primary'>
-              <th className='border border-gray-300 p-2'>Title</th>
-              <th className='border border-gray-300 p-2'>Date</th>
-              <th className='border border-gray-300 p-2'>Rate</th>
-              <th className='border border-gray-300 p-2'>Work</th>
-              <th className='border border-gray-300 p-2'>View</th>
+              <th className='border border-base-200 p-2'>Title</th>
+              <th className='border border-base-200 p-2'>Date</th>
+              <th className='border border-base-200 p-2'>Rate</th>
+              <th className='border border-base-200 p-2'>Work</th>
+              <th className='border border-base-200 p-2'>View</th>
             </tr>
           </thead>
           <tbody>

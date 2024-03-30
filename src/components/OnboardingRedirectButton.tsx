@@ -18,7 +18,7 @@ const OnboardingRedirectButton = () => {
       </div>
       <button
         onClick={handleRedirect}
-        className='bg-primary hover:bg-primary-focus text-white font-bold py-2 px-4 rounded'>
+        className='bg-primary hover:bg-primary-focus text-primary font-bold py-2 px-4 rounded'>
         Create my profile
       </button>
     </div>

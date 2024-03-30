@@ -24,9 +24,9 @@ function ServiceItem({
     <>
       {/* LIST VIEW */}
       {view === 1 && (
-        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-gray-300 text-base-content bg-transparent mb-5'>
+        <div className='relative flex flex-row gap-2 rounded-2xl p-6 border border-3 border-base-100 text-base-content bg-base-100 mb-5'>
           {service.proposals && (
-            <div className='absolute top-[-10px] right-[-10px] bg-primary text-white text-xs rounded-full px-3 py-1'>
+            <div className='absolute top-[-10px] right-[-10px] bg-primary text-primary text-xs rounded-full px-3 py-1'>
               {service.proposals.length}
             </div>
           )}
@@ -78,11 +78,11 @@ function ServiceItem({
       {/* TABLE VIEW */}
       {view === 2 && (
         <tr className='bg-base-100 hover:bg-base-200'>
-          <td className='border border-gray-300 p-2 break-all text-left '>
+          <td className='border border-base-200 p-2 break-all text-left '>
             {service.description?.title}
           </td>
-          <td className='border border-gray-300 p-2'>{daysAgo}</td>
-          <td className='border border-gray-300 p-2'>
+          <td className='border border-base-200 p-2'>{daysAgo}</td>
+          <td className='border border-base-200 p-2'>
             {service.description?.rateToken && service.description?.rateAmount && (
               <TokenAmount
                 amount={service.description.rateAmount}
@@ -91,8 +91,8 @@ function ServiceItem({
             )}
           </td>
 
-          <td className='border border-gray-300 p-2'>Gig</td>
-          <td className='border border-gray-300 p-2'>
+          <td className='border border-base-200 p-2'>Gig</td>
+          <td className='border border-base-200 p-2'>
             <Link
               className='text-base-content hover:opacity-70 underline'
               href={`/work/${service.id}`}
