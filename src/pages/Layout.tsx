@@ -10,6 +10,7 @@ import UserAccount from '../components/UserAccount';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import Loading from '../components/Loading';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
+import Template from './template';
 
 interface ContainerProps {
   children: ReactNode;
@@ -178,7 +179,9 @@ function Layout({ children, className }: ContainerProps) {
             </div>
 
             <main>
-              <div className={`px-6 py-6 md:px-12 xl:px-24`}>{children}</div>
+              <div className={`px-6 py-6 md:px-12 xl:px-24`}>
+                <Template key={router.asPath}>{children}</Template>
+              </div>
             </main>
           </div>
         </div>
