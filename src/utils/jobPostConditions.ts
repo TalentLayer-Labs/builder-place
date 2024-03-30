@@ -14,6 +14,15 @@ const viemFormattedChains: {
   [JobConditionsChainIdEnum.POLYGON]: polygon,
   [JobConditionsChainIdEnum.BNB]: opBNB,
 };
+
+const blockScanList = {
+  [JobConditionsChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
+  [JobConditionsChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/',
+  [JobConditionsChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/',
+  [JobConditionsChainIdEnum.POLYGON]: 'https://polygonscan.com/',
+  [JobConditionsChainIdEnum.BNB]: 'https://bscscan.com/',
+};
+
 export const generateClients = (chainIdSet: Set<number>): Map<number, PublicClient> => {
   const clients = new Map<number, PublicClient>();
   chainIdSet.forEach(chainId => {
@@ -28,3 +37,13 @@ export const generateClients = (chainIdSet: Set<number>): Map<number, PublicClie
 
 export const getViemFormattedChainForJobConditions = (networkId: JobConditionsChainIdEnum): Chain =>
   viemFormattedChains[networkId];
+
+export const getBlockExplorerLink = (
+  chainId: JobConditionsChainIdEnum,
+  address: string,
+  type: string,
+) => {
+  const baseLink = blockScanList[chainId];
+  const path = type === 'NFT' ? 'address' : 'token';
+  return `${baseLink}${path}/${address}`;
+};

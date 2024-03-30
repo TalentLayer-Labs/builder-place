@@ -1,25 +1,8 @@
 import { IReturnPostingCondition } from '../../hooks/useCheckJobPostConditions';
-import { JobConditionsChainIdEnum, PostingCondition } from '../../modules/BuilderPlace/types';
-
-const blockScanList = {
-  [JobConditionsChainIdEnum.ETHEREUM]: 'https://etherscan.io/',
-  [JobConditionsChainIdEnum.ARBITRUM]: 'https://https://arbiscan.io/',
-  [JobConditionsChainIdEnum.IEXEC]: 'https://explorer.iex.ec/bellecour/',
-  [JobConditionsChainIdEnum.POLYGON]: 'https://polygonscan.com/',
-  [JobConditionsChainIdEnum.BNB]: 'https://bscscan.com/',
-};
+import { PostingCondition } from '../../modules/BuilderPlace/types';
+import { getBlockExplorerLink } from '../../utils/jobPostConditions';
 
 const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition) => {
-  const getBlockExplorerLink = (
-    chainId: JobConditionsChainIdEnum,
-    address: string,
-    type: string,
-  ) => {
-    const baseLink = blockScanList[chainId];
-    const path = type === 'NFT' ? 'address' : 'token';
-    return `${baseLink}${path}/${address}`;
-  };
-
   const renderConditionText = (condition: PostingCondition) => {
     switch (condition.type) {
       case 'NFT':

@@ -137,9 +137,7 @@ function JobPostingConditionsFieldArray({
                 name='jobPostingConditions.allowPosts'
                 className='w-6 h-6 border-info bg-base-200 shadow-sm focus:ring-opacity-50 rounded'
               />
-              <label
-                htmlFor='jobPostingConditions.allowPosts'
-                className='ml-2 text-md font-medium text-gray-700'>
+              <label htmlFor='jobPostingConditions.allowPosts' className='ml-2 text-md font-medium'>
                 Allow Posts
               </label>
             </div>
@@ -151,24 +149,24 @@ function JobPostingConditionsFieldArray({
             {existingJobPostingConditions?.allowPosts && (
               <>
                 <div className='flex-row mb-6'>
-                  <div className='flex justify-between items-end mb-2'>
-                    <div className='flex flex-1 items-end'>
+                  <div className='flex justify-between mb-2 flex-wrap'>
+                    <div className='flex flex-1 flex-wrap'>
                       <Field
                         type='text'
                         name='tempFormValues.tempNftAddress'
                         placeholder='NFT Address'
-                        className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                        className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                       />
                       <Field
                         as='select'
                         name='tempFormValues.tempNftChainId'
-                        className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                        className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                         onChange={(e: any) =>
                           setFieldValue('tempFormValues.tempNftChainId', e.target.value)
                         }>
                         {chainIdOptions.map(option => (
                           <option
-                            className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                            className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                             key={option.value}
                             value={option.value}>
                             {option.label}
@@ -179,7 +177,9 @@ function JobPostingConditionsFieldArray({
                     <AsyncButton
                       label={'Add NFT Condition'}
                       isSubmitting={nftSubmitting}
-                      validateButtonCss={'w-52 grow px-5 py-2 rounded-xl bg-primary text-primary'}
+                      validateButtonCss={
+                        'w-52 grow px-5 py-2 my-1 rounded-xl bg-primary text-primary'
+                      }
                       onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'NFT',
@@ -199,18 +199,18 @@ function JobPostingConditionsFieldArray({
                 </div>
 
                 <div className='flex-row mb-6'>
-                  <div className='flex justify-between items-end'>
-                    <div className='flex flex-1 items-end'>
+                  <div className='flex justify-center flex-wrap'>
+                    <div className='flex flex-1 flex-wrap'>
                       <Field
                         type='text'
                         name='tempFormValues.tempTokenAddress'
                         placeholder='Token Address'
-                        className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                        className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                       />
                       <Field
                         as='select'
                         name='tempFormValues.tempTokenChainId'
-                        className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                        className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                         onChange={(e: any) =>
                           setFieldValue('tempFormValues.tempTokenChainId', e.target.value)
                         }>
@@ -224,13 +224,15 @@ function JobPostingConditionsFieldArray({
                         type='number'
                         name='tempFormValues.tempTokenAmount'
                         placeholder='Minimum Amount'
-                        className='my-1 ml-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                        className='flex-1 md:flex-initial my-1 mr-2 block rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                       />
                     </div>
                     <AsyncButton
                       label={'Add Token Condition'}
                       isSubmitting={tokenSubmitting}
-                      validateButtonCss={'w-52 grow px-5 py-2 rounded-xl bg-primary text-primary'}
+                      validateButtonCss={
+                        'w-52 grow px-5 py-2 my-1 rounded-xl bg-primary text-primary'
+                      }
                       onClick={() =>
                         addJobPostingConditions(push, setFieldValue, setFieldError, {
                           type: 'Token',
