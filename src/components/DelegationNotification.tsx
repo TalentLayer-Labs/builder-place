@@ -1,6 +1,6 @@
 import Notification from './Notification';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../utils/toast';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import { usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
@@ -23,9 +23,11 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
   const publicClient = usePublicClient({ chainId });
   const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS;
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   const onActivateDelegation = async () => {
     try {
+      setSubmitting(true);
       if (talentLayerClient && walletClient && talentLayerClientConfig) {
         const { request } = await publicClient.simulateContract({
           address: talentLayerClientConfig.contracts.talentLayerId.address,
@@ -55,6 +57,7 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
     } catch (error) {
       showErrorTransactionToast(error);
     } finally {
+      setSubmitting(false);
       await refreshData();
     }
   };
@@ -71,6 +74,7 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
             linkText='Activate Gassless'
             color='success'
             imageUrl={talentLayerUser?.description?.image_url}
+            submitting={submitting}
             callback={onActivateDelegation}
           />
         )}

@@ -1,8 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import ConnectBlock from '../../components/ConnectBlock';
 import DelegationNotification from '../../components/DelegationNotification';
@@ -71,6 +70,7 @@ function Dashboard() {
 
       {account?.isConnected && talentLayerUser && (
         <div>
+          <VerifyEmailNotification />
           {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
             <>
               <div className='mb-12'>
@@ -93,11 +93,7 @@ function Dashboard() {
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              <VerifyEmailNotification
-                callback={() => {
-                  toast.success('Verification email sent!');
-                }}
-              />
+              <VerifyEmailNotification />
               {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>

@@ -1,10 +1,13 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { useAccount } from 'wagmi';
-import { sendVerificationEmail } from '../../modules/BuilderPlace/request';
 import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
 import { useContext } from 'react';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { useMutation } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { ISendVerificationEmail } from '../../app/api/emails/send-verification/route';
+import { showErrorTransactionToast } from '../../utils/toast';
 
 function SubmitButton({
   isSubmitting,
@@ -19,13 +22,29 @@ function SubmitButton({
   const { open: openConnectModal } = useWeb3Modal();
   const { user } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
+  const sendVerificationEmailMutation = useMutation(
+    async (
+      body: ISendVerificationEmail,
+    ): Promise<AxiosResponse<{ id: string; message: string }>> => {
+      return await axios.post('/api/emails/send-verification', body);
+    },
+  );
 
   const handleSendVerificationEmail = async (e: any) => {
     e.preventDefault();
     const domain = builderPlace?.subdomain || builderPlace?.customDomain;
     if (user && domain) {
-      await sendVerificationEmail(user.email, user.id.toString(), user.name, domain);
-      await createVerificationEmailToast();
+      try {
+        await sendVerificationEmailMutation.mutateAsync({
+          userId: user.id.toString(),
+          domain: domain,
+          name: user.name,
+          to: user.email,
+        });
+        await createVerificationEmailToast();
+      } catch (error: any) {
+        showErrorTransactionToast(error);
+      }
     }
   };
 

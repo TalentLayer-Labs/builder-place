@@ -1,5 +1,6 @@
 // Email verification
 export const EMAIL_VERIFIED_SUCCESSFULLY = 'Email verified successfully';
+export const VERIFICATION_EMAIL_SENT = 'Verification email sent';
 export const EMAIL_ALREADY_VERIFIED = 'Email already verified';
 export const MISSING_DATA = 'Missing data';
 export const METHOD_NOT_ALLOWED = 'Method not allowed';
