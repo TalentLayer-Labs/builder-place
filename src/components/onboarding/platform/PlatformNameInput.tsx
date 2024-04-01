@@ -40,7 +40,7 @@ export function PlatformNameInput({
       }
       return;
     },
-    [initialValue],
+    [initialValue, existingPlatformName],
   );
 
   const updatePlatformName = useCallback((newName: string, existingPlatformName?: string) => {

@@ -34,6 +34,7 @@ import {
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
+import { PlatformsFilters } from '../../../app/api/platforms/route';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
@@ -57,6 +58,37 @@ export const validateBuilderPlace = async (builderPlaceId: string) => {
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_VALIDATING_BUILDERPLACE);
   }
+};
+
+export const getPlatformBy = async (filters: PlatformsFilters) => {
+  console.log('*DEBUG* Getting Platforms with filters:', filters);
+
+  const whereClause: any = {};
+  if (filters.id) {
+    whereClause.id = Number(filters.id);
+  } else if (filters.ownerId) {
+    whereClause.ownerId = filters.ownerId;
+  } else if (filters.ownerAddress) {
+    whereClause.owner.address = filters.ownerAddress;
+  } else if (filters.ownerTalentLayerId) {
+    whereClause.owner.talentLayerId = filters.ownerTalentLayerId;
+  } else if (filters.talentLayerPlatformId) {
+    whereClause.talentLayerPlatformId = filters.talentLayerPlatformId;
+  } else if (filters.talentLayerPlatformName) {
+    whereClause.talentLayerPlatformName = filters.talentLayerPlatformName;
+  } else if (filters.subdomain) {
+    whereClause.subdomain = filters.subdomain;
+  }
+
+  const platform = await prisma.builderPlace.findMany({
+    where: whereClause,
+    include: {
+      owner: true,
+      collaborators: true,
+    },
+  });
+  console.log('Fetched Platform: ', platform[0]?.name);
+  return platform;
 };
 
 export const removeBuilderPlaceOwner = async (data: RemoveBuilderPlaceOwner) => {

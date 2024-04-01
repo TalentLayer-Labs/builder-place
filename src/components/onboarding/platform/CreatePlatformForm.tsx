@@ -13,6 +13,8 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
+import useGetPlatformByOwnerId from '../../../modules/BuilderPlace/hooks/platform/useGetPlatform';
+import { useRouter } from 'next/router';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -46,13 +48,16 @@ export interface ICreatePlatform
 function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const existingPlatform = usePlatformByOwner(address);
+  const existingTalentLayerPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
+  const router = useRouter();
+  const { platform: existingDatabasePlatform } = useGetPlatformByOwnerId(user?.id);
+  const alreadyOwnsAPlatform = existingDatabasePlatform?.ownerId === user?.id;
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',
     subdomain: '',
-    talentLayerPlatformName: existingPlatform?.name || '',
+    talentLayerPlatformName: existingTalentLayerPlatform?.name || '',
     logo: '',
   };
 
@@ -81,7 +86,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         throw new Error('Please connect first');
       }
 
-      await createNewPlatform(values, user, existingPlatform);
+      await createNewPlatform(values, user, existingTalentLayerPlatform);
       //TODO add get like user ?
 
       /**
@@ -106,6 +111,39 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     return <AccessDenied />;
   }
 
+  if (alreadyOwnsAPlatform) {
+    const domain = existingDatabasePlatform?.customDomain || existingDatabasePlatform?.subdomain;
+
+    const onRedirect = async () => {
+      console.log('DEBUG', `${window.location.protocol}//${domain}`);
+      await router.push(`${window.location.protocol}//${domain}`);
+    };
+
+    return (
+      <div className='flex flex-col items-center justify-center text-base-content text-primary'>
+        <div className='rounded-lg pb-5 max-w-md text-center'>
+          <p className='text-lg mb-4'>
+            You already own <strong>{domain}</strong>
+          </p>
+          {existingDatabasePlatform?.logo && (
+            <div className='mb-4'>
+              <img
+                src={existingDatabasePlatform?.logo}
+                alt='Platform Logo'
+                className='mx-auto h-20 w-20 object-cover rounded-full border-2'
+              />
+            </div>
+          )}
+          <button
+            className='rounded-md bg-info px-3.5 py-2.5 text-sm font-semibold text-base-content shadow-sm hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+            onClick={onRedirect}>
+            Go to My Domain
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Formik
@@ -113,7 +151,8 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         enableReinitialize={true}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
-        validateOnBlur={false}>
+        validateOnBlur={true}
+        validateOnChange={true}>
         {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
@@ -137,7 +176,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
                 <span className='font-bold text-md'>talentLayerPlatformName*</span>
                 <PlatformNameInput
                   initialValue={initialValues.name}
-                  existingPlatformName={existingPlatform?.name}
+                  existingPlatformName={existingTalentLayerPlatform?.name}
                 />
               </label>
 
