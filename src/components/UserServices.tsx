@@ -18,6 +18,7 @@ function UserServices({ user, type }: IProps) {
     undefined,
     type == 'contributor' ? user.id : builderPlace?.owner.talentLayerId || undefined,
     type == 'seller' ? user.id : undefined,
+    builderPlace?.talentLayerPlatformId,
   );
 
   if (loading) {

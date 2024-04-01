@@ -1,13 +1,9 @@
-import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
+import { recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
-import {
-  getDelegationSigner,
-  getPublicClient,
-  isPlatformAllowedToDelegate,
-} from '../../../utils/delegate';
+import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getUserByAddress } from '../../../../modules/BuilderPlace/actions/user';
+import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
 
 export interface IPlatformMintForAddress {
   platformName: string;
