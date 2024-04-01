@@ -1,6 +1,6 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import * as Yup from 'yup';
 import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
@@ -15,6 +15,7 @@ import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
 import useGetPlatformByOwnerId from '../../../modules/BuilderPlace/hooks/platform/useGetPlatform';
 import { useRouter } from 'next/router';
+import AsyncButton from '../../AsyncButton';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -51,7 +52,9 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
   const existingTalentLayerPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
   const router = useRouter();
-  const { platform: existingDatabasePlatform } = useGetPlatformByOwnerId(user?.id);
+  const [redirecting, setRedirecting] = useState(false);
+  const { platform: existingDatabasePlatform, loading: platformDataLoading } =
+    useGetPlatformByOwnerId(user?.id);
   const alreadyOwnsAPlatform = existingDatabasePlatform?.ownerId === user?.id;
 
   const initialValues: ICreatePlatformFormValues = {
@@ -103,7 +106,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     }
   };
 
-  if (isLoadingUser) {
+  if (isLoadingUser || platformDataLoading) {
     return <Loading />;
   }
 
@@ -115,8 +118,13 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     const domain = existingDatabasePlatform?.customDomain || existingDatabasePlatform?.subdomain;
 
     const onRedirect = async () => {
-      console.log('DEBUG', `${window.location.protocol}//${domain}`);
-      await router.push(`${window.location.protocol}//${domain}`);
+      setRedirecting(true);
+      try {
+        await router.push(`${window.location.protocol}//${domain}`);
+      } catch (error: any) {
+        console.error('Error redirecting', error);
+        setRedirecting(false);
+      }
     };
 
     return (
@@ -134,11 +142,20 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
               />
             </div>
           )}
-          <button
-            className='rounded-md bg-info px-3.5 py-2.5 text-sm font-semibold text-base-content shadow-sm hover:bg-base-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-            onClick={onRedirect}>
-            Go to My Domain
-          </button>
+          <div className='w-full flex justify-center'>
+            <AsyncButton
+              isSubmitting={redirecting}
+              disabled={redirecting}
+              validateButtonCss={
+                'rounded-md bg-info px-3.5 py-2.5 text-sm font-semibold text-base-content shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+              }
+              loadingButtonCss={
+                'opacity-50 rounded-md bg-info px-3.5 py-2.5 text-sm font-semibold text-base-content shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+              }
+              label={'Go to My Domain'}
+              onClick={onRedirect}
+            />
+          </div>
         </div>
       </div>
     );
