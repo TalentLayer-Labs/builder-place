@@ -43,15 +43,6 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
-  const canDelegate = await isPlatformAllowedToDelegate(body.chainId, body.address);
-
-  if (!canDelegate) {
-    return Response.json(
-      { error: 'Delegation is Not activated for this address' },
-      { status: 401 },
-    );
-  }
-
   try {
     const walletClient = await getDelegationSigner();
     if (!walletClient) {
