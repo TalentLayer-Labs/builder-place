@@ -182,7 +182,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
                         openConnectModal();
                         e.preventDefault();
                       }}>
-                      connect your wallet first
+                      connect your wallet
                     </button>
                   )}
                 </>

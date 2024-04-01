@@ -17,7 +17,7 @@ function createProfile() {
 
   return (
     <div className=''>
-      <div className='text-stone-800'>
+      <div className=''>
         <div className='pb-16 max-w-3xl transition-all duration-300 rounded-md mx-auto'>
           <div className='p-6 mx-auto'>
             <p className=' pb-5 sm:pb-10 pt-5 text-3xl sm:text-5xl font-bold mt-3 sm:mt-6 text-center'>

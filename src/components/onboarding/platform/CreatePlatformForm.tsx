@@ -229,7 +229,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
                       onClick={() => {
                         openConnectModal();
                       }}>
-                      connect your wallet first
+                      connect your wallet
                     </button>
                   )}
                 </>

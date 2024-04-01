@@ -1,13 +1,9 @@
-import { recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
+import { recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
-import {
-  getDelegationSigner,
-  getPublicClient,
-  isPlatformAllowedToDelegate,
-} from '../../../utils/delegate';
+import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getUserByAddress } from '../../../../modules/BuilderPlace/actions/user';
+import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
 
 export interface IPlatformMintForAddress {
   platformName: string;
@@ -41,15 +37,6 @@ export async function POST(req: Request) {
 
   if (user?.talentLayerId !== body.userTalentLayerId) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
-  }
-
-  const canDelegate = await isPlatformAllowedToDelegate(body.chainId, body.address);
-
-  if (!canDelegate) {
-    return Response.json(
-      { error: 'Delegation is Not activated for this address' },
-      { status: 401 },
-    );
   }
 
   try {
