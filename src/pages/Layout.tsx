@@ -1,14 +1,15 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { Fragment, ReactNode, useContext, useEffect, useState } from 'react';
 import Logo from '../components/Layout/Logo';
 import MenuBottom from '../components/Layout/MenuBottom';
 import SideMenu from '../components/Layout/SideMenu';
+import Loading from '../components/Loading';
 import NetworkSwitch from '../components/NetworkSwitch';
 import UserAccount from '../components/UserAccount';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import Loading from '../components/Loading';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import Template from './template';
 
@@ -171,13 +172,17 @@ function Layout({ children, className }: ContainerProps) {
           </Transition.Root>
 
           <div className='hidden md:fixed md:inset-y-0 md:flex md:w-72 md:flex-col'>
-            <div className='flex flex-grow flex-col overflow-y-auto bg-base-300 pt-5'>
+            <motion.div
+              className='flex flex-grow flex-col overflow-y-auto bg-base-300 pt-5'
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ease: 'easeInOut', duration: 0.5 }}>
               <div className='flex flex-shrink-0 items-center px-6'>
                 <Logo />
               </div>
 
               <SideMenu />
-            </div>
+            </motion.div>
           </div>
 
           <div className='flex flex-1 flex-col md:pl-72'>

@@ -1,18 +1,16 @@
+import { GetServerSidePropsContext } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useContext } from 'react';
-import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import SideLink from './SideLink';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
 import {
   getWorkerNavigation,
   hirerAdminNavigation,
   hirerNavigation,
   ownerAdminNavigation,
-  PlatformAdminNavigation,
 } from './navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import SideLink from './SideLink';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
