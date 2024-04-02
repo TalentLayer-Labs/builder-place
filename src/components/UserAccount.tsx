@@ -6,6 +6,7 @@ import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { useAccount } from 'wagmi';
+import Link from 'next/link';
 
 function UserAccount() {
   const { isConnected } = useAccount();
@@ -26,6 +27,20 @@ function UserAccount() {
       <div className='flex justify-between'>
         <div className='pr-4 flex items-center'>
           <ConnectBlock />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className='flex justify-between'>
+        <div className='pr-4 flex items-center'>
+          <Link
+            href='/newonboarding/create-profile'
+            className='px-5 py-2 rounded-xl bg-primary text-primary'>
+            Create an account
+          </Link>
         </div>
       </div>
     );
