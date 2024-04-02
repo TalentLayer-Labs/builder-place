@@ -10,7 +10,7 @@ export function useCheckNameAvailability() {
   const talentLayerClient = useTalentLayerClient();
   const cacheRef = useRef<Cache>({});
 
-  const checkAvailability = useCallback(
+  return useCallback(
     async (value: string, initialValue: string, entity: 'platforms' | 'users') => {
       const cacheKey = `${entity}:${value}:${initialValue}`;
       let isAvailable = cacheRef.current[cacheKey];
@@ -39,6 +39,4 @@ export function useCheckNameAvailability() {
     },
     [talentLayerClient],
   );
-
-  return checkAvailability;
 }

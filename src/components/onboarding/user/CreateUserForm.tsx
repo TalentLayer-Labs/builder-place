@@ -69,7 +69,7 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
       .required('Enter your name'),
     email: Yup.string().required('Enter your email'),
     talentLayerHandle: Yup.string()
-      .min(Math.min(talentLayerUser?.handle?.length || 5, 5)) // if user already got an handle with low characters adjust the min length
+      .min(Math.min(talentLayerUser?.handle?.length || 5, 5)) // if user already got a handle with low characters adjust the min length
       .max(20)
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your handle'),
