@@ -24,6 +24,8 @@ const useUpdateProposal = () => {
       throw new Error('Please connect your wallet');
     }
 
+    console.log('updateProposal', { canUseBackendDelegate });
+
     await wait(2);
 
     if (
