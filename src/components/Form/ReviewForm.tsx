@@ -75,7 +75,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
                 as='textarea'
                 id='content'
                 name='content'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
                 rows={5}
               />
@@ -92,7 +92,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
                 name='rating'
                 min={0}
                 max={5}
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
               />
               <span className='text-alone-error'>
                 <ErrorMessage name='rating' />

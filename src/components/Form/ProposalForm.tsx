@@ -142,7 +142,7 @@ function ProposalForm({
                 id='about'
                 rows={8}
                 name='about'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -157,7 +157,7 @@ function ProposalForm({
                   type='number'
                   id='rateAmount'
                   name='rateAmount'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
                 <RateAmountMessage
@@ -174,7 +174,7 @@ function ProposalForm({
                   component='select'
                   id='rateToken'
                   name='rateToken'
-                  className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''>
                   <option value=''>select a currency</option>
                   {allowedTokenList.map((token, index) => (
@@ -194,7 +194,7 @@ function ProposalForm({
                 type='number'
                 id='expirationDate'
                 name='expirationDate'
-                className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -207,7 +207,7 @@ function ProposalForm({
                 type='text'
                 id='video_url'
                 name='video_url'
-                className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder='Enter  video URL'
               />
               <span className='text-alone-error'>

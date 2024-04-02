@@ -106,7 +106,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='title'
                 name='title'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -119,7 +119,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='name'
                 name='name'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -132,7 +132,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 as='select'
                 id='role'
                 name='role'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''>
                 <option value=''></option>
                 <option value='buyer'>freelancer</option>
@@ -150,10 +150,10 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 type='text'
                 id='image_url'
                 name='image_url'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
-              <div className='border border-info bg-base-200 relative w-full border transition-all duration-300 rounded-xl p-4'>
+              <div className='border-2 border-info bg-base-200 relative w-full border transition-all duration-300 rounded-xl p-4'>
                 <div className='flex w-full items-center gap-3'>
                   <QuestionMarkCircle className='hidden' />
                   <div>
@@ -193,7 +193,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 id='about'
                 name='about'
                 rows='4'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>

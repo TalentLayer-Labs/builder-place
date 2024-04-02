@@ -55,7 +55,7 @@ function SearchModal() {
                 <input
                   type='text'
                   name='search'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   onChange={e => {
                     setSearch(e.target.value);
                   }}

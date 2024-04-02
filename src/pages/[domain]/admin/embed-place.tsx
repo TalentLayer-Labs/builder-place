@@ -42,9 +42,9 @@ export default function EmbedPlace() {
               seamless user journey for contributors in your ecosystem - users can discover missions
               on your website, and then be re-directed to your hosted builder.place platform.
             </p>
-            <p className='text-sm mb-6 text-landingprimary italic'>
+            {/* <p className='text-sm mb-6 text-landingprimary italic'>
               coming soon: host your entire BuilderPlace platform on your own website domain.
-            </p>
+            </p> */}
           </div>
           <div className=''>
             <h2 className='pb-4 text-base font-bold break-all'>copy the code</h2>

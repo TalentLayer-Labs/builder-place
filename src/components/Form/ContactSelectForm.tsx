@@ -137,7 +137,7 @@ export const ContactListForm = ({
                 type='text'
                 id='subject'
                 name='subject'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder='Type your subject here...'
               />
               <span className='text-alone-error'>
@@ -152,7 +152,7 @@ export const ContactListForm = ({
                 rows='4'
                 id='body'
                 name='body'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder='Type the email body here...'
               />
               <span className='text-alone-error'>
