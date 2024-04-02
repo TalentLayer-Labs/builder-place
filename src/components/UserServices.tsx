@@ -29,26 +29,44 @@ function UserServices({ userId, type }: IProps) {
     return <Loading />;
   }
 
-  if (services.length === 0 && type == 'buyer') {
-    return (
-      <>
-        <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
-        <Notification
-          title='post your first missions!'
-          text='post something your team needs help with'
-          link='/work/create'
-          linkText='post a mission'
-          color='primary'
-          imageUrl={user?.picture}
-        />
-      </>
-    );
+  if (services.length === 0) {
+    if (type == 'buyer') {
+      return (
+        <>
+          <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
+          <Notification
+            title='post your first mission!'
+            text='post something your team needs help with'
+            link='/work/create'
+            linkText='post a mission'
+            color='primary'
+            imageUrl={user?.picture}
+          />
+        </>
+      );
+    }
+
+    if (type == 'seller') {
+      return (
+        <>
+          <h2 className='pb-4 text-base font-bold break-all'>missions applied to</h2>
+          <Notification
+            title='post your first proposal!'
+            text='check the current missions and apply to them'
+            link='/'
+            linkText='check the opened missions'
+            color='primary'
+            imageUrl={user?.picture}
+          />
+        </>
+      );
+    }
   }
 
   return (
     <>
       <h2 className='pb-4 text-base font-bold break-all'>
-        {type == 'buyer' || 'contributor' ? 'my posts' : 'posts applied to'}
+        {type == 'buyer' ? 'missions posted' : 'posts applied to'}
       </h2>
       <div className='grid grid-cols-1 gap-4'>
         {services.map((service, i) => {
