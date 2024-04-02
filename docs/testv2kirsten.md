@@ -5,27 +5,52 @@ Gm! Before getting started, copy this page and title it "testV2-yourname.md" (EX
 
 ## Workflow to test
 
+notes:
+- email no longer going to smap !!
+
 without delegation turned on
-- [ ] As a platform entreprener, i can create an account, create my platform, setup my skin, allow others to post if they have an NFT, allow others to post if they have a token
-     - [ ] as a platform I can update my profile information
-     - [ ] as a platform I can verify my email and activate delegation
-     - [ ] as a platform I can recieve email notifications on important steps
-- [ ] As a freelancer, i can create an account, post a proposal and receive my first payment
-    - [ ] as a freelancer I can update my profile information
-    - [ ] as a freelancer I can verify my email and activate delegation
-- [ ] As a hirer, I can create an account, post a job, approve a proposal (sending payment to escrow) and pay out a freelancer
-     - [ ] as a hirer I can update my profile information
-     - [ ] as a hirer I can verify my email and activate delegation
+- [ ] As a platform entreprener, i can... 
+     - [X] create an account
+     - [X] create my platform
+     - [X] setup my skin
+     - [ ] allow others to post if they have an NFT
+     - [ ] allow others to post if they have a token
+     - [X] as a platform I can update my profile information
+     - [X] as a platform I can verify my email and activate delegation
+     - [ ] as a platform I can recieve email notifications on important steps
+- [ ] As a freelancer,
+     - [ ] i can create an account
+     - [ ] post a proposal and receive my first payment
+     - [ ] as a freelancer I can update my profile information
+     - [ ] as a freelancer I can verify my email and activate delegation
+- [ ] As a hirer,
+     - [ ] I can create an account
+     - [ ] post a job
+     - [ ] approve a proposal (sending payment to escrow)
+     - [ ] pay out a freelancer
+     - [ ] as a hirer I can update my profile information
+     - [ ] as a hirer I can verify my email and activate delegation
 *For now collaborator can't be added, this part is not ready
 
 with delegation turned on
-- [ ] As a platform entreprener, i can create an account, create my platform, setup my skin, allow others to post if they have an NFT, allow others to post if they have a token
-    - [ ] as a platform I can update my profile information
-    - [ ] must receive email at each important step 
-- [ ] As a freelancer, i can create an account, post a proposal and receive my first payment without any Matic.
-    - [ ] as a freelancer I can update my profile information
-- [ ] As a hirer, I can create an account, post a job, approve a proposal (sending payment to escrow) and pay out a freelancer
-    - [ ] as a hirer I can update my profile information
+- [ ] As a platform entreprener, i can... 
+     - [ ] create an account
+     - [ ] create my platform
+     - [ ] setup my skin
+     - [ ] allow others to post if they have an NFT
+     - [ ] allow others to post if they have a token
+     - [ ] as a platform I can update my profile information
+     - [ ] as a platform I can recieve email notifications on important steps
+- [ ] As a freelancer,
+     - [ ] i can create an account
+     - [ ] post a proposal and receive my first payment
+     - [ ] as a freelancer I can update my profile information
+- [ ] As a hirer,
+     - [ ] I can create an account
+     - [ ] post a job
+     - [ ] approve a proposal (sending payment to escrow)
+     - [ ] pay out a freelancer
+     - [ ] as a hirer I can update my profile information
 *For now collaborator can't be added, this part is not ready
    
 
