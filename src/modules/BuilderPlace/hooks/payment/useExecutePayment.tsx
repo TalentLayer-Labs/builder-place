@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
-import { delegatePayment, delegateReleaseOrReimburse } from '../../../../components/request';
+import { delegatePayment } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import UserContext from '../../context/UserContext';
@@ -20,7 +20,6 @@ const useExecutePayment = () => {
   const talentLayerClient = useTalentLayerClient();
   const executePayment = async (
     chainId: number,
-    userAddress: string,
     userId: string,
     transactionId: string,
     amount: bigint,

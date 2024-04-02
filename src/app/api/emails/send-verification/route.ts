@@ -27,15 +27,11 @@ export async function POST(req: Request) {
       return Response.json({ error: 'NEXT_PUBLIC_ROOT_DOMAIN is not defined' }, { status: 400 });
     }
 
-    const hashedUserId = encrypt(body.userId);
-    console.log('Encrypted userId', hashedUserId);
-
-    await sendTransactionalEmailValidation(body.to, hashedUserId, body.name, body.domain);
+    await sendTransactionalEmailValidation(body.to, body.userId, body.name, body.domain);
 
     return Response.json(
       {
         message: VERIFICATION_EMAIL_SENT,
-        hashedUserId: hashedUserId,
       },
       { status: 200 },
     );

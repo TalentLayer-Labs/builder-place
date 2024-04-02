@@ -5,19 +5,23 @@ import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceCon
 import Notification from './Notification';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 interface IProps {
-  user: IUser;
-  type: 'buyer' | 'seller' | 'contributor';
+  userId: string;
+  type: 'buyer' | 'seller';
 }
 
-function UserServices({ user, type }: IProps) {
-  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+function UserServices({ userId, type }: IProps) {
+  const { user } = useContext(UserContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
 
   const { services, loading } = useServices(
     undefined,
-    type == 'contributor' ? user.id : builderPlace?.owner.talentLayerId || undefined,
-    type == 'seller' ? user.id : undefined,
+    type == 'buyer' ? userId : undefined,
+    type == 'seller' ? userId : undefined,
+    undefined,
+    undefined,
     builderPlace?.talentLayerPlatformId,
   );
 
@@ -25,24 +29,20 @@ function UserServices({ user, type }: IProps) {
     return <Loading />;
   }
 
-  if (services.length === 0) {
-    if (isBuilderPlaceCollaborator && type == 'buyer') {
-      return (
-        <>
-          <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
-          <Notification
-            title='post your first missions!'
-            text='post something your team needs help with'
-            link='/work/create'
-            linkText='post a mission'
-            color='primary'
-            imageUrl={user?.description?.image_url}
-          />
-        </>
-      );
-    } else {
-      return null;
-    }
+  if (services.length === 0 && type == 'buyer') {
+    return (
+      <>
+        <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
+        <Notification
+          title='post your first missions!'
+          text='post something your team needs help with'
+          link='/work/create'
+          linkText='post a mission'
+          color='primary'
+          imageUrl={user?.picture}
+        />
+      </>
+    );
   }
 
   return (

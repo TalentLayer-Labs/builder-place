@@ -1,7 +1,5 @@
 import { NextApiResponse } from 'next';
-import { getWeb3Provider as getMailProvider, IExecWeb3mail } from '@iexec/web3mail';
-import { getWeb3Provider as getProtectorProvider, IExecDataProtector } from '@iexec/dataprotector';
-import { IUserDetails, EmailNotificationType } from '../../../types';
+import { EmailNotificationType, IUserDetails } from '../../../types';
 
 export class EmptyError extends Error {
   constructor(message: string) {
@@ -66,16 +64,6 @@ export const prepareNonCronApi = (
     console.warn('Platform Id is not set');
     return res.status(500).json('Platform Id is not set');
   }
-};
-
-export const generateWeb3mailProviders = (
-  privateKey: string,
-): { dataProtector: IExecDataProtector; web3mail: IExecWeb3mail } => {
-  const mailWeb3Provider = getMailProvider(privateKey);
-  const web3mail = new IExecWeb3mail(mailWeb3Provider);
-  const protectorWebProvider = getProtectorProvider(privateKey);
-  const dataProtector = new IExecDataProtector(protectorWebProvider);
-  return { dataProtector, web3mail };
 };
 
 //TODO with new graph event this can be optimized

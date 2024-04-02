@@ -28,7 +28,7 @@ function Profile() {
             <WorkerPublicDetail talentLayerUser={talentLayerUser} />
           </div>
           <div className='mb-6'>
-            <UserServices user={talentLayerUser} type='seller' />
+            <UserServices userId={talentLayerUser.id} type='seller' />
           </div>
           <div className='mb-6'>
             <LensModule address={talentLayerUser.address} />

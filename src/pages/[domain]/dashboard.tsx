@@ -58,6 +58,10 @@ function Dashboard() {
     );
   }
 
+  if (!builderPlace) {
+    return null;
+  }
+
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
@@ -71,29 +75,30 @@ function Dashboard() {
       {account?.isConnected && talentLayerUser && (
         <div>
           <VerifyEmailNotification />
-          {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
+          {isBuilderPlaceCollaborator && (
             <>
-              <div className='mb-12'>
-                {isComingFromHirerOnboarding && (
-                  <Notification
-                    title='personalize your space!'
-                    text='customize your Platform to match your brand'
-                    link='/admin/configure-platform'
-                    linkText='personalize my platform'
-                    color='success'
-                    imageUrl={user.picture}
-                  />
-                )}
-              </div>
+              {(!builderPlace.logo || !builderPlace.icon) && (
+                <div className='mb-12'>
+                  {isComingFromHirerOnboarding && (
+                    <Notification
+                      title='personalize your space!'
+                      text='customize your Platform to match your brand'
+                      link='/admin/configure-platform'
+                      linkText='personalize my platform'
+                      color='success'
+                      imageUrl={user.picture}
+                    />
+                  )}
+                </div>
+              )}
 
               <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='buyer' />
+                <UserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
               </div>
             </>
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              <VerifyEmailNotification />
               {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
@@ -113,10 +118,7 @@ function Dashboard() {
                 <UserGains user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='contributor' />
-              </div>
-              <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='seller' />
+                <UserServices userId={user.talentLayerId} type='seller' />
               </div>
               <div className='mb-12'>
                 <UserProposals user={talentLayerUser} />

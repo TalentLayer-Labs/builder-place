@@ -62,7 +62,6 @@ function ReleaseForm({
 
       await executePayment(
         chainId,
-        talentLayerUser.address,
         usedId,
         service.transaction.id,
         percentToToken,
