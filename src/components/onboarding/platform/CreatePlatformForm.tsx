@@ -13,7 +13,7 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
-import useGetPlatformByOwnerId from '../../../modules/BuilderPlace/hooks/platform/useGetPlatform';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 import AlreadyOwnsPlatform from './AlreadyOwnsPlatform';
 
 export interface ICreatePlatformFormValues {
@@ -50,8 +50,11 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
   const { open: openConnectModal } = useWeb3Modal();
   const existingTalentLayerPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
-  const { platform: existingDatabasePlatform, loading: platformDataLoading } =
-    useGetPlatformByOwnerId(user?.id);
+  const { platform: existingDatabasePlatform, isLoading: isPlatformDataLoading } = useGetPlatformBy(
+    {
+      ownerId: user?.id,
+    },
+  );
   const alreadyOwnsAPlatform = existingDatabasePlatform?.ownerId === user?.id;
   const domain = existingDatabasePlatform?.customDomain || existingDatabasePlatform?.subdomain;
 
@@ -104,7 +107,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     }
   };
 
-  if (isLoadingUser || platformDataLoading) {
+  if (isLoadingUser || isPlatformDataLoading) {
     return <Loading />;
   }
 
