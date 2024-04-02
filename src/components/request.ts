@@ -100,58 +100,6 @@ export const delegateUpdateProposal = async (
   }
 };
 
-export const delegateCreateOrUpdateProposal = async (
-  chainId: number,
-  userId: string,
-  userAddress: string,
-  serviceId: string,
-  valuesRateToken: string,
-  parsedRateAmountString: string,
-  cid: string,
-  convertExpirationDateString: string,
-  existingProposalStatus?: string,
-): Promise<any> => {
-  try {
-    return await axios.post('/api/delegate/create-update-proposal', {
-      chainId,
-      userId,
-      userAddress,
-      serviceId,
-      valuesRateToken,
-      parsedRateAmountString,
-      cid,
-      convertExpirationDateString,
-      existingProposalStatus,
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const delegateReleaseOrReimburse = async (
-  chainId: number,
-  userAddress: string,
-  userId: string,
-  transactionId: number,
-  amount: string,
-  isBuyer: boolean,
-): Promise<any> => {
-  try {
-    return await axios.post('/api/delegate/release-reimburse', {
-      chainId,
-      userAddress,
-      userId,
-      transactionId,
-      amount,
-      isBuyer,
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
 export const delegatePayment = async (body: IExecutePayment): Promise<any> => {
   try {
     return await axios.post('/api/delegate/payment', {
@@ -169,28 +117,6 @@ export const delegatePayment = async (body: IExecutePayment): Promise<any> => {
   }
 };
 
-export const delegateMintReview = async (
-  chainId: number,
-  userId: string,
-  userAddress: string,
-  serviceId: string,
-  uri: string,
-  valuesRating: number,
-): Promise<any> => {
-  try {
-    return await axios.post('/api/delegate/mint-review', {
-      chainId,
-      userId,
-      userAddress,
-      serviceId,
-      uri,
-      valuesRating,
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
 export const delegateReview = async (body: IReview): Promise<any> => {
   try {
     return await axios.post('/api/delegate/review', {

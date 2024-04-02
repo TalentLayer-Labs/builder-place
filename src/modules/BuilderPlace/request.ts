@@ -118,68 +118,6 @@ export const verifyEmail = async (email: string, userId: string): Promise<any> =
   }
 };
 
-export const sendVerificationEmail = async (
-  to: string,
-  userId: string,
-  name: string,
-  domain: string,
-): Promise<any> => {
-  try {
-    return await fetch('/api/domain/send-verification-email', {
-      method: 'POST',
-      body: JSON.stringify({
-        to: to,
-        userId: userId,
-        name: name,
-        domain: domain,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const verifyAccount = async (userId: string, signature: string): Promise<any> => {
-  try {
-    const response = await fetch('/api/domain/verify-account', {
-      method: 'PUT',
-      body: JSON.stringify({
-        userId: userId,
-        signature: signature,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const getUserByEmail = async (email: string): Promise<any> => {
-  try {
-    const response = await fetch('/api/domain/get-user-by-email', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
 export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
