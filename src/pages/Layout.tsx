@@ -91,7 +91,7 @@ function Layout({ children, className }: ContainerProps) {
                 </div>
               </div>
               <NetworkSwitch />
-              {user && <UserAccount />}
+              <UserAccount />
             </div>
 
             <main>
