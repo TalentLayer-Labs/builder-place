@@ -79,8 +79,11 @@ export function PlatformNameInput({
       <span className='text-red-500'>{errors.talentLayerPlatformName}</span>
       <p className='font-alt text-xs font-normal'>
         <span className='text-base-content'>
-          Used to create your onchain identity on{' '}
-          <a href='https://talentlayer.org' target='_blank' className='underline text-info'>
+          Used to create your onchain platform on{' '}
+          <a
+            href='https://docs.talentlayer.org/introduction/basics/platformid'
+            target='_blank'
+            className='underline text-info'>
             TalentLayer
           </a>
           .
