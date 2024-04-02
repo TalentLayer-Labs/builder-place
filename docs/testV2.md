@@ -1,5 +1,8 @@
 # Test V2 Workflow
 
+Gm! Before getting started, copy this page and title it "testV2-yourname.md" (EX: "testV2-kirsten.md"), and keep it in this folder. This will help track who's tested what. Then, as you progress, in your own document please check off the things you've tested. LFG!
+
+
 ## Workflow to test
 
 without delegation turned on
