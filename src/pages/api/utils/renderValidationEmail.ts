@@ -256,7 +256,7 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
   }
    
 <p style="font-size: 14px; line-height: 140%;">&nbsp;</p>
-<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">Please click the following link to validate your email and access free gassless transactions !</span></p>
+<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">Please click the following link to validate your email and access gassless transactions!</span></p>
   </div>
 
       </td>
