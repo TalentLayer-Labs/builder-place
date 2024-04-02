@@ -54,12 +54,12 @@ export const ownerAdminNavigation: MenuItem[] = [
     icon: CurrencyDollarIcon,
     current: false,
   },
-  {
-    name: 'dispute',
-    href: `/admin/dispute`,
-    icon: ExclamationCircleIcon,
-    current: false,
-  },
+  // {
+  //   name: 'dispute',
+  //   href: `/admin/dispute`,
+  //   icon: ExclamationCircleIcon,
+  //   current: false,
+  // },
   // {
   //   name: 'add collaborators',
   //   href: '/admin/collaborators',
