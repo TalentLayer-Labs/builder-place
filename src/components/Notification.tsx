@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import ProfileImage from './ProfileImage';
+import AsyncButton from './AsyncButton';
 
 type NotificationProps = {
   title: string;
@@ -9,7 +10,8 @@ type NotificationProps = {
   linkText: string;
   imageUrl?: string | null;
   color: string;
-  callback?: () => void | Promise<void>;
+  submitting?: boolean;
+  callback?: () => Promise<void>;
 };
 
 function Notification({
@@ -19,6 +21,7 @@ function Notification({
   linkText,
   imageUrl,
   color,
+  submitting = false,
   callback,
 }: NotificationProps) {
   return (
@@ -36,11 +39,14 @@ function Notification({
         </div>
       </div>
       {callback ? (
-        <button
-          onClick={callback}
-          className={`bg-${color} hover:opacity-70 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}>
-          {linkText}
-        </button>
+        <AsyncButton
+          onClick={() => callback()}
+          label={linkText}
+          isSubmitting={submitting}
+          disabled={submitting}
+          validateButtonCss={`bg-${color} hover:opacity-70 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}
+          loadingButtonCss={`bg-${color} opacity-50 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}
+        />
       ) : (
         <Link
           href={link}

@@ -9,7 +9,7 @@ sgMail.setApiKey(APIKEY as string);
 
 export const sendTransactionalEmailValidation = async (
   to: string,
-  userId: string,
+  hashedUserId: string,
   name: string,
   domain: string,
 ) => {
@@ -19,8 +19,8 @@ export const sendTransactionalEmailValidation = async (
 
   const builderPlace = await getBuilderPlaceByDomain(domain);
 
-  console.log('Sending email with variables: ', to, userId, name, domain);
-  const htmlBody = renderValidationMail(name, userId, domain, builderPlace?.logo);
+  console.log('Sending email with variables: ', to, hashedUserId, name, domain);
+  const htmlBody = renderValidationMail(name, hashedUserId, domain, builderPlace?.logo);
   const subject = 'Validate your email';
 
   try {

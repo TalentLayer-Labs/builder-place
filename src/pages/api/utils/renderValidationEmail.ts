@@ -1,6 +1,6 @@
 export const renderValidationMail = (
   name: string,
-  userId: string,
+  hashedUserId: string,
   domain?: string,
   logoUrl?: string | null,
 ): string => {
@@ -263,7 +263,7 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
     </tr>
   </tbody>
 </table>
-${renderLink(generateUrl(userId, domain))}
+${renderLink(generateUrl(hashedUserId, domain))}
 
   <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
   </div>
@@ -296,7 +296,7 @@ ${renderLink(generateUrl(userId, domain))}
   <div style="font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
     <p style="line-height: 140%;">
     <span style="color: #ecf0f1; line-height: 19.6px;">
-    <a href="${generateUrl(userId, domain)}" style="color: #ecf0f1;">${domain}</a>
+    <a href="${generateUrl(hashedUserId, domain)}" style="color: #ecf0f1;">${domain}</a>
     </span>
     </p>
   </div>
@@ -400,5 +400,8 @@ Validate my email
 };
 
 export const generateUrl = (userId: string, domain?: string) => {
-  return `https://${domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN}/verify-email/${userId}`;
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const rootDomain = domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+
+  return `${protocol}://${rootDomain}/verify-email/${userId}`;
 };

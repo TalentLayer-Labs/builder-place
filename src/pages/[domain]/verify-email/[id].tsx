@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useVerifyEmailMutation } from '../../../modules/BuilderPlace/hooks/UseVerifyEmailMutation';
+import { useContext, useEffect, useState } from 'react';
 import Loading from '../../../components/Loading';
 import {
   EMAIL_ALREADY_VERIFIED,
@@ -8,21 +7,26 @@ import {
 } from '../../../modules/BuilderPlace/apiResponses';
 import { GetServerSidePropsContext } from 'next';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import { useMutation } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { IVerifyEmail } from '../../../app/api/emails/verify/route';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 const verifyEmail = () => {
-  const { mutateAsync: verifyEmailAsync } = useVerifyEmailMutation();
   const router = useRouter();
-  const { query } = router;
   const { id } = router.query;
+  const { getUser } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [pageResponse, setPageResponse] = useState('Missing Id');
-
-  console.log('verifyEmail', { id, query });
-  console.log('verifyEmail', { router });
+  const emailMutation = useMutation(
+    async (body: IVerifyEmail): Promise<AxiosResponse<{ id: string; message: string }>> => {
+      return await axios.post('/api/emails/verify', body);
+    },
+  );
 
   useEffect(() => {
     if (id) {
@@ -39,16 +43,18 @@ const verifyEmail = () => {
   };
 
   const verifyEmail = async (id: string) => {
-    const response = await verifyEmailAsync({
-      userId: id.toString(),
-    });
-    if (response.error) {
-      setPageResponse(response.error);
-    } else {
-      setPageResponse(response.message);
+    try {
+      const response = await emailMutation.mutateAsync({
+        emailVerificationHash: id,
+      });
+      setPageResponse(response?.data.message);
+    } catch (error: any) {
+      console.error('Error verifying email', error);
+      setPageResponse(error.response.data.error);
+    } finally {
+      await getUser();
+      setLoading(false);
     }
-    console.log('Response', response);
-    setLoading(false);
   };
 
   if (loading) {
