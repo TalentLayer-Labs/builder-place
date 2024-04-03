@@ -68,7 +68,7 @@ function JobPostingConditionsFieldArray({
           jobCondition.type === 'NFT'
             ? 'tempFormValues.tempNftAddress'
             : 'tempFormValues.tempTokenAddress',
-          'Contract not found',
+          response?.errorMessage || 'Contract not found',
         );
       } else {
         contractName = response.contractName;

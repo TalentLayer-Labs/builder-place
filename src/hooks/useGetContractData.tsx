@@ -11,11 +11,18 @@ const useGetContractData = () => {
     chainId: JobConditionsChainIdEnum,
     type: 'NFT' | 'Token',
     address: string,
-  ): Promise<{ contractName: string; tokenSign: string; decimals: number; error: boolean }> => {
+  ): Promise<{
+    contractName: string;
+    tokenSign: string;
+    decimals: number;
+    error: boolean;
+    errorMessage?: string;
+  }> => {
     let contractName = '';
     let tokenSign = '';
     let decimals = 0;
     let error = false;
+    let errorMessage = '';
     try {
       type === 'NFT' ? setNftSubmitting(true) : setTokenSubmitting(true);
 
@@ -30,6 +37,20 @@ const useGetContractData = () => {
           abi: erc721ABI,
           functionName: 'name',
         });
+        let shouldNotExistDecimals;
+        try {
+          shouldNotExistDecimals = await publicClient.readContract({
+            address: address as `0x${string}`,
+            abi: erc20ABI,
+            functionName: 'decimals',
+          });
+        } catch (e) {
+          console.log('ERC-721 contract');
+        }
+        if (shouldNotExistDecimals) {
+          errorMessage = 'Not ERC-721 contract';
+          throw new Error('Not ERC-721 contract');
+        }
       } else if (type === 'Token') {
         contractName = await publicClient.readContract({
           address: address as `0x${string}`,
@@ -41,19 +62,24 @@ const useGetContractData = () => {
           abi: erc20ABI,
           functionName: 'symbol',
         });
-        decimals = await publicClient.readContract({
-          address: address as `0x${string}`,
-          abi: erc20ABI,
-          functionName: 'decimals',
-        });
+        try {
+          decimals = await publicClient.readContract({
+            address: address as `0x${string}`,
+            abi: erc20ABI,
+            functionName: 'decimals',
+          });
+        } catch (e) {
+          errorMessage = 'Not ERC-20 contract';
+          throw new Error('Not ERC-20 contract');
+        }
       }
     } catch (e) {
-      // console.log('Error checking contract name', e);
+      console.log('Error checking contract name', e);
       error = true;
     } finally {
       type === 'NFT' ? setNftSubmitting(false) : setTokenSubmitting(false);
     }
-    return { contractName, tokenSign, decimals, error };
+    return { contractName, tokenSign, decimals, error, errorMessage };
   };
 
   return {
