@@ -142,6 +142,12 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
       const counterWillReset = workerProfile.counterStartDate < oneWeekAgoSeconds;
 
+      console.log('user.delegates', user.delegates);
+      console.log(
+        'process.env.NEXT_PUBLIC_DELEGATE_ADDRESS',
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS,
+      );
+
       const userHasDelegatedToPlatform =
         process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
         user.delegates &&
