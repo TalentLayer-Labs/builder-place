@@ -22,7 +22,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function CreateOrEditProposal() {
   const account = useAccount();
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { userExists } = useContext(MessagingContext);
   const router = useRouter();
@@ -30,7 +30,7 @@ function CreateOrEditProposal() {
   const { service, isLoading } = useServiceById(id as string);
   const existingProposal = useProposalById(`${id}-${user?.talentLayerId}`);
 
-  if (isLoading) {
+  if (isLoading || loading) {
     return <Loading />;
   }
 

@@ -6,8 +6,10 @@ import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
+import { useRouter } from 'next/router';
 
 function UserAccount() {
+  const router = useRouter();
   const { isConnected } = useAccount();
   const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,10 @@ function UserAccount() {
   }, []);
 
   if (loading) {
+    return null;
+  }
+
+  if (router.asPath.includes('onboarding')) {
     return null;
   }
 
@@ -37,7 +43,7 @@ function UserAccount() {
         <div className='pr-4 flex items-center'>
           <Link
             href='/newonboarding/create-profile'
-            className='px-5 py-2 rounded-xl bg-primary text-primary'>
+            className='px-5 py-2 rounded-xl bg-primary text-primary hover:opacity-60'>
             Create an account
           </Link>
         </div>

@@ -10,6 +10,7 @@ import ShareModal from '../../../modules/Messaging/components/ShareModal';
 import { XmtpContext } from '../../../modules/Messaging/context/XmtpContext';
 import useStreamConversations from '../../../modules/Messaging/hooks/useStreamConversations';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import Loading from '../../../components/Loading';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -17,7 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function MessagingIndex() {
   const chainId = useChainId();
-  const { account, user } = useContext(TalentLayerContext);
+  const { account, user, loading } = useContext(TalentLayerContext);
   const { data: walletClient } = useWalletClient({
     chainId,
   });
@@ -31,6 +32,10 @@ function MessagingIndex() {
       await providerState.initClient();
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!user) {
     return <Steps />;
