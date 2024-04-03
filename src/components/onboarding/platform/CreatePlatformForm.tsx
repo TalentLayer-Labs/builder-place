@@ -13,6 +13,8 @@ import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import { PlatformNameInput } from './PlatformNameInput';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
+import AlreadyOwnsPlatform from './AlreadyOwnsPlatform';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -46,13 +48,20 @@ export interface ICreatePlatform
 function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
   const { loading: isLoadingUser, user, address } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
-  const existingPlatform = usePlatformByOwner(address);
+  const existingTalentLayerPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();
+  const { platform: existingDatabasePlatform, isLoading: isPlatformDataLoading } = useGetPlatformBy(
+    {
+      ownerId: user?.id,
+    },
+  );
+  const alreadyOwnsAPlatform = existingDatabasePlatform?.ownerId === user?.id;
+  const domain = existingDatabasePlatform?.customDomain || existingDatabasePlatform?.subdomain;
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',
     subdomain: '',
-    talentLayerPlatformName: existingPlatform?.name || '',
+    talentLayerPlatformName: existingTalentLayerPlatform?.name || '',
     logo: '',
   };
 
@@ -81,8 +90,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         throw new Error('Please connect first');
       }
 
-      await createNewPlatform(values, user, existingPlatform);
-      //TODO add get like user ?
+      await createNewPlatform(values, user, existingTalentLayerPlatform);
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.
@@ -98,12 +106,16 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
     }
   };
 
-  if (isLoadingUser) {
+  if (isLoadingUser || isPlatformDataLoading) {
     return <Loading />;
   }
 
   if (!user) {
     return <AccessDenied />;
+  }
+
+  if (alreadyOwnsAPlatform) {
+    return <AlreadyOwnsPlatform domain={domain} logo={existingDatabasePlatform?.logo} />;
   }
 
   return (
@@ -113,7 +125,8 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
         enableReinitialize={true}
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
-        validateOnBlur={false}>
+        validateOnBlur={true}
+        validateOnChange={true}>
         {({ isSubmitting, setFieldValue, values, isValid, dirty }) => (
           <Form>
             <div className='grid grid-cols-1 gap-3 sm:gap-4'>
@@ -137,7 +150,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
                 <span className='font-bold text-md'>talentLayerPlatformName*</span>
                 <PlatformNameInput
                   initialValue={initialValues.name}
-                  existingPlatformName={existingPlatform?.name}
+                  existingPlatformName={existingTalentLayerPlatform?.name}
                 />
               </label>
 

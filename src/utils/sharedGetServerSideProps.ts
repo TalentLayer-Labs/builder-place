@@ -7,7 +7,7 @@ export const sharedGetServerSideProps: GetServerSideProps = async (
 ): Promise<GetServerSidePropsResult<any>> => {
   const { req, res, params } = context;
   res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=600');
-  console.log('sharedGetServerSideProps', params, res, req);
+  console.log('sharedGetServerSideProps', params);
   const builderPlace = await getBuilderPlace(params?.domain as string);
 
   let customProps = {};

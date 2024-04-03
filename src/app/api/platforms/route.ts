@@ -6,9 +6,16 @@ import { ICreatePlatform } from '../../../components/onboarding/platform/CreateP
 import prisma from '../../../postgre/postgreClient';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export interface PlatformsFilters {
-  id?: string | null;
+  id?: number | null;
+  ownerId?: number | null;
+  ownerTalentLayerId?: string | null;
+  ownerAddress?: string | null;
+  talentLayerPlatformId?: string | null;
+  talentLayerPlatformName?: string | null;
+  subdomain?: string | null;
 }
 
 /**
@@ -18,10 +25,15 @@ export async function GET(request: Request) {
   console.log('GET');
   const { searchParams } = new URL(request.url);
   const filters: PlatformsFilters = {
-    id: searchParams.get('id'),
+    id: Number(searchParams.get('id')),
+    ownerId: Number(searchParams.get('ownerId')),
+    ownerTalentLayerId: searchParams.get('ownerTalentLayerId'),
+    ownerAddress: searchParams.get('ownerAddress'),
+    talentLayerPlatformId: searchParams.get('talentLayerPlatformId'),
+    talentLayerPlatformName: searchParams.get('talentLayerPlatformName'),
+    subdomain: searchParams.get('subdomain'),
   };
-  const platforms: BuilderPlace[] = [];
-  // TODO call DB
+  const platforms: BuilderPlace[] = await getPlatformBy(filters);
 
   return Response.json({ platforms });
 }

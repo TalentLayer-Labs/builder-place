@@ -16,7 +16,12 @@ function AccessDenied() {
           Access denied
         </h1>
         <p className='mt-6 text-base-content leading-7 text-base-content'>
-          You need to connect with an existing account
+          Please create a user account first{' '}
+          <a
+            href='/newonboarding/create-profile'
+            className='text-base-300 font-bold hover:opacity-50'>
+            Create now
+          </a>
         </p>
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           {!address && (

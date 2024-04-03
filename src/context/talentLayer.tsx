@@ -142,6 +142,12 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
       const counterWillReset = workerProfile.counterStartDate < oneWeekAgoSeconds;
 
+      console.log('user.delegates', user.delegates);
+      console.log(
+        'process.env.NEXT_PUBLIC_DELEGATE_ADDRESS',
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS,
+      );
+
       const userHasDelegatedToPlatform =
         process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
         user.delegates &&
@@ -150,6 +156,13 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       const userHasReachedDelegationLimit =
         (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
 
+      console.log(
+        'userHasDelegatedToPlatform',
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true',
+        !!userHasDelegatedToPlatform,
+        !userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset),
+        !!workerProfile?.isEmailVerified,
+      );
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
           !!userHasDelegatedToPlatform &&
@@ -168,6 +181,10 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
 
       const response = await getUserBy({ address: account.address });
+      console.log('response.talentLayerId', response.talentLayerId);
+      console.log('response.id', response.id);
+      console.log('response.isEmailVerified', response.isEmailVerified);
+      console.log('response.address', response.address);
       if (!response) {
         setWorkerProfile(undefined);
         console.error('Error while fetching user profile');

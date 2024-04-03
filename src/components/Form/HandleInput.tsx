@@ -1,5 +1,5 @@
-import { ErrorMessage, Field, useFormikContext } from 'formik';
-import { useCallback, useEffect, useState } from 'react';
+import { Field, useFormikContext } from 'formik';
+import { useCallback, useEffect } from 'react';
 import { slugify } from '../../modules/BuilderPlace/utils';
 import { useCheckNameAvailability } from '../../modules/BuilderPlace/hooks/onboarding/useCheckAvailability';
 import { debounce } from 'lodash';
@@ -40,7 +40,7 @@ export function HandleInput({
       }
       return;
     },
-    [initialValue],
+    [initialValue, existingHandle],
   );
 
   const updateHandle = useCallback((newName: string, existingHandle?: string) => {
