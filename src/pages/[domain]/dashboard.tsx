@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
-import ConnectBlock from '../../components/ConnectBlock';
 import DelegationNotification from '../../components/DelegationNotification';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
@@ -72,6 +71,7 @@ function Dashboard() {
       {account?.isConnected && talentLayerUser && (
         <div>
           <VerifyEmailNotification />
+          {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
           {isBuilderPlaceCollaborator && (
             <>
               {(!builderPlace.logo || !builderPlace.icon) && (
@@ -96,7 +96,6 @@ function Dashboard() {
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your profile</span>
