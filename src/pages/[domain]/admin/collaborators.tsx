@@ -45,7 +45,7 @@ export default function Collaborators() {
                 value={filter}
                 onChange={e => setFilter(e.target.value)}
                 placeholder='Filter by name or address'
-                className='mt-1 mb-1 block w-full rounded-lg border border-info bg-base-200 focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-lg border-2 border-info bg-base-200 focus:ring-opacity-50'
               />
 
               {builderPlace?.collaborators

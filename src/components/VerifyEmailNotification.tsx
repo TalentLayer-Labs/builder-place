@@ -1,10 +1,12 @@
 import Notification from './Notification';
-import { sendVerificationEmail } from '../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
-import TalentLayerContext from '../context/talentLayer';
 import { useRouter } from 'next/router';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
+import { createVerificationEmailToast } from '../modules/BuilderPlace/utils/toast';
+import { useMutation } from 'react-query';
+import { ISendVerificationEmail } from '../app/api/emails/send-verification/route';
+import axios, { AxiosResponse } from 'axios';
 
 type VerifyEmailNotificationProps = {
   callback?: () => void | Promise<void>;
@@ -13,7 +15,15 @@ type VerifyEmailNotificationProps = {
 const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
   const { user } = useContext(UserContext);
   const router = useRouter();
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState(true);
+  const sendVerificationEmailMutation = useMutation(
+    async (
+      body: ISendVerificationEmail,
+    ): Promise<AxiosResponse<{ id: string; message: string }>> => {
+      return await axios.post('/api/emails/send-verification', body);
+    },
+  );
 
   const onVerifyMail = async () => {
     const domain =
@@ -22,16 +32,15 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
         : router.query.domain;
     if (user?.email && !user.isEmailVerified && user?.id && domain) {
       try {
-        const response = await sendVerificationEmail(
-          user.email,
-          user.id.toString(),
-          user.name,
-          domain,
-        );
+        setSubmitting(true);
+        await sendVerificationEmailMutation.mutateAsync({
+          userId: user.id.toString(),
+          domain: domain,
+          name: user.name,
+          to: user.email,
+        });
 
-        if (response.status !== 200) {
-          throw new Error('Error sending verification email');
-        }
+        await createVerificationEmailToast();
 
         setShowNotification(false);
 
@@ -40,6 +49,8 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
         }
       } catch (err: any) {
         showErrorTransactionToast(err.message);
+      } finally {
+        setSubmitting(false);
       }
     }
   };
@@ -55,6 +66,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
       link=''
       linkText={'Verify my email'}
       color='success'
+      submitting={submitting}
       imageUrl={user.picture}
       callback={onVerifyMail}
     />

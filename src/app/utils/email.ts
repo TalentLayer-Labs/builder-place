@@ -6,6 +6,29 @@ import {
   TRANSACTION_LIMIT_REACHED,
 } from '../../modules/BuilderPlace/apiResponses';
 import { logAndReturnApiError } from './handleApiErrors';
+import Cryptr from 'cryptr';
+
+let cryptr: Cryptr | undefined;
+if (process.env.NEXT_PRIVATE_EMAIL_ENCRYPT_SECRET) {
+  cryptr = new Cryptr(process.env.NEXT_PRIVATE_EMAIL_ENCRYPT_SECRET as string);
+}
+export const encrypt = (input: string): string => {
+  console.log(
+    'process.env.NEXT_PRIVATE_EMAIL_ENCRYPT_SECRET',
+    process.env.NEXT_PRIVATE_EMAIL_ENCRYPT_SECRET,
+  );
+  if (!cryptr) {
+    throw new Error('Cryptr not initialized');
+  }
+  return cryptr.encrypt(input);
+};
+
+export const decrypt = (input: string): string => {
+  if (!cryptr) {
+    throw new Error('Cryptr not initialized');
+  }
+  return cryptr.decrypt(input);
+};
 
 export async function checkOrResetTransactionCounter(user: User): Promise<void> {
   try {

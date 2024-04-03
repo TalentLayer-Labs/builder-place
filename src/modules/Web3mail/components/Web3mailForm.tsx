@@ -153,7 +153,7 @@ function Web3mailForm() {
                       type='text'
                       id='email'
                       name='email'
-                      className='cursor-not-allowed mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                      className='cursor-not-allowed mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                       placeholder='**********'
                       readOnly
                       disabled

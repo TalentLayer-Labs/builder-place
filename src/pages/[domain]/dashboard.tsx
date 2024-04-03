@@ -1,8 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import ConnectBlock from '../../components/ConnectBlock';
 import DelegationNotification from '../../components/DelegationNotification';
@@ -44,9 +43,6 @@ function Dashboard() {
                 <p>Please connect your wallet to your new custom domain to access your dashboard</p>
               </div>
             </div>
-            <div className='p-8 flex flex-col items-center'>
-              <ConnectBlock />
-            </div>
           </div>
         ) : (
           !user && (
@@ -57,6 +53,10 @@ function Dashboard() {
         )}
       </>
     );
+  }
+
+  if (!builderPlace) {
+    return null;
   }
 
   return (
@@ -71,33 +71,31 @@ function Dashboard() {
 
       {account?.isConnected && talentLayerUser && (
         <div>
-          {isBuilderPlaceCollaborator && (!builderPlace?.logo || !builderPlace?.icon) && (
+          <VerifyEmailNotification />
+          {isBuilderPlaceCollaborator && (
             <>
-              <div className='mb-12'>
-                {isComingFromHirerOnboarding && (
-                  <Notification
-                    title='personalize your space!'
-                    text='customize your Platform to match your brand'
-                    link='/admin/configure-platform'
-                    linkText='personalize my platform'
-                    color='success'
-                    imageUrl={user.picture}
-                  />
-                )}
-              </div>
+              {(!builderPlace.logo || !builderPlace.icon) && (
+                <div className='mb-12'>
+                  {isComingFromHirerOnboarding && (
+                    <Notification
+                      title='personalize your space!'
+                      text='customize your Platform to match your brand'
+                      link='/admin/configure-platform'
+                      linkText='personalize my platform'
+                      color='success'
+                      imageUrl={user.picture}
+                    />
+                  )}
+                </div>
+              )}
 
               <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='buyer' />
+                <UserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
               </div>
             </>
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              <VerifyEmailNotification
-                callback={() => {
-                  toast.success('Verification email sent!');
-                }}
-              />
               {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
@@ -117,10 +115,7 @@ function Dashboard() {
                 <UserGains user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='contributor' />
-              </div>
-              <div className='mb-12'>
-                <UserServices user={talentLayerUser} type='seller' />
+                <UserServices userId={user.talentLayerId} type='seller' />
               </div>
               <div className='mb-12'>
                 <UserProposals user={talentLayerUser} />

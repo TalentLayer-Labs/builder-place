@@ -56,17 +56,22 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
     }
   }, [user]);
 
+  const initialName = user?.name || talentLayerUser?.description?.name || talentLayerUser?.handle;
+  const initialHandle = talentLayerUser?.handle || user?.talentLayerHandle;
   const initialValues: ICreateUserFormValues = {
-    name: user?.name || talentLayerUser?.description?.name || talentLayerUser?.handle || '',
-    talentLayerHandle: talentLayerUser?.handle || user?.talentLayerHandle || '',
+    name: initialName || '',
+    talentLayerHandle: initialHandle || '',
     email: user?.email || '',
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string().min(5).max(20).required('Enter your name'),
+    name: Yup.string()
+      .min(Math.min(initialName?.length || 5, 5))
+      .max(20)
+      .required('Enter your name'),
     email: Yup.string().required('Enter your email'),
     talentLayerHandle: Yup.string()
-      .min(5)
+      .min(Math.min(initialHandle?.length || 5, 5)) // if user already got a handle with low characters adjust the min length
       .max(20)
       .matches(/^[a-z0-9][a-z0-9-_]*$/, 'Only a-z, 0-9 and -_ allowed, and cannot begin with -_')
       .required('Enter your handle'),

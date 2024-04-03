@@ -82,11 +82,11 @@ function ServiceList() {
         <table className='min-w-full text-center'>
           <thead>
             <tr className='bg-primary text-primary'>
-              <th className='border border-base-200 p-2'>Title</th>
-              <th className='border border-base-200 p-2'>Date</th>
-              <th className='border border-base-200 p-2'>Rate</th>
-              <th className='border border-base-200 p-2'>Work</th>
-              <th className='border border-base-200 p-2'>View</th>
+              <th className='border border-info p-2'>Title</th>
+              <th className='border border-info p-2'>Date</th>
+              <th className='border border-info p-2'>Rate</th>
+              <th className='border border-info p-2'>Work</th>
+              <th className='border border-info p-2'>View</th>
             </tr>
           </thead>
           <tbody>

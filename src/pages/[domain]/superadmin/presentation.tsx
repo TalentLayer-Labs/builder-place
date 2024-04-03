@@ -113,7 +113,7 @@ function AdminPresentation() {
                   type='text'
                   id='website'
                   name='website'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
               </label>
@@ -124,7 +124,7 @@ function AdminPresentation() {
                   type='text'
                   id='image_url'
                   name='image_url'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
                 <div className='border-info bg-info relative w-full border transition-all duration-300 rounded-xl p-4'>
@@ -143,7 +143,7 @@ function AdminPresentation() {
                   id='about'
                   name='about'
                   rows='4'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
               </label>
