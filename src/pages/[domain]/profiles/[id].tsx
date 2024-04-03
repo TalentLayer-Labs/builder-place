@@ -1,6 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
-import Loading from '../../../components/Loading';
 import UserServices from '../../../components/UserServices';
 import WorkerPublicDetail from '../../../components/WorkerPublicDetail';
 import useUserById from '../../../hooks/useUserById';
@@ -15,11 +14,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Profile() {
   const router = useRouter();
   const { id } = router.query;
-  const { user: talentLayerUser, loading } = useUserById(id as string);
-
-  if (loading) {
-    return <Loading />;
-  }
+  const talentLayerUser = useUserById(id as string);
 
   if (!talentLayerUser) {
     return <NotFound />;
