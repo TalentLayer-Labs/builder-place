@@ -54,7 +54,7 @@ function UserServices({ userId, type }: IProps) {
             title='post your first proposal!'
             text='check the current missions and apply to them'
             link='/'
-            linkText='check the opened missions'
+            linkText='check open missions'
             color='primary'
             imageUrl={user?.picture}
           />

@@ -87,7 +87,7 @@ function Dashboard() {
                 </div>
               )}
 
-              <div className='mb-12'>
+              <div className='mb-12 mt-2'>
                 <UserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
               </div>
             </>
