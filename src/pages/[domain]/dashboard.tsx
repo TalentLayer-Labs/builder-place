@@ -69,6 +69,8 @@ function Dashboard() {
         </div>
       </div>
 
+      {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
+
       {account?.isConnected && talentLayerUser && (
         <div>
           <VerifyEmailNotification />
@@ -96,7 +98,6 @@ function Dashboard() {
           )}
           {!isBuilderPlaceCollaborator && (
             <>
-              {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
               <div className='mb-12 mt-2'>
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your profile</span>
