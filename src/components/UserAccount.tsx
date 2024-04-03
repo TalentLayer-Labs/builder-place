@@ -13,7 +13,6 @@ function UserAccount() {
   const { isConnected } = useAccount();
   const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const isOnboarding = router.asPath.toString().includes('create-profile');
 
