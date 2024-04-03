@@ -25,12 +25,7 @@ const verifyEmail = () => {
 
   useEffect(() => {
     const domain = window.location.hostname + ':' + window.location.port;
-
-    console.log('Domain: ', domain);
-    console.log('NEXT_PUBLIC_ORIGIN_DOMAIN: ', process.env.NEXT_PUBLIC_ORIGIN_DOMAIN);
-
     if (domain === process.env.NEXT_PUBLIC_ORIGIN_DOMAIN) {
-      console.log('sqidfhviuqerhgiluqehgfiu');
       setRedirect(false);
     }
   }, []);
