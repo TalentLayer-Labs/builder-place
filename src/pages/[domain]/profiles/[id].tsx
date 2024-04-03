@@ -6,6 +6,7 @@ import WorkerPublicDetail from '../../../components/WorkerPublicDetail';
 import useUserById from '../../../hooks/useUserById';
 import LensModule from '../../../modules/Lens/LensModule';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import NotFound from '../../../components/NotFound';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -14,10 +15,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Profile() {
   const router = useRouter();
   const { id } = router.query;
-  const talentLayerUser = useUserById(id as string);
+  const { user: talentLayerUser, loading } = useUserById(id as string);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!talentLayerUser) {
-    return <Loading />;
+    return <NotFound />;
   }
 
   return (

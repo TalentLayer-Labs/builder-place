@@ -4,7 +4,6 @@ import { formatEther } from 'viem';
 import * as Yup from 'yup';
 import SingleValueForm from '../../../components/Form/SingleValueForm';
 import Loading from '../../../components/Loading';
-import Steps from '../../../components/Steps';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../context/talentLayer';
 import TalentLayerArbitrator from '../../../contracts/ABI/TalentLayerArbitrator.json';
