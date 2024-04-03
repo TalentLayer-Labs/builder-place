@@ -14,11 +14,12 @@ import CardHeader from './CardHeader';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
 import UserContext from '../../BuilderPlace/context/UserContext';
+import Loading from '../../../components/Loading';
 
 function Dashboard() {
   const chainId = useChainId();
   const account = useAccount();
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
   const { data: walletClient } = useWalletClient({
     chainId,
   });
@@ -108,6 +109,10 @@ function Dashboard() {
       }
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!user) {
     return <Steps />;

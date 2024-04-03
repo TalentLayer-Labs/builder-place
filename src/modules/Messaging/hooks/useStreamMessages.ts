@@ -4,6 +4,7 @@ import { Conversation, DecodedMessage, Stream } from '@xmtp/xmtp-js';
 import TalentLayerContext from '../../../context/talentLayer';
 import { buildChatMessage, buildConversationId, getLatestMessage } from '../utils/messaging';
 import { InvitationContext } from '@xmtp/xmtp-js';
+import { useAccount } from 'wagmi';
 
 export const NON_EXISTING_XMTP_USER_ERROR_MESSAGE =
   'The user you are trying to contact is not registered on XMTP network.';
@@ -14,7 +15,7 @@ const useStreamMessages = (
   peerUserId: string,
   setMessageSendingErrorMsg: React.Dispatch<React.SetStateAction<string>>,
 ) => {
-  const { account } = useContext(TalentLayerContext);
+  const account = useAccount();
   const { providerState, setProviderState } = useContext(XmtpContext);
   const [stream, setStream] = useState<Stream<DecodedMessage>>();
   const [conversation, setConversation] = useState<Conversation>();

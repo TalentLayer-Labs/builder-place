@@ -39,7 +39,6 @@ function ServiceForm({
   const chainId = useChainId();
   const { open: openConnectModal } = useWeb3Modal();
   const account = useAccount();
-  const { refreshWorkerProfile, canUseBackendDelegate } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const router = useRouter();
@@ -140,8 +139,6 @@ function ServiceForm({
         }
       } catch (error) {
         showErrorTransactionToast(error);
-      } finally {
-        if (canUseBackendDelegate) await refreshWorkerProfile();
       }
     } else {
       openConnectModal();

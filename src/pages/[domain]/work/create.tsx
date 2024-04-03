@@ -28,8 +28,12 @@ function CreateService() {
     builderPlace?.jobPostingConditions?.conditions,
   );
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return <Loading />;
+  }
+
+  if (!user) {
+    return <Steps />;
   }
 
   if (!builderPlace?.jobPostingConditions.allowPosts && !isBuilderPlaceCollaborator) {

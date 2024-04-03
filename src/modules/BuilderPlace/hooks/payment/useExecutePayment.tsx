@@ -92,9 +92,6 @@ const useExecutePayment = () => {
       } catch (error: any) {
         showErrorTransactionToast(error);
       }
-      // finally {
-      //   if (canUseBackendDelegate) await refreshWorkerProfile();
-      // }
     }
   };
   return { executePayment };

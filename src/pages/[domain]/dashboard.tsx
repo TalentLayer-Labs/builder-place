@@ -44,11 +44,9 @@ function Dashboard() {
             </div>
           </div>
         ) : (
-          !user && (
-            <div className='max-w-7xl mx-auto text-base-content text-center'>
-              <Steps />
-            </div>
-          )
+          <div className='max-w-7xl mx-auto text-base-content text-center'>
+            <Steps />
+          </div>
         )}
       </>
     );

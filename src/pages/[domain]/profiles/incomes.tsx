@@ -1,19 +1,24 @@
+import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import Loading from '../../../components/Loading';
+import Steps from '../../../components/Steps';
 import UserIncomes from '../../../components/UserIncomes';
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
 }
 
 function Incomes() {
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!user) {
-    return <Loading />;
+    return <Steps />;
   }
 
   return (
