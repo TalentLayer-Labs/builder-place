@@ -16,19 +16,14 @@ const verifyEmail = () => {
   const { getUser } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [pageResponse, setPageResponse] = useState('Missing Id');
-  const [redirect, setRedirect] = useState(true);
   const emailMutation = useMutation(
     async (body: IVerifyEmail): Promise<AxiosResponse<{ id: string; message: string }>> => {
       return await axios.post('/api/emails/verify', body);
     },
   );
 
-  useEffect(() => {
-    const domain = window.location.hostname + ':' + window.location.port;
-    if (domain === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
-      setRedirect(false);
-    }
-  }, []);
+  const domain = window.location.hostname + ':' + window.location.port;
+  const isOnRootDomain = domain === process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 
   useEffect(() => {
     if (id) {
@@ -79,7 +74,7 @@ const verifyEmail = () => {
               <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
                 Your email is validated!
               </p>
-              {redirect && (
+              {!isOnRootDomain && (
                 <button
                   className='bg-pink-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
                   onClick={() => goToDashboard()}>
@@ -99,7 +94,7 @@ const verifyEmail = () => {
               <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
                 Looks like you're already all set!
               </p>
-              {redirect && (
+              {!isOnRootDomain && (
                 <button
                   className='bg-green-500 text-content rounded-lg px-4 py-2 mt-4 text-lg text-white font-medium'
                   onClick={() => goToHomePage()}>
