@@ -91,7 +91,6 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
       }
 
       await createNewPlatform(values, user, existingTalentLayerPlatform);
-      //TODO add get like user ?
 
       /**
        * @dev Depending on context, we will redirect to the right path. This could be an argument of the function. Globally a callback.

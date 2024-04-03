@@ -25,6 +25,10 @@ const verifyEmail = () => {
   const domain = window.location.hostname + ':' + window.location.port;
   const isOnRootDomain = domain === process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 
+  console.log('domain', domain);
+  console.log('process.env.NEXT_PUBLIC_ROOT_DOMAIN', process.env.NEXT_PUBLIC_ROOT_DOMAIN);
+  console.log('isOnRootDomain', isOnRootDomain);
+
   useEffect(() => {
     if (id) {
       verifyEmail(id as string);

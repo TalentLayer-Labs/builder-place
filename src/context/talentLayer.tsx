@@ -150,6 +150,13 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       const userHasReachedDelegationLimit =
         (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
 
+      console.log(
+        'userHasDelegatedToPlatform',
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true',
+        !!userHasDelegatedToPlatform,
+        !userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset),
+        !!workerProfile?.isEmailVerified,
+      );
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
           !!userHasDelegatedToPlatform &&
@@ -168,6 +175,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
 
       const response = await getUserBy({ address: account.address });
+      console.log('response', response);
       if (!response) {
         setWorkerProfile(undefined);
         console.error('Error while fetching user profile');
