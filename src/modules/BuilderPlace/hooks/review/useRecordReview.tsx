@@ -101,9 +101,6 @@ const useRecordReview = () => {
       } catch (error: any) {
         showErrorTransactionToast(error);
       }
-      // finally {
-      //     if (canUseBackendDelegate) await refreshWorkerProfile();
-      //   }
     }
   };
   return { recordReview };

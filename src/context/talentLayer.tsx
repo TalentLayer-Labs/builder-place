@@ -10,33 +10,21 @@ import { getUserByAddress } from '../queries/users';
 import { IAccount, IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 export type iTalentLayerContext = {
   loading: boolean;
   canUseBackendDelegate: boolean;
   refreshData: () => Promise<boolean>;
-  refreshWorkerProfile: () => Promise<boolean>;
   user?: IUser;
-  account?: IAccount;
-  workerProfile?: User;
   completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
 };
-
-// export enum PreferredWorkTypes {
-//   jobs = 'jobs',
-//   bounties = 'bounties',
-//   grants = 'grants',
-//   gigs = 'gigs',
-// }
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
   canUseBackendDelegate: false,
   refreshData: async () => {
-    return false;
-  },
-  refreshWorkerProfile: async () => {
     return false;
   },
 });
@@ -46,8 +34,9 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const { switchNetwork } = useSwitchNetwork();
   const { data: walletClient } = useWalletClient();
   const { builderPlace } = useContext(BuilderPlaceContext);
+  const { user: workerProfile } = useContext(UserContext);
   const [user, setUser] = useState<IUser | undefined>();
-  const [workerProfile, setWorkerProfile] = useState<User>();
+
   const account = useAccount();
   const [canUseBackendDelegate, setCanUseBackendDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -176,60 +165,17 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     fetchData();
   }, [chainId, account.address, talentLayerClient]);
 
-  const getWorkerProfile = async () => {
-    try {
-      setLoading(true);
-
-      const response = await getUserBy({ address: account.address });
-      console.log('response.talentLayerId', response.talentLayerId);
-      console.log('response.id', response.id);
-      console.log('response.isEmailVerified', response.isEmailVerified);
-      console.log('response.address', response.address);
-      if (!response) {
-        setWorkerProfile(undefined);
-        console.error('Error while fetching user profile');
-        return;
-      }
-      setWorkerProfile(response);
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const refreshWorkerProfile = async () => {
-    try {
-      setLoading(true);
-      console.log('refreshing worker data');
-      await getWorkerProfile();
-      return true;
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!user) return;
     const completionScores = getCompletionScores(user);
     setCompletionScores(completionScores);
-    getWorkerProfile();
   }, [user]);
 
   const value = useMemo(() => {
     return {
       user,
-      account: account ? account : undefined,
-      workerProfile,
       canUseBackendDelegate,
       refreshData: fetchData,
-      refreshWorkerProfile: refreshWorkerProfile,
       loading,
       completionScores,
       talentLayerClient,
@@ -238,7 +184,6 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     account.address,
     user?.id,
     canUseBackendDelegate,
-    workerProfile,
     loading,
     completionScores,
     talentLayerClient,

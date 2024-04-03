@@ -2,7 +2,7 @@ import Notification from './Notification';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
 import TalentLayerContext from '../context/talentLayer';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 
@@ -11,12 +11,8 @@ type DelegationNotificationProps = {
 };
 
 const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
-  const {
-    account,
-    user: talentLayerUser,
-    refreshData,
-    talentLayerClient,
-  } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user: talentLayerUser, refreshData, talentLayerClient } = useContext(TalentLayerContext);
   const { user } = useContext(UserContext);
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });

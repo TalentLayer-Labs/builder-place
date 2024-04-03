@@ -1,15 +1,16 @@
 import { GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
+import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';
 import ServiceForm from '../../../../components/Form/ServiceForm';
+import Loading from '../../../../components/Loading';
+import NotFound from '../../../../components/NotFound';
 import Steps from '../../../../components/Steps';
 import TalentLayerContext from '../../../../context/talentLayer';
+import useServiceById from '../../../../hooks/useServiceById';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import useServiceById from '../../../../hooks/useServiceById';
-import Loading from '../../../../components/Loading';
-import { useRouter } from 'next/router';
-import NotFound from '../../../../components/NotFound';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -19,7 +20,8 @@ function EditService() {
   const router = useRouter();
   const { id } = router.query;
   const { service, isLoading } = useServiceById(id as string);
-  const { account, user: talentLayerUser } = useContext(TalentLayerContext);
+  const account = useAccount();
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
 
   const canEditService =
