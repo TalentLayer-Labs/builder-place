@@ -24,11 +24,12 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
   const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS;
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [showNotification, setShowNotification] = useState<boolean>(true);
 
   const onActivateDelegation = async () => {
     try {
-      setSubmitting(true);
       if (talentLayerClient && walletClient && talentLayerClientConfig) {
+        setSubmitting(true);
         const { request } = await publicClient.simulateContract({
           address: talentLayerClientConfig.contracts.talentLayerId.address,
           abi: talentLayerClientConfig.contracts.talentLayerId.abi,
@@ -50,6 +51,8 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
           'Delegation',
         );
 
+        setShowNotification(false);
+
         if (callback) {
           await callback();
         }
@@ -61,6 +64,15 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
       await refreshData();
     }
   };
+
+  if (
+    !user?.isEmailVerified ||
+    !delegateAddress ||
+    talentLayerUser?.delegates?.includes(delegateAddress.toLowerCase()) ||
+    !showNotification
+  ) {
+    return null;
+  }
 
   return (
     <div>

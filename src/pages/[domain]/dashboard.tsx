@@ -68,8 +68,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
-
       {account?.isConnected && talentLayerUser && (
         <div>
           <VerifyEmailNotification />
@@ -102,7 +100,7 @@ function Dashboard() {
                 <h2 className='pb-4 text-base-content  break-all flex justify-between items-center'>
                   <span className='flex-1 font-bold'>your profile</span>
                   <Link
-                    className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm  rounded-xl'
+                    className='hover:opacity-70 text-primary bg-primary px-3 py-2 text-sm rounded-xl'
                     href={`/profiles/edit`}>
                     Edit
                   </Link>
