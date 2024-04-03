@@ -68,7 +68,10 @@ function Dashboard() {
 
       {account?.isConnected && talentLayerUser && (
         <div>
-          <VerifyEmailNotification />
+          <div className='mb-12'>
+            <VerifyEmailNotification />
+          </div>
+
           {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
           {isBuilderPlaceCollaborator && (
             <>
