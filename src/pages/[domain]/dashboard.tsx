@@ -43,9 +43,6 @@ function Dashboard() {
                 <p>Please connect your wallet to your new custom domain to access your dashboard</p>
               </div>
             </div>
-            <div className='p-8 flex flex-col items-center'>
-              <ConnectBlock />
-            </div>
           </div>
         ) : (
           !user && (
