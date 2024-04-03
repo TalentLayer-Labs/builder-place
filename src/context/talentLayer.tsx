@@ -151,6 +151,8 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         !!userHasDelegatedToPlatform,
         !userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset),
         !!workerProfile?.isEmailVerified,
+        user.delegates,
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS,
       );
       setCanUseBackendDelegate(
         process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&

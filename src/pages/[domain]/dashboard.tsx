@@ -68,7 +68,10 @@ function Dashboard() {
 
       {account?.isConnected && talentLayerUser && (
         <div>
-          <VerifyEmailNotification />
+          <div className='mb-12'>
+            <VerifyEmailNotification />
+          </div>
+
           {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
           {isBuilderPlaceCollaborator && (
             <>
@@ -87,7 +90,7 @@ function Dashboard() {
                 </div>
               )}
 
-              <div className='mb-12'>
+              <div className='mb-12 mt-2'>
                 <UserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
               </div>
             </>

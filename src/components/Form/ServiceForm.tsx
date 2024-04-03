@@ -1,25 +1,24 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { formatUnits } from 'viem';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
-import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
-import { showErrorTransactionToast } from '../../utils/toast';
-import SubmitButton from './SubmitButton';
-import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { IService, IToken } from '../../types';
-import { SkillsInput } from './skills-input';
-import { useChainId } from '../../hooks/useChainId';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import usePlatform from '../../hooks/usePlatform';
-import { chains } from '../../context/web3modal';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { useRouter } from 'next/router';
+import { useContext, useState } from 'react';
+import { formatUnits } from 'viem';
+import { useAccount } from 'wagmi';
+import * as Yup from 'yup';
+import { chains } from '../../context/web3modal';
+import useAllowedTokens from '../../hooks/useAllowedTokens';
+import { useChainId } from '../../hooks/useChainId';
+import usePlatform from '../../hooks/usePlatform';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
 import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useAccount } from 'wagmi';
+import Web3MailContext from '../../modules/Web3mail/context/web3mail';
+import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
+import { IService, IToken } from '../../types';
+import { showErrorTransactionToast } from '../../utils/toast';
+import SubmitButton from './SubmitButton';
+import { SkillsInput } from './skills-input';
 
 export interface ICreateServiceFormValues {
   title: string;
@@ -229,12 +228,6 @@ function ServiceForm({
                 <span className='text-alone-error mt-2'>
                   <ErrorMessage name='rateAmount' />
                 </span>
-                {servicePostingFeeFormat !== 0 && (
-                  <span className='text-base-content'>
-                    Fee for posting a service: {servicePostingFeeFormat}{' '}
-                    {currentChain?.nativeCurrency.symbol}
-                  </span>
-                )}
               </label>
               <label className='block'>
                 <span className='text-base-content'>Token</span>
@@ -261,6 +254,13 @@ function ServiceForm({
                 </span>
               </label>
             </div>
+
+            {servicePostingFeeFormat !== 0 && (
+              <p className='text-base-content'>
+                Fee for posting a service: {servicePostingFeeFormat}{' '}
+                {currentChain?.nativeCurrency.symbol}
+              </p>
+            )}
 
             <SubmitButton
               isSubmitting={isSubmitting}

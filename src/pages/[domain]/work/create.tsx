@@ -27,17 +27,6 @@ function CreateService() {
     builderPlace?.jobPostingConditions?.conditions,
   );
 
-  console.log(
-    ' builderPlace?.jobPostingConditions?.allowPosts',
-    builderPlace?.jobPostingConditions?.allowPosts,
-  );
-  console.log(
-    'builderPlace?.jobPostingConditions?.conditions',
-    builderPlace?.jobPostingConditions?.conditions,
-  );
-  console.log('returnedPostingConditions', returnedPostingConditions);
-  console.log('canPost', canPost);
-
   if (isLoading || isUserLoading) {
     return <Loading />;
   }
@@ -50,25 +39,23 @@ function CreateService() {
     return <AccessDenied />;
   }
 
-  const shouldDisplayPostingConditions =
-    builderPlace?.jobPostingConditions.allowPosts &&
-    !isBuilderPlaceCollaborator &&
-    builderPlace?.jobPostingConditions?.conditions &&
-    builderPlace.jobPostingConditions.conditions.length > 0;
+  console.log('CreateService', { returnedPostingConditions, isLoading, canPost });
 
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       {/* Will not appear for collaborators */}
-      {shouldDisplayPostingConditions && (
-        <div className='border border-info rounded-xl p-4 mb-6'>
-          <h3 className='text-lg font-semibold mb-3'>Posting Conditions</h3>
-          <ul>
-            {returnedPostingConditions.map(condition => (
-              <ConditionsStatusCard key={condition.condition.address} {...condition} />
-            ))}
-          </ul>
-        </div>
-      )}
+      {builderPlace?.jobPostingConditions.allowPosts &&
+        returnedPostingConditions.length > 0 &&
+        !isBuilderPlaceCollaborator && (
+          <div className='border border-info rounded-xl p-4 mb-6'>
+            <h3 className='text-lg font-semibold mb-3'>Posting Conditions</h3>
+            <ul>
+              {returnedPostingConditions.map(condition => (
+                <ConditionsStatusCard key={condition.condition.address} {...condition} />
+              ))}
+            </ul>
+          </div>
+        )}
 
       {(isBuilderPlaceCollaborator || canPost) && (
         <>
