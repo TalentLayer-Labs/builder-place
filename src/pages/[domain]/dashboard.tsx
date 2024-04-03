@@ -117,6 +117,9 @@ function Dashboard() {
               <div className='mb-12'>
                 <UserServices userId={user.talentLayerId} type='seller' />
               </div>
+              <div className='mb-12 mt-2'>
+                <UserServices userId={user.talentLayerId} type='buyer' />
+              </div>
               <div className='mb-12'>
                 <UserProposals user={talentLayerUser} />
               </div>
