@@ -175,7 +175,10 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
 
       const response = await getUserBy({ address: account.address });
-      console.log('response', response);
+      console.log('response.talentLayerId', response.talentLayerId);
+      console.log('response.id', response.id);
+      console.log('response.isEmailVerified', response.isEmailVerified);
+      console.log('response.address', response.address);
       if (!response) {
         setWorkerProfile(undefined);
         console.error('Error while fetching user profile');
