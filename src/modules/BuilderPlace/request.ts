@@ -1,8 +1,7 @@
 import { IEmailPreferences } from '../../types';
-import { BuilderPlace, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { UsersFilters } from '../../app/api/users/route';
 import axios from 'axios';
-import { PlatformsFilters } from '../../app/api/platforms/route';
 
 export const upload = async (file: File, fileName?: string): Promise<any> => {
   console.log(file);
@@ -20,57 +19,6 @@ export const upload = async (file: File, fileName?: string): Promise<any> => {
   }
 };
 
-export const getBuilderPlaceFromOwner = async (talentLayerId: string): Promise<any> => {
-  try {
-    return await fetch('/api/domain/get-builder-place-from-owner', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: talentLayerId,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const getBuilderPlaceById = async (id: string): Promise<any> => {
-  try {
-    return await fetch('/api/domain/get-builder-place-by-id', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: id,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const getWorkerProfileByOwnerId = async (id: string): Promise<any> => {
-  try {
-    return await fetch('/api/domain/get-worker-profile-by-owner-id', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: id,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
 export const getUserBy = async (filters: UsersFilters): Promise<User> => {
   console.log(`*DEBUG* getUserBy fetch!`);
 
@@ -82,116 +30,6 @@ export const getUserBy = async (filters: UsersFilters): Promise<User> => {
 
   console.log(`*DEBUG* getUserBy results!`, users);
   return users[0];
-};
-
-export const getPlatformBy = async (filters: PlatformsFilters): Promise<BuilderPlace> => {
-  console.log(`*DEBUG* getPlatformsBy fetch!`);
-
-  const response = await axios.get('/api/platforms', {
-    params: filters,
-  });
-
-  const platforms: BuilderPlace[] = response.data.platforms;
-
-  console.log(`*DEBUG* getPlatformBy results!`, platforms);
-  return platforms[0];
-};
-
-export const getWorkerProfileById = async (id: string): Promise<any> => {
-  try {
-    return await fetch('/api/domain/get-worker-profile-by-id', {
-      method: 'POST',
-      body: JSON.stringify({
-        id: id,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const verifyEmail = async (email: string, userId: string): Promise<any> => {
-  try {
-    return await fetch('/api/domain/verify-email', {
-      method: 'PUT',
-      body: JSON.stringify({
-        email: email,
-        userId: userId,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const sendVerificationEmail = async (
-  to: string,
-  userId: string,
-  name: string,
-  domain: string,
-): Promise<any> => {
-  try {
-    return await fetch('/api/domain/send-verification-email', {
-      method: 'POST',
-      body: JSON.stringify({
-        to: to,
-        userId: userId,
-        name: name,
-        domain: domain,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const verifyAccount = async (userId: string, signature: string): Promise<any> => {
-  try {
-    const response = await fetch('/api/domain/verify-account', {
-      method: 'PUT',
-      body: JSON.stringify({
-        userId: userId,
-        signature: signature,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const getUserByEmail = async (email: string): Promise<any> => {
-  try {
-    const response = await fetch('/api/domain/get-user-by-email', {
-      method: 'POST',
-      body: JSON.stringify({
-        email,
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
 };
 
 export const getUsersNotificationData = async (
