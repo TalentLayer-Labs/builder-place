@@ -71,6 +71,12 @@ const useCheckJobPostConditions = (
     const checkConditions = async () => {
       setIsLoading(true);
 
+      if (isPostingAllowed && jobPostConditions?.length === 0) {
+        setCanPost(true);
+        setIsLoading(false);
+        return;
+      }
+
       if (!isPostingAllowed || !jobPostConditions || jobPostConditions.length === 0) {
         setCanPost(false);
         setIsLoading(false);
