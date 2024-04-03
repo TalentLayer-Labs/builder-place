@@ -13,6 +13,12 @@ function UserAccount() {
   const { isConnected } = useAccount();
   const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const isOnboarding = router.asPath.toString().includes('create-profile');
+
+  console.log('router.asPath', router.asPath);
+  console.log('isOnboarding', isOnboarding);
 
   // Tips to prevent nextJs error: Hydration failed because the initial UI does not match what was rendered on the server.
   useEffect(() => {
@@ -37,7 +43,7 @@ function UserAccount() {
     );
   }
 
-  if (!user) {
+  if (!user || isOnboarding) {
     return (
       <div className='flex justify-between'>
         <div className='pr-4 flex items-center'>
