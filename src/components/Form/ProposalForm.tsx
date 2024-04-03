@@ -189,7 +189,7 @@ function ProposalForm({
               </label>
             </div>
             <label className='block flex-1'>
-              <span className='text-base-content'>proposal expiration date</span>
+              <span className='text-base-content'>days until proposal expiration</span>
               <Field
                 type='number'
                 id='expirationDate'
