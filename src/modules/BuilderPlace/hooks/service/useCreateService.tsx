@@ -23,6 +23,8 @@ const useCreateService = () => {
       throw new Error('Please connect your wallet');
     }
 
+    console.log('canUseBackendDelegate', canUseBackendDelegate);
+
     await wait(2);
 
     if (
