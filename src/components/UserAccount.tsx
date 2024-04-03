@@ -1,12 +1,11 @@
 import { Menu, Transition } from '@headlessui/react';
+import Link from 'next/link';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import TalentLayerContext from '../context/talentLayer';
+import { useAccount } from 'wagmi';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
-import UserContext from '../modules/BuilderPlace/context/UserContext';
-import { useAccount } from 'wagmi';
-import Link from 'next/link';
 
 function UserAccount() {
   const { isConnected } = useAccount();
