@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "app/api/**/*": {
+      "maxDuration": 120
+    }
+  },
   "crons":[
     {
       "path":"/api/email/new-proposal",
