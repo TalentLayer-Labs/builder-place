@@ -2,8 +2,6 @@ import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import AccessDenied from '../../../components/AccessDenied';
 import ServiceForm from '../../../components/Form/ServiceForm';
-import Steps from '../../../components/Steps';
-import TalentLayerContext from '../../../context/talentLayer';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import ConnectButton from '../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../modules/Messaging/context/messging';
@@ -13,6 +11,7 @@ import Loading from '../../../components/Loading';
 import ConditionsStatusCard from '../../../components/CreateService/ConditionsStatusCard ';
 import { useAccount } from 'wagmi';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import Steps from '../../../components/Steps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -20,7 +19,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function CreateService() {
   const account = useAccount();
-  const { user } = useContext(UserContext);
+  const { user, loading: isUserLoading } = useContext(UserContext);
   const { userExists } = useContext(MessagingContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const { returnedPostingConditions, isLoading, canPost } = useCheckJobPostConditions(
@@ -28,7 +27,7 @@ function CreateService() {
     builderPlace?.jobPostingConditions?.conditions,
   );
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <Loading />;
   }
 

@@ -71,24 +71,26 @@ const useCheckJobPostConditions = (
     const checkConditions = async () => {
       setIsLoading(true);
 
-      if (isPostingAllowed && jobPostConditions?.length === 0) {
-        setCanPost(true);
-        setIsLoading(false);
-        return;
-      }
-
-      if (!isPostingAllowed || !jobPostConditions || jobPostConditions.length === 0) {
+      if (!isPostingAllowed) {
         setCanPost(false);
         setIsLoading(false);
         return;
       }
 
-      try {
-        const results = await Promise.all(jobPostConditions.map(checkCondition));
-        const allConditionsMet = results.every(result => result.validated);
+      if (isPostingAllowed && jobPostConditions && jobPostConditions.length === 0) {
+        setCanPost(true);
+        setIsLoading(false);
+        return;
+      }
 
-        setCanPost(allConditionsMet);
-        setReturnedPostingConditions(results);
+      try {
+        if (jobPostConditions) {
+          const results = await Promise.all(jobPostConditions.map(checkCondition));
+          const allConditionsMet = results.every(result => result.validated);
+
+          setCanPost(allConditionsMet);
+          setReturnedPostingConditions(results);
+        }
       } catch (error) {
         console.error('Error checking posting conditions', error);
         setCanPost(false);

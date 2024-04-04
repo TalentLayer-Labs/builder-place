@@ -3,6 +3,7 @@ import { createPublicClient, http } from 'viem';
 import { erc20ABI, erc721ABI } from 'wagmi';
 import { useState } from 'react';
 import { getViemFormattedChainForJobConditions } from '../utils/jobPostConditions';
+import { toast } from 'react-toastify';
 
 const useGetContractData = () => {
   const [nftSubmitting, setNftSubmitting] = useState<boolean>(false);
@@ -30,6 +31,19 @@ const useGetContractData = () => {
           abi: erc721ABI,
           functionName: 'name',
         });
+        let shouldNotExistDecimals;
+        try {
+          shouldNotExistDecimals = await publicClient.readContract({
+            address: address as `0x${string}`,
+            abi: erc20ABI,
+            functionName: 'decimals',
+          });
+        } catch (e) {
+          console.log('ERC-721 contract');
+        }
+        if (shouldNotExistDecimals) {
+          toast.error('No ERC-721 contract detected');
+        }
       } else if (type === 'Token') {
         contractName = await publicClient.readContract({
           address: address as `0x${string}`,
@@ -41,14 +55,18 @@ const useGetContractData = () => {
           abi: erc20ABI,
           functionName: 'symbol',
         });
-        decimals = await publicClient.readContract({
-          address: address as `0x${string}`,
-          abi: erc20ABI,
-          functionName: 'decimals',
-        });
+        try {
+          decimals = await publicClient.readContract({
+            address: address as `0x${string}`,
+            abi: erc20ABI,
+            functionName: 'decimals',
+          });
+        } catch (e) {
+          toast.error('No ERC-20 contract detected');
+        }
       }
     } catch (e) {
-      // console.log('Error checking contract name', e);
+      console.log('Error checking contract name', e);
       error = true;
     } finally {
       type === 'NFT' ? setNftSubmitting(false) : setTokenSubmitting(false);
