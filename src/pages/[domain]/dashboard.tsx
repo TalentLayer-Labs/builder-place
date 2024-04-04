@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import DelegationNotification from '../../components/DelegationNotification';
 import Notification from '../../components/Notification';
@@ -24,10 +24,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Dashboard() {
   const account = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext); // Add refreshData
-  const { user } = useContext(UserContext);
+  const { user, getUser } = useContext(UserContext);
   const router = useRouter();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const isComingFromHirerOnboarding = router.asPath.includes('platformonboarding');
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   if (!user) {
     return (
