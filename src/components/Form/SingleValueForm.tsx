@@ -40,7 +40,6 @@ function SingleValueForm({
   const { contractFunctionName, contractEntity } = contractParams;
 
   const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
@@ -48,39 +47,35 @@ function SingleValueForm({
     values: any,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (publicClient && values && talentLayerClient) {
-      try {
-        let value = values[valueName];
+    try {
+      let value = values[valueName];
 
-        if (value === undefined) {
-          return;
-        }
-
-        //  @ts-ignore
-        const tx = await talentLayerClient[contractEntity][contractFunctionName](value);
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Updating informations ...',
-            success: 'Congrats! Your informations has been updated',
-            error: 'An error occurred while updating your informations',
-          },
-          publicClient,
-          tx,
-          contractEntity,
-        );
-
-        if (callback) {
-          callback();
-        }
-
-        setSubmitting(false);
-      } catch (error) {
-        showErrorTransactionToast(error);
+      if (value === undefined) {
+        return;
       }
-    } else {
-      openConnectModal();
+
+      //  @ts-ignore
+      const tx = await talentLayerClient[contractEntity][contractFunctionName](value);
+
+      await createMultiStepsTransactionToast(
+        chainId,
+        {
+          pending: 'Updating informations ...',
+          success: 'Congrats! Your informations has been updated',
+          error: 'An error occurred while updating your informations',
+        },
+        publicClient,
+        tx,
+        contractEntity,
+      );
+
+      if (callback) {
+        callback();
+      }
+
+      setSubmitting(false);
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 

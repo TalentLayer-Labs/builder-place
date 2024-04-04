@@ -1,31 +1,29 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
+import axios, { AxiosResponse } from 'axios';
 import { Form, Formik } from 'formik';
 import { useContext } from 'react';
+import { useMutation } from 'react-query';
+import { toast } from 'react-toastify';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
-import SubmitButton from './SubmitButton';
-import { Toogle } from './Toggle';
-import Loading from '../Loading';
-import { delegateUpdateProfileData } from '../request';
+import { IUpdateProfile } from '../../app/api/users/[id]/route';
 import TalentLayerContext from '../../context/talentLayer';
 import TalentLayerID from '../../contracts/ABI/TalentLayerID.json';
 import { useChainId } from '../../hooks/useChainId';
 import { useConfig } from '../../hooks/useConfig';
 import useUserById from '../../hooks/useUserById';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
+import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import { EmailNotificationType, IEmailPreferences } from '../../types';
 import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
-import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
-import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
-import { toast } from 'react-toastify';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import { useMutation } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
-import { IUpdateProfile } from '../../app/api/users/[id]/route';
+import Loading from '../Loading';
+import { delegateUpdateProfileData } from '../request';
+import SubmitButton from './SubmitButton';
+import { Toogle } from './Toggle';
 
 function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
   const {
     canUseBackendDelegate,
     refreshData,
@@ -79,7 +77,11 @@ function EmailPreferencesForm() {
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {
-      if (emailNotificationType === EmailNotificationType.WEB2 && walletClient && user && address) {
+      if (!walletClient || !address || !user) {
+        throw new Error('Please connect your wallet first');
+      }
+
+      if (emailNotificationType === EmailNotificationType.WEB2) {
         /**
          * @dev Sign message to prove ownership of the address
          */
@@ -103,7 +105,7 @@ function EmailPreferencesForm() {
           autoClose: 5000,
           closeOnClick: true,
         });
-      } else if (user && publicClient && walletClient) {
+      } else {
         const cid = await postToIPFSwithQuickNode(
           JSON.stringify({
             title: userDescription?.title,
@@ -171,8 +173,6 @@ function EmailPreferencesForm() {
 
         refreshData();
         setSubmitting(false);
-      } else {
-        openConnectModal();
       }
     } catch (error) {
       showErrorTransactionToast(error);

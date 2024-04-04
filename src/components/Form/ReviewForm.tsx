@@ -1,6 +1,4 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import useRecordReview from '../../modules/BuilderPlace/hooks/review/useRecordReview';
 import { showErrorTransactionToast } from '../../utils/toast';
@@ -22,8 +20,6 @@ const initialValues: IFormValues = {
 };
 
 function ReviewForm({ serviceId }: { serviceId: string }) {
-  const { open: openConnectModal } = useWeb3Modal();
-  const account = useAccount();
   const { recordReview } = useRecordReview();
 
   /**
@@ -39,16 +35,12 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (account?.isConnected === true) {
-      try {
-        await recordReview(values, serviceId);
-        setSubmitting(false);
-        resetForm();
-      } catch (error) {
-        showErrorTransactionToast(error);
-      }
-    } else {
-      openConnectModal();
+    try {
+      await recordReview(values, serviceId);
+      setSubmitting(false);
+      resetForm();
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 

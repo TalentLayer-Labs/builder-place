@@ -1,16 +1,14 @@
 import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, usePublicClient, useSwitchNetwork, useWalletClient } from 'wagmi';
+import { useAccount, useSwitchNetwork } from 'wagmi';
 import * as Yup from 'yup';
 import ConnectBlock from '../../../components/ConnectBlock';
 import SubmitButton from '../../../components/Form/SubmitButton';
 import Loading from '../../../components/Loading';
 import Step from '../../../components/Step';
-import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
 import { NetworkEnum } from '../../../types';
 import { showErrorTransactionToast } from '../../../utils/toast';
@@ -24,12 +22,9 @@ interface IFormValues {
 function Web3mailForm() {
   const chainId = useChainId();
   const { switchNetwork } = useSwitchNetwork();
-  const { open: openConnectModal } = useWeb3Modal();
   const account = useAccount();
   const { platformHasAccess, protectEmailAndGrantAccess, emailIsProtected } =
     useContext(Web3MailContext);
-  const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
   const router = useRouter();
 
   if (account.isConnecting) {
@@ -87,20 +82,16 @@ function Web3mailForm() {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && publicClient) {
-      try {
-        const promise = protectEmailAndGrantAccess(values.email);
-        await toast.promise(promise, {
-          pending: 'Pending transactions, follow instructions in your wallet',
-          success: 'Access granted succefully',
-          error: 'An error occurred while granting access',
-        });
-        setSubmitting(false);
-      } catch (error) {
-        showErrorTransactionToast(error);
-      }
-    } else {
-      openConnectModal();
+    try {
+      const promise = protectEmailAndGrantAccess(values.email);
+      await toast.promise(promise, {
+        pending: 'Pending transactions, follow instructions in your wallet',
+        success: 'Access granted succefully',
+        error: 'An error occurred while granting access',
+      });
+      setSubmitting(false);
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 

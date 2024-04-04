@@ -1,11 +1,11 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { QuestionMarkCircle } from 'heroicons-react';
 import { useContext, useState } from 'react';
-import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
 import useUserById from '../../hooks/useUserById';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import useUpdateUser from '../../modules/BuilderPlace/hooks/user/useUpdateUser';
 import Web3MailContext from '../../modules/Web3mail/context/web3mail';
 import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import { generatePicture } from '../../utils/ai-picture-gen';
@@ -13,8 +13,6 @@ import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import useUpdateUser from '../../modules/BuilderPlace/hooks/user/useUpdateUser';
 
 export interface IUpdateProfileFormValues {
   title?: string;
@@ -31,9 +29,7 @@ const validationSchema = Yup.object({
 });
 
 function ProfileForm({ callback }: { callback?: () => void }) {
-  const { open: openConnectModal } = useWeb3Modal();
   const { user } = useContext(UserContext);
-  const account = useAccount();
   const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const { platformHasAccess } = useContext(Web3MailContext);
   const [aiLoading, setAiLoading] = useState(false);
@@ -70,24 +66,20 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     values: IUpdateProfileFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (account?.isConnected === true) {
-      try {
-        await updateUser(values);
+    try {
+      await updateUser(values);
 
-        if (callback) {
-          callback();
-        }
-
-        refreshData();
-        setSubmitting(false);
-        if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-          createWeb3mailToast();
-        }
-      } catch (error) {
-        showErrorTransactionToast(error);
+      if (callback) {
+        callback();
       }
-    } else {
-      openConnectModal();
+
+      refreshData();
+      setSubmitting(false);
+      if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
+        createWeb3mailToast();
+      }
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 

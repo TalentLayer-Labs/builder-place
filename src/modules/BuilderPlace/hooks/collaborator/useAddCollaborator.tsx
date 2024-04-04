@@ -14,7 +14,6 @@ const useAddCollaborator = () => {
   const config = useConfig();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { open: openConnectModal } = useWeb3Modal();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { address } = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext);
@@ -25,56 +24,55 @@ const useAddCollaborator = () => {
   );
 
   const addCollaborator = async (collaboratorAddress: string): Promise<void> => {
-    if (walletClient && collaboratorAddress && builderPlace?.id && address && talentLayerUser?.id) {
-      if (
-        collaboratorAddress.toLocaleLowerCase() ===
-        builderPlace?.owner?.address?.toLocaleLowerCase()
-      ) {
-        throw new Error('Already owner');
-      }
+    if (!walletClient || !address || !talentLayerUser?.id || !builderPlace) {
+      throw new Error('Please connect your wallet first');
+    }
 
+    if (
+      collaboratorAddress.toLocaleLowerCase() === builderPlace?.owner?.address?.toLocaleLowerCase()
+    ) {
+      throw new Error('Already owner');
+    }
+
+    /**
+     * @dev Sign message to prove ownership of the address
+     */
+    const signature = await walletClient.signMessage({
+      account: address,
+      message: `connect with ${address}`,
+    });
+
+    /**
+     * @dev Add new collaborator to the BuilderPlace
+     * The collaborator must have a BuilderPlace profile & TalentLayer Id
+     */
+    await collaboratorMutation.mutateAsync({
+      data: {
+        collaboratorAddress: collaboratorAddress,
+        builderPlaceId: builderPlace.id,
+        ownerTalentLayerId: talentLayerUser.id,
+      },
+      signature: signature,
+      address: address,
+      domain: `${window.location.hostname}${
+        window.location.port ? ':' + window.location.port : ''
+      }`,
+    });
+
+    // if address is not delegated yet on chain
+    if (!talentLayerUser.delegates?.includes(collaboratorAddress.toLowerCase())) {
       /**
-       * @dev Sign message to prove ownership of the address
+       * @dev Add the new collaborator as a delegate to the BuilderPlace owner
        */
-      const signature = await walletClient.signMessage({
-        account: address,
-        message: `connect with ${address}`,
-      });
-
-      /**
-       * @dev Add new collaborator to the BuilderPlace
-       * The collaborator must have a BuilderPlace profile & TalentLayer Id
-       */
-      await collaboratorMutation.mutateAsync({
-        data: {
-          collaboratorAddress: collaboratorAddress,
-          builderPlaceId: builderPlace.id,
-          ownerTalentLayerId: talentLayerUser.id,
-        },
-        signature: signature,
-        address: address,
-        domain: `${window.location.hostname}${
-          window.location.port ? ':' + window.location.port : ''
-        }`,
-      });
-
-      // if address is not delegated yet on chain
-      if (!talentLayerUser.delegates?.includes(collaboratorAddress.toLowerCase())) {
-        /**
-         * @dev Add the new collaborator as a delegate to the BuilderPlace owner
-         */
-        await toggleDelegation(
-          chainId,
-          talentLayerUser.id,
-          config,
-          collaboratorAddress,
-          publicClient,
-          walletClient,
-          true,
-        );
-      }
-    } else {
-      openConnectModal();
+      await toggleDelegation(
+        chainId,
+        talentLayerUser.id,
+        config,
+        collaboratorAddress,
+        publicClient,
+        walletClient,
+        true,
+      );
     }
   };
   return { addCollaborator };

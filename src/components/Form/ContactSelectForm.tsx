@@ -38,7 +38,6 @@ export const ContactListForm = ({
 }) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { open: openConnectModal } = useWeb3Modal();
 
   const emailNotificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
@@ -80,45 +79,45 @@ export const ContactListForm = ({
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (walletClient && address) {
-      try {
-        setSubmitting(true);
-
-        /**
-         * @dev Sign message to prove ownership of the address
-         */
-        const signature = await walletClient.signMessage({
-          account: address,
-          message: `connect with ${address}`,
-        });
-
-        const userAddresses = values.users.map(contact => contact.address);
-
-        const promise = sendPlatformMarketingWeb3mail(
-          values.subject,
-          values.body,
-          userAddresses,
-          builderPlaceId,
-          address,
-          signature,
-        );
-
-        await toast.promise(promise, {
-          pending: `${
-            userAddresses.length === 1 ? `Your email is` : `Your emails are`
-          } being sent...`,
-          success: `${userAddresses.length === 1 ? `Email ` : `Emails `} sent !`,
-          error: `An error occurred while sending your ${
-            userAddresses.length === 1 ? `emails` : `email`
-          } `,
-        });
-
-        setSubmitting(false);
-      } catch (error) {
-        showErrorTransactionToast(error);
+    try {
+      if (!walletClient || !address) {
+        throw new Error('Please connect your wallet first');
       }
-    } else {
-      openConnectModal();
+
+      setSubmitting(true);
+
+      /**
+       * @dev Sign message to prove ownership of the address
+       */
+      const signature = await walletClient.signMessage({
+        account: address,
+        message: `connect with ${address}`,
+      });
+
+      const userAddresses = values.users.map(contact => contact.address);
+
+      const promise = sendPlatformMarketingWeb3mail(
+        values.subject,
+        values.body,
+        userAddresses,
+        builderPlaceId,
+        address,
+        signature,
+      );
+
+      await toast.promise(promise, {
+        pending: `${
+          userAddresses.length === 1 ? `Your email is` : `Your emails are`
+        } being sent...`,
+        success: `${userAddresses.length === 1 ? `Email ` : `Emails `} sent !`,
+        error: `An error occurred while sending your ${
+          userAddresses.length === 1 ? `emails` : `email`
+        } `,
+      });
+
+      setSubmitting(false);
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 
