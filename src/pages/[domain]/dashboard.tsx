@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { useAccount } from 'wagmi';
+import ConnectBlock from '../../components/ConnectBlock';
 import DelegationNotification from '../../components/DelegationNotification';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
@@ -31,7 +32,7 @@ function Dashboard() {
 
   useEffect(() => {
     getUser();
-  }, []);
+  }, [account]);
 
   if (!user) {
     return (
@@ -45,6 +46,9 @@ function Dashboard() {
                 </p>
                 <p>Please connect your wallet to your new custom domain to access your dashboard</p>
               </div>
+            </div>
+            <div className='p-8 flex flex-col items-center'>
+              <ConnectBlock />
             </div>
           </div>
         ) : (
