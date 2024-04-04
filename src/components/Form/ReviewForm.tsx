@@ -19,7 +19,7 @@ const initialValues: IFormValues = {
   rating: 3,
 };
 
-function ReviewForm({ serviceId }: { serviceId: string }) {
+function ReviewForm({ serviceId, closeModal }: { serviceId: string; closeModal: () => void }) {
   const { recordReview } = useRecordReview();
 
   /**
@@ -38,6 +38,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
     try {
       await recordReview(values, serviceId);
       setSubmitting(false);
+      closeModal();
       resetForm();
     } catch (error) {
       showErrorTransactionToast(error);
@@ -50,7 +51,7 @@ function ReviewForm({ serviceId }: { serviceId: string }) {
       enableReinitialize={true}
       onSubmit={onSubmit}
       validationSchema={validationSchema}>
-      {({ isSubmitting, errors }) => (
+      {({ isSubmitting }) => (
         <Form>
           {/* {Object.keys(errors).map(errorKey => (
             <div key={errorKey}>{errors[errorKey]}</div>
