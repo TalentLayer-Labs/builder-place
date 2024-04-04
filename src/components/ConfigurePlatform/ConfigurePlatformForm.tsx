@@ -268,10 +268,22 @@ const ConfigurePlatformForm = () => {
             <UploadImage
               fieldName='icon'
               label='icon'
-              legend='square format'
+              legend='square format - optimally 512x512'
               src={values.icon}
               setFieldValue={setFieldValue}
             />
+            <p className='font-alt text-xs font-normal opacity-60'>
+              <span className='text-base-content'>
+                Use for homepage header and for your PWA icon. More info{' '}
+                <a
+                  href='https://web.dev/explore/progressive-web-apps'
+                  target='_blank'
+                  className='underline text-info'>
+                  here
+                </a>
+                .
+              </span>
+            </p>
 
             <UploadImage
               fieldName='cover'
