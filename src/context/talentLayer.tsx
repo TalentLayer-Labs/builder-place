@@ -3,18 +3,16 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
-import { getUserByAddress } from '../queries/users';
-import { IUser } from '../types';
-import { getCompletionScores, ICompletionScores } from '../utils/profile';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
+import { getUserByAddress } from '../queries/users';
+import { IUser } from '../types';
 
 export type iTalentLayerContext = {
   loading: boolean;
   canUseBackendDelegate: boolean;
   refreshData: () => Promise<boolean>;
   user?: IUser;
-  completionScores?: ICompletionScores;
   talentLayerClient?: TalentLayerClient;
 };
 
@@ -37,7 +35,6 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const account = useAccount();
   const [canUseBackendDelegate, setCanUseBackendDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
 
   // automatically switch to the default chain is the current one is not part of the config
@@ -160,29 +157,15 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     fetchData();
   }, [account.address]);
 
-  useEffect(() => {
-    if (!user) return;
-    const completionScores = getCompletionScores(user);
-    setCompletionScores(completionScores);
-  }, [user]);
-
   const value = useMemo(() => {
     return {
       user,
       canUseBackendDelegate,
       refreshData: fetchData,
       loading,
-      completionScores,
       talentLayerClient,
     };
-  }, [
-    account.address,
-    user?.id,
-    canUseBackendDelegate,
-    loading,
-    completionScores,
-    talentLayerClient,
-  ]);
+  }, [account.address, user?.id, canUseBackendDelegate, loading, talentLayerClient]);
 
   return <TalentLayerContext.Provider value={value}>{children}</TalentLayerContext.Provider>;
 };

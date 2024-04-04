@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
@@ -7,8 +8,6 @@ import ServiceDetail from '../../../../components/ServiceDetail';
 import useServiceById from '../../../../hooks/useServiceById';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import Head from 'next/head';
-import { NextSeo } from 'next-seo';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);

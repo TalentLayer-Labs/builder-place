@@ -6,6 +6,7 @@ import ProfileImage from '../ProfileImage';
 import Steps from '../Steps';
 import SideMenu from './SideMenu';
 import { useAccount } from 'wagmi';
+import { useCompletitionScores } from '../../hooks/useCompletitionScores';
 
 interface ContainerProps {
   children: ReactNode;
@@ -14,7 +15,8 @@ interface ContainerProps {
 
 function Layout({ children, className }: ContainerProps) {
   const account = useAccount();
-  const { user: talentLayerUser, completionScores } = useContext(TalentLayerContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const completionScores = useCompletitionScores();
 
   if (!account?.isConnected || !talentLayerUser) {
     return <Steps />;
