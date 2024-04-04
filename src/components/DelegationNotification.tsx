@@ -81,7 +81,7 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
             link=''
             linkText='Activate Gassless'
             color='success'
-            imageUrl={talentLayerUser?.description?.image_url}
+            imageUrl={user.picture}
             submitting={submitting}
             callback={onActivateDelegation}
           />
