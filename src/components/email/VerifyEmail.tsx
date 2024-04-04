@@ -73,7 +73,7 @@ const verifyEmail = () => {
         <div className='rounded-xl p-4 border border-info text-base-content bg-base-100'>
           <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
-              <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
+              <p className='text-2xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Congratulations! 🎉
               </p>
               <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
@@ -93,7 +93,7 @@ const verifyEmail = () => {
         <div className='rounded-xl p-4 border border-info text-base-content bg-base-100'>
           <div className='max-w-7xl mx-auto text-base-content sm:px-4 lg:px-0 sm:py-20 py-10'>
             <div className='flex flex-col items-center justify-center gap-10'>
-              <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
+              <p className='text-2xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Email Already Verified! 🦝
               </p>
               <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>
@@ -116,7 +116,7 @@ const verifyEmail = () => {
               <p className='text-5xl sm:text-7xl font-bold tracking-wider max-w-5xl text-center'>
                 Oops! 😕
               </p>
-              <p className='text-3xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
+              <p className='text-2xl sm:text-5xl font-medium tracking-wider max-w-5xl text-center'>
                 Something went wrong...
               </p>
               <p className='text-xl sm:text-2xl text-base-content opacity-50 text-center'>

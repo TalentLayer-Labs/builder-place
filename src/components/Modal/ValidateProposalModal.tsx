@@ -130,33 +130,40 @@ function ValidateProposalModal({
                       {renderTokenAmount(proposal.rateToken, proposal.rateAmount)}
                     </p>
                   </div>
-                  <div className='flex justify-between items-center w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>
-                      Fees from the marketplace originating the service{' '}
-                      <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
-                        {((Number(originServiceFeeRate) / FEE_RATE_DIVIDER) * 100).toString()} %
-                      </span>
-                    </p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      +{renderTokenAmount(proposal.rateToken, originServiceFee.toString())}
-                    </p>
-                  </div>
-                  <div className='flex justify-between items-center w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>
-                      Fees from the marketplace validating the proposal{' '}
-                      <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
-                        {(
-                          (Number(originValidatedProposalFeeRate) / FEE_RATE_DIVIDER) *
-                          100
-                        ).toString()}{' '}
-                        %
-                      </span>
-                    </p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      +
-                      {renderTokenAmount(proposal.rateToken, originValidatedProposalFee.toString())}
-                    </p>
-                  </div>
+                  {originServiceFeeRate > 0 && (
+                    <div className='flex justify-between items-center w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>
+                        Service fee{' '}
+                        <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
+                          {((Number(originServiceFeeRate) / FEE_RATE_DIVIDER) * 100).toString()} %
+                        </span>
+                      </p>
+                      <p className='text-base-content  leading-4 text-base-content'>
+                        +{renderTokenAmount(proposal.rateToken, originServiceFee.toString())}
+                      </p>
+                    </div>
+                  )}
+                  {originValidatedProposalFee > 0 && (
+                    <div className='flex justify-between items-center w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>
+                        Proposal fee{' '}
+                        <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
+                          {(
+                            (Number(originValidatedProposalFeeRate) / FEE_RATE_DIVIDER) *
+                            100
+                          ).toString()}{' '}
+                          %
+                        </span>
+                      </p>
+                      <p className='text-base-content  leading-4 text-base-content'>
+                        +
+                        {renderTokenAmount(
+                          proposal.rateToken,
+                          originValidatedProposalFee.toString(),
+                        )}
+                      </p>
+                    </div>
+                  )}
                   <div className='flex justify-between items-center w-full'>
                     <p className='text-base-content leading-4 text-base-content'>
                       Protocol fees{' '}
