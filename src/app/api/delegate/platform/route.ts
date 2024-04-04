@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     console.log('tx hash', txHash);
 
     await publicClient.waitForTransactionReceipt({
-      confirmations: 1,
+      confirmations: 2,
       hash: txHash,
     });
 
