@@ -114,7 +114,9 @@ const useCreatePlatform = () => {
         },
         signature: signature,
         address: address,
-        domain: window.location.hostname + ':' + window.location.port,
+        domain: `${window.location.hostname}${
+          window.location.port ? ':' + window.location.port : ''
+        }`,
       });
 
       toast.update(toastId, {

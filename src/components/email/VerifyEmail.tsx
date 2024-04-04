@@ -22,11 +22,9 @@ const verifyEmail = () => {
     },
   );
 
-  let domain = window.location.hostname;
-
-  if (process.env.NODE_ENV === 'development') {
-    domain += ':' + window.location.port;
-  }
+  let domain = `${window.location.hostname}${
+    window.location.port ? ':' + window.location.port : ''
+  }`;
 
   const isOnRootDomain = domain === process.env.NEXT_PUBLIC_ROOT_DOMAIN;
 
