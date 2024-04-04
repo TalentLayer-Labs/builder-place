@@ -61,9 +61,9 @@ export async function checkOrResetTransactionCounter(user: User): Promise<void> 
 
 export async function incrementWeeklyTransactionCounter(user: User): Promise<void> {
   try {
-    const newWeeklyTransactionCounter = (user.weeklyTransactionCounter = 50
-      ? 1
-      : (user.weeklyTransactionCounter || 0) + 1);
+    const newWeeklyTransactionCounter =
+      user.weeklyTransactionCounter === 50 ? 1 : (user.weeklyTransactionCounter || 0) + 1;
+
     await prisma.user.update({
       where: {
         id: user.id,
