@@ -1,25 +1,22 @@
-import { toast } from 'react-toastify';
-import TransactionToast from '../components/TransactionToast';
-import { showErrorTransactionToast } from '../utils/toast';
+import { useChainId, usePublicClient } from 'wagmi';
+import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import { Address } from 'viem';
-import { ZERO_ADDRESS } from '../utils/constant';
-import { useChainId } from '../hooks/useChainId';
-import { usePublicClient } from 'wagmi';
-import useTalentLayerClient from '../hooks/useTalentLayerClient';
+import { ZERO_ADDRESS } from '../../../../utils/constant';
+import { toast } from 'react-toastify';
+import TransactionToast from '../../../../components/TransactionToast';
 
-// TODO: need to generate this json duynamically and post it to IPFS to be use for dispute resolution
-export const metaEvidenceCid = 'QmQ2hcACF6r2Gf8PDxG4NcBdurzRUopwcaYQHNhSah6a8v';
-
-export const validateProposal = async (
-  serviceId: string,
-  proposalId: string,
-  rateToken: Address,
-): Promise<void> => {
+const useValidateProposal = () => {
   const chainId = useChainId();
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
-  try {
+  const metaEvidenceCid = 'QmQ2hcACF6r2Gf8PDxG4NcBdurzRUopwcaYQHNhSah6a8v';
+
+  const validateProposal = async (
+    serviceId: string,
+    proposalId: string,
+    rateToken: Address,
+  ): Promise<void> => {
     if (publicClient && talentLayerClient) {
       if (rateToken === ZERO_ADDRESS) {
         const { tx } = await talentLayerClient.escrow.approve(
@@ -69,7 +66,8 @@ export const validateProposal = async (
         }
       }
     }
-  } catch (error: any) {
-    showErrorTransactionToast(error);
-  }
+  };
+  return { validateProposal };
 };
+
+export default useValidateProposal;
