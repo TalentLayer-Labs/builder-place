@@ -15,6 +15,8 @@ export interface IUserMintForAddress {
   addDelegateAndTransferId?: boolean;
 }
 
+const MAX_RETRIES = 5;
+
 /**
  * POST /api/delegate/user
  */
@@ -51,7 +53,8 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Server Error' }, { status: 500 });
     }
 
-    let transaction, userId;
+    let transaction;
+    let userId: bigint = 0n;
 
     /**
      * If addDelegateAndTransferId is true, we mint the TlId for the user, add the delegator address as delegate, then transfer it to them.
@@ -82,13 +85,21 @@ export async function POST(req: Request) {
         hash: tx,
       });
 
-      // Get Minted UserId
-      userId = await publicClient.readContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'ids',
-        args: [body.userAddress],
-      });
+      let retries = 0;
+
+      while (userId === 0n && retries < MAX_RETRIES) {
+        // Get Minted UserId
+        userId = (await publicClient.readContract({
+          address: config.contracts.talentLayerId,
+          abi: TalentLayerID.abi,
+          functionName: 'ids',
+          args: [body.userAddress],
+        })) as bigint;
+
+        console.log('Platform id', userId);
+
+        retries++;
+      }
 
       console.log(
         `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account.address} as delegate`,
@@ -108,13 +119,18 @@ export async function POST(req: Request) {
       const receipt = await publicClient.waitForTransactionReceipt({ hash: transaction });
       console.log('Mint Transaction Status', receipt.status);
 
+      await publicClient.waitForTransactionReceipt({
+        confirmations: 1,
+        hash: transaction,
+      });
+
       // Get Minted UserId
-      userId = await publicClient.readContract({
+      userId = (await publicClient.readContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'ids',
         args: [body.userAddress],
-      });
+      })) as bigint;
 
       console.log(`Minted id: ${userId} for user ${body.userAddress}`);
     }

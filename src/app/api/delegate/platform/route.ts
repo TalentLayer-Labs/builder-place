@@ -13,6 +13,8 @@ export interface IPlatformMintForAddress {
   signature: `0x${string}` | Uint8Array;
 }
 
+const MAX_RETRIES = 5;
+
 /**
  * POST /api/delegate/platform
  * @note: The delegate address executing the mint function needs to have the MINT_ROLE
@@ -70,23 +72,32 @@ export async function POST(req: Request) {
 
     console.log('tx hash', txHash);
 
+    // Wait for transaction to be mined
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+    console.log('Mint Transaction Status', receipt.status);
+
     await publicClient.waitForTransactionReceipt({
       confirmations: 2,
       hash: txHash,
     });
 
-    const id = await publicClient.readContract({
-      address: config.contracts.talentLayerPlatformId,
-      abi: TalentLayerPlatformID.abi,
-      functionName: 'ids',
-      args: [body.address],
-    });
+    let id: bigint = 0n;
+    let retries = 0;
 
-    console.log('Platform id', id);
+    while (id === 0n && retries < MAX_RETRIES) {
+      id = (await publicClient.readContract({
+        address: config.contracts.talentLayerPlatformId,
+        abi: TalentLayerPlatformID.abi,
+        functionName: 'ids',
+        args: [body.address],
+      })) as bigint;
 
-    const platformId = id as unknown as string;
+      console.log('Platform id', id);
 
-    return Response.json({ transaction: txHash, platformId: String(platformId) }, { status: 201 });
+      retries++;
+    }
+
+    return Response.json({ transaction: txHash, platformId: String(id) }, { status: 201 });
   } catch (error: any) {
     // @TODO: move error handle to a middleware ? or factorize it ?
     let message = 'Failed to create plaform';
