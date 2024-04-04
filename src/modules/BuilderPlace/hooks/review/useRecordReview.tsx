@@ -1,23 +1,21 @@
 import { useContext } from 'react';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { IFormValues } from '../../../../components/Form/ReviewForm';
 import { delegateReview } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import UserContext from '../../context/UserContext';
+import { postToIPFSwithQuickNode } from '../../../../utils/ipfs';
 import {
   createMultiStepsTransactionToast,
   showErrorTransactionToast,
-  wait,
 } from '../../../../utils/toast';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
-import { postToIPFSwithQuickNode } from '../../../../utils/ipfs';
-import { IFormValues } from '../../../../components/Form/ReviewForm';
 
 const useRecordReview = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();

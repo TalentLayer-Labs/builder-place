@@ -1,27 +1,25 @@
-import { toast } from 'react-toastify';
-import MultiStepsTransactionToast from '../../../../components/onboarding/user/MultiStepsTransactionToast';
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
 import { useMutation } from 'react-query';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { toast } from 'react-toastify';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
   ICreateUser,
   ICreateUserFormValues,
 } from '../../../../components/onboarding/user/CreateUserForm';
+import MultiStepsTransactionToast from '../../../../components/onboarding/user/MultiStepsTransactionToast';
 import { delegateMintID } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useMintFee from '../../../../hooks/useMintFee';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import UserContext from '../../context/UserContext';
-import { createVerificationEmailToast } from '../../utils/toast';
-import { wait } from '../../../../utils/toast';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
+import { createVerificationEmailToast } from '../../utils/toast';
 
 const useCreateUser = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { calculateMintFee } = useMintFee();

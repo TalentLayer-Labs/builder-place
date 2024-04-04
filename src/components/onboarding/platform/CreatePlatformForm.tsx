@@ -1,10 +1,12 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
+import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import useCreatePlatform from '../../../modules/BuilderPlace/hooks/platform/useCreatePlatform';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { IMutation } from '../../../types';
 import { showErrorTransactionToast } from '../../../utils/toast';
@@ -12,9 +14,8 @@ import SubdomainInput from '../../Form/SubdomainInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
-import { PlatformNameInput } from './PlatformNameInput';
-import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 import AlreadyOwnsPlatform from './AlreadyOwnsPlatform';
+import { PlatformNameInput } from './PlatformNameInput';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -46,7 +47,8 @@ export interface ICreatePlatform
  *      Access denied
  */
 function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
-  const { loading: isLoadingUser, user, address } = useContext(UserContext);
+  const { address } = useAccount();
+  const { loading: isLoadingUser, user } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
   const existingTalentLayerPlatform = usePlatformByOwner(address);
   const { createNewPlatform } = useCreatePlatform();

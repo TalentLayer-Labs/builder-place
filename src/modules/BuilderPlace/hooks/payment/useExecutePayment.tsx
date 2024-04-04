@@ -1,20 +1,19 @@
 import { useContext } from 'react';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { toast } from 'react-toastify';
+import { Address } from 'viem';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import TransactionToast from '../../../../components/TransactionToast';
 import { delegatePayment } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import UserContext from '../../context/UserContext';
-import { showErrorTransactionToast, wait } from '../../../../utils/toast';
+import { showErrorTransactionToast } from '../../../../utils/toast';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
-import { Address } from 'viem';
-import { toast } from 'react-toastify';
-import TransactionToast from '../../../../components/TransactionToast';
 
 const useExecutePayment = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();

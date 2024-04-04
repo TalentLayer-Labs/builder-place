@@ -2,10 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useChainId, useWalletClient } from 'wagmi';
-import { wait } from '../../../../utils/toast';
-import UserContext from '../../context/UserContext';
-import BuilderPlaceContext from '../../context/BuilderPlaceContext';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import {
   IConfigurePlace,
   IConfigurePlaceFormValues,
@@ -13,11 +10,12 @@ import {
 import TwoStepsTransactionToast, {
   IMessages,
 } from '../../../../components/TwoStepsTransactionToast';
+import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useUpdatePlatform = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const platformMutation = useMutation(
     async (body: IConfigurePlace): Promise<AxiosResponse<{ id: string }>> => {

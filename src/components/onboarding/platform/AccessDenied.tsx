@@ -1,9 +1,8 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { useContext } from 'react';
-import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import { useAccount } from 'wagmi';
 
 function AccessDenied() {
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { open: openConnectModal } = useWeb3Modal();
 
   console.log('DEBUG', { address });

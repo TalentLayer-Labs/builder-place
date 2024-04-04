@@ -1,13 +1,11 @@
+import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
-import BuilderPlaceContext from '../../context/BuilderPlaceContext';
+import { useMutation } from 'react-query';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { useConfig } from '../../../../hooks/useConfig';
-import { useMutation } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/[domain]/admin/collaborator-card';
-import UserContext from '../../context/UserContext';
+import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useRemoveCollaborator = () => {
   const chainId = useChainId();
@@ -15,7 +13,7 @@ const useRemoveCollaborator = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const collaboratorMutation = useMutation(
     async ({
       collaboratorId,

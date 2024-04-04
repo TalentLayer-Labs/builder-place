@@ -1,26 +1,23 @@
+import { User } from '@prisma/client';
 import axios, { AxiosResponse } from 'axios';
-import { useContext } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
   ICreatePlatform,
   ICreatePlatformFormValues,
 } from '../../../../components/onboarding/platform/CreatePlatformForm';
 import MultiStepsTransactionToast from '../../../../components/onboarding/platform/MultiStepsTransactionToast';
+import { delegatePlatformMint } from '../../../../components/request';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import { IPlatform } from '../../../../types';
 import { themes } from '../../../../utils/themes';
-import { wait } from '../../../../utils/toast';
-import UserContext from '../../context/UserContext';
-import { User } from '@prisma/client';
-import { delegatePlatformMint } from '../../../../components/request';
 
 const useCreatePlatform = () => {
   const chainId = useChainId();
   const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const talentLayerClient = useTalentLayerClient();
   const platformMutation = useMutation(
     async (body: ICreatePlatform): Promise<AxiosResponse<{ id: string }>> => {

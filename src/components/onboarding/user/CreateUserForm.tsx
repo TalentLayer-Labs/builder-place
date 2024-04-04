@@ -1,6 +1,8 @@
+import { EntityStatus } from '@prisma/client';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useEffect } from 'react';
+import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../../context/talentLayer';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
@@ -10,7 +12,6 @@ import { showErrorTransactionToast } from '../../../utils/toast';
 import { HandleInput } from '../../Form/HandleInput';
 import Loading from '../../Loading';
 import UploadImage from '../../UploadImage';
-import { EntityStatus } from '@prisma/client';
 
 export interface ICreateUserFormValues {
   name: string;
@@ -42,7 +43,8 @@ export interface ICreateUser
  *     let the user complete the form and ask him to connect on submit
  */
 function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
-  const { loading: isLoadingUser, user, address, getUser } = useContext(UserContext);
+  const { address } = useAccount();
+  const { loading: isLoadingUser, user, getUser } = useContext(UserContext);
   const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { createNewUser } = useCreateUser();

@@ -1,20 +1,19 @@
 import { useContext } from 'react';
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { IProposalFormValues } from '../../../../components/Form/ProposalForm';
 import { delegateCreateProposal } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import UserContext from '../../context/UserContext';
-import { createMultiStepsTransactionToast, wait } from '../../../../utils/toast';
-import { parseRateAmount } from '../../../../utils/currency';
 import { IToken } from '../../../../types';
+import { parseRateAmount } from '../../../../utils/currency';
+import { createMultiStepsTransactionToast } from '../../../../utils/toast';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
-import { IProposalFormValues } from '../../../../components/Form/ProposalForm';
 
 const useCreateProposal = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { address } = useContext(UserContext);
+  const { address } = useAccount();
   const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
   const talentLayerClient = useTalentLayerClient();
