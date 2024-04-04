@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { getConfig } from '../../../../config';
 import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
 import TalentLayerID from '../../../../contracts/ABI/TalentLayerID.json';
+import TalentLayerIdUtils from '../../../../contracts/ABI/TalentLayerIdUtils.json';
 
 export interface IUserMintForAddress {
   chainId: number;
@@ -58,57 +59,40 @@ export async function POST(req: Request) {
      */
     if (body.addDelegateAndTransferId) {
       const tx = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'mint',
-        args: [body.platformId, body.handle],
+        address: config.contracts.talentLayerIdUtils,
+        abi: TalentLayerIdUtils.abi,
+        functionName: 'mintDelegateAndTransfer',
+        args: [
+          body.userAddress,
+          walletClient.account.address,
+          BigInt(body.platformId),
+          body.handle,
+        ],
         value: BigInt(body.handlePrice),
       });
 
-      console.log(`Minted TalentLayer Id for address ${body.userAddress}`);
+      console.log(`Minting TalentLayer Id for address ${body.userAddress}...`);
 
       // Wait for transaction to be mined
       const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
       console.log('Mint Transaction Status', receipt.status);
+
+      await publicClient.waitForTransactionReceipt({
+        confirmations: 1,
+        hash: tx,
+      });
 
       // Get Minted UserId
       userId = await publicClient.readContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'ids',
-        args: [walletClient.account.address],
-      });
-
-      console.log(`Minted id: ${userId} for user ${body.userAddress}`);
-
-      // Add delegate
-      const delegateTxHash = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'addDelegate',
-        args: [userId, walletClient.account.address],
+        args: [body.userAddress],
       });
 
       console.log(
-        `Adding ${walletClient.account.address} as delegate for user ${userId}, waiting for block confirmation...`,
+        `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account.address} as delegate`,
       );
-
-      await publicClient.waitForTransactionReceipt({
-        confirmations: 1,
-        hash: delegateTxHash,
-      });
-
-      console.log(`Delegate Added`);
-
-      // Transfer TlId to user
-      transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'safeTransferFrom',
-        args: [walletClient.account.address, body.userAddress, userId],
-      });
-
-      console.log(`Transferred TalentLayer Id ${userId} to address ${body.userAddress}`);
     } else {
       transaction = await walletClient.writeContract({
         address: config.contracts.talentLayerId,
@@ -137,6 +121,7 @@ export async function POST(req: Request) {
 
     return Response.json({ transaction: transaction, userId: String(userId) }, { status: 201 });
   } catch (error: any) {
+    console.log('CATCH error', error);
     // @TODO: move error handle to a middleware ? or factorize it ?
     let message = 'Failed to mint ID';
     if (error instanceof PrismaClientKnownRequestError) {
