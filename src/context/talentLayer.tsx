@@ -90,17 +90,11 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const currentUser = userResponse.data.data.users[0];
-
-      if (builderPlace?.talentLayerPlatformId) {
-        const platform = await talentLayerClient.platform.getOne(
-          // process.env.NEXT_PUBLIC_PLATFORM_ID as string,
-          builderPlace?.talentLayerPlatformId,
-        );
-        currentUser.isAdmin = platform?.address === currentUser?.address;
+      if (builderPlace) {
+        currentUser.isAdmin = builderPlace?.owner.address === currentUser?.address;
       }
 
       setUser(currentUser);
-
       setLoading(false);
       return true;
     } catch (err: any) {
