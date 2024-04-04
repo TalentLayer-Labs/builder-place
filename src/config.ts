@@ -60,6 +60,7 @@ const polygon: Config = {
     talentLayerEscrow: '0x21C716673897f4a2A3c12053f3973F51Ce7b0cf6',
     talentLayerPlatformId: '0x09FF07297d48eD9aD870caCE4b33BF30869C1D17',
     talentLayerArbitrator: '0x4502E695A747F1b382a16D6C8AE3FD94DA78e7a0',
+    talentLayerIdUtils: '0xtoset',
   },
   escrowConfig: {
     adminFee: '0',
