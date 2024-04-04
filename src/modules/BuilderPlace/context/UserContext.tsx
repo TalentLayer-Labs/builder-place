@@ -6,12 +6,10 @@ import { getUserBy } from '../request';
 
 const UserContext = createContext<{
   user?: User;
-  address?: `0x${string}`;
   loading: boolean;
   getUser: () => Promise<void>;
 }>({
   user: undefined,
-  address: undefined,
   loading: false,
   getUser: async () => {
     return;
@@ -55,7 +53,6 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const value = {
     user,
-    address,
     loading,
     getUser,
   };
