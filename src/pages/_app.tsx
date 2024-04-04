@@ -22,7 +22,13 @@ import { PostHogProvider } from 'posthog-js/react';
 import { UserProvider } from '../modules/BuilderPlace/context/UserContext';
 
 // react-query client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // default: true
+    },
+  },
+});
 
 // Check that PostHog is client-side
 if (typeof window !== 'undefined') {
