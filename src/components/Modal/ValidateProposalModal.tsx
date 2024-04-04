@@ -2,7 +2,6 @@ import { Check, X } from 'heroicons-react';
 import { useState } from 'react';
 import { useAccount, useBalance } from 'wagmi';
 import { FEE_RATE_DIVIDER } from '../../config';
-import { validateProposal } from '../../contracts/acceptProposal';
 import useFees from '../../hooks/useFees';
 import ContactButton from '../../modules/Messaging/components/ContactButton';
 import { IProposal } from '../../types';
@@ -10,6 +9,8 @@ import { ZERO_ADDRESS } from '../../utils/constant';
 import { renderTokenAmount } from '../../utils/conversion';
 import AsyncButton from '../AsyncButton';
 import Step from '../Step';
+import useValidateProposal from '../../modules/BuilderPlace/hooks/proposal/useValidateProposal';
+import { showErrorTransactionToast } from '../../utils/toast';
 
 function ValidateProposalModal({
   proposal,
@@ -21,6 +22,7 @@ function ValidateProposalModal({
   const { address } = useAccount();
   const [show, setShow] = useState(false);
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
+  const { validateProposal } = useValidateProposal();
 
   const { data: ethBalance } = useBalance({ address: address });
   const isProposalUseEth: boolean = proposal.rateToken.address === ZERO_ADDRESS;
@@ -47,15 +49,20 @@ function ValidateProposalModal({
   const totalAmount = jobRateAmount + originServiceFee + originValidatedProposalFee + protocolFee;
 
   const onSubmit = async () => {
-    setPaymentSubmitting(true);
+    try {
+      setPaymentSubmitting(true);
 
-    await validateProposal(proposal.service.id, proposal.id, proposal.rateToken.address);
+      await validateProposal(proposal.service.id, proposal.id, proposal.rateToken.address);
 
-    setPaymentSubmitting(false);
-    setShow(false);
-
-    if (callBack) {
-      callBack();
+      if (callBack) {
+        callBack();
+      }
+    } catch (error) {
+      console.error('Error validating proposal', error);
+      showErrorTransactionToast(error);
+    } finally {
+      setPaymentSubmitting(false);
+      setShow(false);
     }
   };
 

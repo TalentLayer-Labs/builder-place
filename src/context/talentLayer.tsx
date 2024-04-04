@@ -1,13 +1,11 @@
-import { User } from '.prisma/client';
 import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { MAX_TRANSACTION_AMOUNT } from '../config';
 import { useChainId } from '../hooks/useChainId';
-import { getUserBy } from '../modules/BuilderPlace/request';
 import { getUserByAddress } from '../queries/users';
-import { IAccount, IUser } from '../types';
+import { IUser } from '../types';
 import { getCompletionScores, ICompletionScores } from '../utils/profile';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
