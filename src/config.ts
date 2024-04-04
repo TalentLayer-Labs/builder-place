@@ -15,8 +15,6 @@ export const maxDecimals = {
 
 export const FEE_RATE_DIVIDER = 10_000;
 
-export const MAX_TRANSACTION_AMOUNT = 50;
-
 const mumbai: Config = {
   networkId: NetworkEnum.MUMBAI,
   subgraphUrl: 'https://api.thegraph.com/subgraphs/name/talentlayer/talent-layer-mumbai',

@@ -1,14 +1,15 @@
 import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
-import { MAX_TRANSACTION_AMOUNT } from '../config';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
+
+const maxFreeTransactions = Number(process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS);
 
 const renderTxNumber = (sentTransactionsNumber: number) => {
   if (sentTransactionsNumber < 20)
     return <span className='text-xs text-green-500'>{sentTransactionsNumber}</span>;
   if (sentTransactionsNumber >= 20 && sentTransactionsNumber < 40)
     return <span className='text-xs text-yellow-500'>{sentTransactionsNumber}</span>;
-  if (sentTransactionsNumber >= 40 && sentTransactionsNumber <= MAX_TRANSACTION_AMOUNT)
+  if (sentTransactionsNumber >= 40 && sentTransactionsNumber <= maxFreeTransactions)
     return <span className='text-xs text-red-500'>{sentTransactionsNumber}</span>;
 };
 
@@ -33,7 +34,7 @@ const DelegatedTransactionCounter = () => {
    * @dev: Checks whether next transaction will reset the counter if max free tx amount reached.
    */
   const resetTxAmount =
-    (user?.weeklyTransactionCounter || 0) === MAX_TRANSACTION_AMOUNT &&
+    (user?.weeklyTransactionCounter || 0) === maxFreeTransactions &&
     !!user?.counterStartDate &&
     getWaitingPeriodInDays(user.counterStartDate) < 0;
 
@@ -51,9 +52,9 @@ const DelegatedTransactionCounter = () => {
             <span className='text-xs'>Free Weekly Tx : </span>
             {/*If next transaction will reset counter, display zero*/}
             {renderTxNumber(resetTxAmount ? 0 : user?.weeklyTransactionCounter || 0)}
-            <span className='text-xs'>/{MAX_TRANSACTION_AMOUNT}</span>
+            <span className='text-xs'>/{maxFreeTransactions}</span>
           </p>
-          {(user?.weeklyTransactionCounter || 0) === MAX_TRANSACTION_AMOUNT &&
+          {(user?.weeklyTransactionCounter || 0) === maxFreeTransactions &&
             user?.counterStartDate &&
             getWaitingPeriodInDays(user.counterStartDate) > 0 && (
               <>

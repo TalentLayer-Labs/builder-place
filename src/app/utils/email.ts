@@ -1,5 +1,4 @@
 import { User } from '.prisma/client';
-import { MAX_TRANSACTION_AMOUNT } from '../../config';
 import prisma from '../../postgre/postgreClient';
 import {
   ERROR_CHECKING_TRANSACTION_COUNTER,
@@ -32,11 +31,14 @@ export const decrypt = (input: string): string => {
 
 export async function checkOrResetTransactionCounter(user: User): Promise<void> {
   try {
+    const maxFreeTransactions = Number(
+      process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS,
+    );
     const nowSeconds = Math.floor(Date.now() / 1000);
     const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
 
     if (user.counterStartDate > oneWeekAgoSeconds) {
-      if (user.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
+      if (user.weeklyTransactionCounter >= maxFreeTransactions) {
         console.log(TRANSACTION_LIMIT_REACHED);
         throw new Error(TRANSACTION_LIMIT_REACHED);
       }
@@ -61,9 +63,15 @@ export async function checkOrResetTransactionCounter(user: User): Promise<void> 
 
 export async function incrementWeeklyTransactionCounter(user: User): Promise<void> {
   try {
-    const newWeeklyTransactionCounter = (user.weeklyTransactionCounter = 50
-      ? 1
-      : (user.weeklyTransactionCounter || 0) + 1);
+    const maxFreeTransactions = Number(
+      process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS,
+    );
+
+    const newWeeklyTransactionCounter =
+      user.weeklyTransactionCounter === maxFreeTransactions
+        ? 1
+        : (user.weeklyTransactionCounter || 0) + 1;
+
     await prisma.user.update({
       where: {
         id: user.id,

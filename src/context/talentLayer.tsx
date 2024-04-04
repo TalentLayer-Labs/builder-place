@@ -2,7 +2,6 @@ import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
-import { MAX_TRANSACTION_AMOUNT } from '../config';
 import { useChainId } from '../hooks/useChainId';
 import { getUserByAddress } from '../queries/users';
 import { IUser } from '../types';
@@ -125,6 +124,9 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   // Check whether all conditions are met to use the backend delegate
   useEffect(() => {
     if (user && workerProfile) {
+      const maxFreeTransactions = Number(
+        process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS,
+      );
       const nowSeconds = Math.floor(Date.now() / 1000);
       const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
       const counterWillReset = workerProfile.counterStartDate < oneWeekAgoSeconds;
@@ -141,7 +143,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         user.delegates.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()) !== -1;
 
       const userHasReachedDelegationLimit =
-        (workerProfile?.weeklyTransactionCounter || 0) >= MAX_TRANSACTION_AMOUNT;
+        (workerProfile?.weeklyTransactionCounter || 0) >= maxFreeTransactions;
 
       console.log(
         'userHasDelegatedToPlatform',
