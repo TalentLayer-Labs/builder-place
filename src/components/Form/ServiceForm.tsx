@@ -1,22 +1,15 @@
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { formatUnits } from 'viem';
-import { useAccount } from 'wagmi';
 import * as Yup from 'yup';
-import { chains } from '../../context/web3modal';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { useChainId } from '../../hooks/useChainId';
-import usePlatform from '../../hooks/usePlatform';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
 import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
 import { IService, IToken } from '../../types';
 import { showErrorTransactionToast } from '../../utils/toast';
+import ServicePostingFee from '../ServicePostingFee';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 
@@ -35,20 +28,9 @@ function ServiceForm({
   existingService?: IService;
   callback?: () => void;
 }) {
-  const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
-  const account = useAccount();
-  const { platformHasAccess } = useContext(Web3MailContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-  const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
-  const servicePostingFee = platform?.servicePostingFee || 0;
-  const servicePostingFeeFormat = servicePostingFee
-    ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
-    : 0;
   const { createNewService } = useCreateService();
   const { updateService } = useUpdateService();
 
@@ -115,32 +97,25 @@ function ServiceForm({
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (account?.isConnected === true) {
-      try {
-        const token = allowedTokenList.find(token => token.address === values.rateToken);
-        if (token) {
-          const newId = existingService
-            ? await updateService(values, token, existingService)
-            : await createNewService(values, token);
+    try {
+      const token = allowedTokenList.find(token => token.address === values.rateToken);
+      if (token) {
+        const newId = existingService
+          ? await updateService(values, token, existingService)
+          : await createNewService(values, token);
 
-          if (callback) {
-            callback();
-          }
-
-          setSubmitting(false);
-          resetForm();
-          if (newId) {
-            router.push(`/work/${newId}`);
-          }
-          if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-            createWeb3mailToast();
-          }
+        if (callback) {
+          callback();
         }
-      } catch (error) {
-        showErrorTransactionToast(error);
+
+        setSubmitting(false);
+        resetForm();
+        if (newId) {
+          router.push(`/work/${newId}`);
+        }
       }
-    } else {
-      openConnectModal();
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 
@@ -255,12 +230,7 @@ function ServiceForm({
               </label>
             </div>
 
-            {servicePostingFeeFormat !== 0 && (
-              <p className='text-base-content'>
-                Fee for posting a service: {servicePostingFeeFormat}{' '}
-                {currentChain?.nativeCurrency.symbol}
-              </p>
-            )}
+            {!existingService && <ServicePostingFee />}
 
             <SubmitButton
               isSubmitting={isSubmitting}

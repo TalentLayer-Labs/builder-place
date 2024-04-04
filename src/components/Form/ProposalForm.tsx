@@ -1,24 +1,16 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
 import { formatUnits } from 'viem';
 import * as Yup from 'yup';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
+import useCreateProposal from '../../modules/BuilderPlace/hooks/proposal/useCreateProposal';
+import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
 import { IProposal, IService } from '../../types';
 import { showErrorTransactionToast } from '../../utils/toast';
+import ProposalPostingFee from '../ProposalPostingFee';
+import RateAmountMessage from '../RateAmountMessage';
 import ServiceItem from '../ServiceItem';
 import SubmitButton from './SubmitButton';
-import usePlatform from '../../hooks/usePlatform';
-import { chains } from '../../context/web3modal';
-import useCreateProposal from '../../modules/BuilderPlace/hooks/proposal/useCreateProposal';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
-import { useChainId } from '../../hooks/useChainId';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useAccount } from 'wagmi';
-import RateAmountMessage from '../RateAmountMessage';
 
 export interface IProposalFormValues {
   about: string;
@@ -42,20 +34,8 @@ function ProposalForm({
   service: IService;
   existingProposal?: IProposal;
 }) {
-  const { open: openConnectModal } = useWeb3Modal();
-  const chainId = useChainId();
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const account = useAccount();
-  const { builderPlace } = useContext(BuilderPlaceContext);
-  const { platformHasAccess } = useContext(Web3MailContext);
-  const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
-  const proposalPostingFee = platform?.proposalPostingFee || 0;
-  const proposalPostingFeeFormat = proposalPostingFee
-    ? Number(formatUnits(BigInt(proposalPostingFee), Number(currentChain?.nativeCurrency.decimals)))
-    : 0;
-
   const { createNewProposal } = useCreateProposal();
   const { updateProposal } = useUpdateProposal();
 
@@ -103,27 +83,20 @@ function ProposalForm({
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (account?.isConnected === true) {
-      try {
-        const token = allowedTokenList.find(token => token.address === values.rateToken);
-        if (token) {
-          existingProposal
-            ? await updateProposal(values, token, service.id)
-            : await createNewProposal(values, token, service.id);
+    try {
+      const token = allowedTokenList.find(token => token.address === values.rateToken);
+      if (token) {
+        existingProposal
+          ? await updateProposal(values, token, service.id)
+          : await createNewProposal(values, token, service.id);
 
-          setSubmitting(false);
-          resetForm();
-          if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-            createWeb3mailToast();
-          }
-        }
-      } catch (error) {
-        showErrorTransactionToast(error);
-      } finally {
-        router.push(`/work/${service.id}`);
+        setSubmitting(false);
+        resetForm();
       }
-    } else {
-      openConnectModal();
+    } catch (error) {
+      showErrorTransactionToast(error);
+    } finally {
+      router.push(`/work/${service.id}`);
     }
   };
 
@@ -210,25 +183,9 @@ function ProposalForm({
                 <ErrorMessage name='expirationDate' />
               </span>
             </label>
-            {/* <label className='block flex-1'>
-              <span className='text-base-content'>video proposal url (optional)</span>
-              <Field
-                type='text'
-                id='video_url'
-                name='video_url'
-                className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                placeholder='Enter  video URL'
-              />
-              <span className='text-alone-error'>
-                <ErrorMessage name='video_url' />
-              </span>
-            </label> */}
-            {proposalPostingFeeFormat !== 0 && !existingProposal && (
-              <span className='text-base-content'>
-                Fee for making a proposal: {proposalPostingFeeFormat}{' '}
-                {currentChain?.nativeCurrency.symbol}
-              </span>
-            )}
+
+            {!existingProposal && <ProposalPostingFee />}
+
             <SubmitButton isSubmitting={isSubmitting} label='Post' />
           </div>
         </Form>
