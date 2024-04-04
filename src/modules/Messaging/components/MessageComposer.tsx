@@ -33,10 +33,13 @@ const MessageComposer = ({
 
   return (
     <>
-      <div className='pt-5 fixed bottom-[64px] md:bottom-0 w-full md:w-[calc(100vw-288px)]'>
+      <div
+        className={`pt-5 fixed bottom-[64px] md:bottom-0 w-full md:w-[calc(100vw-288px)] ${
+          !peerUserExistsOnXMTP || !peerUserExistsOnTalentLayer ? 'opacity-50' : ''
+        }`}>
         <div className=' m-2 md:m-4 border border-base-300 rounded-3xl flex overflow-hidden'>
           <input
-            className='flex-1 py-4 px-3 pl-6 bg-base-200 text-base-content text-sm rounded-3xl focus:shadow-none focus:outline-none border-none focus:border-none'
+            className={`flex-1 py-4 px-3 pl-6 bg-base-200 text-base-content text-sm rounded-3xl focus:shadow-none focus:outline-none border-none focus:border-none`}
             type='text'
             onChange={e => setMessageContent(e.target.value)}
             placeholder='Write a message'
