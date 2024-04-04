@@ -124,7 +124,7 @@ export const delegateReview = async (body: IReview): Promise<any> => {
       userId: body.userId,
       userAddress: body.userAddress,
       serviceId: body.serviceId,
-      uri: body.cid,
+      cid: body.cid,
       rating: body.rating,
       signature: body.signature,
     });
