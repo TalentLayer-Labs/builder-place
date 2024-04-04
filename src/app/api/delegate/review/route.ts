@@ -82,6 +82,8 @@ export async function POST(req: Request) {
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
 
+      console.log('Minting review with args:', userId, serviceId, cid, rating);
+
       const transaction = await walletClient.writeContract({
         address: config.contracts.talentLayerReview,
         abi: TalentLayerReview.abi,
