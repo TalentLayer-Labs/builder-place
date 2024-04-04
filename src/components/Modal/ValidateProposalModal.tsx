@@ -1,5 +1,5 @@
 import { Check, X } from 'heroicons-react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useAccount, useBalance } from 'wagmi';
 import { FEE_RATE_DIVIDER } from '../../config';
 import useFees from '../../hooks/useFees';
@@ -11,6 +11,7 @@ import AsyncButton from '../AsyncButton';
 import Step from '../Step';
 import useValidateProposal from '../../modules/BuilderPlace/hooks/proposal/useValidateProposal';
 import { showErrorTransactionToast } from '../../utils/toast';
+import TalentLayerContext from '../../context/talentLayer';
 
 function ValidateProposalModal({
   proposal,
@@ -20,6 +21,7 @@ function ValidateProposalModal({
   callBack?: () => void;
 }) {
   const { address } = useAccount();
+  const { refreshData } = useContext(TalentLayerContext);
   const [show, setShow] = useState(false);
   const [paymentSubmitting, setPaymentSubmitting] = useState(false);
   const { validateProposal } = useValidateProposal();
@@ -61,6 +63,7 @@ function ValidateProposalModal({
       console.error('Error validating proposal', error);
       showErrorTransactionToast(error);
     } finally {
+      await refreshData();
       setPaymentSubmitting(false);
       setShow(false);
     }
