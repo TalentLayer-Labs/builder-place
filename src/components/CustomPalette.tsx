@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 
 function CustomPalette() {
-  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
 
   /*
     Optim idea:
