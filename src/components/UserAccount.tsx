@@ -1,13 +1,20 @@
 import { Menu, Transition } from '@headlessui/react';
+import Link from 'next/link';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import TalentLayerContext from '../context/talentLayer';
+import { useAccount } from 'wagmi';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
+import { useRouter } from 'next/router';
 
 function UserAccount() {
-  const { account, user } = useContext(TalentLayerContext);
+  const router = useRouter();
+  const { isConnected } = useAccount();
+  const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
+
+  console.log('router.asPath', router.asPath);
 
   // Tips to prevent nextJs error: Hydration failed because the initial UI does not match what was rendered on the server.
   useEffect(() => {
@@ -18,11 +25,29 @@ function UserAccount() {
     return null;
   }
 
-  if (!account?.isConnected) {
+  if (router.asPath.includes('onboarding')) {
+    return null;
+  }
+
+  if (!isConnected) {
     return (
       <div className='flex justify-between'>
-        <div className='px-4 flex items-center'>
+        <div className='pr-4 flex items-center'>
           <ConnectBlock />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className='flex justify-between'>
+        <div className='pr-4 flex items-center'>
+          <Link
+            href='/newonboarding/create-profile'
+            className='px-5 py-2 rounded-xl bg-primary text-primary hover:opacity-60'>
+            Create an account
+          </Link>
         </div>
       </div>
     );
@@ -30,13 +55,13 @@ function UserAccount() {
 
   return (
     <div className='flex justify-between'>
-      <div className='px-4 flex items-center'>
+      <div className='pr-4 flex items-center'>
         <Menu as='div' className='relative'>
           <div>
             <div className='flex items-center relative group'>
               <Menu.Button className='group-hover:ring-redpraha ring-offset-midnight inline-flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-transparent transition-all duration-300 group-hover:ring-offset-4'>
                 <span className='sr-only'>Open user menu</span>
-                <ProfileImage size={50} url={user?.description?.image_url} />
+                <ProfileImage size={50} url={user?.picture} />
               </Menu.Button>
             </div>
           </div>

@@ -1,17 +1,16 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { Field, Form, Formik } from 'formik';
 import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
-import { usePublicClient, useWalletClient } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import SubmitButton from '../../../components/Form/SubmitButton';
 import Loading from '../../../components/Loading';
-import Steps from '../../../components/Steps';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
 import usePlatform from '../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
+import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
 
@@ -31,22 +30,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function AdminPresentation() {
-  const { user, loading } = useContext(TalentLayerContext);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
+  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
+  const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const platformDescription = platform?.description;
   const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
   const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
-    return <Steps />;
-  }
-  if (!user.isAdmin) {
+  if (!talentLayerUser?.isAdmin) {
     return <UserNeedsMoreRights />;
   }
 
@@ -61,34 +56,34 @@ function AdminPresentation() {
     values: IFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
-    if (user && publicClient && walletClient && talentLayerClient) {
-      try {
-        const { tx, cid } = await talentLayerClient.platform.update({
-          about: values.about,
-          website: values.website,
-          video_url: values.video_url,
-          image_url: values.image_url,
-        });
+    if (!talentLayerClient) {
+      throw new Error('talentLayerClient not initialized');
+    }
 
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Updating platform...',
-            success: 'Congrats! Your platform has been updated',
-            error: 'An error occurred while updating your platform',
-          },
-          publicClient,
-          tx,
-          'platform',
-          cid,
-        );
+    try {
+      const { tx, cid } = await talentLayerClient.platform.update({
+        about: values.about,
+        website: values.website,
+        video_url: values.video_url,
+        image_url: values.image_url,
+      });
 
-        setSubmitting(false);
-      } catch (error) {
-        showErrorTransactionToast(error);
-      }
-    } else {
-      openConnectModal();
+      await createMultiStepsTransactionToast(
+        chainId,
+        {
+          pending: 'Updating platform...',
+          success: 'Congrats! Your platform has been updated',
+          error: 'An error occurred while updating your platform',
+        },
+        publicClient,
+        tx,
+        'platform',
+        cid,
+      );
+
+      setSubmitting(false);
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 
@@ -114,7 +109,7 @@ function AdminPresentation() {
                   type='text'
                   id='website'
                   name='website'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
               </label>
@@ -125,7 +120,7 @@ function AdminPresentation() {
                   type='text'
                   id='image_url'
                   name='image_url'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
                 <div className='border-info bg-info relative w-full border transition-all duration-300 rounded-xl p-4'>
@@ -144,7 +139,7 @@ function AdminPresentation() {
                   id='about'
                   name='about'
                   rows='4'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
               </label>

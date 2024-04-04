@@ -1,23 +1,23 @@
 {
   "crons":[
     {
-      "path":"/api/web3mail/new-proposal",
+      "path":"/api/email/new-proposal",
       "schedule":"*/5 * * * *"
     },
     {
-      "path":"/api/web3mail/proposal-validated",
+      "path":"/api/email/proposal-validated",
       "schedule":"*/5 * * * *"
     },
     {
-      "path":"/api/web3mail/fund-release",
+      "path":"/api/email/fund-release",
       "schedule":"*/5 * * * *"
     },
     {
-      "path":"/api/web3mail/review",
+      "path":"/api/email/review",
       "schedule":"*/5 * * * *"
     },
     {
-      "path":"/api/web3mail/new-service",
+      "path":"/api/email/new-service",
       "schedule":"*/5 * * * *"
     }
   ]

@@ -13,7 +13,7 @@ function ToastStep({
     <li>
       {status === 'complete' ? (
         <div className='group'>
-          <span className='flex items-start flex-wrap'>
+          <span className='flex items-start'>
             <span className='relative flex h-5 w-5 flex-shrink-0 items-center justify-center'>
               <CheckCircleIcon className='h-full w-full text-content group-hover:text-content' />
             </span>
@@ -22,17 +22,19 @@ function ToastStep({
           <>{children && children()}</>
         </div>
       ) : status === 'current' ? (
-        <div className='flex items-start flex-wrap'>
+        <div className='flex items-start'>
           <span className='relative flex h-5 w-5 flex-shrink-0 items-center justify-center '>
             <span className='animate-ping absolute h-4 w-4 rounded-full bg-zinc-200' />
             <span className='relative block h-2 w-2 rounded-full bg-zinc-600' />
           </span>
-          <span className='ml-3 text-sm font-medium text-content'>{title}</span>
-          <>{children && children()}</>
+          <span className='flex flex-col items-center ml-3 '>
+            <span className='text-sm font-medium text-content block'>{title}</span>
+            <>{children && children()}</>
+          </span>
         </div>
       ) : (
         <div className='group'>
-          <div className='flex items-start flex-wrap'>
+          <div className='flex items-start'>
             <div className='relative flex h-5 w-5 flex-shrink-0 items-center justify-center'>
               <div className='h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400' />
             </div>

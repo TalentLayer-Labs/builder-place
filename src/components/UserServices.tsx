@@ -5,19 +5,24 @@ import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceCon
 import Notification from './Notification';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 interface IProps {
-  user: IUser;
+  userId: string;
   type: 'buyer' | 'seller';
 }
 
-function UserServices({ user, type }: IProps) {
-  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+function UserServices({ userId, type }: IProps) {
+  const { user } = useContext(UserContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
 
   const { services, loading } = useServices(
     undefined,
-    builderPlace?.owner.talentLayerId || undefined,
-    type == 'seller' ? user.id : undefined,
+    type == 'buyer' ? userId : undefined,
+    type == 'seller' ? userId : undefined,
+    undefined,
+    undefined,
+    builderPlace?.talentLayerPlatformId,
   );
 
   if (loading) {
@@ -25,29 +30,43 @@ function UserServices({ user, type }: IProps) {
   }
 
   if (services.length === 0) {
-    if (isBuilderPlaceCollaborator && type == 'buyer') {
+    if (type == 'buyer') {
       return (
         <>
           <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
           <Notification
-            title='post your first missions!'
+            title='post your first mission!'
             text='post something your team needs help with'
             link='/work/create'
-            linkText='post a missions'
+            linkText='post a mission'
             color='primary'
-            imageUrl={user?.description?.image_url}
+            imageUrl={user?.picture}
           />
         </>
       );
-    } else {
-      return null;
+    }
+
+    if (type == 'seller') {
+      return (
+        <>
+          <h2 className='pb-4 text-base font-bold break-all'>missions applied to</h2>
+          <Notification
+            title='post your first proposal!'
+            text='check the current missions and apply to them'
+            link='/'
+            linkText='check open missions'
+            color='primary'
+            imageUrl={user?.picture}
+          />
+        </>
+      );
     }
   }
 
   return (
     <>
       <h2 className='pb-4 text-base font-bold break-all'>
-        {type == 'buyer' ? 'my posts' : 'posts applied to'}
+        {type == 'buyer' ? 'missions posted' : 'posts applied to'}
       </h2>
       <div className='grid grid-cols-1 gap-4'>
         {services.map((service, i) => {

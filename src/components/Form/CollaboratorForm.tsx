@@ -1,18 +1,20 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
-import { useChainId } from '../../hooks/useChainId';
 import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
-import { useAddBuilderPlaceCollaborator } from '../../modules/BuilderPlace/hooks/UseAddBuilderPlaceCollaborator';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { toggleDelegation } from '../../contracts/toggleDelegation';
-import { useConfig } from '../../hooks/useConfig';
 import { ETH_ADDRESS_LENGTH, ETH_ADDRESS_REGEX } from '../../utils';
+import useAddCollaborator from '../../modules/BuilderPlace/hooks/collaborator/useAddCollaborator';
+import { IMutation } from '../../types';
 
+export interface IAddBuilderPlaceCollaborator
+  extends IMutation<{
+    ownerTalentLayerId: string;
+    builderPlaceId: string;
+    collaboratorAddress: string;
+  }> {}
 interface IFormValues {
   collaborator: string;
 }
@@ -28,15 +30,10 @@ const initialValues: IFormValues = {
   collaborator: '',
 };
 export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
-  const chainId = useChainId();
-  const config = useConfig();
-  const { mutateAsync: addBuilderPlaceCollaboratorAsync } = useAddBuilderPlaceCollaborator();
-  const { data: walletClient } = useWalletClient({ chainId });
-  const { user, account, refreshData } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
-  const publicClient = usePublicClient({ chainId });
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
+  const { addCollaborator } = useAddCollaborator();
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
 
@@ -48,64 +45,17 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      if (walletClient && account?.address && builderPlace?.id) {
-        setSubmitting(true);
+      setSubmitting(true);
+      await addCollaborator(values.collaborator);
+      resetForm();
 
-        if (
-          values.collaborator.toLocaleLowerCase() ===
-          builderPlace?.owner?.address?.toLocaleLowerCase()
-        ) {
-          throw new Error('Already owner');
-        }
-        /**
-         * @dev Sign message to prove ownership of the address
-         */
-        const signature = await walletClient.signMessage({
-          message: user.id,
-          account: account.address,
-        });
-
-        /**
-         * @dev Add new collaborator to the BuilderPlace
-         * The collaborator must have a BuilderPlace profile & TalentLayer Id
-         */
-        const response = await addBuilderPlaceCollaboratorAsync({
-          ownerId: user.id,
-          builderPlaceId: builderPlace.id,
-          newCollaboratorAddress: values.collaborator,
-          signature,
-        });
-        if (response?.error) {
-          throw new Error(response.error);
-        }
-
-        // if address is not delegated yet on chain
-        if (!user.delegates?.includes(values.collaborator.toLowerCase())) {
-          /**
-           * @dev Add the new collaborator as a delegate to the BuilderPlace owner
-           */
-          await toggleDelegation(
-            chainId,
-            user.id,
-            config,
-            values.collaborator,
-            publicClient,
-            walletClient,
-            true,
-          );
-
-          resetForm();
-
-          if (callback) {
-            callback();
-          }
-        }
+      if (callback) {
+        callback();
       }
     } catch (error: any) {
       console.log(error);
-      showErrorTransactionToast(error.message);
+      showErrorTransactionToast(error);
     } finally {
-      refreshData();
       setSubmitting(false);
     }
   };
@@ -119,7 +69,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
       {({ isSubmitting }) => (
         <Form>
           <div className='grid grid-cols-1 gap-6'>
-            <div className='block border border-base-300 rounded-lg border p-10'>
+            <div className='block border border-base-300 rounded-lg p-10'>
               <span className='text-base-content font-bold'>
                 Invite new members by wallet address
               </span>
@@ -130,14 +80,13 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                   type='text'
                   id='collaborator'
                   name='collaborator'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder='0x...'
                 />
               </label>
               <span className='text-alone-error'>
                 <ErrorMessage name='collaborator' />
               </span>
-              <div className='border-b border-base-300 mt-10 mb-5'></div>
               <div className='flex  lg:justify-between mr-2'>
                 <div className='mb-2 flex-col lg:items-center'>
                   {/* <span className='text-base-content'>Learn more about&nbsp;</span>
@@ -148,7 +97,7 @@ export const CollaboratorForm = ({ callback }: { callback?: () => void }) => {
                     Collaborator
                   </a> */}
                 </div>
-                <div className='ml-2'>
+                <div className='ml-2 mt-4'>
                   <SubmitButton isSubmitting={isSubmitting} label='Add' />
                 </div>
               </div>

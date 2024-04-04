@@ -7,16 +7,18 @@ import { renderTokenAmount } from '../utils/conversion';
 import { formatDate } from '../utils/dates';
 import ValidateProposalModal from './Modal/ValidateProposalModal';
 import ProfileImage from './ProfileImage';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
 function ProposalItem({ proposal }: { proposal: IProposal }) {
-  const { user, account } = useContext(TalentLayerContext);
+  const { refreshData } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const { service } = useServiceById(proposal.service.id);
 
   if (!service) {
     return null;
   }
 
-  const isBuyer = user?.id === proposal.service.buyer.id;
+  const isBuyer = user?.talentLayerId === proposal.service.buyer.id;
 
   return (
     <div className='flex flex-row gap-2 rounded-xl p-4 border border-info text-base-content bg-base-100'>
@@ -60,12 +62,11 @@ function ProposalItem({ proposal }: { proposal: IProposal }) {
           <p className='text-base-content font-bold line-clamp-1 flex-1'>
             {renderTokenAmount(proposal.rateToken, proposal.rateAmount)}
           </p>
-          {account && isBuyer && proposal.status === ProposalStatusEnum.Pending && (
-            <ValidateProposalModal proposal={proposal} account={account} />
+          {isBuyer && proposal.status === ProposalStatusEnum.Pending && (
+            <ValidateProposalModal proposal={proposal} callBack={() => refreshData()} />
           )}
         </div>
-        {account &&
-          !isBuyer &&
+        {!isBuyer &&
           proposal.status === ProposalStatusEnum.Pending &&
           service.status === ServiceStatusEnum.Opened && (
             <div className='flex flex-row gap-4 items-center border-t border-info pt-4'>

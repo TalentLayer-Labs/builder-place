@@ -1,28 +1,19 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { formatUnits } from 'viem';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
-import { usePublicClient, useWalletClient } from 'wagmi';
-import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
-import { parseRateAmount } from '../../utils/currency';
-import SubmitButton from './SubmitButton';
-import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { IService, IToken } from '../../types';
-import { SkillsInput } from './skills-input';
-import { delegateCreateOrUpdateService } from '../request';
-import { useChainId } from '../../hooks/useChainId';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import usePlatform from '../../hooks/usePlatform';
-import { chains } from '../../context/web3modal';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { formatUnits } from 'viem';
+import * as Yup from 'yup';
+import useAllowedTokens from '../../hooks/useAllowedTokens';
+import useCreateService from '../../modules/BuilderPlace/hooks/service/useCreateService';
+import useUpdateService from '../../modules/BuilderPlace/hooks/service/useUpdateService';
+import { IService, IToken } from '../../types';
+import { showErrorTransactionToast } from '../../utils/toast';
+import ServicePostingFee from '../ServicePostingFee';
+import SubmitButton from './SubmitButton';
+import { SkillsInput } from './skills-input';
 
-interface IFormValues {
+export interface ICreateServiceFormValues {
   title: string;
   about: string;
   keywords: string;
@@ -37,24 +28,11 @@ function ServiceForm({
   existingService?: IService;
   callback?: () => void;
 }) {
-  const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
-  const { user, account, refreshWorkerProfile, canUseDelegation } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
-  const { platformHasAccess } = useContext(Web3MailContext);
-  const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
   const [selectedToken, setSelectedToken] = useState<IToken>();
-  const talentLayerClient = useTalentLayerClient();
-
-  const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
-  const servicePostingFee = platform?.servicePostingFee || 0;
-  const servicePostingFeeFormat = servicePostingFee
-    ? Number(formatUnits(BigInt(servicePostingFee), Number(currentChain?.nativeCurrency?.decimals)))
-    : 0;
+  const { createNewService } = useCreateService();
+  const { updateService } = useUpdateService();
 
   const getFormattedTokenAmount = () => {
     const token = allowedTokenList.find(
@@ -68,7 +46,7 @@ function ServiceForm({
     );
   };
 
-  const initialValues: IFormValues = {
+  const initialValues: ICreateServiceFormValues = {
     title: existingService?.description?.title || '',
     about: existingService?.description?.about || '',
     keywords: existingService?.description?.keywords_raw || '',
@@ -112,100 +90,19 @@ function ServiceForm({
    * @param setSubmitting
    * @param resetForm
    */
-  const onSubmit = async (
-    values: IFormValues,
+  const handleSubmit = async (
+    values: ICreateServiceFormValues,
     {
       setSubmitting,
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (
-      account?.isConnected === true &&
-      publicClient &&
-      walletClient &&
-      token &&
-      user &&
-      talentLayerClient &&
-      builderPlace?.owner?.talentLayerId
-    ) {
-      try {
-        const parsedRateAmount = await parseRateAmount(
-          values.rateAmount.toString(),
-          values.rateToken,
-          token.decimals,
-        );
-        const parsedRateAmountString = parsedRateAmount.toString();
-
-        let tx, cid;
-        if (canUseDelegation) {
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
-            title: values.title,
-            about: values.about,
-            keywords: values.keywords,
-            rateToken: values.rateToken,
-            rateAmount: parsedRateAmountString,
-          });
-          const response = await delegateCreateOrUpdateService(
-            chainId,
-            existingService?.buyer.id
-              ? existingService.buyer.id
-              : builderPlace.owner?.talentLayerId,
-            user.address.toLowerCase(),
-            cid,
-            !!existingService,
-          );
-          tx = response.data.transaction;
-        } else {
-          if (talentLayerClient) {
-            let serviceResponse;
-            if (!existingService) {
-              serviceResponse = await talentLayerClient.service.create(
-                {
-                  title: values.title,
-                  about: values.about,
-                  keywords: values.keywords,
-                  rateToken: values.rateToken,
-                  rateAmount: parsedRateAmountString,
-                },
-                builderPlace.owner?.talentLayerId,
-                parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
-              );
-              cid = serviceResponse.cid;
-              tx = serviceResponse.tx;
-            } else {
-              cid = await talentLayerClient.service.updloadServiceDataToIpfs({
-                title: values.title,
-                about: values.about,
-                keywords: values.keywords,
-                rateToken: values.rateToken,
-                rateAmount: parsedRateAmountString,
-              });
-
-              //TODO: Replace by SDK function when implemented
-              tx = await talentLayerClient.viemClient.writeContract(
-                'talentLayerService',
-                'updateServiceData',
-                [existingService.buyer.id, existingService.id, cid],
-              );
-            }
-          } else {
-            throw new Error('TL client not initialised');
-          }
-        }
-
-        const newId = await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Creating your project...',
-            success: 'Congrats! Your open-source post has been created',
-            error: 'An error occurred while creating your post',
-          },
-          publicClient,
-          tx,
-          'service',
-          cid,
-        );
+    try {
+      const token = allowedTokenList.find(token => token.address === values.rateToken);
+      if (token) {
+        const newId = existingService
+          ? await updateService(values, token, existingService)
+          : await createNewService(values, token);
 
         if (callback) {
           callback();
@@ -216,23 +113,16 @@ function ServiceForm({
         if (newId) {
           router.push(`/work/${newId}`);
         }
-        if (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL == 'true' && !platformHasAccess) {
-          createWeb3mailToast();
-        }
-      } catch (error) {
-        showErrorTransactionToast(error);
-      } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
       }
-    } else {
-      openConnectModal();
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       validationSchema={validationSchema}
       enableReinitialize={true}>
       {({ isSubmitting, setFieldValue }) => (
@@ -244,7 +134,7 @@ function ServiceForm({
                 type='text'
                 id='title'
                 name='title'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -258,7 +148,7 @@ function ServiceForm({
                 as='textarea'
                 id='about'
                 name='about'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
                 rows={12}
               />
@@ -307,18 +197,12 @@ function ServiceForm({
                   type='number'
                   id='rateAmount'
                   name='rateAmount'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                 />
                 <span className='text-alone-error mt-2'>
                   <ErrorMessage name='rateAmount' />
                 </span>
-                {servicePostingFeeFormat !== 0 && (
-                  <span className='text-base-content'>
-                    Fee for posting a service: {servicePostingFeeFormat}{' '}
-                    {currentChain?.nativeCurrency.symbol}
-                  </span>
-                )}
               </label>
               <label className='block'>
                 <span className='text-base-content'>Token</span>
@@ -326,7 +210,7 @@ function ServiceForm({
                   component='select'
                   id='rateToken'
                   name='rateToken'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
                   onChange={(e: { target: { value: string } }) => {
                     const token = allowedTokenList.find(token => token.address === e.target.value);
@@ -346,7 +230,13 @@ function ServiceForm({
               </label>
             </div>
 
-            <SubmitButton isSubmitting={isSubmitting} label={existingService ? 'Update' : 'Post'} />
+            {!existingService && <ServicePostingFee />}
+
+            <SubmitButton
+              isSubmitting={isSubmitting}
+              label={existingService ? 'Update' : 'Post'}
+              checkEmailStatus={true}
+            />
           </div>
         </Form>
       )}

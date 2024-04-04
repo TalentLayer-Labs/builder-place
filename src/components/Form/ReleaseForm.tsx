@@ -1,38 +1,52 @@
-import { Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useMemo, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import TalentLayerContext from '../../context/talentLayer';
-import { executePayment } from '../../contracts/executePayment';
 import { IService, IToken, ServiceStatusEnum } from '../../types';
 import { renderTokenAmount } from '../../utils/conversion';
 import { useChainId } from '../../hooks/useChainId';
 import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import useExecutePayment from '../../modules/BuilderPlace/hooks/payment/useExecutePayment';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AsyncButton from '../AsyncButton';
+import * as Yup from 'yup';
 
 interface IFormValues {
   percentField: string;
 }
 
 interface IReleaseFormProps {
-  totalInEscrow: bigint;
+  totalInServiceAmount: bigint;
   rateToken: IToken;
   service: IService;
   isBuyer: boolean;
   closeModal: () => void;
+  refreshPayments: () => Promise<void>;
 }
 
+const validationSchema = Yup.object({
+  percentField: Yup.number()
+    .integer('Please enter an integer')
+    .min(0, 'Minimum value is 0')
+    .max(100, 'Maximum value is 100')
+    .required('Required'),
+});
+
 function ReleaseForm({
-  totalInEscrow,
+  totalInServiceAmount,
   rateToken,
   service,
   closeModal,
+  refreshPayments,
   isBuyer,
 }: IReleaseFormProps) {
   const chainId = useChainId();
-  const { user, canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
+  const { user: talentLayerUser } = useContext(TalentLayerContext);
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
+  const { executePayment } = useExecutePayment();
+  const [submitting, setSubmitting] = useState(false);
 
   const [percent, setPercentage] = useState(0);
 
@@ -40,28 +54,34 @@ function ReleaseForm({
    * @dev If the user is a Collaborator, use the owner's TalentLayerId
    */
   const handleSubmit = async () => {
-    if (!user || !publicClient) {
+    if (!talentLayerUser || !publicClient) {
       return;
     }
-    const percentToToken = (totalInEscrow * BigInt(percent)) / BigInt(100);
+    const percentToToken = (totalInServiceAmount * BigInt(percent)) / BigInt(100);
 
-    if (talentLayerClient) {
+    if (
+      talentLayerClient &&
+      builderPlace?.owner?.talentLayerId &&
+      builderPlace?.talentLayerPlatformId
+    ) {
+      setSubmitting(true);
+      const usedId = isBuilderPlaceCollaborator
+        ? builderPlace.owner.talentLayerId
+        : talentLayerUser.id;
+
       await executePayment(
         chainId,
-        user.address,
-        publicClient,
-        user.id,
+        usedId,
         service.transaction.id,
         percentToToken,
         isBuyer,
-        canUseDelegation,
-        talentLayerClient,
         service.id,
-        refreshWorkerProfile,
       );
     }
 
-    closeModal();
+    setSubmitting(false);
+
+    await refreshPayments();
   };
 
   const releaseMax = () => {
@@ -74,13 +94,17 @@ function ReleaseForm({
 
   const onChange = (e: any) => {
     const percentOnChange = e.target.value;
-    if (percentOnChange <= 100 && percentOnChange >= 0) {
+    if (
+      percentOnChange <= 100 &&
+      percentOnChange >= 0 &&
+      !percentOnChange.toString().includes('.' || ',')
+    ) {
       setPercentage(percentOnChange);
     }
   };
 
   const amountSelected = useMemo(() => {
-    return percent ? (totalInEscrow * BigInt(percent)) / BigInt(100) : '';
+    return percent ? (totalInServiceAmount * BigInt(percent)) / BigInt(100) : '';
   }, [percent]);
 
   const initialValues: IFormValues = {
@@ -92,7 +116,7 @@ function ReleaseForm({
       <div className='flex flex-col px-4 py-6 md:p-6 xl:p-6 w-full bg-base-200 space-y-6'>
         {service.status === ServiceStatusEnum.Confirmed && (
           <h3 className='text-xl font-semibold leading-5 text-base-content'>
-            Select the % amount to release
+            {isBuyer ? 'Select the % amount to release' : 'Select the % amount to reimburse'}
           </h3>
         )}
         <div className='flex space-x-2 flex-row'>
@@ -104,7 +128,7 @@ function ReleaseForm({
               Min
             </button>
           </div>
-          <div className='items-center  rounded-b border-info '>
+          <div className='items-center rounded-b border-info '>
             <button
               type='button'
               onClick={releaseMax}
@@ -113,24 +137,33 @@ function ReleaseForm({
             </button>
           </div>
         </div>
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize={true}
+          onSubmit={handleSubmit}>
           <Form>
             <div className='sm:px-6 justify-between bg-base-100 flex flex-row items-center gap-2'>
               <div>
                 <span className='text-base-content font-semibold leading-4 text-base-content'>
                   %{' '}
                 </span>
-                <Field
-                  type='number'
-                  label='Pourcent'
-                  className='text-base-content opacity-50 py-2 focus:outline-none text-sm sm:text-lg border-0'
-                  placeholder='between 0 and 100'
-                  id='pourcentField'
-                  name='pourcentField'
-                  required
-                  value={percent ? percent : ''}
-                  onChange={onChange}
-                />
+                <label className='block'>
+                  <Field
+                    type='number'
+                    label='Percent'
+                    className='text-base-content opacity-50 py-2 focus:outline-none text-sm sm:text-lg border-0'
+                    placeholder='between 0 and 100'
+                    id='percentField'
+                    name='percentField'
+                    required
+                    value={percent ? percent : ''}
+                    onChange={onChange}
+                  />
+                  <span className='text-alone-error'>
+                    <ErrorMessage name='percentField' />
+                  </span>
+                </label>
               </div>
               {
                 <div className='pr-2 text-base-content font-semibold leading-4 text-base-content  '>
@@ -139,12 +172,13 @@ function ReleaseForm({
               }
             </div>
             <div className='flex items-center pt-6 space-x-2 rounded-b border-info '>
-              {totalInEscrow > 0 && (
-                <button
-                  type='submit'
-                  className=' hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'>
-                  {isBuyer ? 'Release the selected amount' : 'Reimburse the selected amount'}
-                </button>
+              {totalInServiceAmount > 0 && (
+                <AsyncButton
+                  isSubmitting={submitting}
+                  onClick={() => handleSubmit()}
+                  label={isBuyer ? 'Release the selected amount' : 'Reimburse the selected amount'}
+                  validateButtonCss={'hover:bg-base-300 text-info bg-info px-5 py-2 rounded-xl'}
+                />
               )}
               <button
                 onClick={closeModal}

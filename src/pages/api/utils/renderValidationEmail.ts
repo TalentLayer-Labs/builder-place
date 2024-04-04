@@ -1,7 +1,7 @@
 export const renderValidationMail = (
   name: string,
-  userId: string,
-  domain: string,
+  hashedUserId: string,
+  domain?: string,
   logoUrl?: string | null,
 ): string => {
   return `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -256,14 +256,14 @@ table, td { color: #000000; } #u_body a { color: #161a39; text-decoration: under
   }
    
 <p style="font-size: 14px; line-height: 140%;">&nbsp;</p>
-<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">Please click the following link to validate your email and access free gassless transactions !</span></p>
+<p style="font-size: 14px; line-height: 140%;"><span style="font-size: 18px; line-height: 25.2px; color: #666666;">Please click the following link to validate your email and access gassless transactions!</span></p>
   </div>
 
       </td>
     </tr>
   </tbody>
 </table>
-${renderLink(generateUrl(userId, domain))}
+${renderLink(generateUrl(hashedUserId, domain))}
 
   <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
   </div>
@@ -296,7 +296,7 @@ ${renderLink(generateUrl(userId, domain))}
   <div style="font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
     <p style="line-height: 140%;">
     <span style="color: #ecf0f1; line-height: 19.6px;">
-    <a href="${generateUrl(userId, domain)}" style="color: #ecf0f1;">${domain}</a>
+    <a href="${generateUrl(hashedUserId, domain)}" style="color: #ecf0f1;">${domain}</a>
     </span>
     </p>
   </div>
@@ -399,6 +399,9 @@ Validate my email
   </table>`;
 };
 
-export const generateUrl = (userId: string, domain: string) => {
-  return `http://${domain}/verify-email?id=${userId}`;
+export const generateUrl = (userId: string, domain?: string) => {
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const rootDomain = domain || process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+
+  return `${protocol}://${rootDomain}/verify-email/${userId}`;
 };

@@ -45,7 +45,7 @@ function Profiles() {
 
       <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>
         {users.map((user, i) => {
-          return <UserItem user={user} key={i} />;
+          return <UserItem talentLayerUser={user} key={i} />;
         })}
       </div>
 

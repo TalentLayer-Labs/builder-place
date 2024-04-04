@@ -1,25 +1,28 @@
 import { User } from '.prisma/client';
 import { NextApiResponse } from 'next';
-import { MAX_TRANSACTION_AMOUNT } from '../../../config';
 import {
   ERROR_CHECKING_TRANSACTION_COUNTER,
   ERROR_INCREMENTING_TRANSACTION_COUNTER,
   TRANSACTION_LIMIT_REACHED,
 } from '../apiResponses';
 import prisma from '../../../postgre/postgreClient';
+import { handleApiError } from '../utils/error';
 
 export async function checkOrResetTransactionCounter(
   user: User,
   res: NextApiResponse,
 ): Promise<void> {
-  let errorMessage;
+  let errorMessage = '';
   try {
+    const maxFreeTransactions = Number(
+      process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS,
+    );
     const nowMilliseconds = new Date().getTime();
     const oneWeekAgoMilliseconds = new Date(nowMilliseconds - 7 * 24 * 60 * 60 * 1000).getTime(); // 7 days ago
 
     if (user.counterStartDate > oneWeekAgoMilliseconds) {
       // Less than one week since counterStartDate
-      if (user.weeklyTransactionCounter >= MAX_TRANSACTION_AMOUNT) {
+      if (user.weeklyTransactionCounter >= maxFreeTransactions) {
         // If the counter is already 50, stop the function
         console.log(TRANSACTION_LIMIT_REACHED);
         throw new Error(TRANSACTION_LIMIT_REACHED);
@@ -38,18 +41,7 @@ export async function checkOrResetTransactionCounter(
     }
     console.log('Delegating transaction');
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_CHECKING_TRANSACTION_COUNTER, res);
   }
 }
 
@@ -57,7 +49,7 @@ export async function incrementWeeklyTransactionCounter(
   user: User,
   res: NextApiResponse,
 ): Promise<void> {
-  let errorMessage;
+  let errorMessage = '';
   try {
     // Increment the counter
     const newWeeklyTransactionCounter = (user.weeklyTransactionCounter || 0) + 1;
@@ -71,17 +63,6 @@ export async function incrementWeeklyTransactionCounter(
     });
     console.log('Transaction counter incremented', newWeeklyTransactionCounter);
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_INCREMENTING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_INCREMENTING_TRANSACTION_COUNTER, res);
   }
 }

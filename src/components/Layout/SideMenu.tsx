@@ -1,20 +1,25 @@
-import { useContext } from 'react';
-import TalentLayerContext from '../../context/talentLayer';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import SideLink from './SideLink';
-import {
-  hirerNavigation,
-  hirerAdminNavigation,
-  PlatformAdminNavigation,
-  workerNavigation,
-  ownerAdminNavigation,
-} from './navigation';
+import { GetServerSidePropsContext } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useContext } from 'react';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import {
+  getWorkerNavigation,
+  hirerAdminNavigation,
+  hirerNavigation,
+  ownerAdminNavigation,
+} from './navigation';
+import SideLink from './SideLink';
 
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return sharedGetServerSideProps(context);
+}
 function SideMenu() {
-  const { user } = useContext(TalentLayerContext);
-  const { isBuilderPlaceCollaborator, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
+    useContext(BuilderPlaceContext);
+  const workerNavigation = getWorkerNavigation(builderPlace?.jobPostingConditions?.allowPosts);
+
   return (
     <>
       <div className='sm:mt-8 flex flex-1 flex-col justify-between'>
@@ -80,7 +85,7 @@ function SideMenu() {
             </nav>
           )}
 
-          {user?.isAdmin && (
+          {/* {user?.isAdmin && (
             <div className='pt-4'>
               <h2 className='text-base-content font-bold ml-3 mt-6'>PLATFORM</h2>
               <nav className='space-y-1 mt-6'>
@@ -95,7 +100,7 @@ function SideMenu() {
                 ))}
               </nav>
             </div>
-          )}
+          )} */}
         </nav>
       </div>
       <div className='mt-8 flex flex-1 flex-col items-center justify-end pb-4'>

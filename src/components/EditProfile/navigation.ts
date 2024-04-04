@@ -20,13 +20,13 @@ export const navigation = () => {
     //   icon: StarIcon,
     //   current: false,
     // },
-    // {
-    //   name: 'notifications',
-    //   href: '/profiles/edit/privacy',
-    //   icon: BellAlertIcon,
-    //   current: false,
-    //   completitonKey: 'web3mail',
-    // },
+    {
+      name: 'notifications',
+      href: '/profiles/edit/privacy',
+      icon: BellAlertIcon,
+      current: false,
+      completitonKey: 'web3mail',
+    },
     // {
     //   name: 'Settings',
     //   href: '/profiles/edit/settings',
@@ -34,10 +34,6 @@ export const navigation = () => {
     //   current: false,
     // },
   ];
-
-  if (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL == 'false') {
-    config.splice(2, 1);
-  }
 
   return config;
 };

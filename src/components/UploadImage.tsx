@@ -34,12 +34,12 @@ function UploadImage({ label, fieldName, legend, src, handle, setFieldValue }: C
               handle,
             );
           }}
-          className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+          className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
           placeholder=''
         />
         {loading && <Loading />}
         {!!src && (
-          <div className='flex items-center justify-center py-3'>
+          <div className='flex items-center justify-center py-2'>
             <img width='200' src={src} alt='' />
           </div>
         )}

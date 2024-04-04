@@ -1,15 +1,17 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { Fragment, ReactNode, useContext, useEffect, useState } from 'react';
 import Logo from '../components/Layout/Logo';
 import MenuBottom from '../components/Layout/MenuBottom';
 import SideMenu from '../components/Layout/SideMenu';
+import Loading from '../components/Loading';
 import NetworkSwitch from '../components/NetworkSwitch';
 import UserAccount from '../components/UserAccount';
-import TalentLayerContext from '../context/talentLayer';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import Loading from '../components/Loading';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
+import Template from './template';
 
 interface ContainerProps {
   children: ReactNode;
@@ -19,7 +21,7 @@ interface ContainerProps {
 function Layout({ children, className }: ContainerProps) {
   const router = useRouter();
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
-  const { account, workerProfile } = useContext(TalentLayerContext);
+  const { user, loading: userLoading } = useContext(UserContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +30,7 @@ function Layout({ children, className }: ContainerProps) {
     setLoading(false);
   }, []);
 
-  if (loading) {
+  if (loading || userLoading) {
     return (
       <div className='pt-16'>
         <Loading />
@@ -37,10 +39,9 @@ function Layout({ children, className }: ContainerProps) {
   }
 
   console.log('Layout render', {
-    builderPlace,
-    account,
+    builderPlaceName: builderPlace?.name,
     isBuilderPlaceCollaborator,
-    workerProfile,
+    user,
   });
 
   if (router.asPath.includes('web3mail')) {
@@ -76,7 +77,10 @@ function Layout({ children, className }: ContainerProps) {
       );
     }
 
-    if ((!isBuilderPlaceCollaborator && !workerProfile) || router.asPath.includes('embed/')) {
+    if (
+      (!isBuilderPlaceCollaborator && !user && !router.asPath.includes('verify-email')) ||
+      router.asPath.includes('embed/')
+    ) {
       return (
         <div className={'dashboard pb-[110px] text-base-content bg-base-200 min-h-screen'}>
           <div className='flex flex-1 flex-col '>
@@ -94,6 +98,16 @@ function Layout({ children, className }: ContainerProps) {
               <div className={`px-6 py-6 md:px-12 xl:px-24`}>{children}</div>
             </main>
           </div>
+        </div>
+      );
+    }
+
+    if (router.asPath.includes('verify-email/')) {
+      return (
+        <div className={'dashboard pb-[110px] text-base-content bg-base-200 min-h-screen'}>
+          <main>
+            <div className={`px-6 py-6 md:px-12 xl:px-24`}>{children}</div>
+          </main>
         </div>
       );
     }
@@ -158,13 +172,17 @@ function Layout({ children, className }: ContainerProps) {
           </Transition.Root>
 
           <div className='hidden md:fixed md:inset-y-0 md:flex md:w-72 md:flex-col'>
-            <div className='flex flex-grow flex-col overflow-y-auto bg-base-300 pt-5'>
+            <motion.div
+              className='flex flex-grow flex-col overflow-y-auto bg-base-300 pt-5'
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ease: 'easeInOut', duration: 0.5 }}>
               <div className='flex flex-shrink-0 items-center px-6'>
                 <Logo />
               </div>
 
               <SideMenu />
-            </div>
+            </motion.div>
           </div>
 
           <div className='flex flex-1 flex-col md:pl-72'>
@@ -175,15 +193,17 @@ function Layout({ children, className }: ContainerProps) {
                 </div>
               </div>
               <NetworkSwitch />
-              <UserAccount />
+              {user && <UserAccount />}
             </div>
 
             <main>
-              <div className={`px-6 py-6 md:px-12 xl:px-24`}>{children}</div>
+              <div className={`px-6 py-6 md:px-12 xl:px-24`}>
+                <Template key={router.asPath}>{children}</Template>
+              </div>
             </main>
           </div>
         </div>
-        <MenuBottom setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />
+        {user && <MenuBottom setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />}
       </>
     );
   }

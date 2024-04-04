@@ -40,7 +40,6 @@ function SingleValueForm({
   const { contractFunctionName, contractEntity } = contractParams;
 
   const chainId = useChainId();
-  const { open: openConnectModal } = useWeb3Modal();
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
@@ -48,39 +47,35 @@ function SingleValueForm({
     values: any,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    if (publicClient && values && talentLayerClient) {
-      try {
-        let value = values[valueName];
+    try {
+      let value = values[valueName];
 
-        if (value === undefined) {
-          return;
-        }
-
-        //  @ts-ignore
-        const tx = await talentLayerClient[contractEntity][contractFunctionName](value);
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Updating informations ...',
-            success: 'Congrats! Your informations has been updated',
-            error: 'An error occurred while updating your informations',
-          },
-          publicClient,
-          tx,
-          contractEntity,
-        );
-
-        if (callback) {
-          callback();
-        }
-
-        setSubmitting(false);
-      } catch (error) {
-        showErrorTransactionToast(error);
+      if (value === undefined) {
+        return;
       }
-    } else {
-      openConnectModal();
+
+      //  @ts-ignore
+      const tx = await talentLayerClient[contractEntity][contractFunctionName](value);
+
+      await createMultiStepsTransactionToast(
+        chainId,
+        {
+          pending: 'Updating informations ...',
+          success: 'Congrats! Your informations has been updated',
+          error: 'An error occurred while updating your informations',
+        },
+        publicClient,
+        tx,
+        contractEntity,
+      );
+
+      if (callback) {
+        callback();
+      }
+
+      setSubmitting(false);
+    } catch (error) {
+      showErrorTransactionToast(error);
     }
   };
 
@@ -101,7 +96,7 @@ function SingleValueForm({
                 id={valueName}
                 name={valueName}
                 step='any'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50 mr-4'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50 mr-4'
                 placeholder=''>
                 {valueType === 'select' && selectOptions
                   ? selectOptions.map(option => (

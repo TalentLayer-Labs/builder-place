@@ -82,13 +82,25 @@ export const createMultiStepsTransactionToast = async (
 export const showErrorTransactionToast = (error: any) => {
   console.error(error);
   let errorMessage = error;
-  if (error.name === 'AxiosError') {
-    errorMessage = error.response.data.error;
+  if (typeof error === 'string') {
+    errorMessage = error;
+  } else if (error.name === 'AxiosError') {
+    errorMessage =
+      error.response?.data?.error?.details ||
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message;
   } else if (error.response && error.response.status === 500) {
     errorMessage = getParsedErrorMessage(error);
     errorMessage = error.response.data;
+  } else {
+    //@dev: Case Viem insufficient gas error
+    const spreadError = { ...error };
+    if (spreadError.shortMessage) {
+      errorMessage = spreadError.shortMessage;
+    }
   }
-  toast.error(errorMessage);
+  toast.error(`An error happened: ${errorMessage}.`);
 };
 
 export const createTalentLayerIdTransactionToast = async (
@@ -152,3 +164,9 @@ function getParsedErrorMessage(error: any) {
 
   return 'Unknown error occurred';
 }
+
+export const wait = async (seconds: number): Promise<void> => {
+  return new Promise(resolve => {
+    setTimeout(resolve, seconds * 1000);
+  });
+};

@@ -12,15 +12,18 @@ function DelegateModal() {
   const [hasPlatformAsDelegate, setHasPlatformAsDelegate] = useState(false);
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  const { user, refreshData } = useContext(TalentLayerContext);
+  const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS;
 
-  if (!user) {
+  if (!talentLayerUser || process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE !== 'true') {
     return null;
   }
 
   const checkDelegateState = async () => {
-    if (delegateAddress && user?.delegates?.indexOf(delegateAddress.toLowerCase()) != -1) {
+    if (
+      delegateAddress &&
+      talentLayerUser?.delegates?.indexOf(delegateAddress.toLowerCase()) != -1
+    ) {
       setHasPlatformAsDelegate(true);
     } else {
       setHasPlatformAsDelegate(false);
@@ -29,13 +32,14 @@ function DelegateModal() {
 
   useEffect(() => {
     checkDelegateState();
-  }, [user, show]);
+  }, [talentLayerUser, show]);
 
   const onSubmit = async (validateState: boolean) => {
-    if (walletClient && publicClient && user && delegateAddress) {
+    //TODO add try catch toast here
+    if (walletClient && publicClient && talentLayerUser && delegateAddress) {
       await toggleDelegation(
         chainId,
-        user.id,
+        talentLayerUser.id,
         config,
         delegateAddress,
         publicClient,
@@ -49,13 +53,21 @@ function DelegateModal() {
 
   return (
     <>
-      {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && hasPlatformAsDelegate && (
+      {hasPlatformAsDelegate ? (
         <button
           onClick={() => setShow(true)}
-          className='block text-info bg-error hover:bg-info hover:text-base-content rounded-xl px-5 py-2.5 text-center'
+          className='block text-info bg-error text-error hover:opacity-50  rounded-xl px-5 py-2.5 text-center'
           type='button'
           data-modal-toggle='defaultModal'>
-          Deactivate delegation
+          Deactivate gasless
+        </button>
+      ) : (
+        <button
+          onClick={() => setShow(true)}
+          className='block text-info bg-success text-success hover:opacity-50  rounded-xl px-5 py-2.5 text-center'
+          type='button'
+          data-modal-toggle='defaultModal'>
+          Activate gasless
         </button>
       )}
 
@@ -67,7 +79,7 @@ function DelegateModal() {
           <div className='relative bg-base-300 rounded-xl shadow '>
             <div className='flex justify-between items-start p-4 rounded-t border-b border-info'>
               <h3 className='text-xl font-semibold text-base-content '>
-                Delegate activation information
+                {hasPlatformAsDelegate ? 'Deactivate gasless' : 'Activate gasless'}
               </h3>
               {/* close button */}
               <button
@@ -93,9 +105,9 @@ function DelegateModal() {
                 <div className='flex flex-row'>
                   <h3 className='font-semibold text-base-content'>Delegation state: </h3>
                   {hasPlatformAsDelegate ? (
-                    <p className='text-alone-success pl-2'> is active</p>
+                    <p className='pl-2'> is active</p>
                   ) : (
-                    <p className='text-alone-error pl-2'> is inactive</p>
+                    <p className='pl-2'> is inactive</p>
                   )}
                 </div>
                 <p>After activating the delegation, all fees will be delegated to the platform.</p>

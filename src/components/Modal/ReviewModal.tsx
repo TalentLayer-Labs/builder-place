@@ -45,7 +45,7 @@ function ReviewModal({ service, userToReview }: { service: IService; userToRevie
               <p className='text-base-content opacity-50 text-sm'>
                 How did the project go with {userToReview.handle}?
               </p>
-              {show && <ReviewForm serviceId={service.id} />}
+              {show && <ReviewForm serviceId={service.id} closeModal={() => setShow(false)} />}
             </div>
           </div>
         </div>

@@ -1,18 +1,19 @@
 import { useContext } from 'react';
 import TalentLayerContext from '../context/talentLayer';
 import useUserById from '../hooks/useUserById';
-import PohModule from '../modules/Poh/PohModule';
 import { IUser } from '../types';
 import Loading from './Loading';
 import Stars from './Stars';
 import DelegateModal from './Modal/DelegateModal';
-import Link from 'next/link';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 
-function WorkerPublicDetail({ user }: { user: IUser }) {
-  const { user: currentUser } = useContext(TalentLayerContext);
-  const userDescription = user?.id ? useUserById(user?.id)?.description : null;
+function WorkerPublicDetail({ talentLayerUser }: { talentLayerUser: IUser }) {
+  const { user } = useContext(UserContext);
+  const userDescription = talentLayerUser?.id
+    ? useUserById(talentLayerUser?.id)?.description
+    : null;
 
-  if (!user?.id) {
+  if (!talentLayerUser?.id) {
     return <Loading />;
   }
 
@@ -21,17 +22,24 @@ function WorkerPublicDetail({ user }: { user: IUser }) {
       <div className='w-full'>
         <div className='flex max-w-5xl flex-col justify-center items-center gap-4'>
           <div className='flex  mb-4'>
-            <div className='flex flex-col items-center justify-center items-center gap-8'>
+            <div className='flex flex-col items-center justify-center gap-8'>
               <div className='w-48 h-48 rounded-full overflow-hidden border'>
-                <img src={user?.description?.image_url} className='object-cover w-full h-full' />
+                <img
+                  src={talentLayerUser?.description?.image_url}
+                  className='object-cover w-full h-full'
+                />
               </div>
-              <p className='mt-5 text-4xl font-bold '>{user?.handle}</p>
-              <p className='text-2xl text-gray-500 font-bold '>{user?.description?.title}</p>
+              <p className='mt-5 text-4xl font-bold '>{talentLayerUser?.handle}</p>
+              <p className='text-2xl text-gray-500 font-bold '>
+                {talentLayerUser?.description?.title}
+              </p>
             </div>
           </div>
           <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
             <p className='text-xl text-black font-bold'>about</p>
-            <p className='text-xl text-gray-500 font-medium '>{user?.description?.about}</p>
+            <p className='text-xl text-gray-500 font-medium '>
+              {talentLayerUser?.description?.about}
+            </p>
           </div>
           <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
             <p className='text-xl text-black font-bold'>skills</p>
@@ -49,18 +57,13 @@ function WorkerPublicDetail({ user }: { user: IUser }) {
           </div>
           <div className='mt-5 flex w-full flex-col gap-4 justify-start items-start'>
             <p className='text-xl text-black font-bold'>reviews</p>
-            <Stars rating={Number(user.rating)} numReviews={user.userStats.numReceivedReviews} />
+            <Stars
+              rating={Number(talentLayerUser.rating)}
+              numReviews={talentLayerUser.userStats.numReceivedReviews}
+            />
           </div>
         </div>
       </div>
-
-      {currentUser?.id === user.id && process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && (
-        <div className=' border-t border-info pt-4 w-full mt-4'>
-          <div className='flex flex-row gap-4 justify-end items-center'>
-            <DelegateModal />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { Search } from 'heroicons-react';
 
 function SearchServiceButton(props?: { value?: string }) {
   const router = useRouter();
@@ -27,7 +28,7 @@ function SearchServiceButton(props?: { value?: string }) {
       <div className='flex justify-end'>
         <div
           className={`flex flex-row flex-wrap rounded-3xl border ${
-            isFocused ? 'opacity-100' : 'opacity-60'
+            isFocused ? 'opacity-100' : 'opacity-80'
           }`}>
           <div className='px-4 flex flex-row items-center'>
             <input
@@ -43,8 +44,8 @@ function SearchServiceButton(props?: { value?: string }) {
           <div className='px-2 flex flex-row justify-between items-center'>
             <button
               type='submit'
-              className='px-4 py-1 rounded-3xl text-sm hover:bg-primary-focus bg-primary text-primary'>
-              Search
+              className='px-2 py-1 rounded-3xl text-sm hover:bg-primary-focus bg-primary text-primary'>
+              <Search width={18} height={18} />
             </button>
           </div>
         </div>

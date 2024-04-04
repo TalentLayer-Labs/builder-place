@@ -11,7 +11,7 @@ export const toggleDelegation = async (
   publicClient: PublicClient,
   walletClient: WalletClient,
   validateState: boolean,
-): Promise<void> => {
+): Promise<void | { error: string }> => {
   try {
     let tx: Address;
     let toastMessages;
@@ -26,7 +26,7 @@ export const toggleDelegation = async (
       tx = await walletClient.writeContract(request);
       toastMessages = {
         pending: 'Submitting the delegation...',
-        success: 'Congrats! the delegation is active',
+        success: 'Congrats! All is set',
         error: 'An error occurred while delegation process',
       };
     } else {
@@ -48,5 +48,6 @@ export const toggleDelegation = async (
     await createMultiStepsTransactionToast(chainId, toastMessages, publicClient, tx, 'Delegation');
   } catch (error) {
     showErrorTransactionToast(error);
+    return { error: 'Error removing delegate' };
   }
 };

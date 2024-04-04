@@ -1,11 +1,10 @@
-import { useContext } from 'react';
+import { useCompletitionScores } from '../../hooks/useCompletitionScores';
+import { ICompletionScores } from '../../utils/profile';
 import SideLink from './SideLink';
 import { navigation } from './navigation';
-import TalentLayerContext from '../../context/talentLayer';
-import { ICompletionScores } from '../../utils/profile';
 
 function SideMenu() {
-  const { completionScores } = useContext(TalentLayerContext);
+  const completionScores = useCompletitionScores();
 
   return (
     <ul className='space-y-1 font-sans text-sm'>

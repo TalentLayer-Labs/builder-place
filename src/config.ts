@@ -15,8 +15,6 @@ export const maxDecimals = {
 
 export const FEE_RATE_DIVIDER = 10_000;
 
-export const MAX_TRANSACTION_AMOUNT = 50;
-
 const mumbai: Config = {
   networkId: NetworkEnum.MUMBAI,
   subgraphUrl: 'https://api.thegraph.com/subgraphs/name/talentlayer/talent-layer-mumbai',
@@ -27,6 +25,7 @@ const mumbai: Config = {
     talentLayerEscrow: '0x4bE920eC3e8552292B2147480111063E0dc36872',
     talentLayerPlatformId: '0xEFD8dbC421380Ee04BAdB69216a0FD97F64CbFD4',
     talentLayerArbitrator: '0x2CA01a0058cfB3cc4755a7773881ea88eCfBba7C',
+    talentLayerIdUtils: '0xB94BA221b629f0A9d77B3Eb8dBC15680F5cd53ab',
   },
   escrowConfig: {
     adminFee: '0',
@@ -59,6 +58,7 @@ const polygon: Config = {
     talentLayerEscrow: '0x21C716673897f4a2A3c12053f3973F51Ce7b0cf6',
     talentLayerPlatformId: '0x09FF07297d48eD9aD870caCE4b33BF30869C1D17',
     talentLayerArbitrator: '0x4502E695A747F1b382a16D6C8AE3FD94DA78e7a0',
+    talentLayerIdUtils: '0xDC775A4e4AC3EebA4D16A9c8fB907d0194153C13',
   },
   escrowConfig: {
     adminFee: '0',
