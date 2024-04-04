@@ -17,49 +17,46 @@ without delegation turned on
      - [ ] allow others to post if they have a token
           - [X] platfom allowed me to configure this
           - [ ] as a third-party hirer I posted on this platform with this condition (No: blocked by 2 issues, endless load and gating issue)
-               - [ ] As a hirer I can see that I have the ability to post and I can fill out the form
-               - [ ] I can make the post (BLOCKED: Not sure why, but endless load
+               - [X] As a hirer I can see that I have the ability to post and I can fill out the form
+               - [ ] I can make the post (BLOCKED: Not sure why, but endless load)
      - [X] as a platform I can update my profile information
      - [X] as a platform I can verify my email and activate delegation
+     - [X] as a platform I can post a job
+     - [X] approve a proposal (Blocked: Hirer can't validate propo - endless load)
+     - [ ] pay out a freelancer (blocked by other)
      - [ ] as a platform I can recieve email notifications on important steps (question - when should i get emails?)
 - [ ] As a freelancer,
      - [X] i can create an account
      - [X] post a proposalr
-     - [ ] receive my first payment (can't test, no TST)
+     - [ ] receive my first payment (Blocked: Hirer can't validate propo - endless load)
      - [X] as a freelancer I can update my profile information
-     - [ ] as a freelancer I can verify my email and activate delegation
+     - [X] as a freelancer I can verify my email and activate delegation 
           - [X] email activated
-          - [ ] delegation works?  (no it does not: https://trello.com/c/7CuHSbiq/146-delegation-not-initiated-after-i-have-approved-email
+          - [X] delegation works?
 - [ ] As a hirer,
      - [X] I can create an account
      - [ ] post a job (No: blocked by 2 issues, endless load and gating issue)
-     - [ ] approve a proposal (sending payment to escrow) (can't test, no TST)
+     - [ ] approve a proposal (Blocked: Hirer can't validate propo - endless load)
      - [ ] pay out a freelancer (blocked by other)
      - [X] as a hirer I can update my profile information
-     - [ ] as a hirer I can verify my email and activate delegation
+     - [X] as a hirer I can verify my email and activate delegation
           - [X] email activated
-          - [ ] delegation works?  (no it does not: https://trello.com/c/7CuHSbiq/146-delegation-not-initiated-after-i-have-approved-email
+          - [X] delegation works?  (no it does not: https://trello.com/c/7CuHSbiq/146-delegation-not-initiated-after-i-have-approved-email
 *For now collaborator can't be added, this part is not ready
 
 with delegation turned on
-- [ ] As a platform entreprener, i can... 
-     - [ ] create an account
-     - [ ] create my platform
-     - [ ] setup my skin
-     - [ ] allow others to post if they have an NFT
-     - [ ] allow others to post if they have a token
-     - [ ] as a platform I can update my profile information
-     - [ ] as a platform I can recieve email notifications on important steps
+- [X] As a platform entreprener, i can... 
+     - [X] setup my skin
+     - [X] as a platform I can update my profile information
 - [ ] As a freelancer,
-     - [ ] i can create an account
-     - [ ] post a proposal and receive my first payment
-     - [ ] as a freelancer I can update my profile information
+     - [ ] post a proposal and receive my first payment 
+     - [X] as a freelancer I can update my profile information
 - [ ] As a hirer,
      - [ ] I can create an account
      - [ ] post a job
      - [ ] approve a proposal (sending payment to escrow)
      - [ ] pay out a freelancer
-     - [ ] as a hirer I can update my profile information
+     - [X] as a hirer I can update my profile information
 *For now collaborator can't be added, this part is not ready
    
 
