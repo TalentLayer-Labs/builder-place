@@ -28,7 +28,7 @@ function UserAccount() {
     return null;
   }
 
-  if (router.asPath.includes('onboarding')) {
+  if (router.asPath.includes('onboarding') || router.asPath.includes('dashboard')) {
     return null;
   }
 
