@@ -1,30 +1,41 @@
 import {
   BriefcaseIcon,
   ChatBubbleBottomCenterIcon,
+  CodeBracketSquareIcon,
+  CurrencyDollarIcon,
+  EnvelopeIcon,
+  ExclamationCircleIcon,
+  HomeIcon,
+  PlusCircleIcon,
+  PresentationChartLineIcon,
+  ShieldCheckIcon,
   UserIcon,
   UserPlusIcon,
-  PresentationChartLineIcon,
-  ExclamationCircleIcon,
-  ShieldCheckIcon,
-  EnvelopeIcon,
-  PlusCircleIcon,
   WrenchIcon,
-  CodeBracketSquareIcon,
-  HomeIcon,
 } from '@heroicons/react/24/outline';
+import { SVGProps } from 'react';
 
-export const hirerNavigation = [
+export interface MenuItem {
+  name: string;
+  href: string;
+  icon: (
+    props: SVGProps<SVGSVGElement> & { title?: string | undefined; titleId?: string | undefined },
+  ) => JSX.Element;
+  current: boolean;
+}
+
+export const hirerNavigation: MenuItem[] = [
   { name: 'dashboard', href: '/dashboard', icon: HomeIcon, current: false },
   { name: 'my place', href: '/', icon: BriefcaseIcon, current: false },
   { name: 'new mission', href: '/work/create', icon: PlusCircleIcon, current: false },
   { name: 'chat', href: '/messaging', icon: ChatBubbleBottomCenterIcon, current: false },
 ];
 
-export const hirerAdminNavigation = [
+export const hirerAdminNavigation: MenuItem[] = [
   // { name: 'hirer profile', href: '/admin/hirer-profile', icon: UserIcon, current: false },
   {
-    name: 'configure your place',
-    href: '/admin/configure-place',
+    name: 'configure your platform',
+    href: '/admin/configure-platform',
     icon: WrenchIcon,
     current: false,
   },
@@ -36,23 +47,49 @@ export const hirerAdminNavigation = [
   },
 ];
 
-export const ownerAdminNavigation = [
+export const ownerAdminNavigation: MenuItem[] = [
   {
-    name: 'add collaborators',
-    href: '/admin/collaborators',
-    icon: UserPlusIcon,
+    name: 'configure fees',
+    href: '/admin/fees',
+    icon: CurrencyDollarIcon,
     current: false,
   },
+  // {
+  //   name: 'dispute',
+  //   href: `/admin/dispute`,
+  //   icon: ExclamationCircleIcon,
+  //   current: false,
+  // },
+  // {
+  //   name: 'add collaborators',
+  //   href: '/admin/collaborators',
+  //   icon: UserPlusIcon,
+  //   current: false,
+  // },
 ];
 
-export const workerNavigation = [
-  { name: 'missions', href: '/', icon: BriefcaseIcon, current: false },
+export const workerNavigation: MenuItem[] = [
   { name: 'dashboard', href: '/dashboard', icon: HomeIcon, current: false },
   { name: 'profile', href: '/profiles/edit', icon: UserIcon, current: false },
   { name: 'chat', href: '/messaging', icon: ChatBubbleBottomCenterIcon, current: false },
+  { name: 'missions', href: '/', icon: BriefcaseIcon, current: false },
 ];
 
-export const PlatformAdminNavigation = [
+export const getWorkerNavigation = (allowPosts: boolean = false): MenuItem[] => {
+  return allowPosts
+    ? [
+        ...workerNavigation,
+        {
+          name: 'new mission',
+          href: '/work/create',
+          icon: PlusCircleIcon,
+          current: false,
+        },
+      ]
+    : workerNavigation;
+};
+
+export const PlatformAdminNavigation: MenuItem[] = [
   {
     name: 'presentation',
     href: `/superadmin/presentation`,

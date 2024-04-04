@@ -58,12 +58,12 @@ export const getPlatformsByOwner = (chainId: number, addressOwner: string): Prom
   return processRequest(chainId, query);
 };
 
-export const getPlatformId = (chainId: number, address: string): Promise<any> => {
+export const getPlatformPostingFees = (chainId: number, id: string): Promise<any> => {
   const query = `
     {
-      platforms(where: {address: "${address}"}) {
-        id
-        name
+      platform(id: "${id}") {
+        servicePostingFee
+        proposalPostingFee
       }
     }
     `;

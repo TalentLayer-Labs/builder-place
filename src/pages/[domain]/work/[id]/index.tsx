@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
@@ -22,19 +23,25 @@ function Service() {
     return <Loading />;
   }
 
-  if (builderPlace?.owner?.talentLayerId !== service?.buyer.id) {
+  if (builderPlace?.talentLayerPlatformId !== service?.platform?.id) {
     return <NotFound />;
   }
 
   return (
-    <div className='max-w-7xl mx-auto text-base-content'>
-      <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
-        <p className='flex py-2 items-center text-2xl font-bold tracking-wider mb-6 w-full px-6 sm:px-0 mt-6 '>
-          mission
-        </p>
+    <>
+      <NextSeo
+        title={`Mission | ${service?.description?.title}`}
+        description={`check work mission on ${builderPlace?.name} BuilderPlace`}></NextSeo>
+
+      <div className='max-w-7xl mx-auto text-base-content'>
+        <div className='-mx-6 -mt-6 sm:mx-0 sm:mt-0'>
+          <p className='flex py-2 items-center text-2xl font-bold tracking-wider mb-6 w-full px-6 sm:px-0 mt-6 '>
+            mission
+          </p>
+        </div>
+        {service ? <ServiceDetail service={service} /> : <Loading />}
       </div>
-      {service ? <ServiceDetail service={service} /> : <Loading />}
-    </div>
+    </>
   );
 }
 

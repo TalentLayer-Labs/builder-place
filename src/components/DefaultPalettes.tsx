@@ -48,7 +48,7 @@ function DefaultPalettes({ onChange }: ContainerProps) {
         })}
       </div>
 
-      <span className='text-stone-500 italic text-xs'>
+      <span className='opacity-70 italic text-xs'>
         After finalizing your BuilderPlace, in your admin dashboard you can create your own fully
         personalized palette :)
       </span>

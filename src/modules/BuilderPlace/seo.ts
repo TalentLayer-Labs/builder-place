@@ -21,9 +21,9 @@ export const getSeoDefaultConfig = (builderPlace: IBuilderPlace) => {
   }
 
   const title = `${builderPlace.name} BuilderPlace`;
-  const description = `${builderPlace.name} open source community, find open work and contribute!`;
+  const description = `${builderPlace.baseline}`;
 
-  return {
+  const config = {
     title,
     description,
     openGraph: {
@@ -32,6 +32,7 @@ export const getSeoDefaultConfig = (builderPlace: IBuilderPlace) => {
       site_name: title,
       title,
       description,
+      images: [],
     },
     additionalLinkTags: [
       {
@@ -40,4 +41,26 @@ export const getSeoDefaultConfig = (builderPlace: IBuilderPlace) => {
       },
     ],
   };
+
+  if (builderPlace.cover) {
+    // @ts-ignore
+    config.openGraph.images.push({
+      url: builderPlace.cover,
+      width: 800,
+      height: 600,
+      alt: builderPlace.name,
+    });
+  }
+
+  if (builderPlace.logo) {
+    // @ts-ignore
+    config.openGraph.images.push({
+      url: builderPlace.logo,
+      width: 400,
+      height: 300,
+      alt: builderPlace.name,
+    });
+  }
+
+  return config;
 };

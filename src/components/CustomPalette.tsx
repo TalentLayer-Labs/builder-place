@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 
 function CustomPalette() {
-  const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
+  const { builderPlace } = useContext(BuilderPlaceContext);
 
   /*
     Optim idea:
@@ -60,123 +60,123 @@ function CustomPalette() {
             --error-content: ${builderPlace?.palette?.errorContent || '#000000'};
           }
 
-          body .bg-primary {
+          html .bg-primary {
             background-color: var(--primary);
           }
 
-          body .bg-primary-focus {
+          html .bg-primary-focus {
             background-color: var(--primary-focus);
           }
 
-          body .bg-primary-50 {
+          html .bg-primary-50 {
             background-color: var(--primary-50);
           }
 
-          body .text-primary {
+          html .text-primary {
             color: var(--primary-content);
           }
 
-          body .text-primary-focus {
+          html .text-primary-focus {
             color: var(--primary-focus);
           }
 
-          body .border-primary {
+          html .border-primary {
             border-color: var(--primary);
           }
 
-          body .border-primary-focus {
+          html .border-primary-focus {
             border-color: var(--primary-focus);
           }
 
-          body .bg-base-100 {
+          html .bg-base-100 {
             background-color: var(--base-100);
           }
 
-          body .bg-base-200, body .hover\\:bg-base-200:hover {
+          html .bg-base-200, html .hover\\:bg-base-200:hover {
             background-color: var(--base-200);
           }
 
-          body .bg-base-300 {
+          html .bg-base-300 {
             background-color: var(--base-300);
           }
 
-          body .border-base-100 {
+          html .border-base-100 {
             border-color: var(--base-100);
           }
 
-          body .border-base-200 {
+          html .border-base-200 {
             border-color: var(--base-200);
           }
 
-          body .border-base-300 {
+          html .border-base-300 {
             border-color: var(--base-300);
           }
 
-          body .text-base-content {
+          html .text-base-content {
             color: var(--base-content);
           }
 
-          body .text-base-content-50 {
+          html .text-base-content-50 {
             color: var(--base-content-50);
           }
 
-          body .bg-info {
+          html .bg-info {
             background-color: var(--info);
           }
 
-          body .text-info {
+          html .text-info {
             color: var(--info-content);
           }
 
-          body .border-info {
+          html .border-info {
             border-color: var(--info);
           }
 
-          body .bg-success {
+          html .bg-success {
             background-color: var(--success);
           }
 
-          body .bg-success-50 {
+          html .bg-success-50 {
             background-color: var(--success-50);
           }
 
-          body .text-success {
+          html .text-success {
             color: var(--success-content);
           }
 
-          body .text-alone-success {
+          html .text-alone-success {
             color: var(--success);
           }
 
-          body .border-success {
+          html .border-success {
             border-color: var(--success);
           }
 
-          body .bg-warning {
+          html .bg-warning {
             background-color: var(--warning);
           }
 
-          body .text-warning {
+          html .text-warning {
             color: var(--warning-content);
           }
 
-          body .border-warning {
+          html .border-warning {
             border-color: var(--warning);
           }
 
-          body .bg-error {
+          html .bg-error {
             background-color: var(--error);
           }
 
-          body .text-error {
+          html .text-error {
             color: var(--error-content);
           }
 
-          body .text-alone-error {
+          html .text-alone-error {
             color: var(--error);
           }
 
-          body .border-error {
+          html .border-error {
             border-color: var(--error);
           }
         `}

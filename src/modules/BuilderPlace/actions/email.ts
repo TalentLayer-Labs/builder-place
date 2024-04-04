@@ -6,9 +6,10 @@ import {
   ERROR_CHECKING_TRANSACTION_COUNTER,
 } from '../apiResponses';
 import prisma from '../../../postgre/postgreClient';
+import { handleApiError } from '../utils/error';
 
 export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -33,18 +34,7 @@ export const verifyUserEmail = async (id: string, res?: NextApiResponse) => {
       email: resp.email,
     };
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_CHECKING_TRANSACTION_COUNTER, res);
   }
 };
 
@@ -59,7 +49,7 @@ export async function checkUserEmailVerificationStatus(
 }
 
 export const getUserByEmail = async (userEmail: string, res?: NextApiResponse) => {
-  let errorMessage;
+  let errorMessage = '';
   try {
     console.log('Getting User Profile with email:', userEmail);
     const userProfile = await prisma.user.findUnique({
@@ -75,17 +65,6 @@ export const getUserByEmail = async (userEmail: string, res?: NextApiResponse) =
     console.log('Fetched user profile with id: ', userProfile?.id);
     return userProfile;
   } catch (error: any) {
-    if (error?.name?.includes('Prisma')) {
-      errorMessage = ERROR_CHECKING_TRANSACTION_COUNTER;
-    } else {
-      errorMessage = error.message;
-    }
-    if (res) {
-      console.log(error.message);
-      res.status(500).json({ error: errorMessage });
-    } else {
-      console.log(error.message);
-      throw new Error(errorMessage);
-    }
+    handleApiError(error, errorMessage, ERROR_CHECKING_TRANSACTION_COUNTER, res);
   }
 };

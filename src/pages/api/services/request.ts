@@ -12,7 +12,7 @@ export const getFilteredServicesByKeywords = async (
   chainId?: number,
 ): Promise<any> => {
   try {
-    return await axios.get('/api/services/filtered', {
+    return await axios.get('/api/services', {
       params: {
         serviceStatus,
         buyerId,

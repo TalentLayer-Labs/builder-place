@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import { NotificationApiUri } from '../../../types';
+import { EmailNotificationApiUri } from '../../../types';
 import * as vercel from '../../../../vercel.json';
 import { parseExpression } from 'cron-parser';
 
@@ -15,7 +15,7 @@ import { parseExpression } from 'cron-parser';
 export const calculateCronData = (
   req: NextApiRequest,
   RETRY_FACTOR: number,
-  apiUri: NotificationApiUri,
+  apiUri: EmailNotificationApiUri,
 ): { cronDuration: number; sinceTimestamp: string } => {
   let sinceTimestamp: string = '';
   let cronDuration = 0;

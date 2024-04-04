@@ -1,4 +1,7 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
+import { IEmailPreferences } from '../../types';
+import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
+import { iexec } from '../../chains';
 
 export interface iBuilderPlacePalette {
   primary: string;
@@ -64,6 +67,7 @@ export interface AddBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   newCollaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -71,6 +75,7 @@ export interface RemoveBuilderPlaceCollaborator {
   ownerId: string;
   builderPlaceId: string;
   collaboratorAddress: string;
+  address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -114,6 +119,13 @@ export interface UpdateUserEmail {
   signature: `0x${string}` | Uint8Array;
 }
 
+export interface UpdateUserEmailPreferences {
+  userId: string;
+  preferences: IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+}
+
 export interface VerifyAccount {
   userId: string;
   signature: `0x${string}` | Uint8Array;
@@ -130,6 +142,15 @@ export interface SendVerificationEmail {
   domain: string;
 }
 
+export interface GetUserEmailData {
+  builderPlaceId: string;
+  ownerId: string;
+  emailNotificationType: keyof IEmailPreferences;
+  address: `0x${string}`;
+  signature: `0x${string}` | Uint8Array;
+  includeSkills?: boolean;
+}
+
 export enum DomainVerificationStatusProps {
   Valid = 'Valid Configuration',
   Invalid = 'Invalid Configuration',
@@ -143,7 +164,7 @@ export interface CreateBuilderPlaceAction {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileAction {
@@ -184,6 +205,11 @@ export interface UpdateWorkerProfileAction {
   talentLayerId?: string;
 }
 
+export interface UpdateUserEmailPreferencesAction {
+  address: `0x${string}`;
+  preferences: IEmailPreferences;
+}
+
 export interface UpdateUserEmailAction {
   id: number;
   email: string;
@@ -194,7 +220,7 @@ export interface CreateBuilderPlaceProps {
   palette: iBuilderPlacePalette;
   about: string;
   preferredWorkTypes: WorkType[];
-  profilePicture?: string;
+  icon?: string;
 }
 
 export interface CreateWorkerProfileProps {
@@ -207,33 +233,66 @@ export interface CreateWorkerProfileProps {
 export interface CreateHirerProfileProps {
   email: string;
   name: string;
-  picture?: string;
+  icon?: string;
   about?: string;
   status?: string;
 }
 
 export type IBuilderPlace = {
   id: string;
+  status: EntityStatus;
+  name: string;
+  subdomain?: string;
+  customDomain?: string | null;
+  talentLayerPlatformId?: string;
+  talentLayerPlatformName?: string;
+  owner: User;
+  ownerId?: string;
+  collaborators?: User[];
+  baseline?: string;
   about?: string;
   aboutTech?: string;
-  baseline?: string;
-  cover?: string;
-  customDomain?: string | null;
-  icon?: string;
-  logo?: string;
-  name: string;
-  owner: User;
-  collaborators?: User[];
-  palette?: iBuilderPlacePalette;
-  preferredWorkTypes: WorkType[];
   presentation?: string;
-  profilePicture?: string;
-  status: EntityStatus;
-  ownerId?: string;
-  // ownerAddress?: string;
-  // ownerTalentLayerId?: string;
-  subdomain?: string;
+  logo?: string;
+  icon?: string;
+  cover?: string;
+  palette?: iBuilderPlacePalette;
+  jobPostingConditions: JobPostingConditions;
+  preferredWorkTypes: WorkType[];
 };
+
+export interface JobPostingConditions {
+  allowPosts: boolean;
+  conditions?: PostingCondition[];
+}
+
+export type PostingCondition = NFTCondition | TokenCondition;
+
+export interface NFTCondition {
+  type: 'NFT';
+  chainId: JobConditionsChainIdEnum; // Chain ID of the NFT contract
+  address: string; // Address of the NFT contract
+  name: string; // Name of the NFT contract
+}
+
+export interface TokenCondition {
+  type: 'Token';
+  chainId: number; // Chain ID of the token contract
+  chainName: string;
+  address: string; // Address of the token contract
+  name: string; // Name of the NFT contract
+  symbol: string; // Token sign
+  minimumAmount: number; // Minimum amount of tokens required for frontend display
+  parsedMinimumAmount: string; // Minimum amount of tokens required in the smallest smart contract uint
+}
+
+export enum JobConditionsChainIdEnum {
+  ETHEREUM = mainnet.id,
+  ARBITRUM = arbitrum.id,
+  IEXEC = iexec.id,
+  POLYGON = polygon.id,
+  BNB = opBNB.id,
+}
 
 export interface IUserProfile {
   id: string;

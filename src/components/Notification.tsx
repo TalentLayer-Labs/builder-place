@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import React from 'react';
 import ProfileImage from './ProfileImage';
+import AsyncButton from './AsyncButton';
 
 type NotificationProps = {
   title: string;
   text: string;
   link: string;
   linkText: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   color: string;
-  callback?: () => void | Promise<void>;
+  submitting?: boolean;
+  callback?: () => Promise<void>;
 };
 
 function Notification({
@@ -19,11 +21,12 @@ function Notification({
   linkText,
   imageUrl,
   color,
+  submitting = false,
   callback,
 }: NotificationProps) {
   return (
     <div
-      className={`bg-${color}-50 border border-${color} text-content py-4 px-4 flex flex-wrap  items-center justify-between rounded-xl`}>
+      className={`bg-${color}-50 border border-${color} text-content py-4 px-4 flex flex-wrap items-center justify-between rounded-xl`}>
       <div className='flex items-center'>
         <div className='flex items-center justify-center relative'>
           <ProfileImage size={50} url={imageUrl} />
@@ -36,11 +39,14 @@ function Notification({
         </div>
       </div>
       {callback ? (
-        <button
-          onClick={callback}
-          className={`bg-${color} hover:opacity-70 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}>
-          {linkText}
-        </button>
+        <AsyncButton
+          onClick={() => callback()}
+          label={linkText}
+          isSubmitting={submitting}
+          disabled={submitting}
+          validateButtonCss={`bg-${color} hover:opacity-70 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}
+          loadingButtonCss={`bg-${color} opacity-50 text-${color} px-4 py-2 rounded-xl mt-2 sm:mt-0`}
+        />
       ) : (
         <Link
           href={link}

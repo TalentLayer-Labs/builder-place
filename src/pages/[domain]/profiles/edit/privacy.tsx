@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import Layout from '../../../../components/EditProfile/Layout';
-import Web3mailPreferencesForm from '../../../../modules/Web3mail/components/Web3mailPreferencesForm';
+import EmailPreferencesForm from '../../../../components/Form/EmailPreferencesForm';
 import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -10,7 +10,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function EditPrivacy() {
   return (
     <Layout>
-      <Web3mailPreferencesForm />
+      <EmailPreferencesForm />
     </Layout>
   );
 }

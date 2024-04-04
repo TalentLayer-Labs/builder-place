@@ -13,13 +13,13 @@ function MultiStepsTransactionToast({
   hasOffchainData?: boolean;
 }) {
   const network = useNetwork();
-  const renderTransaction = useCallback(() => {
+  const renderTransaction: () => JSX.Element = useCallback(() => {
     return (
       <a
         className='flex flex-col text-sm font-normal w-full pt-2'
         target='_blank'
         href={`${network.chain?.blockExplorers?.default.url}/tx/${txHash}`}>
-        <span className='inline-flex full-w justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-black border border-info rounded-xl hover:opacity-70 focus:ring-4 focus:outline-none focus:ring-gray-200 '>
+        <span className='flex full-w justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-black border border-info rounded-xl hover:opacity-70 focus:ring-4 focus:outline-none focus:ring-gray-200 '>
           Follow on {network.chain?.blockExplorers?.default.name}
         </span>
       </a>

@@ -2,9 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  images: {
-    domains: ['ipfs.io'],
-  },
 };
 
 const withPWA = require('next-pwa')({

@@ -7,43 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ********************* BuilderPlace *********************
+
 model BuilderPlace {
-  id                 Int          @id @default(autoincrement())
-  about              String?
-  aboutTech          String?
-  baseline           String?
-  cover              String?
-  customDomain       String?      @unique
-  icon               String?
-  logo               String?
-  name               String
-  owner              User?        @relation(fields: [ownerId], references: [id])
-  ownerId            Int?         @unique
-  collaborators      User[]       @relation("BuilderPlaceCollaborators")
-  palette            Json
-  preferredWorkTypes WorkType[]
-  presentation       String?
-  profilePicture     String?
-  status             EntityStatus @default(PENDING)
-  subdomain          String?      @unique
+  id                      Int          @id @default(autoincrement())
+  status                  EntityStatus @default(PENDING)
+  name                    String
+  subdomain               String       @unique
+  customDomain            String?      @unique
+  talentLayerPlatformId   String       @unique
+  talentLayerPlatformName String       @unique
+  owner                   User?        @relation(fields: [ownerId], references: [id])
+  ownerId                 Int?         @unique
+  collaborators           User[]       @relation("BuilderPlaceCollaborators")
+  baseline                String?
+  about                   String?
+  aboutTech               String?
+  presentation            String?
+  logo                    String?
+  icon                    String?
+  cover                   String?
+  palette                 Json
+  jobPostingConditions    Json?        @default("{\"allowPosts\": false, \"conditions\": []}")
+  preferredWorkTypes      WorkType[]
 }
 
 model User {
   id                       Int            @id @default(autoincrement())
-  about                    String?
-  address                  String?        @unique
-  counterStartDate         Int            @default(0)
-  email                    String?        @unique
-  isEmailVerified          Boolean        @default(false)
-  name                     String
-  picture                  String?
   status                   EntityStatus   @default(PENDING)
-  talentLayerId            String?        @unique
+  name                     String
+  email                    String         @unique
+  address                  String         @unique
+  talentLayerId            String         @unique
+  talentLayerHandle        String         @unique
+  isEmailVerified          Boolean        @default(false)
+  about                    String?
+  picture                  String?
+  counterStartDate         Int            @default(0)
   weeklyTransactionCounter Int            @default(0)
   workerProfile            WorkerProfile? @relation("WorkerProfile")
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
   managedPlaces            BuilderPlace[] @relation("BuilderPlaceCollaborators")
+  emailPreferences         Json           @default("{\"activeOnNewService\": false, \"activeOnNewProposal\": true, \"activeOnProposalValidated\": true, \"activeOnFundRelease\": true, \"activeOnReview\": true, \"activeOnPlatformMarketing\": false, \"activeOnProtocolMarketing\": true}")
 }
 
 model WorkerProfile {
@@ -67,4 +73,37 @@ enum WorkType {
   GRANTS
   GIGS
   JOBS
+}
+
+// ********************* Web3 Mail *********************
+
+enum EmailType {
+  NEW_PROPOSAL
+  PROPOSAL_VALIDATED
+  FUND_RELEASE
+  REVIEW
+  PLATFORM_MARKETING
+  PROTOCOL_MARKETING
+  NEW_SERVICE
+}
+
+enum EmailSender {
+  IEXEC
+  SENDGRID
+}
+
+model CronProbe {
+  id           Int       @id @default(autoincrement())
+  type         EmailType @unique
+  lastRanAt    DateTime
+  successCount Int
+  duration     Int
+  errorCount   Int
+}
+
+model Email {
+  id     String      @id
+  sentAt DateTime
+  type   EmailType
+  sender EmailSender
 }

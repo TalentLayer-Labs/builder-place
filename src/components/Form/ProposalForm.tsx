@@ -1,25 +1,18 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
 import { formatUnits } from 'viem';
-import { usePublicClient, useWalletClient } from 'wagmi';
 import * as Yup from 'yup';
-import TalentLayerContext from '../../context/talentLayer';
 import useAllowedTokens from '../../hooks/useAllowedTokens';
-import { useChainId } from '../../hooks/useChainId';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
-import { IProposal, IService, IUser } from '../../types';
-import { parseRateAmount } from '../../utils/currency';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
+import useCreateProposal from '../../modules/BuilderPlace/hooks/proposal/useCreateProposal';
+import useUpdateProposal from '../../modules/BuilderPlace/hooks/proposal/useUpdateProposal';
+import { IProposal, IService } from '../../types';
+import { showErrorTransactionToast } from '../../utils/toast';
+import ProposalPostingFee from '../ProposalPostingFee';
+import RateAmountMessage from '../RateAmountMessage';
 import ServiceItem from '../ServiceItem';
-import { delegateCreateOrUpdateProposal } from '../request';
 import SubmitButton from './SubmitButton';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
-import usePlatform from '../../hooks/usePlatform';
-import { chains } from '../../context/web3modal';
 
-interface IFormValues {
+export interface IProposalFormValues {
   about: string;
   rateToken: string;
   rateAmount: number;
@@ -35,29 +28,16 @@ const validationSchema = Yup.object({
 });
 
 function ProposalForm({
-  user,
   service,
   existingProposal,
 }: {
-  user: IUser;
   service: IService;
   existingProposal?: IProposal;
 }) {
-  const chainId = useChainId();
-  const publicClient = usePublicClient({ chainId });
-  const { data: walletClient } = useWalletClient({ chainId });
   const router = useRouter();
   const allowedTokenList = useAllowedTokens();
-  const { canUseDelegation, refreshWorkerProfile } = useContext(TalentLayerContext);
-  const { platformHasAccess } = useContext(Web3MailContext);
-  const talentLayerClient = useTalentLayerClient();
-
-  const currentChain = chains.find(chain => chain.id === chainId);
-  const platform = usePlatform(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
-  const proposalPostingFee = platform?.proposalPostingFee || 0;
-  const proposalPostingFeeFormat = proposalPostingFee
-    ? Number(formatUnits(BigInt(proposalPostingFee), Number(currentChain?.nativeCurrency.decimals)))
-    : 0;
+  const { createNewProposal } = useCreateProposal();
+  const { updateProposal } = useUpdateProposal();
 
   if (allowedTokenList.length === 0) {
     return <div>Loading...</div>;
@@ -79,104 +59,44 @@ function ProposalForm({
     );
   }
 
-  const initialValues: IFormValues = {
+  let defaultRateAmount;
+  if (service.description?.rateAmount && service.description?.rateToken) {
+    const token = allowedTokenList.find(token => token.address === service.description?.rateToken);
+
+    defaultRateAmount = parseFloat(
+      formatUnits(BigInt(service.description?.rateAmount), Number(token?.decimals)),
+    );
+  }
+
+  const initialValues: IProposalFormValues = {
     about: existingProposal?.description?.about || '',
-    rateToken: existingProposal?.rateToken.address || '',
-    rateAmount: existingRateTokenAmount || 0,
+    rateToken: existingProposal?.rateToken.address || service.description?.rateToken || '',
+    rateAmount: existingRateTokenAmount || defaultRateAmount || 0,
     expirationDate: existingExpirationDate || 15,
     video_url: existingProposal?.description?.video_url || '',
   };
 
   const onSubmit = async (
-    values: IFormValues,
+    values: IProposalFormValues,
     {
       setSubmitting,
       resetForm,
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
-    const token = allowedTokenList.find(token => token.address === values.rateToken);
-    if (publicClient && token && walletClient) {
-      try {
-        const parsedRateAmount = await parseRateAmount(
-          values.rateAmount.toString(),
-          values.rateToken,
-          token.decimals,
-        );
-        const now = Math.floor(Date.now() / 1000);
-        const convertExpirationDate = now + 60 * 60 * 24 * values.expirationDate;
-        const convertExpirationDateString = convertExpirationDate.toString();
+    try {
+      const token = allowedTokenList.find(token => token.address === values.rateToken);
+      if (token) {
+        existingProposal
+          ? await updateProposal(values, token, service.id)
+          : await createNewProposal(values, token, service.id);
 
-        const parsedRateAmountString = parsedRateAmount.toString();
-
-        const proposal = {
-          about: values.about,
-          video_url: values.video_url,
-        };
-
-        let tx, cid, proposalResponse;
-
-        cid = await talentLayerClient?.proposal?.upload(proposal);
-
-        if (canUseDelegation) {
-          const proposalResponse = await delegateCreateOrUpdateProposal(
-            chainId,
-            user.id,
-            user.address,
-            service.id,
-            values.rateToken,
-            parsedRateAmountString,
-            cid || '',
-            convertExpirationDateString,
-            existingProposal?.status,
-          );
-          tx = proposalResponse.data.transaction;
-        } else {
-          if (existingProposal) {
-            proposalResponse = await talentLayerClient?.proposal.update(
-              proposal,
-              user.id,
-              service.id,
-              values.rateToken,
-              parsedRateAmountString,
-              convertExpirationDateString,
-            );
-          } else {
-            proposalResponse = await talentLayerClient?.proposal.create(
-              proposal,
-              user.id,
-              service.id,
-              values.rateToken,
-              parsedRateAmountString,
-              convertExpirationDateString,
-            );
-          }
-          tx = proposalResponse?.tx;
-          cid = proposalResponse?.cid;
-        }
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Creating your proposal...',
-            success: 'Congrats! Your proposal has been added',
-            error: 'An error occurred while creating your proposal',
-          },
-          publicClient,
-          tx,
-          'proposal',
-          cid,
-        );
         setSubmitting(false);
         resetForm();
-        router.push(`/dashboard`);
-        if (process.env.NEXT_PUBLIC_ACTIVATE_WEB3MAIL == 'true' && !platformHasAccess) {
-          createWeb3mailToast();
-        }
-      } catch (error) {
-        showErrorTransactionToast(error);
-      } finally {
-        if (canUseDelegation) await refreshWorkerProfile();
       }
+    } catch (error) {
+      showErrorTransactionToast(error);
+    } finally {
+      router.push(`/work/${service.id}`);
     }
   };
 
@@ -204,7 +124,7 @@ function ProposalForm({
                 id='about'
                 rows={8}
                 name='about'
-                className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
@@ -219,19 +139,12 @@ function ProposalForm({
                   type='number'
                   id='rateAmount'
                   name='rateAmount'
-                  className='mt-1 mb-1 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''
-                  // min={() => {
-                  //   const selectToken = allowedTokenList.find(
-                  //     token => token.address === values.rateToken,
-                  //   );
-                  //   if (!selectToken || !selectToken.minimumTransactionAmount) return null;
-
-                  //   return (
-                  //     BigInt(selectToken.minimumTransactionAmount) /
-                  //     10n ** BigInt(selectToken.decimals)
-                  //   );
-                  // }}
+                />
+                <RateAmountMessage
+                  allowedTokenList={allowedTokenList}
+                  selectTokenAddress={values.rateToken}
                 />
                 <span className='text-alone-error'>
                   <ErrorMessage name='rateAmount' />
@@ -243,7 +156,7 @@ function ProposalForm({
                   component='select'
                   id='rateToken'
                   name='rateToken'
-                  className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                   placeholder=''>
                   <option value=''>select a currency</option>
                   {allowedTokenList.map((token, index) => (
@@ -258,37 +171,21 @@ function ProposalForm({
               </label>
             </div>
             <label className='block flex-1'>
-              <span className='text-base-content'>proposal expiration date</span>
+              <span className='text-base-content'>days until proposal expiration</span>
               <Field
                 type='number'
                 id='expirationDate'
                 name='expirationDate'
-                className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                className='mt-1 mb-2 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
               <span className='text-alone-error'>
                 <ErrorMessage name='expirationDate' />
               </span>
             </label>
-            {/* <label className='block flex-1'>
-              <span className='text-base-content'>video proposal url (optional)</span>
-              <Field
-                type='text'
-                id='video_url'
-                name='video_url'
-                className='mt-1 mb-2 block w-full rounded-xl border border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                placeholder='Enter  video URL'
-              />
-              <span className='text-alone-error'>
-                <ErrorMessage name='video_url' />
-              </span>
-            </label> */}
-            {proposalPostingFeeFormat !== 0 && !existingProposal && (
-              <span className='text-base-content'>
-                Fee for making a proposal: {proposalPostingFeeFormat}{' '}
-                {currentChain?.nativeCurrency.symbol}
-              </span>
-            )}
+
+            {!existingProposal && <ProposalPostingFee />}
+
             <SubmitButton isSubmitting={isSubmitting} label='Post' />
           </div>
         </Form>

@@ -1,33 +1,36 @@
 import { Check, X } from 'heroicons-react';
 import { useState } from 'react';
-import { useBalance, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import { FEE_RATE_DIVIDER } from '../../config';
-import { validateProposal } from '../../contracts/acceptProposal';
 import useFees from '../../hooks/useFees';
 import ContactButton from '../../modules/Messaging/components/ContactButton';
-import { IAccount, IProposal } from '../../types';
-import { renderTokenAmount } from '../../utils/conversion';
-import Step from '../Step';
-import { useChainId } from '../../hooks/useChainId';
-import useTalentLayerClient from '../../hooks/useTalentLayerClient';
+import { IProposal } from '../../types';
 import { ZERO_ADDRESS } from '../../utils/constant';
+import { renderTokenAmount } from '../../utils/conversion';
+import AsyncButton from '../AsyncButton';
+import Step from '../Step';
+import useValidateProposal from '../../modules/BuilderPlace/hooks/proposal/useValidateProposal';
+import { showErrorTransactionToast } from '../../utils/toast';
 
-function ValidateProposalModal({ proposal, account }: { proposal: IProposal; account: IAccount }) {
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({
-    chainId,
-  });
-  const publicClient = usePublicClient({ chainId });
+function ValidateProposalModal({
+  proposal,
+  callBack,
+}: {
+  proposal: IProposal;
+  callBack?: () => void;
+}) {
+  const { address } = useAccount();
   const [show, setShow] = useState(false);
-  const { data: ethBalance } = useBalance({ address: account.address });
+  const [paymentSubmitting, setPaymentSubmitting] = useState(false);
+  const { validateProposal } = useValidateProposal();
+
+  const { data: ethBalance } = useBalance({ address: address });
   const isProposalUseEth: boolean = proposal.rateToken.address === ZERO_ADDRESS;
   const { data: tokenBalance } = useBalance({
-    address: account.address,
+    address: address,
     enabled: !isProposalUseEth,
     token: proposal.rateToken.address,
   });
-
-  const talentLayerClient = useTalentLayerClient();
 
   const originValidatedProposalPlatformId = proposal.platform.id;
   const originServicePlatformId = proposal.service.platform.id;
@@ -46,18 +49,21 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
   const totalAmount = jobRateAmount + originServiceFee + originValidatedProposalFee + protocolFee;
 
   const onSubmit = async () => {
-    if (!walletClient || !publicClient || !talentLayerClient) {
-      return;
-    }
+    try {
+      setPaymentSubmitting(true);
 
-    await validateProposal(
-      talentLayerClient,
-      publicClient,
-      proposal.service.id,
-      proposal.id,
-      proposal.rateToken.address,
-    );
-    setShow(false);
+      await validateProposal(proposal.service.id, proposal.id, proposal.rateToken.address);
+
+      if (callBack) {
+        callBack();
+      }
+    } catch (error) {
+      console.error('Error validating proposal', error);
+      showErrorTransactionToast(error);
+    } finally {
+      setPaymentSubmitting(false);
+      setShow(false);
+    }
   };
 
   const hasEnoughBalance = () => {
@@ -131,33 +137,40 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
                       {renderTokenAmount(proposal.rateToken, proposal.rateAmount)}
                     </p>
                   </div>
-                  <div className='flex justify-between items-center w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>
-                      Fees from the marketplace originating the service{' '}
-                      <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
-                        {((Number(originServiceFeeRate) / FEE_RATE_DIVIDER) * 100).toString()} %
-                      </span>
-                    </p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      +{renderTokenAmount(proposal.rateToken, originServiceFee.toString())}
-                    </p>
-                  </div>
-                  <div className='flex justify-between items-center w-full'>
-                    <p className='text-base-content leading-4 text-base-content'>
-                      Fees from the marketplace validating the proposal{' '}
-                      <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
-                        {(
-                          (Number(originValidatedProposalFeeRate) / FEE_RATE_DIVIDER) *
-                          100
-                        ).toString()}{' '}
-                        %
-                      </span>
-                    </p>
-                    <p className='text-base-content  leading-4 text-base-content'>
-                      +
-                      {renderTokenAmount(proposal.rateToken, originValidatedProposalFee.toString())}
-                    </p>
-                  </div>
+                  {originServiceFeeRate > 0 && (
+                    <div className='flex justify-between items-center w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>
+                        Service fee{' '}
+                        <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
+                          {((Number(originServiceFeeRate) / FEE_RATE_DIVIDER) * 100).toString()} %
+                        </span>
+                      </p>
+                      <p className='text-base-content  leading-4 text-base-content'>
+                        +{renderTokenAmount(proposal.rateToken, originServiceFee.toString())}
+                      </p>
+                    </div>
+                  )}
+                  {originValidatedProposalFee > 0 && (
+                    <div className='flex justify-between items-center w-full'>
+                      <p className='text-base-content leading-4 text-base-content'>
+                        Proposal fee{' '}
+                        <span className='bg-base-200 p-1 text-xs font-medium leading-3 text-base-content opacity-50'>
+                          {(
+                            (Number(originValidatedProposalFeeRate) / FEE_RATE_DIVIDER) *
+                            100
+                          ).toString()}{' '}
+                          %
+                        </span>
+                      </p>
+                      <p className='text-base-content  leading-4 text-base-content'>
+                        +
+                        {renderTokenAmount(
+                          proposal.rateToken,
+                          originValidatedProposalFee.toString(),
+                        )}
+                      </p>
+                    </div>
+                  )}
                   <div className='flex justify-between items-center w-full'>
                     <p className='text-base-content leading-4 text-base-content'>
                       Protocol fees{' '}
@@ -205,16 +218,14 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
                   {isProposalUseEth && ethBalance && (
                     <div className='flex justify-between w-full'>
                       <p className='text-base-content leading-4 text-base-content'>
-                        {ethBalance.formatted} ETH
+                        {ethBalance.formatted} {ethBalance.symbol}
                       </p>
                       <p className=''>
                         <span
                           className={`block ${
-                            (isProposalUseEth && hasEnoughBalance()) || ethBalance.value > 0
-                              ? 'bg-info'
-                              : 'bg-error'
+                            hasEnoughBalance() ? 'bg-info' : 'bg-error'
                           } p-1 text-xs font-medium text-base-content rounded-full`}>
-                          {(isProposalUseEth && hasEnoughBalance()) || ethBalance.value > 0 ? (
+                          {hasEnoughBalance() ? (
                             <Check className='w-4 h-4' />
                           ) : (
                             <X className='w-4 h-4' />
@@ -228,17 +239,16 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
             </div>
             <div className='flex items-center p-6 space-x-2 rounded-b border-t border-info '>
               {hasEnoughBalance() ? (
-                <button
+                <AsyncButton
                   onClick={() => onSubmit()}
-                  type='button'
-                  className='hover:text-success hover:bg-success bg-info text-base-content rounded-xl px-5 py-2.5 text-center'>
-                  {isProposalUseEth ? 'Validate' : 'Allow spending'}
-                </button>
+                  isSubmitting={paymentSubmitting}
+                  label={'Validate'}
+                />
               ) : (
                 <button
                   disabled
                   type='button'
-                  className='hover:text-red-600 hover:bg-error bg-error text-base-content rounded-xl px-5 py-2.5 text-center'>
+                  className='text-base-content bg-gray-300 rounded-xl px-5 py-2.5 text-center'>
                   Validate
                 </button>
               )}
@@ -246,7 +256,7 @@ function ValidateProposalModal({ proposal, account }: { proposal: IProposal; acc
                 onClick={() => setShow(false)}
                 type='button'
                 className='text-base-content bg-base-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl border text-sm font-medium px-5 py-2.5 hover:text-base-content focus:z-10 '>
-                Decline
+                Close
               </button>
               <ContactButton
                 userAddress={proposal.seller.address}

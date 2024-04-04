@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
-import { useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import Steps from '../../../components/Steps';
 import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
@@ -10,6 +10,8 @@ import ShareModal from '../../../modules/Messaging/components/ShareModal';
 import { XmtpContext } from '../../../modules/Messaging/context/XmtpContext';
 import useStreamConversations from '../../../modules/Messaging/hooks/useStreamConversations';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
+import Loading from '../../../components/Loading';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -17,7 +19,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function MessagingIndex() {
   const chainId = useChainId();
-  const { account, user } = useContext(TalentLayerContext);
+  const { user, loading } = useContext(UserContext);
+  const account = useAccount();
   const { data: walletClient } = useWalletClient({
     chainId,
   });
@@ -31,6 +34,10 @@ function MessagingIndex() {
       await providerState.initClient();
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!user) {
     return <Steps />;

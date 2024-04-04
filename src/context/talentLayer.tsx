@@ -1,46 +1,62 @@
 import { TalentLayerClient } from '@talentlayer/client';
-import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
+import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { getUserByAddress } from '../queries/users';
-import { iTalentLayerContext, IUser } from '../types';
-import { getCompletionScores, ICompletionScores } from '../utils/profile';
-import { getWorkerProfileByOwnerId } from '../modules/BuilderPlace/request';
-import { IWorkerProfile } from '../modules/BuilderPlace/types';
-import { MAX_TRANSACTION_AMOUNT } from '../config';
+import { IUser } from '../types';
+
+export type iTalentLayerContext = {
+  loading: boolean;
+  canUseBackendDelegate: boolean;
+  refreshData: () => Promise<boolean>;
+  user?: IUser;
+  talentLayerClient?: TalentLayerClient;
+};
 
 const TalentLayerContext = createContext<iTalentLayerContext>({
   loading: true,
-  canUseDelegation: false,
+  canUseBackendDelegate: false,
   refreshData: async () => {
-    return false;
-  },
-  refreshWorkerProfile: async () => {
     return false;
   },
 });
 
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
+  const { switchNetwork } = useSwitchNetwork();
   const { data: walletClient } = useWalletClient();
+  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { user: workerProfile } = useContext(UserContext);
   const [user, setUser] = useState<IUser | undefined>();
-  const [workerProfile, setWorkerProfile] = useState<IWorkerProfile | undefined>();
+
   const account = useAccount();
-  const [canUseDelegation, setCanUseDelegation] = useState(false);
+  const [canUseBackendDelegate, setCanUseBackendDelegate] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [completionScores, setCompletionScores] = useState<ICompletionScores | undefined>();
   const [talentLayerClient, setTalentLayerClient] = useState<TalentLayerClient>();
 
   // automatically switch to the default chain is the current one is not part of the config
   useEffect(() => {
+    if (
+      switchNetwork &&
+      chainId !== (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number)
+    ) {
+      switchNetwork(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number);
+    }
+
+    const platformId = parseInt(
+      builderPlace?.talentLayerPlatformId || (process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+    );
+
     const talentLayerClient = new TalentLayerClient({
       chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
       ipfsConfig: {
         clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
         baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
       },
-      platformId: parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string),
+      platformId: platformId,
       signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
       walletConfig: walletClient
         ? {
@@ -49,47 +65,32 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         : undefined,
     });
     setTalentLayerClient(talentLayerClient);
-  }, [account.address, walletClient]);
+  }, [account.address, walletClient, chainId]);
 
   const fetchData = async () => {
-    if (!account.address || !account.isConnected || !talentLayerClient) {
+    if (!account.address || !account.isConnected) {
       setLoading(false);
       return false;
     }
 
     try {
-      console.log('fetching data', chainId, account.address);
-      const userResponse = await getUserByAddress(chainId, account.address);
+      const userResponse = await getUserByAddress(
+        process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
+        account.address,
+      );
 
       if (userResponse?.data?.data?.users?.length == 0) {
+        setUser(undefined);
         setLoading(false);
         return false;
       }
 
       const currentUser = userResponse.data.data.users[0];
-
-      const platform = await talentLayerClient.platform.getOne(
-        process.env.NEXT_PUBLIC_PLATFORM_ID as string,
-      );
-      currentUser.isAdmin = platform?.address === currentUser?.address;
+      if (builderPlace) {
+        currentUser.isAdmin = builderPlace?.owner.address === currentUser?.address;
+      }
 
       setUser(currentUser);
-
-      const userHasDelegatedToPlatform =
-        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
-        userResponse.data.data.users[0].delegates &&
-        userResponse.data.data.users[0].delegates.indexOf(
-          process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase(),
-        ) !== -1;
-
-      const userHasReachedDelegationLimit =
-        (workerProfile?.weeklyTransactionCounter || 0) > MAX_TRANSACTION_AMOUNT;
-
-      setCanUseDelegation(
-        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
-          userHasDelegatedToPlatform &&
-          !userHasReachedDelegationLimit,
-      );
       setLoading(false);
       return true;
     } catch (err: any) {
@@ -110,69 +111,61 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Check whether all conditions are met to use the backend delegate
+  useEffect(() => {
+    if (user && workerProfile) {
+      const maxFreeTransactions = Number(
+        process.env.NEXT_PUBLIC_MAX_FREE_WEEKLY_GASSLESS_TRANSACTIONS,
+      );
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      const oneWeekAgoSeconds = nowSeconds - 7 * 24 * 60 * 60; // 7 days ago in seconds
+      const counterWillReset = workerProfile.counterStartDate < oneWeekAgoSeconds;
+
+      console.log('user.delegates', user.delegates);
+      console.log(
+        'process.env.NEXT_PUBLIC_DELEGATE_ADDRESS',
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS,
+      );
+
+      const userHasDelegatedToPlatform =
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS &&
+        user.delegates &&
+        user.delegates.indexOf(process.env.NEXT_PUBLIC_DELEGATE_ADDRESS.toLowerCase()) !== -1;
+
+      const userHasReachedDelegationLimit =
+        (workerProfile?.weeklyTransactionCounter || 0) >= maxFreeTransactions;
+
+      console.log(
+        'userHasDelegatedToPlatform',
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true',
+        !!userHasDelegatedToPlatform,
+        !userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset),
+        !!workerProfile?.isEmailVerified,
+        user.delegates,
+        process.env.NEXT_PUBLIC_DELEGATE_ADDRESS,
+      );
+      setCanUseBackendDelegate(
+        process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' &&
+          !!userHasDelegatedToPlatform &&
+          (!userHasReachedDelegationLimit || (userHasReachedDelegationLimit && counterWillReset)) &&
+          !!workerProfile?.isEmailVerified,
+      );
+    }
+  }, [user, workerProfile]);
+
   useEffect(() => {
     fetchData();
-  }, [chainId, account.address, talentLayerClient]);
-
-  const getWorkerProfile = async (userId: string) => {
-    const response = await getWorkerProfileByOwnerId(userId);
-
-    if (response.status !== 200) {
-      console.error('Error while fetching worker profile');
-      return;
-    }
-
-    const data = await response.json();
-    if (data) {
-      setWorkerProfile(data);
-    }
-  };
-
-  const refreshWorkerProfile = async () => {
-    try {
-      setLoading(true);
-      if (user?.id) {
-        console.log('refreshing worker data');
-        await getWorkerProfile(user.id);
-      }
-      return true;
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!user) return;
-    const completionScores = getCompletionScores(user);
-    setCompletionScores(completionScores);
-    getWorkerProfile(user.id);
-  }, [user]);
+  }, [account.address]);
 
   const value = useMemo(() => {
     return {
       user,
-      account: account ? account : undefined,
-      workerProfile,
-      canUseDelegation,
+      canUseBackendDelegate,
       refreshData: fetchData,
-      refreshWorkerProfile: refreshWorkerProfile,
       loading,
-      completionScores,
       talentLayerClient,
     };
-  }, [
-    account.address,
-    user?.id,
-    canUseDelegation,
-    workerProfile,
-    loading,
-    completionScores,
-    talentLayerClient,
-  ]);
+  }, [account.address, user?.id, canUseBackendDelegate, loading, talentLayerClient]);
 
   return <TalentLayerContext.Provider value={value}>{children}</TalentLayerContext.Provider>;
 };

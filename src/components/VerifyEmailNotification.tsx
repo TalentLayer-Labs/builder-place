@@ -1,36 +1,46 @@
 import Notification from './Notification';
-import { sendVerificationEmail } from '../modules/BuilderPlace/request';
 import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
-import TalentLayerContext from '../context/talentLayer';
 import { useRouter } from 'next/router';
+import UserContext from '../modules/BuilderPlace/context/UserContext';
+import { createVerificationEmailToast } from '../modules/BuilderPlace/utils/toast';
+import { useMutation } from 'react-query';
+import { ISendVerificationEmail } from '../app/api/emails/send-verification/route';
+import axios, { AxiosResponse } from 'axios';
 
 type VerifyEmailNotificationProps = {
   callback?: () => void | Promise<void>;
 };
 
 const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
-  const { user, workerProfile } = useContext(TalentLayerContext);
+  const { user } = useContext(UserContext);
   const router = useRouter();
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState(true);
+  const sendVerificationEmailMutation = useMutation(
+    async (
+      body: ISendVerificationEmail,
+    ): Promise<AxiosResponse<{ id: string; message: string }>> => {
+      return await axios.post('/api/emails/send-verification', body);
+    },
+  );
 
   const onVerifyMail = async () => {
     const domain =
       typeof router.query.domain === 'object' && !!router.query.domain
         ? router.query.domain[0]
         : router.query.domain;
-    if (workerProfile?.email && !workerProfile.isEmailVerified && user?.id && domain) {
+    if (user?.email && !user.isEmailVerified && user?.id && domain) {
       try {
-        const response = await sendVerificationEmail(
-          workerProfile.email,
-          workerProfile.id,
-          workerProfile.name,
-          domain,
-        );
+        setSubmitting(true);
+        await sendVerificationEmailMutation.mutateAsync({
+          userId: user.id.toString(),
+          domain: domain,
+          name: user.name,
+          to: user.email,
+        });
 
-        if (response.status !== 200) {
-          throw new Error('Error sending verification email');
-        }
+        await createVerificationEmailToast();
 
         setShowNotification(false);
 
@@ -39,22 +49,25 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
         }
       } catch (err: any) {
         showErrorTransactionToast(err.message);
+      } finally {
+        setSubmitting(false);
       }
     }
   };
 
-  if (!workerProfile?.email || workerProfile?.isEmailVerified || !showNotification) {
+  if (!user?.email || user?.isEmailVerified || !showNotification) {
     return null;
   }
 
   return (
     <Notification
       title='Verify your email!'
-      text='Needed to active email notifications.'
+      text='Needed to activate email notifications'
       link=''
       linkText={'Verify my email'}
       color='success'
-      imageUrl={user?.description?.image_url}
+      submitting={submitting}
+      imageUrl={user.picture}
       callback={onVerifyMail}
     />
   );
