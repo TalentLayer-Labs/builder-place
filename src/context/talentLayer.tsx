@@ -68,16 +68,15 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
         : undefined,
     });
     setTalentLayerClient(talentLayerClient);
-  }, [account.address, walletClient]);
+  }, [account.address, walletClient, chainId]);
 
   const fetchData = async () => {
-    if (!account.address || !account.isConnected || !talentLayerClient) {
+    if (!account.address || !account.isConnected) {
       setLoading(false);
       return false;
     }
 
     try {
-      console.log('fetching data', account.address);
       const userResponse = await getUserByAddress(
         process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
         account.address,
@@ -159,7 +158,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchData();
-  }, [chainId, account.address, talentLayerClient]);
+  }, [account.address]);
 
   useEffect(() => {
     if (!user) return;
