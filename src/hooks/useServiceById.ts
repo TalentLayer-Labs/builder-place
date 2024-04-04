@@ -15,8 +15,6 @@ const useServiceById = (serviceId: string): IReturn => {
   const chainId = useChainId();
   const talentLayerClient = useTalentLayerClient();
 
-  const queryKey = ['service', serviceId, chainId];
-
   const fetchService = async (): Promise<IService> => {
     if (!talentLayerClient) {
       throw new Error('TalentLayer client is not available');
@@ -27,6 +25,7 @@ const useServiceById = (serviceId: string): IReturn => {
     return response?.data?.data?.service;
   };
 
+  const queryKey = ['service', serviceId, chainId];
   const {
     data: service,
     isLoading,
