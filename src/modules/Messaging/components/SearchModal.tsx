@@ -1,12 +1,10 @@
 import { SearchOutline } from 'heroicons-react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
 
 function SearchModal() {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState('');
-  const account = useAccount();
   const router = useRouter();
 
   const handleChat = () => {
@@ -28,13 +26,13 @@ function SearchModal() {
         className={`${
           !show ? 'hidden' : ''
         } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal h-full bg-black/90 flex flex-col items-center justify-center`}>
-        <div className='relative w-full max-w-2xl h-auto'>
+        <div className='relative w-full max-w-2xl h-auto px-4'>
           <div className='relative bg-base-300 shadow '>
-            <div className='fixed top-0 right-0'>
+            <div className='absolute top-[-30px] right-[-10px]'>
               <button
                 onClick={() => setShow(false)}
                 type='button'
-                className='text-base-content bg-transparent hover:bg-base-200 hover:text-base-content rounded-xl text-sm p-4 ml-auto inline-flex items-center '
+                className='text-error bg-error hover:opacity-60 rounded-xl text-sm p-4 ml-auto inline-flex items-center '
                 data-modal-toggle='defaultModal'>
                 <svg
                   className='w-5 h-5'
@@ -49,8 +47,11 @@ function SearchModal() {
                 <span>Close</span>
               </button>
             </div>
-            <div className='flex flex-col justify-between items-center '>
-              <h3 className='text-xl font-semibold text-center py-6'>Search by address</h3>
+            <div className='flex flex-col justify-between items-center pb-6'>
+              <h3 className='text-xl font-semibold text-center py-6'>
+                search by <br />
+                wallet address
+              </h3>
               <div className='flex justify-center'>
                 <input
                   type='text'
@@ -62,11 +63,13 @@ function SearchModal() {
                   value={search}
                 />
               </div>
-              <a
-                onClick={handleChat}
-                className='flex p-3 bg-base-300 border-info rounded-xl justify-between mt-10 text-base-content'>
-                Chat
-              </a>
+              {search.length > 0 && (
+                <a
+                  onClick={handleChat}
+                  className='flex p-3 bg-primary text-primary border-info rounded-xl justify-between mt-10 text-base-content'>
+                  Chat
+                </a>
+              )}
             </div>
           </div>
         </div>
