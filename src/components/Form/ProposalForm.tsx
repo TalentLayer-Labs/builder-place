@@ -79,10 +79,19 @@ function ProposalForm({
     );
   }
 
+  let defaultRateAmount;
+  if (service.description?.rateAmount && service.description?.rateToken) {
+    const token = allowedTokenList.find(token => token.address === service.description?.rateToken);
+
+    defaultRateAmount = parseFloat(
+      formatUnits(BigInt(service.description?.rateAmount), Number(token?.decimals)),
+    );
+  }
+
   const initialValues: IProposalFormValues = {
     about: existingProposal?.description?.about || '',
-    rateToken: existingProposal?.rateToken.address || '',
-    rateAmount: existingRateTokenAmount || 0,
+    rateToken: existingProposal?.rateToken.address || service.description?.rateToken || '',
+    rateAmount: existingRateTokenAmount || defaultRateAmount || 0,
     expirationDate: existingExpirationDate || 15,
     video_url: existingProposal?.description?.video_url || '',
   };
