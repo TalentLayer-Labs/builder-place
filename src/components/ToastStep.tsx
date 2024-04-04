@@ -27,8 +27,10 @@ function ToastStep({
             <span className='animate-ping absolute h-4 w-4 rounded-full bg-zinc-200' />
             <span className='relative block h-2 w-2 rounded-full bg-zinc-600' />
           </span>
-          <span className='ml-3 text-sm font-medium text-content'>{title}</span>
-          <>{children && children()}</>
+          <span className='flex flex-col items-center ml-3 '>
+            <span className='text-sm font-medium text-content block'>{title}</span>
+            <>{children && children()}</>
+          </span>
         </div>
       ) : (
         <div className='group'>
