@@ -58,9 +58,11 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
           <div className='relative bg-base-300 rounded-xl shadow '>
             <div className='flex justify-between items-start p-4 rounded-t border-b border-info'>
               <h3 className='text-xl font-semibold text-base-content '>
-                {service.status === ServiceStatusEnum.Confirmed
-                  ? 'Release payment'
-                  : 'Payment summary'}
+                {service.status === ServiceStatusEnum.Finished
+                  ? 'Payment summary'
+                  : service.status === ServiceStatusEnum.Confirmed && !isBuyer
+                  ? 'Reimburse payment'
+                  : 'Release payment'}
               </h3>
               <button
                 onClick={() => setShow(false)}

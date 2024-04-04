@@ -103,7 +103,7 @@ function ReleaseForm({
       <div className='flex flex-col px-4 py-6 md:p-6 xl:p-6 w-full bg-base-200 space-y-6'>
         {service.status === ServiceStatusEnum.Confirmed && (
           <h3 className='text-xl font-semibold leading-5 text-base-content'>
-            Select the % amount to release
+            {isBuyer ? 'Select the % amount to release' : 'Select the % amount to reimburse'}
           </h3>
         )}
         <div className='flex space-x-2 flex-row'>
