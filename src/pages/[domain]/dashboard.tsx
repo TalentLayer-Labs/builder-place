@@ -70,9 +70,9 @@ function Dashboard() {
         <div>
           <div className='mb-12'>
             <VerifyEmailNotification />
+            {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
           </div>
 
-          {process.env.NEXT_PUBLIC_ACTIVATE_DELEGATE === 'true' && <DelegationNotification />}
           {isBuilderPlaceCollaborator && (
             <>
               {(!builderPlace.logo || !builderPlace.icon) && (
