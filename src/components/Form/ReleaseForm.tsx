@@ -1,4 +1,4 @@
-import { Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext, useMemo, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import TalentLayerContext from '../../context/talentLayer';
@@ -9,6 +9,7 @@ import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 import useExecutePayment from '../../modules/BuilderPlace/hooks/payment/useExecutePayment';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import AsyncButton from '../AsyncButton';
+import * as Yup from 'yup';
 
 interface IFormValues {
   percentField: string;
@@ -22,6 +23,14 @@ interface IReleaseFormProps {
   closeModal: () => void;
   refreshPayments: () => Promise<void>;
 }
+
+const validationSchema = Yup.object({
+  percentField: Yup.number()
+    .integer('Please enter an integer')
+    .min(0, 'Minimum value is 0')
+    .max(100, 'Maximum value is 100')
+    .required('Required'),
+});
 
 function ReleaseForm({
   totalInServiceAmount,
@@ -85,7 +94,11 @@ function ReleaseForm({
 
   const onChange = (e: any) => {
     const percentOnChange = e.target.value;
-    if (percentOnChange <= 100 && percentOnChange >= 0) {
+    if (
+      percentOnChange <= 100 &&
+      percentOnChange >= 0 &&
+      !percentOnChange.toString().includes('.' || ',')
+    ) {
       setPercentage(percentOnChange);
     }
   };
@@ -124,24 +137,33 @@ function ReleaseForm({
             </button>
           </div>
         </div>
-        <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize={true}
+          onSubmit={handleSubmit}>
           <Form>
             <div className='sm:px-6 justify-between bg-base-100 flex flex-row items-center gap-2'>
               <div>
                 <span className='text-base-content font-semibold leading-4 text-base-content'>
                   %{' '}
                 </span>
-                <Field
-                  type='number'
-                  label='Pourcent'
-                  className='text-base-content opacity-50 py-2 focus:outline-none text-sm sm:text-lg border-0'
-                  placeholder='between 0 and 100'
-                  id='pourcentField'
-                  name='pourcentField'
-                  required
-                  value={percent ? percent : ''}
-                  onChange={onChange}
-                />
+                <label className='block'>
+                  <Field
+                    type='number'
+                    label='Percent'
+                    className='text-base-content opacity-50 py-2 focus:outline-none text-sm sm:text-lg border-0'
+                    placeholder='between 0 and 100'
+                    id='percentField'
+                    name='percentField'
+                    required
+                    value={percent ? percent : ''}
+                    onChange={onChange}
+                  />
+                  <span className='text-alone-error'>
+                    <ErrorMessage name='percentField' />
+                  </span>
+                </label>
               </div>
               {
                 <div className='pr-2 text-base-content font-semibold leading-4 text-base-content  '>
