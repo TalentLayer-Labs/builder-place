@@ -15,7 +15,7 @@ const BuilderPlaceContext = createContext<{
 
 const BuilderPlaceProvider = ({ data, children }: { data: IBuilderPlace; children: ReactNode }) => {
   const { address } = useAccount();
-  const isBuilderPlaceOwner = address === data.owner?.address;
+  const isBuilderPlaceOwner = address === data?.owner?.address;
   const isBuilderPlaceCollaborator = data?.collaborators
     ? data?.collaborators?.some(
         collaborator => collaborator?.address?.toLocaleLowerCase() === address?.toLocaleLowerCase(),
