@@ -88,6 +88,27 @@ function AdminFees() {
           }}
           valueName={`Fees (in ${currentChain?.nativeCurrency.symbol}) asked to post a service on the platform`}
         />
+
+        <SingleValueForm
+          validationData={{
+            validationSchema: Yup.object({
+              [`Fees (in ${currentChain?.nativeCurrency.symbol}) asked to post a proposal on the platform`]:
+                Yup.number().required('value is required'),
+            }),
+            valueType: 'number',
+            initialValue: platform?.proposalPostingFee
+              ? formatEther(BigInt(platform?.proposalPostingFee))
+              : 0,
+          }}
+          contractParams={{
+            contractFunctionName: 'updateProposalPostingFee',
+            contractAddress: config.contracts.talentLayerPlatformId,
+            contractAbi: TalentLayerPlatformID.abi,
+            contractEntity: 'platform',
+            contractInputs: builderPlace?.talentLayerPlatformId,
+          }}
+          valueName={`Fees (in ${currentChain?.nativeCurrency.symbol}) asked to post a proposal on the platform`}
+        />
       </div>
     </div>
   );
