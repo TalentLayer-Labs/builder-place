@@ -25,8 +25,6 @@ const useCreateService = () => {
 
     console.log('canUseBackendDelegate', canUseBackendDelegate);
 
-    await wait(2);
-
     if (
       user?.talentLayerId &&
       publicClient &&
@@ -50,8 +48,6 @@ const useCreateService = () => {
 
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
-          await wait(2);
-
           /**
            * @dev Sign message to prove ownership of the address
            */

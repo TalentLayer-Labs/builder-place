@@ -28,8 +28,6 @@ const useUpdateService = () => {
       throw new Error('Please connect your wallet');
     }
 
-    await wait(2);
-
     if (
       // account?.isConnected === true &&
       user?.talentLayerId &&
@@ -54,8 +52,6 @@ const useUpdateService = () => {
 
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
-          await wait(2);
-
           /**
            * @dev Sign message to prove ownership of the address
            */

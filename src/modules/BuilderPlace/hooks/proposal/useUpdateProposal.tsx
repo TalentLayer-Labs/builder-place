@@ -26,8 +26,6 @@ const useUpdateProposal = () => {
 
     console.log('updateProposal', { canUseBackendDelegate });
 
-    await wait(2);
-
     if (
       talentLayerUser?.id &&
       publicClient &&
@@ -58,8 +56,6 @@ const useUpdateProposal = () => {
 
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
-          await wait(2);
-
           /**
            * @dev Sign message to prove ownership of the address
            */

@@ -42,8 +42,6 @@ const useUpdatePlatform = () => {
       closeOnClick: false,
     });
 
-    await wait(2);
-
     try {
       /**
        * @dev Sign message to prove ownership of the address

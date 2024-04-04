@@ -30,8 +30,6 @@ const useExecutePayment = () => {
       throw new Error('Please connect your wallet');
     }
 
-    await wait(2);
-
     if (
       // account?.isConnected === true &&
       talentLayerUser?.id &&

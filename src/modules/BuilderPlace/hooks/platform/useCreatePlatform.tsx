@@ -45,8 +45,6 @@ const useCreatePlatform = () => {
       closeOnClick: false,
     });
 
-    await wait(2);
-
     let platformId = existingPlatform?.id;
 
     try {

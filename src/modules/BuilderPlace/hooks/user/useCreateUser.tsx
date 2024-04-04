@@ -45,8 +45,6 @@ const useCreateUser = () => {
       closeOnClick: false,
     });
 
-    await wait(2);
-
     let userId = talentLayerUser?.id;
 
     try {

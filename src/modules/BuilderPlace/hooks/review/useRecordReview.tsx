@@ -27,8 +27,6 @@ const useRecordReview = () => {
       throw new Error('Please connect your wallet');
     }
 
-    await wait(2);
-
     if (
       talentLayerUser?.id &&
       publicClient &&

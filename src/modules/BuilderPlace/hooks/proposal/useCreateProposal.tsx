@@ -28,8 +28,6 @@ const useCreateProposal = () => {
       throw new Error('Please connect your wallet');
     }
 
-    await wait(2);
-
     if (
       talentLayerUser?.id &&
       publicClient &&
@@ -60,7 +58,6 @@ const useCreateProposal = () => {
 
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
-          await wait(2);
 
           /**
            * @dev Sign message to prove ownership of the address
