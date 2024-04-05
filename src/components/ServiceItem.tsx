@@ -91,7 +91,6 @@ function ServiceItem({
             )}
           </td>
 
-          <td className='border border-info p-2'>Gig</td>
           <td className='border border-info p-2'>
             <Link
               className='text-base-content hover:opacity-70 underline'
