@@ -12,6 +12,16 @@ export const toggleDelegation = async (
   walletClient: WalletClient,
   validateState: boolean,
 ): Promise<void | { error: string }> => {
+  console.log(
+    'toggleDelegation args',
+    chainId,
+    user,
+    config,
+    DelegateAddress,
+    publicClient,
+    walletClient,
+    validateState,
+  );
   try {
     let tx: Address;
     let toastMessages;
