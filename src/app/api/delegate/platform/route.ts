@@ -13,6 +13,8 @@ export interface IPlatformMintForAddress {
   signature: `0x${string}` | Uint8Array;
 }
 
+const MAX_RETRIES = 5;
+
 /**
  * POST /api/delegate/platform
  * @note: The delegate address executing the mint function needs to have the MINT_ROLE
@@ -70,23 +72,39 @@ export async function POST(req: Request) {
 
     console.log('tx hash', txHash);
 
-    await publicClient.waitForTransactionReceipt({
-      confirmations: 1,
-      hash: txHash,
-    });
+    console.log(`Minting Platform Id for address ${body.address}...`);
 
-    const id = await publicClient.readContract({
-      address: config.contracts.talentLayerPlatformId,
-      abi: TalentLayerPlatformID.abi,
-      functionName: 'ids',
-      args: [body.address],
-    });
+    let id: bigint = 0n;
+    let retries = 0;
+    let confirmations = 1;
 
-    console.log('Platform id', id);
+    while (id === 0n && retries < MAX_RETRIES) {
+      console.log('Waiting for transaction to be mined, try: ', retries + 1);
+      console.log('Confirmations', confirmations);
 
-    const platformId = id as unknown as string;
+      // Wait for transaction to be mined - increase block confirmations each time
+      const receipt = await publicClient.waitForTransactionReceipt({
+        confirmations,
+        hash: txHash,
+      });
 
-    return Response.json({ transaction: txHash, platformId: String(platformId) }, { status: 201 });
+      console.log('Mint Transaction Status', receipt.status);
+
+      // Get Minted PlatformId
+      id = (await publicClient.readContract({
+        address: config.contracts.talentLayerPlatformId,
+        abi: TalentLayerPlatformID.abi,
+        functionName: 'ids',
+        args: [body.address],
+      })) as bigint;
+
+      console.log('Platform id', id);
+
+      retries++;
+      confirmations++;
+    }
+
+    return Response.json({ transaction: txHash, platformId: String(id) }, { status: 201 });
   } catch (error: any) {
     // @TODO: move error handle to a middleware ? or factorize it ?
     let message = 'Failed to create plaform';

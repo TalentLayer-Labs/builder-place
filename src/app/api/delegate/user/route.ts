@@ -15,6 +15,8 @@ export interface IUserMintForAddress {
   addDelegateAndTransferId?: boolean;
 }
 
+const MAX_RETRIES = 5;
+
 /**
  * POST /api/delegate/user
  */
@@ -51,14 +53,15 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Server Error' }, { status: 500 });
     }
 
-    let transaction, userId;
+    let userId: bigint = 0n;
+    let transaction;
 
     /**
      * If addDelegateAndTransferId is true, we mint the TlId for the user, add the delegator address as delegate, then transfer it to them.
      * @dev: This requires the delegator address not to have an existing TlId.
      */
     if (body.addDelegateAndTransferId) {
-      const tx = await walletClient.writeContract({
+      const txHash = await walletClient.writeContract({
         address: config.contracts.talentLayerIdUtils,
         abi: TalentLayerIdUtils.abi,
         functionName: 'mintDelegateAndTransfer',
@@ -71,24 +74,38 @@ export async function POST(req: Request) {
         value: BigInt(body.handlePrice),
       });
 
+      console.log('tx hash', txHash);
+
       console.log(`Minting TalentLayer Id for address ${body.userAddress}...`);
 
-      // Wait for transaction to be mined
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
-      console.log('Mint Transaction Status', receipt.status);
+      let retries = 0;
+      let confirmations = 1;
 
-      await publicClient.waitForTransactionReceipt({
-        confirmations: 1,
-        hash: tx,
-      });
+      while (userId === 0n && retries < MAX_RETRIES) {
+        console.log('Waiting for transaction to be mined, try: ', retries + 1);
+        console.log('Confirmations', confirmations);
 
-      // Get Minted UserId
-      userId = await publicClient.readContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'ids',
-        args: [body.userAddress],
-      });
+        // Wait for transaction to be mined - increase block confirmations each time
+        const receipt = await publicClient.waitForTransactionReceipt({
+          confirmations,
+          hash: txHash,
+        });
+
+        console.log('Mint Transaction Status', receipt.status);
+
+        // Get Minted UserId
+        userId = (await publicClient.readContract({
+          address: config.contracts.talentLayerId,
+          abi: TalentLayerID.abi,
+          functionName: 'ids',
+          args: [body.userAddress],
+        })) as bigint;
+
+        console.log('User id', userId);
+
+        retries++;
+        confirmations++;
+      }
 
       console.log(
         `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account.address} as delegate`,
@@ -108,13 +125,18 @@ export async function POST(req: Request) {
       const receipt = await publicClient.waitForTransactionReceipt({ hash: transaction });
       console.log('Mint Transaction Status', receipt.status);
 
+      await publicClient.waitForTransactionReceipt({
+        confirmations: 1,
+        hash: transaction,
+      });
+
       // Get Minted UserId
-      userId = await publicClient.readContract({
+      userId = (await publicClient.readContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'ids',
         args: [body.userAddress],
-      });
+      })) as bigint;
 
       console.log(`Minted id: ${userId} for user ${body.userAddress}`);
     }

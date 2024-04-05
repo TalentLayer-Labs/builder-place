@@ -28,7 +28,7 @@ const ConditionsStatusCard = ({ condition, validated }: IReturnPostingCondition)
 
   const renderButton = () => {
     if (!validated) {
-      const buttonText = condition.type === 'Token' ? `Buy ${condition.symbol}` : 'Mint NFT';
+      const buttonText = condition.type === 'Token' ? `Buy ${condition.symbol}` : 'View NFT';
       const blockExplorerLink = getBlockExplorerLink(
         condition.chainId,
         condition.address,

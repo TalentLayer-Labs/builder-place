@@ -144,7 +144,8 @@ function ReleaseForm({
           onSubmit={handleSubmit}>
           <Form>
             <div className='sm:px-6 justify-between bg-base-100 flex flex-row items-center gap-2'>
-              <div>
+              <div className='flex items-center'>
+                {' '}
                 <span className='text-base-content font-semibold leading-4 text-base-content'>
                   %{' '}
                 </span>
@@ -165,11 +166,9 @@ function ReleaseForm({
                   </span>
                 </label>
               </div>
-              {
-                <div className='pr-2 text-base-content font-semibold leading-4 text-base-content  '>
-                  {renderTokenAmount(rateToken, amountSelected ? amountSelected.toString() : '0')}
-                </div>
-              }
+              <div className='pr-2 text-base-content font-semibold leading-4 text-base-content'>
+                {renderTokenAmount(rateToken, amountSelected ? amountSelected.toString() : '0')}
+              </div>
             </div>
             <div className='flex items-center pt-6 space-x-2 rounded-b border-info '>
               {totalInServiceAmount > 0 && (
