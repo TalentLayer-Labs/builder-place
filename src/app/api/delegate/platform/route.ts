@@ -72,19 +72,25 @@ export async function POST(req: Request) {
 
     console.log('tx hash', txHash);
 
-    // Wait for transaction to be mined
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-    console.log('Mint Transaction Status', receipt.status);
-
-    await publicClient.waitForTransactionReceipt({
-      confirmations: 2,
-      hash: txHash,
-    });
+    console.log(`Minting Platform Id for address ${body.address}...`);
 
     let id: bigint = 0n;
     let retries = 0;
+    let confirmations = 1;
 
     while (id === 0n && retries < MAX_RETRIES) {
+      console.log('Waiting for transaction to be mined, try: ', retries + 1);
+      console.log('Confirmations', confirmations);
+
+      // Wait for transaction to be mined - increase block confirmations each time
+      const receipt = await publicClient.waitForTransactionReceipt({
+        confirmations,
+        hash: txHash,
+      });
+
+      console.log('Mint Transaction Status', receipt.status);
+
+      // Get Minted PlatformId
       id = (await publicClient.readContract({
         address: config.contracts.talentLayerPlatformId,
         abi: TalentLayerPlatformID.abi,
@@ -95,6 +101,7 @@ export async function POST(req: Request) {
       console.log('Platform id', id);
 
       retries++;
+      confirmations++;
     }
 
     return Response.json({ transaction: txHash, platformId: String(id) }, { status: 201 });
