@@ -1,14 +1,10 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { QuestionMarkCircle } from 'heroicons-react';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import * as Yup from 'yup';
 import TalentLayerContext from '../../context/talentLayer';
 import useUserById from '../../hooks/useUserById';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import useUpdateUser from '../../modules/BuilderPlace/hooks/user/useUpdateUser';
-import Web3MailContext from '../../modules/Web3mail/context/web3mail';
-import { createWeb3mailToast } from '../../modules/Web3mail/utils/toast';
-import { generatePicture } from '../../utils/ai-picture-gen';
 import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
@@ -31,8 +27,6 @@ const validationSchema = Yup.object({
 function ProfileForm({ callback }: { callback?: () => void }) {
   const { user } = useContext(UserContext);
   const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
-  const { platformHasAccess } = useContext(Web3MailContext);
-  const [aiLoading, setAiLoading] = useState(false);
   const userDescription = talentLayerUser?.id
     ? useUserById(talentLayerUser?.id)?.description
     : null;
@@ -52,16 +46,6 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     skills: userDescription?.skills_raw || '',
   };
 
-  const generatePictureUrl = async (e: React.FormEvent, callback: (string: string) => void) => {
-    e.preventDefault();
-    setAiLoading(true);
-    const image_url = await generatePicture();
-    if (image_url) {
-      callback(image_url);
-    }
-    setAiLoading(false);
-  };
-
   const onSubmit = async (
     values: IUpdateProfileFormValues,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
@@ -75,9 +59,6 @@ function ProfileForm({ callback }: { callback?: () => void }) {
 
       refreshData();
       setSubmitting(false);
-      if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3' && !platformHasAccess) {
-        createWeb3mailToast();
-      }
     } catch (error) {
       showErrorTransactionToast(error);
     }
@@ -145,34 +126,13 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
                 placeholder=''
               />
-              <div className='border-2 border-info bg-base-200 relative w-full border transition-all duration-300 rounded-xl p-4'>
-                <div className='flex w-full items-center gap-3'>
-                  <QuestionMarkCircle className='hidden' />
-                  <div>
-                    <h2 className='font-heading text-xs font-bold text-xl font-bold  mb-1'>
-                      <span>Need help?</span>
-                    </h2>
-                    <p className='font-alt text-xs font-normal'>
-                      <span className='text-base-content'>Use our AI to generate a cool one</span>
-                    </p>
-                  </div>
-                  <div className='ms-auto'>
-                    <button
-                      disabled={aiLoading}
-                      onClick={e =>
-                        generatePictureUrl(e, newUrl => setFieldValue('image_url', newUrl))
-                      }
-                      className='border text-base-content bg-base-300 hover:bg-base-100 border-white rounded-md h-10 w-10 p-2 relative inline-flex items-center justify-center space-x-1 font-sans text-sm font-normal leading-5 no-underline outline-none transition-all duration-300'>
-                      {aiLoading ? <Loading /> : 'GO'}
-                    </button>
-                  </div>
-                </div>
-                {values.image_url && (
+              {values.image_url && (
+                <div className='border-2 border-info bg-base-200 relative w-full transition-all duration-300 rounded-xl p-4'>
                   <div className='flex items-center justify-center py-3'>
                     <img width='300' height='300' src={values.image_url} alt='' />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
               <span className='text-alone-error'>
                 <ErrorMessage name='image_url' />
               </span>

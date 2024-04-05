@@ -50,9 +50,7 @@ export const getSeoDefaultConfig = (builderPlace: IBuilderPlace) => {
       height: 600,
       alt: builderPlace.name,
     });
-  }
-
-  if (builderPlace.logo) {
+  } else if (builderPlace.logo) {
     // @ts-ignore
     config.openGraph.images.push({
       url: builderPlace.logo,

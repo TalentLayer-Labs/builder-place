@@ -7,6 +7,7 @@ import Steps from '../Steps';
 import SideMenu from './SideMenu';
 import { useAccount } from 'wagmi';
 import { useCompletitionScores } from '../../hooks/useCompletitionScores';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
 
 interface ContainerProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ interface ContainerProps {
 
 function Layout({ children, className }: ContainerProps) {
   const account = useAccount();
+  const { user } = useContext(UserContext);
   const { user: talentLayerUser } = useContext(TalentLayerContext);
   const completionScores = useCompletitionScores();
 
@@ -48,7 +50,7 @@ function Layout({ children, className }: ContainerProps) {
                       <div className='flex items-center'>
                         <div className='relative inline-flex shrink-0 items-center justify-center outline-none h-12 w-12 rounded-full mr-4'>
                           <div className='flex h-full w-full items-center justify-center overflow-hidden text-center transition-all duration-300 rounded-full'>
-                            <ProfileImage size={50} url={talentLayerUser?.description?.image_url} />
+                            <ProfileImage size={50} url={user?.picture} />
                           </div>
                         </div>
                         <div className=''>
