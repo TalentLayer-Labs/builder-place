@@ -59,6 +59,7 @@ const useUpdateUser = () => {
           );
           tx = response.data.transaction;
         } else {
+          console.log('Update profile', profile, talentLayerUser.id);
           const res = await talentLayerClient?.profile.update(profile, talentLayerUser.id);
 
           tx = res.tx;
