@@ -32,7 +32,7 @@ function Dashboard() {
 
   useEffect(() => {
     getUser();
-  }, [account]);
+  }, [account.address]);
 
   if (!user) {
     return (
