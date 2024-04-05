@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import ConnectBlock from '../../components/ConnectBlock';
+import DashboardUserServices from '../../components/DashboardUserServices';
 import DelegationNotification from '../../components/DelegationNotification';
 import Notification from '../../components/Notification';
 import Steps from '../../components/Steps';
@@ -11,7 +12,6 @@ import UserDetail from '../../components/UserDetail';
 import UserGains from '../../components/UserGains';
 import UserPayments from '../../components/UserPayments';
 import UserProposals from '../../components/UserProposals';
-import UserServices from '../../components/UserServices';
 import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
@@ -99,7 +99,7 @@ function Dashboard() {
               )}
 
               <div className='mb-12 mt-2'>
-                <UserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
+                <DashboardUserServices userId={builderPlace.owner.talentLayerId} type='buyer' />
               </div>
             </>
           )}
@@ -123,11 +123,11 @@ function Dashboard() {
                 <UserGains user={talentLayerUser} />
               </div>
               <div className='mb-12'>
-                <UserServices userId={user.talentLayerId} type='seller' />
+                <DashboardUserServices userId={user.talentLayerId} type='seller' />
               </div>
               {builderPlace.jobPostingConditions.allowPosts && (
                 <div className='mb-12 mt-2'>
-                  <UserServices userId={user.talentLayerId} type='buyer' />
+                  <DashboardUserServices userId={user.talentLayerId} type='buyer' />
                 </div>
               )}
               <div className='mb-12'>

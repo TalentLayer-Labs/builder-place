@@ -6,6 +6,7 @@ import useUserById from '../../../hooks/useUserById';
 import LensModule from '../../../modules/Lens/LensModule';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 import NotFound from '../../../components/NotFound';
+import { ServiceStatusEnum } from '../../../types';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -28,7 +29,11 @@ function Profile() {
             <WorkerPublicDetail talentLayerUser={talentLayerUser} />
           </div>
           <div className='mb-6'>
-            <UserServices userId={talentLayerUser.id} type='seller' />
+            <UserServices
+              userId={talentLayerUser.id}
+              type='seller'
+              status={ServiceStatusEnum.Finished}
+            />
           </div>
           <div className='mb-6'>
             <LensModule address={talentLayerUser.address} />

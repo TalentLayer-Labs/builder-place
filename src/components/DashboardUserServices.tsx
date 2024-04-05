@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import useServices from '../hooks/useServices';
-import { IUser, ServiceStatusEnum } from '../types';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import Notification from './Notification';
-import Loading from './Loading';
-import ServiceItem from './ServiceItem';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
+import { ServiceStatusEnum } from '../types';
+import Loading from './Loading';
+import Notification from './Notification';
+import ServiceItem from './ServiceItem';
 
 interface IProps {
   userId: string;
@@ -13,7 +13,7 @@ interface IProps {
   status?: ServiceStatusEnum;
 }
 
-function UserServices({ userId, type, status }: IProps) {
+function DashboardUserServices({ userId, type, status }: IProps) {
   const { user } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
 
@@ -31,7 +31,37 @@ function UserServices({ userId, type, status }: IProps) {
   }
 
   if (services.length === 0) {
-    return null;
+    if (type == 'buyer') {
+      return (
+        <>
+          <h2 className='pb-4 text-base font-bold break-all'>missions posted</h2>
+          <Notification
+            title='post your first mission!'
+            text='post something your team needs help with'
+            link='/work/create'
+            linkText='post a mission'
+            color='primary'
+            imageUrl={user?.picture}
+          />
+        </>
+      );
+    }
+
+    if (type == 'seller') {
+      return (
+        <>
+          <h2 className='pb-4 text-base font-bold break-all'>missions applied to</h2>
+          <Notification
+            title='post your first proposal!'
+            text='check the current missions and apply to them'
+            link='/'
+            linkText='check open missions'
+            color='primary'
+            imageUrl={user?.picture}
+          />
+        </>
+      );
+    }
   }
 
   return (
@@ -56,4 +86,4 @@ function UserServices({ userId, type, status }: IProps) {
   );
 }
 
-export default UserServices;
+export default DashboardUserServices;
