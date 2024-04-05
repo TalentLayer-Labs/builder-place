@@ -149,6 +149,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const services: IService[] = serviceResponse.data.data.services;
 
+    console.log('Fetched Services:', services);
+
     // For each contact, check if an email was already sent for each new service. If not, check if skills match
     for (const contact of validUsers) {
       console.log(
@@ -242,7 +244,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status = 500;
     }
   } finally {
-    if (!req.query.sinceTimestamp) {
+    console.log('req.query.sinceTimestamp', req.query.sinceTimestamp);
+    if (!cronDuration) {
+      // if (!req.query.sinceTimestamp) {
       // Update cron probe in db
       await persistCronProbe(EmailType.NEW_SERVICE, sentEmails, nonSentEmails, cronDuration);
       console.log(

@@ -41,6 +41,9 @@ export const calculateCronData = (
       cronExpression.prev().toDate().getTime() / 1000 -
       cronDuration * RETRY_FACTOR
     ).toString();
+
+    console.log('Cron duration', cronDuration);
+    console.log('Since timestamp', sinceTimestamp);
   }
   return { sinceTimestamp, cronDuration };
 };
