@@ -101,7 +101,7 @@ export async function POST(req: Request) {
           args: [body.userAddress],
         })) as bigint;
 
-        console.log('Platform id', userId);
+        console.log('User id', userId);
 
         retries++;
         confirmations++;
