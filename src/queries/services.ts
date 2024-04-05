@@ -198,5 +198,6 @@ export const getNewServicesForPlatform = (
         }
       }
     `;
+  console.log('getNewServicesForPlatform query', query);
   return processRequest(chainId, query);
 };

@@ -149,6 +149,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const services: IService[] = serviceResponse.data.data.services;
 
+    console.log('Fetched Services:', services);
+
     // For each contact, check if an email was already sent for each new service. If not, check if skills match
     for (const contact of validUsers) {
       console.log(
@@ -156,12 +158,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         contact.address,
       );
       for (const service of services) {
+        console.log('service', service);
         // Check if a notification email has already been sent for these services
         const compositeId = `${contact.id}-${service.id}`;
         const emailHasBeenSent = await hasEmailBeenSent(compositeId, EmailType.NEW_SERVICE);
         if (!emailHasBeenSent) {
           const userSkills = contact.skills;
           const serviceSkills = service.description?.keywords_raw?.split(',');
+          console.log('userSkills', userSkills);
+          console.log('serviceSkills', serviceSkills);
           // Check if the service keywords match the user keywords
           const matchingSkills = userSkills?.filter((skill: string) =>
             serviceSkills?.includes(skill),
