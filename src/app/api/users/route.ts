@@ -10,6 +10,7 @@ export interface UsersFilters {
   id?: string | null;
   address?: string | null;
   email?: string | null;
+  talentLayerId?: string | null;
 }
 
 /**
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
     id: searchParams.get('id'),
     address: searchParams.get('address'),
     email: searchParams.get('email'),
+    talentLayerId: searchParams.get('talentLayerId'),
   };
   const users = await getUsersBy(filters);
 

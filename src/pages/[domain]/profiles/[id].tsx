@@ -1,12 +1,16 @@
+import { User } from '@prisma/client';
 import { GetServerSidePropsContext } from 'next';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
+import { useQuery } from 'wagmi';
+import Loading from '../../../components/Loading';
+import NotFound from '../../../components/NotFound';
 import UserServices from '../../../components/UserServices';
 import WorkerPublicDetail from '../../../components/WorkerPublicDetail';
-import useUserById from '../../../hooks/useUserById';
+import { getUserBy } from '../../../modules/BuilderPlace/request';
 import LensModule from '../../../modules/Lens/LensModule';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-import NotFound from '../../../components/NotFound';
 import { ServiceStatusEnum } from '../../../types';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -15,31 +19,38 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 function Profile() {
   const router = useRouter();
   const { id } = router.query;
-  const talentLayerUser = useUserById(id as string);
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery<User, Error>(['user', id], () => getUserBy({ talentLayerId: id as string }));
 
-  if (!talentLayerUser) {
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError || !user) {
     return <NotFound />;
   }
 
   return (
     <div className='mx-auto text-base-content'>
-      {talentLayerUser && (
-        <>
-          <div className='mb-6'>
-            <WorkerPublicDetail talentLayerUser={talentLayerUser} />
-          </div>
-          <div className='mb-6'>
-            <UserServices
-              userId={talentLayerUser.id}
-              type='seller'
-              status={ServiceStatusEnum.Finished}
-            />
-          </div>
-          <div className='mb-6'>
-            <LensModule address={talentLayerUser.address} />
-          </div>
-        </>
-      )}
+      <NextSeo
+        title={`Profile | ${user.name}`}
+        description={`onChain work profile on BuilderPlace`}></NextSeo>
+      <div className='mb-6'>
+        <WorkerPublicDetail user={user} />
+      </div>
+      <div className='mb-6'>
+        <UserServices
+          userId={user.talentLayerId}
+          type='seller'
+          status={ServiceStatusEnum.Finished}
+        />
+      </div>
+      <div className='mb-6'>
+        <LensModule address={user.address} />
+      </div>
     </div>
   );
 }

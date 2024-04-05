@@ -166,6 +166,8 @@ export const getUsersBy = async (filters: UsersFilters) => {
     whereClause.address = filters.address;
   } else if (filters.email) {
     whereClause.email = filters.email;
+  } else if (filters.talentLayerId) {
+    whereClause.talentLayerId = filters.talentLayerId;
   }
 
   const userProfile = await prisma.user.findMany({
