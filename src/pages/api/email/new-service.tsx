@@ -244,9 +244,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status = 500;
     }
   } finally {
-    console.log('req.query.sinceTimestamp', req.query.sinceTimestamp);
-    if (!cronDuration) {
-      // if (!req.query.sinceTimestamp) {
+    if (!req.query.sinceTimestamp) {
       // Update cron probe in db
       await persistCronProbe(EmailType.NEW_SERVICE, sentEmails, nonSentEmails, cronDuration);
       console.log(
