@@ -54,8 +54,11 @@ function ServiceDetail({ service }: { service: IService }) {
                   {service.description?.title}
                 </p>
                 <p className='text-xs text-base-content opacity-50'>
-                  created by {isBuyer ? 'You' : service.buyer.handle} the{' '}
-                  {formatDate(Number(service.createdAt) * 1000)}
+                  created by{' '}
+                  <Link href={`/profiles/${service.buyer.id}`}>
+                    {isBuyer ? 'You' : service.buyer.handle}
+                  </Link>{' '}
+                  the {formatDate(Number(service.createdAt) * 1000)}
                 </p>
               </div>
               {service.status === ServiceStatusEnum.Opened && canEditService && (

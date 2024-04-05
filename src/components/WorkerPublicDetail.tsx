@@ -1,6 +1,5 @@
 import { User } from '@prisma/client';
 import useUserById from '../hooks/useUserById';
-import Loading from './Loading';
 import Stars from './Stars';
 
 function WorkerPublicDetail({ user }: { user: User }) {
