@@ -149,7 +149,7 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
               <SubdomainInput />
 
               <label className='block'>
-                <span className='font-bold text-md'>talentLayerPlatformName*</span>
+                <span className='font-bold text-md'>Platform Name*</span>
                 <PlatformNameInput
                   initialValue={initialValues.name}
                   existingPlatformName={existingTalentLayerPlatform?.name}
