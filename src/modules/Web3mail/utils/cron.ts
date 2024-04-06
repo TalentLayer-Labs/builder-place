@@ -34,7 +34,6 @@ export const calculateCronData = (
      of the cron schedule multiplied by a retry factor, so that non sent emails
      can be sent again. */
     const cronExpression = parseExpression(cronSchedule);
-    console.log('Cron expression', cronExpression.toString());
     cronDuration =
       cronExpression.next().toDate().getTime() / 1000 -
       cronExpression.prev().toDate().getTime() / 1000;
@@ -43,7 +42,11 @@ export const calculateCronData = (
       cronDuration * RETRY_FACTOR
     ).toString();
 
-    console.log('Cron duration', cronDuration);
+    console.log('Cron duration * retry', cronDuration * RETRY_FACTOR);
+    console.log(
+      'cronExpression.prev().toDate().getTime()',
+      cronExpression.prev().toDate().getTime() / 100,
+    );
     console.log('Since timestamp', sinceTimestamp);
   }
   return { sinceTimestamp, cronDuration };
