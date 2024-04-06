@@ -32,7 +32,6 @@ interface IUserForService {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string;
-  const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID as string;
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
@@ -47,15 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareCronApi(
-    emailNotificationType,
-    chainId,
-    platformId,
-    databaseUrl,
-    cronSecurityKey,
-    privateKey,
-    res,
-  );
+  prepareCronApi(emailNotificationType, chainId, databaseUrl, cronSecurityKey, privateKey, res);
 
   const providers = generateMailProviders(
     emailNotificationType as EmailNotificationType,
@@ -137,11 +128,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if new services are available & get their keywords
-    const serviceResponse = await getNewServicesForPlatform(
-      Number(chainId),
-      platformId,
-      sinceTimestamp,
-    );
+    const serviceResponse = await getNewServicesForPlatform(Number(chainId), sinceTimestamp);
 
     if (!serviceResponse?.data?.data?.services) {
       throw new EmptyError(`No new services available`);

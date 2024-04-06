@@ -157,17 +157,13 @@ export const getServiceById = (chainId: number, id: string): Promise<any> => {
   return processRequest(chainId, query);
 };
 
-export const getNewServicesForPlatform = (
-  chainId: number,
-  id: string,
-  timestamp?: string,
-): Promise<any> => {
+export const getNewServicesForPlatform = (chainId: number, timestamp?: string): Promise<any> => {
   const timestampCondition = timestamp ? `, updatedAt_gt: "${timestamp}"` : '';
   const query = `
       {
         services(
           orderBy: updatedAt
-          where: {status: Opened, platform: "${id}" ${timestampCondition}}
+          where: {status: Opened ${timestampCondition}}
         ) {
           id
           platform {

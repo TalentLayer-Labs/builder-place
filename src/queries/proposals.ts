@@ -124,7 +124,6 @@ export const getProposalById = (chainId: number, id: string): Promise<any> => {
 
 export const getProposalsFromPlatformServices = (
   chainId: number,
-  id: string,
   timestamp?: string,
 ): Promise<any> => {
   const timestampCondition = timestamp ? `, updatedAt_gt: "${timestamp}"` : '';
@@ -132,7 +131,7 @@ export const getProposalsFromPlatformServices = (
       {
         proposals(
           orderBy: updatedAt
-          where: {status: Pending, service_: {platform: "${id}", status: Opened} ${timestampCondition}}
+          where: {status: Pending, service_: {status: Opened} ${timestampCondition}}
         ) {
           id
           rateAmount
@@ -168,17 +167,13 @@ export const getProposalsFromPlatformServices = (
   return processRequest(chainId, query);
 };
 
-export const getAcceptedProposals = (
-  chainId: number,
-  id: string,
-  timestamp?: string,
-): Promise<any> => {
+export const getAcceptedProposals = (chainId: number, timestamp?: string): Promise<any> => {
   const timestampCondition = timestamp ? `, updatedAt_gt: "${timestamp}"` : '';
   const query = `
       {
         proposals(
           orderBy: updatedAt
-          where: {status: Validated, platform: "${id}" ${timestampCondition}}
+          where: {status: Validated ${timestampCondition}}
         ) {
           id
           description {

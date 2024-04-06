@@ -21,7 +21,6 @@ export const config = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string;
-  const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID as string;
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
@@ -36,15 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareCronApi(
-    emailNotificationType,
-    chainId,
-    platformId,
-    databaseUrl,
-    cronSecurityKey,
-    privateKey,
-    res,
-  );
+  prepareCronApi(emailNotificationType, chainId, databaseUrl, cronSecurityKey, privateKey, res);
 
   // Check whether the user provided a timestamp or if it will come from the cron config
   const { sinceTimestamp, cronDuration } = calculateCronData(
@@ -55,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   let status = 200;
   try {
-    const response = await getAcceptedProposals(Number(chainId), platformId, sinceTimestamp);
+    const response = await getAcceptedProposals(Number(chainId), sinceTimestamp);
 
     if (!response?.data?.data?.proposals || response.data.data.proposals.length === 0) {
       throw new EmptyError(`No new proposals validated available`);

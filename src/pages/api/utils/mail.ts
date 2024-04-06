@@ -11,7 +11,6 @@ export class EmptyError extends Error {
 export const prepareCronApi = (
   notificationType: EmailNotificationType,
   chainId: string | undefined,
-  platformId: string | undefined,
   databaseUrl: string | undefined,
   cronSecurityKey: string | undefined,
   privateKey: string | undefined,
@@ -36,17 +35,11 @@ export const prepareCronApi = (
     console.warn('Database URL is not set');
     return res.status(500).json('Database URL is not set');
   }
-
-  if (!platformId) {
-    console.warn('Platform Id is not set');
-    return res.status(500).json('Platform Id is not set');
-  }
 };
 
 export const prepareNonCronApi = (
   notificationType: EmailNotificationType,
   chainId: string | undefined,
-  platformId: string | undefined,
   privateKey: string | undefined,
   res: NextApiResponse,
 ): void => {
@@ -58,11 +51,6 @@ export const prepareNonCronApi = (
   if (!chainId) {
     console.warn('Chain Id is not set');
     return res.status(500).json('Chain Id is not set');
-  }
-
-  if (!platformId) {
-    console.warn('Platform Id is not set');
-    return res.status(500).json('Platform Id is not set');
   }
 };
 
