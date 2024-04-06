@@ -21,12 +21,12 @@ export default function Collaborators() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const [filter, setFilter] = useState('');
 
-  if (talentLayerUser?.id != builderPlace?.owner.talentLayerId) {
-    return <AccessDenied />;
-  }
-
   if (loading) {
     return <Loading />;
+  }
+
+  if (talentLayerUser?.id != builderPlace?.owner.talentLayerId) {
+    return <AccessDenied />;
   }
 
   return (
