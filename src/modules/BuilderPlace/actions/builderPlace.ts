@@ -35,6 +35,7 @@ import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
 import { PlatformsFilters } from '../../../app/api/platforms/route';
+import { BuilderPlace } from '@prisma/client';
 
 /**
  * @dev: Only this function can set the BuilderPlace status to VALIDATED
@@ -60,7 +61,7 @@ export const validateBuilderPlace = async (builderPlaceId: string) => {
   }
 };
 
-export const getPlatformBy = async (filters: PlatformsFilters) => {
+export const getPlatformsBy = async (filters: PlatformsFilters) => {
   console.log('*DEBUG* Getting Platforms with filters:', filters);
 
   const whereClause: any = {};
@@ -87,7 +88,38 @@ export const getPlatformBy = async (filters: PlatformsFilters) => {
       collaborators: true,
     },
   });
-  console.log('Fetched Platform: ', platform[0]?.name);
+  console.log('Fetched Platforms: ', platform?.length);
+  return platform;
+};
+
+export const getPlatformBy = async (filters: PlatformsFilters): Promise<BuilderPlace | null> => {
+  console.log('*DEBUG* Getting Platform with filters:', filters);
+
+  const whereClause: any = {};
+  if (filters.id) {
+    whereClause.id = Number(filters.id);
+  } else if (filters.ownerId) {
+    whereClause.ownerId = filters.ownerId;
+  } else if (filters.ownerAddress) {
+    whereClause.owner.address = filters.ownerAddress;
+  } else if (filters.ownerTalentLayerId) {
+    whereClause.owner.talentLayerId = filters.ownerTalentLayerId;
+  } else if (filters.talentLayerPlatformId) {
+    whereClause.talentLayerPlatformId = filters.talentLayerPlatformId;
+  } else if (filters.talentLayerPlatformName) {
+    whereClause.talentLayerPlatformName = filters.talentLayerPlatformName;
+  } else if (filters.subdomain) {
+    whereClause.subdomain = filters.subdomain;
+  }
+
+  const platform = await prisma.builderPlace.findUnique({
+    where: whereClause,
+    include: {
+      owner: true,
+      collaborators: true,
+    },
+  });
+  console.log('Fetched Platform: ', platform?.name);
   return platform;
 };
 

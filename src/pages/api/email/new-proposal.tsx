@@ -117,10 +117,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const providers = generateMailProviders(emailNotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
-      const builderPlaceResponse = await getPlatformBy({
+      const builderPlace = await getPlatformBy({
         ownerTalentLayerId: proposal.service.buyer.id,
       });
-      const builderPlace = builderPlaceResponse[0];
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration

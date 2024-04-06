@@ -131,10 +131,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? console.log('Reviewer is the seller')
         : console.log('Reviewer is the buyer');
 
-      const builderPlaceResponse = await getPlatformBy({
+      const builderPlace = await getPlatformBy({
         ownerTalentLayerId: review.service.buyer.id,
       });
-      const builderPlace = builderPlaceResponse[0];
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration

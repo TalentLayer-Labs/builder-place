@@ -6,7 +6,7 @@ import { ICreatePlatform } from '../../../components/onboarding/platform/CreateP
 import prisma from '../../../postgre/postgreClient';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
-import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformsBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export interface PlatformsFilters {
   id?: number | null;
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     talentLayerPlatformName: searchParams.get('talentLayerPlatformName'),
     subdomain: searchParams.get('subdomain'),
   };
-  const platforms: BuilderPlace[] = await getPlatformBy(filters);
+  const platforms: BuilderPlace[] = await getPlatformsBy(filters);
 
   return Response.json({ platforms });
 }
