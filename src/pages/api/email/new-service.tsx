@@ -32,7 +32,6 @@ interface IUserForService {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string;
-  const platformId = process.env.NEXT_PUBLIC_PLATFORM_ID as string;
   const databaseUrl = process.env.DATABASE_URL as string;
   const cronSecurityKey = req.headers.authorization as string;
   const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY as string;
@@ -47,15 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sentEmails = 0,
     nonSentEmails = 0;
 
-  prepareCronApi(
-    emailNotificationType,
-    chainId,
-    platformId,
-    databaseUrl,
-    cronSecurityKey,
-    privateKey,
-    res,
-  );
+  prepareCronApi(emailNotificationType, chainId, databaseUrl, cronSecurityKey, privateKey, res);
 
   const providers = generateMailProviders(
     emailNotificationType as EmailNotificationType,
@@ -137,17 +128,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if new services are available & get their keywords
-    const serviceResponse = await getNewServicesForPlatform(
-      Number(chainId),
-      platformId,
-      sinceTimestamp,
-    );
+    const serviceResponse = await getNewServicesForPlatform(Number(chainId), sinceTimestamp);
 
     if (!serviceResponse?.data?.data?.services) {
       throw new EmptyError(`No new services available`);
     }
 
     const services: IService[] = serviceResponse.data.data.services;
+
+    console.log('Fetched Services:', services);
 
     // For each contact, check if an email was already sent for each new service. If not, check if skills match
     for (const contact of validUsers) {
@@ -156,12 +145,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         contact.address,
       );
       for (const service of services) {
+        console.log('service', service);
         // Check if a notification email has already been sent for these services
         const compositeId = `${contact.id}-${service.id}`;
         const emailHasBeenSent = await hasEmailBeenSent(compositeId, EmailType.NEW_SERVICE);
         if (!emailHasBeenSent) {
           const userSkills = contact.skills;
           const serviceSkills = service.description?.keywords_raw?.split(',');
+          console.log('userSkills', userSkills);
+          console.log('serviceSkills', serviceSkills);
           // Check if the service keywords match the user keywords
           const matchingSkills = userSkills?.filter((skill: string) =>
             serviceSkills?.includes(skill),

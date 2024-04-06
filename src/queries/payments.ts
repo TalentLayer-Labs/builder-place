@@ -71,13 +71,13 @@ export const getPaymentsForUser = (
   return processRequest(chainId, query);
 };
 
-export const getNewPayments = (chainId: number, id: string, timestamp?: string): Promise<any> => {
-  const timestampCondition = timestamp ? `, createdAt_gt: "${timestamp}"` : '';
+export const getNewPayments = (chainId: number, timestamp?: string): Promise<any> => {
+  const timestampCondition = timestamp ? `createdAt_gt: "${timestamp}"` : '';
   const query = `
       {
         payments(
           first: 1000, orderBy: createdAt
-          where: {service_: {platform: "${id}"} ${timestampCondition}}
+          where: {service_: ${timestampCondition}}
         ) {
           id
           amount

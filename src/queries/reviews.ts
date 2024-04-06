@@ -28,13 +28,13 @@ export const getReviewsByService = (chainId: number, serviceId: string): Promise
   return processRequest(chainId, query);
 };
 
-export const getNewReviews = (chainId: number, id: string, timestamp?: string): Promise<any> => {
-  const timestampCondition = timestamp ? `, createdAt_gt: "${timestamp}"` : '';
+export const getNewReviews = (chainId: number, timestamp?: string): Promise<any> => {
+  const timestampCondition = timestamp ? `createdAt_gt: "${timestamp}"` : '';
   const query = `
       {
         reviews(
           orderBy: createdAt
-          where: {service_: {platform: "${id}"} ${timestampCondition}}
+          where: {service_: ${timestampCondition}}
         ) {
           id
           rating
