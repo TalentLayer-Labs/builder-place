@@ -18,7 +18,7 @@ import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
-import { getPlatformsBy } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -149,10 +149,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         `New fund ${action} email to send to ${senderHandle} at address ${receiverAddress}`,
       );
 
-      const builderPlaceResponse = await getPlatformsBy({
+      const builderPlace = await getPlatformBy({
         ownerTalentLayerId: payment.service.buyer.id,
       });
-      const builderPlace = builderPlaceResponse[0];
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
