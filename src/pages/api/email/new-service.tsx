@@ -17,7 +17,7 @@ import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
-import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -168,9 +168,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               )}`,
             );
 
-            const { platform: builderPlace } = useGetPlatformBy({
+            const builderPlaceResponse = await getPlatformBy({
               ownerTalentLayerId: service.buyer.id,
             });
+            const builderPlace = builderPlaceResponse[0];
 
             /**
              * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
