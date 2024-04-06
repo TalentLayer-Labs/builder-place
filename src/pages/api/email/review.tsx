@@ -1,4 +1,4 @@
-import { IReview, EmailNotificationApiUri, EmailNotificationType } from '../../../types';
+import { EmailNotificationApiUri, EmailNotificationType, IReview } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -9,10 +9,10 @@ import { EmptyError, getValidUsers, prepareCronApi } from '../utils/mail';
 import { renderMail } from '../utils/generateMail';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
-import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -131,8 +131,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? console.log('Reviewer is the seller')
         : console.log('Reviewer is the buyer');
 
-      const builderPlace = await getBuilderPlaceByOwnerId(review.service.buyer.id);
-
+      const { platform: builderPlace } = useGetPlatformBy({
+        ownerTalentLayerId: review.service.buyer.id,
+      });
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
        */

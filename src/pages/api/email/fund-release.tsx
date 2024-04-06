@@ -1,8 +1,8 @@
 import { getNewPayments } from '../../../queries/payments';
 import {
-  IPayment,
   EmailNotificationApiUri,
   EmailNotificationType,
+  IPayment,
   PaymentTypeEnum,
 } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -15,10 +15,10 @@ import { renderTokenAmount } from '../../../utils/conversion';
 import { renderMail } from '../utils/generateMail';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
-import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -149,7 +149,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         `New fund ${action} email to send to ${senderHandle} at address ${receiverAddress}`,
       );
 
-      const builderPlace = await getBuilderPlaceByOwnerId(payment.service.buyer.id);
+      const { platform: builderPlace } = useGetPlatformBy({
+        ownerTalentLayerId: payment.service.buyer.id,
+      });
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration

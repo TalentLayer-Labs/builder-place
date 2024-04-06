@@ -1,5 +1,5 @@
 import { getAcceptedProposals } from '../../../queries/proposals';
-import { IProposal, EmailNotificationApiUri, EmailNotificationType } from '../../../types';
+import { EmailNotificationApiUri, EmailNotificationType, IProposal } from '../../../types';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sendMailToAddresses } from '../../../scripts/iexec/sendMailToAddresses';
 import { getUsersWeb3MailPreference } from '../../../queries/users';
@@ -10,10 +10,10 @@ import { renderMail } from '../utils/generateMail';
 import { renderTokenAmount } from '../../../utils/conversion';
 import { EmailType } from '.prisma/client';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
-import { getBuilderPlaceByOwnerId } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -116,7 +116,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const providers = generateMailProviders(emailNotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
-      const builderPlace = await getBuilderPlaceByOwnerId(proposal.service.buyer.id);
+      const { platform: builderPlace } = useGetPlatformBy({
+        ownerTalentLayerId: proposal.service.buyer.id,
+      });
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
