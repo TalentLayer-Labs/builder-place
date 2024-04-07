@@ -165,6 +165,7 @@ function EmailPreferencesForm() {
             success: 'Congrats! Your preferences has been updated',
             error: 'An error occurred while updating your preferences',
           },
+          // @ts-ignore: error after viem v2 migration
           publicClient,
           tx,
           'user',

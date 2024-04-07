@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { PostingCondition } from '../modules/BuilderPlace/types';
-import { erc20ABI, erc721ABI, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 import TalentLayerContext from '../context/talentLayer';
 import { generateClients } from '../utils/jobPostConditions';
+import { erc20Abi, erc721Abi } from 'viem';
 
 export interface IReturnPostingCondition {
   condition: PostingCondition;
@@ -46,7 +47,7 @@ const useCheckJobPostConditions = (
         if (condition.type === 'NFT') {
           data = await client.readContract({
             address: condition.address as `0x${string}`,
-            abi: erc721ABI,
+            abi: erc721Abi,
             functionName: 'balanceOf',
             args: [account.address],
           });
@@ -54,7 +55,7 @@ const useCheckJobPostConditions = (
         } else if (condition.type === 'Token') {
           data = await client.readContract({
             address: condition.address as `0x${string}`,
-            abi: erc20ABI,
+            abi: erc20Abi,
             functionName: 'balanceOf',
             args: [account.address],
           });

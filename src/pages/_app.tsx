@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CustomPalette from '../components/CustomPalette';
 import { TalentLayerProvider } from '../context/talentLayer';
-import { Web3Modal } from '../context/web3modal';
+import Web3ModalProvider from '../context/web3modal';
 import { BuilderPlaceProvider } from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import { getSeoDefaultConfig } from '../modules/BuilderPlace/seo';
 import { XmtpContextProvider } from '../modules/Messaging/context/XmtpContext';
@@ -61,7 +61,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <PostHogProvider client={posthog}>
         <QueryClientProvider client={queryClient}>
           <DefaultSeo {...getSeoDefaultConfig(pageProps.builderPlace)} />
-          <Web3Modal>
+          <Web3ModalProvider>
             <BuilderPlaceProvider data={pageProps.builderPlace}>
               <UserProvider>
                 <TalentLayerProvider>
@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </TalentLayerProvider>
               </UserProvider>
             </BuilderPlaceProvider>
-          </Web3Modal>
+          </Web3ModalProvider>
         </QueryClientProvider>
         <SpeedInsights />
         <Analytics />

@@ -64,6 +64,7 @@ function SingleValueForm({
           success: 'Congrats! Your informations has been updated',
           error: 'An error occurred while updating your informations',
         },
+        // @ts-ignore: error after viem v2 migration
         publicClient,
         tx,
         contractEntity,

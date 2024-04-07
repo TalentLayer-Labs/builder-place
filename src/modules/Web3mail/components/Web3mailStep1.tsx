@@ -1,10 +1,10 @@
 import React from 'react';
-import { useChainId, useSwitchNetwork } from 'wagmi';
+import { useChainId, useSwitchChain } from 'wagmi';
 import { NetworkEnum } from '../../../types';
 
 function Web3mailStep1() {
   const chainId = useChainId();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
 
   const isCompleted = chainId === NetworkEnum.IEXEC;
 
@@ -29,7 +29,7 @@ function Web3mailStep1() {
         </div>
       </label>
       <button
-        onClick={() => switchNetwork && switchNetwork(NetworkEnum.IEXEC)}
+        onClick={() => switchChain && switchChain({ chainId: NetworkEnum.IEXEC })}
         className='grow px-5 py-2 rounded-xl bg-primary text-primary hover:opacity-70 inline-flex align-center justify-center mt-1'>
         <span>Switch to iExec chain</span>
       </button>

@@ -8,13 +8,13 @@ import Loading from '../../../components/Loading';
 import Steps from '../../../components/Steps';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
 import { FEE_RATE_DIVIDER } from '../../../config';
+import { chains } from '../../../config/wagmi';
 import TalentLayerPlatformID from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { useConfig } from '../../../hooks/useConfig';
 import usePlatform from '../../../hooks/usePlatform';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-import { chains } from '../../../context/web3modal';
 import BuilderPlaceContext from '../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../../../modules/BuilderPlace/context/UserContext';
+import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);

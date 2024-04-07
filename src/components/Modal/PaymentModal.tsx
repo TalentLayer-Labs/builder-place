@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { renderTokenAmount } from '../../utils/conversion';
 import { IPayment, IService, PaymentTypeEnum, ServiceStatusEnum } from '../../types';
 import ReleaseForm from '../Form/ReleaseForm';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 interface IPaymentModalProps {
   service: IService;
@@ -17,7 +17,7 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
   const [showCheckIcon, setShowCheckIcon] = useState(false);
   const rateToken = service.validatedProposal[0].rateToken;
   const rateAmount = service.validatedProposal[0].rateAmount;
-  const network = useNetwork();
+  const { chain } = useAccount();
 
   const totalPayments = payments.reduce((acc, payment) => {
     return acc + BigInt(payment.amount);
@@ -116,7 +116,7 @@ function PaymentModal({ service, payments, isBuyer, refreshPayments }: IPaymentM
                         <p className='text-base-content leading-4 text-base-content'>
                           <a
                             className='flex'
-                            href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
+                            href={`${chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}
                             target='_blank'
                             rel='noopener noreferrer'>
                             {payment.paymentType === PaymentTypeEnum.Release

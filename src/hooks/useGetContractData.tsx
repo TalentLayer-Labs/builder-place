@@ -1,9 +1,8 @@
-import { JobConditionsChainIdEnum } from '../modules/BuilderPlace/types';
-import { createPublicClient, http } from 'viem';
-import { erc20ABI, erc721ABI } from 'wagmi';
 import { useState } from 'react';
-import { getViemFormattedChainForJobConditions } from '../utils/jobPostConditions';
 import { toast } from 'react-toastify';
+import { createPublicClient, erc20Abi, erc721Abi, http } from 'viem';
+import { JobConditionsChainIdEnum } from '../modules/BuilderPlace/types';
+import { getViemFormattedChainForJobConditions } from '../utils/jobPostConditions';
 
 const useGetContractData = () => {
   const [nftSubmitting, setNftSubmitting] = useState<boolean>(false);
@@ -28,14 +27,14 @@ const useGetContractData = () => {
       if (type === 'NFT') {
         contractName = await publicClient.readContract({
           address: address as `0x${string}`,
-          abi: erc721ABI,
+          abi: erc721Abi,
           functionName: 'name',
         });
         let shouldNotExistDecimals;
         try {
           shouldNotExistDecimals = await publicClient.readContract({
             address: address as `0x${string}`,
-            abi: erc20ABI,
+            abi: erc20Abi,
             functionName: 'decimals',
           });
         } catch (e) {
@@ -47,18 +46,18 @@ const useGetContractData = () => {
       } else if (type === 'Token') {
         contractName = await publicClient.readContract({
           address: address as `0x${string}`,
-          abi: erc20ABI,
+          abi: erc20Abi,
           functionName: 'name',
         });
         tokenSign = await publicClient.readContract({
           address: address as `0x${string}`,
-          abi: erc20ABI,
+          abi: erc20Abi,
           functionName: 'symbol',
         });
         try {
           decimals = await publicClient.readContract({
             address: address as `0x${string}`,
-            abi: erc20ABI,
+            abi: erc20Abi,
             functionName: 'decimals',
           });
         } catch (e) {

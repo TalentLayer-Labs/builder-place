@@ -75,6 +75,7 @@ function AdminPresentation() {
           success: 'Congrats! Your platform has been updated',
           error: 'An error occurred while updating your platform',
         },
+        // @ts-ignore: error after viem v2 migration
         publicClient,
         tx,
         'platform',

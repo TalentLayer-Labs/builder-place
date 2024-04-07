@@ -2,7 +2,7 @@ import { User } from '@prisma/client';
 import { GetServerSidePropsContext } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
-import { useQuery } from 'wagmi';
+import { useQuery } from 'react-query';
 import Loading from '../../../components/Loading';
 import NotFound from '../../../components/NotFound';
 import UserServices from '../../../components/UserServices';

@@ -4,11 +4,13 @@
 
 - main doc: https://nextjs.org/docs/pages/building-your-application/upgrading/app-router-migration
 - must watch: https://www.youtube.com/watch?v=YQMSietiFm0&ab_channel=LeeRobinson
+- setup web3modal + wagmi with SSR and cookie: https://wagmi.sh/react/guides/ssr
 
 
 ## To know
 
 - New Metadata that replace Head: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+- useRouter
 
 
 ## TODO 

@@ -1,6 +1,6 @@
 import { defineChain } from 'viem';
 import { NetworkEnum } from './types';
-import { Chain } from 'wagmi';
+import { Chain } from 'wagmi/chains';
 import { polygon, polygonMumbai } from 'viem/chains';
 
 export const iexec = defineChain({

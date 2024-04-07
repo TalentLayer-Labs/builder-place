@@ -53,7 +53,7 @@ const useCreatePlatform = () => {
         message: `connect with ${address}`,
       });
 
-      if (!existingPlatform && talentLayerClient) {
+      if (!existingPlatform && publicClient && talentLayerClient) {
         toast.update(toastId, {
           render: <MultiStepsTransactionToast currentStep={2} />,
         });

@@ -1,13 +1,12 @@
+import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
+import { useMutation } from 'react-query';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
-import BuilderPlaceContext from '../../context/BuilderPlaceContext';
+import { IAddBuilderPlaceCollaborator } from '../../../../components/Form/CollaboratorForm';
+import TalentLayerContext from '../../../../context/talentLayer';
 import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { useConfig } from '../../../../hooks/useConfig';
-import { useMutation } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import TalentLayerContext from '../../../../context/talentLayer';
-import { IAddBuilderPlaceCollaborator } from '../../../../components/Form/CollaboratorForm';
+import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useAddCollaborator = () => {
   const chainId = useChainId();
@@ -69,6 +68,7 @@ const useAddCollaborator = () => {
         talentLayerUser.id,
         config,
         collaboratorAddress,
+        // @ts-ignore: error after viem v2 migration
         publicClient,
         walletClient,
         true,

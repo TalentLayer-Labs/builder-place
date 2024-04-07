@@ -2,8 +2,8 @@ import { getUserByAddress } from '../../queries/users';
 import { mnemonicToAccount } from 'viem/accounts';
 import { createPublicClient, createWalletClient, http, PublicClient } from 'viem';
 import { getViemFormattedChain } from '../../chains';
-import { WalletClient } from 'wagmi';
 import { NetworkEnum } from '../../types';
+import { WalletClient } from 'viem';
 
 export async function isPlatformAllowedToDelegate(
   chainId: number,

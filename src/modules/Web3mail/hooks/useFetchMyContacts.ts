@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Contact } from '@iexec/web3mail';
-import { getUsersWeb3MailPreference } from '../../../queries/users';
-import { IUserDetails, EmailNotificationType } from '../../../types';
-import { useChainId } from '../../../hooks/useChainId';
+import { useEffect, useState } from 'react';
+import { Account, Chain, Transport, WalletClient } from 'viem';
 import { fetchMyContacts } from '../../../components/request';
+import { useChainId } from '../../../hooks/useChainId';
+import { getUsersWeb3MailPreference } from '../../../queries/users';
+import { EmailNotificationType, IUserDetails } from '../../../types';
 import { getUsersNotificationData } from '../../BuilderPlace/request';
-import { Chain, WalletClient } from 'wagmi';
-import { Account, Transport } from 'viem';
 
 export interface IContact {
   id: string;

@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 import { formatUnits } from 'viem';
 import { useChainId } from 'wagmi';
-import { chains } from '../context/web3modal';
 import usePlatform from '../hooks/usePlatform';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import { chains } from '../config/wagmi';
 
 function ProposalPostingFee() {
   const { builderPlace } = useContext(BuilderPlaceContext);

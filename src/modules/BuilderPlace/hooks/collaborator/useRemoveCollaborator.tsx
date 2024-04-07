@@ -46,6 +46,7 @@ const useRemoveCollaborator = () => {
         userId,
         config,
         collaboratorAddress,
+        // @ts-ignore: error after viem v2 migration
         publicClient,
         walletClient,
         false,

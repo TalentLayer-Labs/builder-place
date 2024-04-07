@@ -1,42 +1,31 @@
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
-import { Chain, WagmiConfig } from 'wagmi';
-import { iexec } from '../chains';
-import { NetworkEnum } from '../types';
-import { polygon, polygonMumbai } from 'viem/chains';
+'use client';
 
-// 1. Get projectId
-const projectId = process.env.NEXT_PUBLIC_WALLECT_CONNECT_PROJECT_ID as string;
+import { ReactNode } from 'react';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
+import { State, WagmiProvider } from 'wagmi';
+import { config, projectId } from '../config/wagmi';
+import { ReactQueryProvider } from './react-query';
 
-// 2. Create wagmiConfig
-const metadata = {
-  name: 'BuilderPlace',
-  description: 'grow your open-source movement today',
-  url: 'https://builder.place',
-  icons: ['https://builder.place/logo192.png'],
-};
+if (!projectId) throw new Error('Project ID is not defined');
 
-export let chains: Chain[] = [];
-if ((process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum) == NetworkEnum.MUMBAI) {
-  chains.push(polygonMumbai);
-} else if (
-  (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum) == NetworkEnum.POLYGON
-) {
-  chains.push(polygon);
-}
+// Create modal
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  enableOnramp: true, // Optional - false as default
+});
 
-if (process.env.NEXT_PUBLIC_EMAIL_MODE == 'web3') {
-  chains.push(iexec);
-}
-
-export const defaultChain: Chain | undefined = chains.find(
-  chain => chain.id === parseInt(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as string),
-);
-
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
-
-// 3. Create modal
-createWeb3Modal({ wagmiConfig, projectId, chains });
-
-export function Web3Modal({ children }: { children: React.ReactNode }) {
-  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
+export default function Web3ModalProvider({
+  children,
+  initialState,
+}: {
+  children: ReactNode;
+  initialState?: State;
+}) {
+  return (
+    <WagmiProvider config={config} initialState={initialState}>
+      <ReactQueryProvider>{children}</ReactQueryProvider>
+    </WagmiProvider>
+  );
 }

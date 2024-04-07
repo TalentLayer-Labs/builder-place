@@ -1,17 +1,15 @@
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
-import NetworkLink from './NetworkLink';
+import { useAccount, useConfig, useSwitchChain } from 'wagmi';
 import { NetworkEnum } from '../types';
+import NetworkLink from './NetworkLink';
 
 function NetworkSwitch() {
-  const network = useNetwork();
-  const { chains } = network;
+  const { chains } = useConfig();
+  const { chain } = useAccount();
   const [loading, setLoading] = useState(true);
-  const { switchNetwork: switchToDefaultNetwork } = useSwitchNetwork({
-    chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
-  });
+  const { switchChain: switchToDefaultNetwork } = useSwitchChain();
 
   // Tips to prevent nextJs error: Hydration failed because the initial UI does not match what was rendered on the server.
   useEffect(() => {
@@ -22,17 +20,22 @@ function NetworkSwitch() {
     return null;
   }
 
-  if (network?.chain === undefined) {
+  if (chain === undefined) {
     return null;
   }
 
   const needToSwitch =
-    network.chain.id != (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum);
+    chain.id != (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum);
 
   if (needToSwitch) {
     return (
       <button
-        onClick={() => switchToDefaultNetwork && switchToDefaultNetwork()}
+        onClick={() =>
+          switchToDefaultNetwork &&
+          switchToDefaultNetwork({
+            chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
+          })
+        }
         className='text-alone-error text-xs italic mr-2'>
         wrong network, <span className='underline hover:text-red-700'>switch now</span>
       </button>
@@ -48,8 +51,8 @@ function NetworkSwitch() {
           width={28}
           height={28}
           className='h-7 w-7 rounded-full'
-          src={`/images/blockchain/${network.chain?.id}.png`}
-          alt={`${network.chain?.name}  icon`}
+          src={`/images/blockchain/${chain?.id}.png`}
+          alt={`${chain?.name}  icon`}
         />
       </Menu.Button>
       <Transition

@@ -72,6 +72,7 @@ const useUpdateUser = () => {
             success: 'Congrats! Your profile has been updated',
             error: 'An error occurred while updating your profile',
           },
+          // @ts-ignore: error after viem v2 migration
           publicClient,
           tx,
           'user',

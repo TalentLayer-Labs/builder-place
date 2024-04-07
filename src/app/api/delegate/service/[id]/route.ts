@@ -67,7 +67,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient) {
+      if (!walletClient?.account) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -87,6 +87,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         abi: TalentLayerService.abi,
         functionName: 'updateServiceData',
         args: [userId, params.id, cid],
+        chain: walletClient.chain,
+        account: walletClient.account.address,
       });
 
       await incrementWeeklyTransactionCounter(user);

@@ -3,7 +3,7 @@ import { formatUnits } from 'viem';
 import { useChainId } from '../../hooks/useChainId';
 import { useEffect, useState } from 'react';
 import useMintFee from '../../hooks/useMintFee';
-import { chains } from '../../context/web3modal';
+import { chains } from '../../config/wagmi';
 
 export function HandlePrice({ handle }: { handle: string }) {
   const [price, setPrice] = useState(0);

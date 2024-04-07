@@ -18,13 +18,19 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const talentLayerClientConfig = talentLayerClient?.getChainConfig(chainId);
-  const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS;
+  const delegateAddress = process.env.NEXT_PUBLIC_DELEGATE_ADDRESS as string;
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState<boolean>(true);
 
   const onActivateDelegation = async () => {
     try {
-      if (talentLayerClient && walletClient && talentLayerClientConfig) {
+      if (
+        talentLayerClient &&
+        walletClient?.account &&
+        publicClient &&
+        talentLayerClientConfig &&
+        talentLayerUser?.id
+      ) {
         setSubmitting(true);
         const { request } = await publicClient.simulateContract({
           address: talentLayerClientConfig.contracts.talentLayerId.address,
@@ -32,6 +38,7 @@ const DelegationNotification = ({ callback }: DelegationNotificationProps) => {
           functionName: 'addDelegate',
           args: [talentLayerUser?.id, delegateAddress],
           account: account?.address,
+          chain: walletClient.chain,
         });
         const tx = await walletClient.writeContract(request);
         const toastMessages = {

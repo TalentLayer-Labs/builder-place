@@ -15,6 +15,8 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { getViemFormattedChain } from '../../../../chains';
+import { NetworkEnum } from '../../../../types';
 
 export interface IExecutePayment {
   chainId: number;
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient) {
+      if (!walletClient?.account) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -88,6 +90,8 @@ export async function POST(req: Request) {
           abi: TalentLayerEscrow.abi,
           functionName: 'release',
           args: [userId, transactionId, amount],
+          chain: walletClient.chain,
+          account: walletClient.account.address,
         });
       } else {
         transaction = await walletClient.writeContract({
@@ -95,6 +99,8 @@ export async function POST(req: Request) {
           abi: TalentLayerEscrow.abi,
           functionName: 'reimburse',
           args: [userId, transactionId, amount],
+          chain: walletClient.chain,
+          account: walletClient.account.address,
         });
       }
 

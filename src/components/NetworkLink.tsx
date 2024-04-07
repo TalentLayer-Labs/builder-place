@@ -1,22 +1,22 @@
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 
 function NetworkLink({ chaindId, chainName }: { chaindId: number; chainName: string }) {
-  const { switchNetwork } = useSwitchNetwork({
-    chainId: chaindId,
-  });
-  const network = useNetwork();
+  const { switchChain } = useSwitchChain();
+  const { chain } = useAccount();
 
-  if (!switchNetwork) {
+  if (!switchChain) {
     return null;
   }
 
   return (
     <a
       onClick={() => {
-        switchNetwork();
+        switchChain({
+          chainId: chaindId,
+        });
       }}
       className={`cursor-pointer text-base-content block px-4 py-2 text-sm' ${
-        network?.chain?.id === chaindId ? 'bg-base-200 ' : 'hover:opacity-80'
+        chain?.id === chaindId ? 'bg-base-200 ' : 'hover:opacity-80'
       }`}>
       {chainName}
     </a>

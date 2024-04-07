@@ -1,7 +1,8 @@
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../utils/toast';
 import { Address } from 'viem';
-import { PublicClient, WalletClient } from 'wagmi';
 import TalentLayerID from './ABI/TalentLayerID.json';
+import { PublicClient } from 'viem';
+import { WalletClient } from 'viem';
 
 export const toggleDelegation = async (
   chainId: number,

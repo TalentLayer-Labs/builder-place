@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import ToastStep from './ToastStep';
-import { useNetwork } from 'wagmi';
 import { Hash } from 'viem';
+import { useAccount } from 'wagmi';
 
 function MultiStepsTransactionToast({
   txHash,
@@ -12,15 +12,15 @@ function MultiStepsTransactionToast({
   currentStep: number;
   hasOffchainData?: boolean;
 }) {
-  const network = useNetwork();
+  const { chain } = useAccount();
   const renderTransaction: () => JSX.Element = useCallback(() => {
     return (
       <a
         className='flex flex-col text-sm font-normal w-full pt-2'
         target='_blank'
-        href={`${network.chain?.blockExplorers?.default.url}/tx/${txHash}`}>
+        href={`${chain?.blockExplorers?.default.url}/tx/${txHash}`}>
         <span className='flex full-w justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-black border border-info rounded-xl hover:opacity-70 focus:ring-4 focus:outline-none focus:ring-gray-200 '>
-          Follow on {network.chain?.blockExplorers?.default.name}
+          Follow on {chain?.blockExplorers?.default.name}
         </span>
       </a>
     );

@@ -1,9 +1,12 @@
 import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
+import { headers } from 'next/headers';
+import { cookieToInitialState } from 'wagmi';
+import { AnalyticsProvider } from '../context/analytics';
+import Web3ModalProvider from '../context/web3modal';
 import '../styles/globals.css';
 import '../styles/markdown.css';
-import dynamic from 'next/dynamic';
-import { AnalyticsProvider } from './analytics-provider';
-import { ReactQueryProvider } from './react-query-provider';
+import { config } from '../config/wagmi';
 
 // @TODO: make Metadata dynamic by builderPlace
 export const metadata: Metadata = {
@@ -21,16 +24,18 @@ const PostHogPageView = dynamic(() => import('../components/PostHogPageView'), {
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const initialState = cookieToInitialState(config, headers().get('cookie'));
+
   return (
     <html lang='en'>
-      <AnalyticsProvider>
-        <ReactQueryProvider>
-          <body>
+      <body>
+        <AnalyticsProvider>
+          <Web3ModalProvider initialState={initialState}>
             <PostHogPageView />
             {children}
-          </body>
-        </ReactQueryProvider>
-      </AnalyticsProvider>
+          </Web3ModalProvider>
+        </AnalyticsProvider>
+      </body>
     </html>
   );
 }

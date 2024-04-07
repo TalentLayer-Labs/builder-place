@@ -1,7 +1,7 @@
 import { TalentLayerClient } from '@talentlayer/client';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useSwitchNetwork, useWalletClient } from 'wagmi';
+import { useAccount, useSwitchChain, useWalletClient } from 'wagmi';
 import { useChainId } from '../hooks/useChainId';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
@@ -26,7 +26,7 @@ const TalentLayerContext = createContext<iTalentLayerContext>({
 
 const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   const chainId = useChainId();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { user: workerProfile } = useContext(UserContext);
@@ -40,10 +40,10 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
   // automatically switch to the default chain is the current one is not part of the config
   useEffect(() => {
     if (
-      switchNetwork &&
+      switchChain &&
       chainId !== (process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number)
     ) {
-      switchNetwork(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number);
+      switchChain({ chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number });
     }
 
     const platformId = parseInt(
@@ -58,6 +58,7 @@ const TalentLayerProvider = ({ children }: { children: ReactNode }) => {
       },
       platformId: platformId,
       signatureApiUrl: process.env.NEXT_PUBLIC_SIGNATURE_API_URL as string,
+      // @ts-ignore: TODO: upgrade SDK
       walletConfig: walletClient
         ? {
             walletClient,

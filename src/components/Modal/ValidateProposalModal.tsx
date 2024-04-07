@@ -28,8 +28,10 @@ function ValidateProposalModal({
   const isProposalUseEth: boolean = proposal.rateToken.address === ZERO_ADDRESS;
   const { data: tokenBalance } = useBalance({
     address: address,
-    enabled: !isProposalUseEth,
     token: proposal.rateToken.address,
+    query: {
+      enabled: !isProposalUseEth,
+    },
   });
 
   const originValidatedProposalPlatformId = proposal.platform.id;

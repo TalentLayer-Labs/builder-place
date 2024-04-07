@@ -1,3 +1,5 @@
+'use client';
+
 import { useRouter } from 'next/router';
 import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
 import { GetServerSidePropsContext } from 'next';

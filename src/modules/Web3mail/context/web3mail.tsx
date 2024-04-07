@@ -1,16 +1,7 @@
 import { GrantedAccess, IExecDataProtector, ProtectedData } from '@iexec/dataprotector';
 import { IExecWeb3mail } from '@iexec/web3mail';
-import {
-  ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
-import TalentLayerContext from '../../../context/talentLayer';
 import { NetworkEnum } from '../../../types';
 import { log } from '../../../utils/log';
 
@@ -68,7 +59,9 @@ const Web3MailProvider = ({ children }: { children: ReactNode }) => {
 
       log('Web3MailProvider ---- Init The dataProtector', { dataProtector, account });
       const provider2 = await account.connector?.getProvider();
+      // @ts-ignore - new typing error after viem v2 migration
       setDataProtector(new IExecDataProtector(provider2));
+      // @ts-ignore
       setWeb3mail(new IExecWeb3mail(provider2));
     };
     fetchData();

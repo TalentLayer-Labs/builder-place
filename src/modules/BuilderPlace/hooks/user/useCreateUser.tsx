@@ -77,7 +77,7 @@ const useCreateUser = () => {
 
           userId = tx.data.userId;
         } else {
-          if (talentLayerClient) {
+          if (talentLayerClient && publicClient) {
             //TODO: invalid Bigint syntax :/
             console.log('ic !', values.talentLayerHandle);
             const txHash = await talentLayerClient.profile.create(values.talentLayerHandle);

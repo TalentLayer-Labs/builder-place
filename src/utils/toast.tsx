@@ -1,8 +1,7 @@
 import { toast } from 'react-toastify';
 import MultiStepsTransactionToast from '../components/MultiStepsTransactionToast';
 import { graphIsSynced, graphUserIsSynced } from '../queries/global';
-import { BaseError, Hash } from 'viem';
-import { PublicClient } from 'wagmi';
+import { BaseError, Hash, PublicClient } from 'viem';
 
 interface IMessages {
   pending: string;

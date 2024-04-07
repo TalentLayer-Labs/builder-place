@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 
 function Menu() {
@@ -29,43 +28,43 @@ function Menu() {
         <nav className='fixed top-0 left-0 z-[999] flex h-screen w-full items-center justify-center bg-white bg-opacity-95 text-center backdrop-blur-sm lg:static lg:h-auto lg:w-max lg:bg-transparent lg:backdrop-blur-none '>
           <ul className='items-center space-y-3 lg:flex lg:space-x-8 lg:space-y-0 xl:space-x-10'>
             <li className='menu-item'>
-              <Link
+              <a
                 onClick={() => setIsOpen(false)}
                 href='/#video'
                 className='menu-scroll inline-flex items-center text-base font-medium text-black hover:text-redpraha   lg:py-7'>
                 about
-              </Link>
+              </a>
             </li>
             <li className='menu-item'>
-              <Link
+              <a
                 onClick={() => setIsOpen(false)}
                 href='/#features'
                 className='menu-scroll inline-flex items-center text-base font-medium text-black hover:text-redpraha   lg:py-7'>
                 features
-              </Link>
+              </a>
             </li>
             <li className='menu-item'>
-              <Link
+              <a
                 onClick={() => setIsOpen(false)}
                 href='/#pricing'
                 className='menu-scroll inline-flex items-center text-base font-medium text-black hover:text-redpraha   lg:py-7'>
                 pricing
-              </Link>
+              </a>
             </li>
             <li className='menu-item'>
-              <Link
+              <a
                 onClick={() => setIsOpen(false)}
                 href='/#contact'
                 className='menu-scroll inline-flex items-center text-base font-medium text-black hover:text-redpraha   lg:py-7'>
                 support
-              </Link>
+              </a>
             </li>
             <li>
-              <Link
+              <a
                 href='/worker-landing'
                 className='rounded-md text-center bg-redpraha py-[6px] px-[12px] xl:py-[10px] xl:px-[30px] text-base font-bold text-stone-800 hover:bg-opacity-60'>
                 i'm a contributor
-              </Link>
+              </a>
             </li>
           </ul>
         </nav>

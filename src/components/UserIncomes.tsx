@@ -3,15 +3,15 @@ import Loading from './Loading';
 import { renderTokenAmount } from '../utils/conversion';
 import { formatStringCompleteDate } from '../utils/dates';
 import usePaymentsForUser from '../hooks/usePaymentsForUser';
-import { useNetwork } from 'wagmi';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import { formatUnits } from 'viem';
+import { useAccount } from 'wagmi';
 
 function UserIncomes({ id }: { id: string }) {
   const ROW_SIZE = 50;
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  const network = useNetwork();
+  const { chain } = useAccount();
 
   const { payments, hasMoreData, loading, loadMore } = usePaymentsForUser(
     id,
@@ -29,7 +29,7 @@ function UserIncomes({ id }: { id: string }) {
         Amount: formatUnits(BigInt(payment.amount), payment.rateToken.decimals),
         Token: payment.rateToken.symbol,
         Service: `Service n°${payment.service.id}`,
-        'Transaction Information': `${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`,
+        'Transaction Information': `${chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`,
       })),
     );
 
@@ -115,10 +115,10 @@ function UserIncomes({ id }: { id: string }) {
                         </a>
                       </td>
                       <td className=' p-2 text-center text-info border-b border-info'>
-                        {network.chain?.id === 137 || network.chain?.id === 80001 ? (
+                        {chain?.id === 137 || chain?.id === 80001 ? (
                           <a
                             target='_blank'
-                            href={`${network.chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}>
+                            href={`${chain?.blockExplorers?.default.url}/tx/${payment.transactionHash}`}>
                             Tx
                           </a>
                         ) : null}

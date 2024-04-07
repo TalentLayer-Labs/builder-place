@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   try {
     const walletClient = await getDelegationSigner();
-    if (!walletClient) {
+    if (!walletClient?.account) {
       console.log('Wallet client not found');
       return Response.json({ error: 'Server Error' }, { status: 500 });
     }
@@ -68,6 +68,8 @@ export async function POST(req: Request) {
       functionName: 'mintForAddress',
       args: [body.platformName, body.address],
       value: mintFee as bigint,
+      chain: walletClient.chain,
+      account: walletClient.account.address,
     });
 
     console.log('tx hash', txHash);

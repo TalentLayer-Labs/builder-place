@@ -1,7 +1,7 @@
 import { PublicClient } from 'viem/clients/createPublicClient';
 import { createPublicClient, http } from 'viem';
 import { iexec } from '../chains';
-import { Chain } from 'wagmi';
+import { Chain } from 'wagmi/chains';
 import { JobConditionsChainIdEnum } from '../modules/BuilderPlace/types';
 import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
 

@@ -3,7 +3,7 @@ import { Field, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useSwitchNetwork } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 import * as Yup from 'yup';
 import ConnectBlock from '../../../components/ConnectBlock';
 import SubmitButton from '../../../components/Form/SubmitButton';
@@ -21,7 +21,7 @@ interface IFormValues {
 
 function Web3mailForm() {
   const chainId = useChainId();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const account = useAccount();
   const { platformHasAccess, protectEmailAndGrantAccess, emailIsProtected } =
     useContext(Web3MailContext);
@@ -53,10 +53,10 @@ function Web3mailForm() {
         </label>
         <button
           onClick={async () => {
-            switchNetwork &&
-              (await switchNetwork(
-                process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum,
-              ));
+            switchChain &&
+              (await switchChain({
+                chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum,
+              }));
 
             router.push('/profiles/edit/privacy');
           }}
