@@ -1,3 +1,5 @@
+'use client';
+
 import { EntityStatus } from '@prisma/client';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';

@@ -1,6 +1,6 @@
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
-import { useMutation } from 'react-query';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { useConfig } from '../../../../hooks/useConfig';
@@ -14,8 +14,8 @@ const useRemoveCollaborator = () => {
   const publicClient = usePublicClient({ chainId });
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { address } = useAccount();
-  const collaboratorMutation = useMutation(
-    async ({
+  const collaboratorMutation = useMutation({
+    mutationFn: async ({
       collaboratorId,
       body,
     }: {
@@ -24,7 +24,7 @@ const useRemoveCollaborator = () => {
     }): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.put(`/api/collaborators/${collaboratorId}`, body);
     },
-  );
+  });
 
   const removeCollaborator = async (
     collaboratorAddress: `0x${string}`,

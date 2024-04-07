@@ -1,6 +1,6 @@
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
-import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import {
@@ -17,11 +17,11 @@ const useUpdatePlatform = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const platformMutation = useMutation(
-    async (body: IConfigurePlace): Promise<AxiosResponse<{ id: string }>> => {
+  const platformMutation = useMutation({
+    mutationFn: async (body: IConfigurePlace): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.put(`/api/platforms/${builderPlace?.id}`, body);
     },
-  );
+  });
 
   const updatePlatform = async (values: IConfigurePlaceFormValues) => {
     if (!walletClient || !address) {

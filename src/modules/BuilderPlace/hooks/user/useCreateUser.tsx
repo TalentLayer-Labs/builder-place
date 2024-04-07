@@ -1,6 +1,6 @@
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
-import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
@@ -24,11 +24,11 @@ const useCreateUser = () => {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { calculateMintFee } = useMintFee();
   const talentLayerClient = useTalentLayerClient();
-  const userMutation = useMutation(
-    async (body: ICreateUser): Promise<AxiosResponse<{ id: string }>> => {
+  const userMutation = useMutation({
+    mutationFn: async (body: ICreateUser): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.post('/api/users', body);
     },
-  );
+  });
 
   const createNewUser = async (values: ICreateUserFormValues) => {
     if (!walletClient || !talentLayerClient || !address) {

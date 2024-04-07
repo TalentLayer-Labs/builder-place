@@ -1,12 +1,12 @@
+import { useMutation } from '@tanstack/react-query';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { useAccount } from 'wagmi';
-import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
-import { useContext } from 'react';
-import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useMutation } from 'react-query';
 import axios, { AxiosResponse } from 'axios';
+import { useContext } from 'react';
+import { useAccount } from 'wagmi';
 import { ISendVerificationEmail } from '../../app/api/emails/send-verification/route';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
 import { showErrorTransactionToast } from '../../utils/toast';
 
 function SubmitButton({
@@ -22,13 +22,13 @@ function SubmitButton({
   const { open: openConnectModal } = useWeb3Modal();
   const { user } = useContext(UserContext);
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const sendVerificationEmailMutation = useMutation(
-    async (
+  const sendVerificationEmailMutation = useMutation({
+    mutationFn: async (
       body: ISendVerificationEmail,
     ): Promise<AxiosResponse<{ id: string; message: string }>> => {
       return await axios.post('/api/emails/send-verification', body);
     },
-  );
+  });
 
   const handleSendVerificationEmail = async (e: any) => {
     e.preventDefault();

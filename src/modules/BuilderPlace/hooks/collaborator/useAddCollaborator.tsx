@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { useContext } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { IAddBuilderPlaceCollaborator } from '../../../../components/Form/CollaboratorForm';
 import TalentLayerContext from '../../../../context/talentLayer';
@@ -16,11 +16,13 @@ const useAddCollaborator = () => {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { address } = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext);
-  const collaboratorMutation = useMutation(
-    async (body: IAddBuilderPlaceCollaborator): Promise<AxiosResponse<{ id: string }>> => {
+  const collaboratorMutation = useMutation({
+    mutationFn: async (
+      body: IAddBuilderPlaceCollaborator,
+    ): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.post(`/api/collaborators`, body);
     },
-  );
+  });
 
   const addCollaborator = async (collaboratorAddress: string): Promise<void> => {
     if (!walletClient || !address || !talentLayerUser?.id || !builderPlace) {

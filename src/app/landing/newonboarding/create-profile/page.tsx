@@ -1,9 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import CreateUserForm from '../../../../components/onboarding/user/CreateUserForm';
-import Header from '../../../../components/onboarding/Header';
 import Steps from '../../../../components/onboarding/platform/Steps';
+import CreateUserForm from '../../../../components/onboarding/user/CreateUserForm';
 
 export default function CreateProfilePage() {
   const router = useRouter();
@@ -14,9 +13,7 @@ export default function CreateProfilePage() {
   };
 
   return (
-    <div className=''>
-      <Header />
-
+    <>
       <Steps currentStep={1} />
 
       <div className='text-stone-800'>
@@ -30,6 +27,6 @@ export default function CreateProfilePage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

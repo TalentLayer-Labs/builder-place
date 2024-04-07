@@ -1,7 +1,7 @@
-import { PlatformsFilters } from '../../../../app/api/platforms/route';
-import { useQuery } from 'react-query';
-import { IBuilderPlace } from '../../types';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { PlatformsFilters } from '../../../../app/api/platforms/route';
+import { IBuilderPlace } from '../../types';
 
 interface IReturn {
   platform?: IBuilderPlace;
@@ -31,9 +31,7 @@ const useGetPlatformBy = (filters: PlatformsFilters): IReturn => {
     isLoading,
     isError,
     error,
-  } = useQuery<IBuilderPlace, Error>(queryKey, fetchPlatformBy, {
-    enabled: !!filters,
-  });
+  } = useQuery<IBuilderPlace, Error>({ queryKey, queryFn: fetchPlatformBy, enabled: !!filters });
 
   return { platform, isLoading, isError, error };
 };

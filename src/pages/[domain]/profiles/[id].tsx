@@ -1,8 +1,8 @@
 import { User } from '@prisma/client';
+import { useQuery } from '@tanstack/react-query';
 import { GetServerSidePropsContext } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
 import Loading from '../../../components/Loading';
 import NotFound from '../../../components/NotFound';
 import UserServices from '../../../components/UserServices';
@@ -23,7 +23,10 @@ function Profile() {
     data: user,
     isLoading,
     isError,
-  } = useQuery<User, Error>(['user', id], () => getUserBy({ talentLayerId: id as string }));
+  } = useQuery<User, Error>({
+    queryKey: ['user', id],
+    queryFn: () => getUserBy({ talentLayerId: id as string }),
+  });
 
   if (isLoading) {
     return <Loading />;

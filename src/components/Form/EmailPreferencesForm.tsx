@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Form, Formik } from 'formik';
 import { useContext } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import { IUpdateProfile } from '../../app/api/users/[id]/route';
@@ -41,11 +41,11 @@ function EmailPreferencesForm() {
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
       : EmailNotificationType.WEB2;
-  const userMutation = useMutation(
-    async (body: IUpdateProfile): Promise<AxiosResponse<{ id: string }>> => {
+  const userMutation = useMutation({
+    mutationFn: async (body: IUpdateProfile): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.put(`/api/users/${user?.id}`, body);
     },
-  );
+  });
 
   if (!user?.talentLayerId || talentLayerDataLoading || loading || !user) {
     return <Loading />;

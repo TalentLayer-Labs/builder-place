@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
-import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import {
@@ -19,11 +19,11 @@ const useCreatePlatform = () => {
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const talentLayerClient = useTalentLayerClient();
-  const platformMutation = useMutation(
-    async (body: ICreatePlatform): Promise<AxiosResponse<{ id: string }>> => {
+  const platformMutation = useMutation({
+    mutationFn: async (body: ICreatePlatform): Promise<AxiosResponse<{ id: string }>> => {
       return await axios.post('/api/platforms', body);
     },
-  );
+  });
 
   const createNewPlatform = async (
     values: ICreatePlatformFormValues,

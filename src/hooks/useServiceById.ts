@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
 import { IService } from '../types';
 import { useChainId } from './useChainId';
 import useTalentLayerClient from './useTalentLayerClient';
 import { getServiceById } from '../queries/services';
+import { useQuery } from '@tanstack/react-query';
 
 interface IReturn {
   service?: IService;
@@ -31,7 +31,9 @@ const useServiceById = (serviceId: string): IReturn => {
     isLoading,
     isError,
     error,
-  } = useQuery<IService, Error>(queryKey, fetchService, {
+  } = useQuery<IService, Error>({
+    queryKey,
+    queryFn: fetchService,
     enabled: !!serviceId && !!talentLayerClient,
   });
 

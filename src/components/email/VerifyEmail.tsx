@@ -1,26 +1,28 @@
 'use client';
 
+import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useMutation } from 'react-query';
 import { IVerifyEmail } from '../../app/api/emails/verify/route';
 import {
   EMAIL_ALREADY_VERIFIED,
   EMAIL_VERIFIED_SUCCESSFULLY,
 } from '../../modules/BuilderPlace/apiResponses';
-import Loading from '../Loading';
 import { isOnRootDomain } from '../../utils/url';
+import Loading from '../Loading';
 
 const verifyEmail = () => {
   const router = useRouter();
   const { id } = router.query;
   const [pageResponse, setPageResponse] = useState<string>();
-  const emailMutation = useMutation(
-    async (body: IVerifyEmail): Promise<AxiosResponse<{ id: string; message: string }>> => {
+  const emailMutation = useMutation({
+    mutationFn: async (
+      body: IVerifyEmail,
+    ): Promise<AxiosResponse<{ id: string; message: string }>> => {
       return await axios.post('/api/emails/verify', body);
     },
-  );
+  });
 
   useEffect(() => {
     if (id) {

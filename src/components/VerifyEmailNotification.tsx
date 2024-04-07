@@ -4,7 +4,7 @@ import { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { createVerificationEmailToast } from '../modules/BuilderPlace/utils/toast';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { ISendVerificationEmail } from '../app/api/emails/send-verification/route';
 import axios, { AxiosResponse } from 'axios';
 
@@ -17,13 +17,13 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
   const router = useRouter();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState(true);
-  const sendVerificationEmailMutation = useMutation(
-    async (
+  const sendVerificationEmailMutation = useMutation({
+    mutationFn: async (
       body: ISendVerificationEmail,
     ): Promise<AxiosResponse<{ id: string; message: string }>> => {
       return await axios.post('/api/emails/send-verification', body);
     },
-  );
+  });
 
   const onVerifyMail = async () => {
     const domain =
