@@ -23,11 +23,12 @@ const PostHogPageView = dynamic(() => import('../components/PostHogPageView'), {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
-      <head></head>
       <AnalyticsProvider>
-        <PostHogPageView />
         <ReactQueryProvider>
-          <body>{children}</body>
+          <body>
+            <PostHogPageView />
+            {children}
+          </body>
         </ReactQueryProvider>
       </AnalyticsProvider>
     </html>

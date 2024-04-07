@@ -8,6 +8,7 @@ export default function PostHogPageView() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const posthog = usePostHog();
+
   // Track pageviews
   useEffect(() => {
     if (pathname && posthog) {
