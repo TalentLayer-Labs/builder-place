@@ -41,7 +41,6 @@ describe('getCompletionScores', () => {
         title: 'Engineer',
         name: 'John',
         skills_raw: 'solidity, jest, js',
-        isAdmin: false,
         web3mailPreferences: {
           activeOnNewService: false,
           activeOnNewProposal: true,

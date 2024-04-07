@@ -4,11 +4,9 @@ import { formatEther } from 'viem';
 import { useChainId } from 'wagmi';
 import * as Yup from 'yup';
 import SingleValueForm from '../../../components/Form/SingleValueForm';
-import Loading from '../../../components/Loading';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
 import { FEE_RATE_DIVIDER } from '../../../config';
 import { chains } from '../../../config/wagmi';
-import TalentLayerContext from '../../../context/talentLayer';
 import TalentLayerPlatformID from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { useConfig } from '../../../hooks/useConfig';
 import usePlatform from '../../../hooks/usePlatform';
@@ -21,16 +19,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminFees() {
   const chainId = useChainId();
-  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const config = useConfig();
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const currentChain = chains.find(chain => chain.id === chainId);
 
-  if (loading) {
-    return <Loading />;
-  }
-  if (!talentLayerUser?.isAdmin) {
+  if (!isBuilderPlaceOwner) {
     return <UserNeedsMoreRights />;
   }
 

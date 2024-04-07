@@ -21,7 +21,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 function AdminDispute() {
   const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const config = useConfig();
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const [arbitratorPrice, setArbitratorPrice] = useState<number>(0);
@@ -41,15 +41,13 @@ function AdminDispute() {
   };
 
   useEffect(() => {
-    if (talentLayerUser?.isAdmin != null && platform != null && config != null) {
-      fetchArbitrationPrice();
-    }
+    fetchArbitrationPrice();
   }, [platform?.id, talentLayerClient, talentLayerUser, platform, config]);
 
   if (loading) {
     return <Loading />;
   }
-  if (!talentLayerUser?.isAdmin) {
+  if (!isBuilderPlaceOwner) {
     return <UserNeedsMoreRights />;
   }
 

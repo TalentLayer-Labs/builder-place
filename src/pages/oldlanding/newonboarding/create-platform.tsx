@@ -26,7 +26,7 @@ function createPlatform() {
               Create your platform
             </p>
 
-            <CreatePlatformForm onSuccess={onSuccess} />
+            <CreatePlatformForm />
           </div>
         </div>
       </div>

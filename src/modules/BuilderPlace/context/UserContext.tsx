@@ -1,3 +1,5 @@
+'use client';
+
 import { User } from '@prisma/client';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';

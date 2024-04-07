@@ -3,9 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { formatEther } from 'viem';
 import * as Yup from 'yup';
 import SingleValueForm from '../../../components/Form/SingleValueForm';
-import Loading from '../../../components/Loading';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
-import TalentLayerContext from '../../../context/talentLayer';
 import TalentLayerArbitrator from '../../../contracts/ABI/TalentLayerArbitrator.json';
 import TalentLayerPlatformID from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { useConfig } from '../../../hooks/useConfig';
@@ -20,8 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function AdminDispute() {
-  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const config = useConfig();
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const [arbitratorPrice, setArbitratorPrice] = useState<number>(0);
@@ -41,15 +38,10 @@ function AdminDispute() {
   };
 
   useEffect(() => {
-    if (talentLayerUser?.isAdmin != null && platform != null && config != null) {
-      fetchArbitrationPrice();
-    }
-  }, [platform?.id, talentLayerClient, talentLayerUser, platform, config]);
+    fetchArbitrationPrice();
+  }, [platform?.id, talentLayerClient, platform, config]);
 
-  if (loading) {
-    return <Loading />;
-  }
-  if (!talentLayerUser?.isAdmin) {
+  if (!isBuilderPlaceOwner) {
     return <UserNeedsMoreRights />;
   }
 

@@ -1,17 +1,7 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
 import Steps from '../../../../components/onboarding/platform/Steps';
-import CreateUserForm from '../../../../components/onboarding/user/CreateUserForm';
+import OnboardingUserForm from '../../../../components/onboarding/user/OnboardingUserForm';
 
 export default function CreateProfilePage() {
-  const router = useRouter();
-
-  const onSuccess = () => {
-    console.log('*DEBUG* onSuccess REDIRECT');
-    router.push('/newonboarding/create-platform');
-  };
-
   return (
     <>
       <Steps currentStep={1} />
@@ -23,7 +13,7 @@ export default function CreateProfilePage() {
               Create your profile
             </p>
 
-            <CreateUserForm onSuccess={onSuccess} />
+            <OnboardingUserForm />
           </div>
         </div>
       </div>

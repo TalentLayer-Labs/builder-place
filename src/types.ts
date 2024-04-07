@@ -11,7 +11,6 @@ export type IUser = {
   description?: IUserDetails;
   userStats: IUserStats;
   delegates?: string[];
-  isAdmin?: boolean;
 };
 
 export type IUserDetails = {

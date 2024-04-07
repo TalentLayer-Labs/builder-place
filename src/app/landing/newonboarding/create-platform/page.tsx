@@ -1,22 +1,9 @@
-import { useRouter } from 'next/router';
-import Header from '../../../../components/onboarding/Header';
-import Steps from '../../../../components/onboarding/platform/Steps';
 import CreatePlatformForm from '../../../../components/onboarding/platform/CreatePlatformForm';
+import Steps from '../../../../components/onboarding/platform/Steps';
 
 export default function CreatePlatformPage() {
-  const router = useRouter();
-
-  const onSuccess = (subdomain: string) => {
-    console.log('*DEBUG* onSuccess REDIRECT');
-    router.push(
-      `${window.location.protocol}//${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/dashboard?platformonboarding=1`,
-    );
-  };
-
   return (
-    <div className=''>
-      <Header />
-
+    <>
       <Steps currentStep={2} />
 
       <div className='text-stone-800'>
@@ -26,10 +13,10 @@ export default function CreatePlatformPage() {
               Create your platform
             </p>
 
-            <CreatePlatformForm onSuccess={onSuccess} />
+            <CreatePlatformForm />
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

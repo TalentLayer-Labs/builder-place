@@ -1,10 +1,7 @@
 import Head from 'next/head';
-import { useContext } from 'react';
-import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import { iBuilderPlacePalette } from '../modules/BuilderPlace/types';
 
-function CustomPalette() {
-  const { builderPlace } = useContext(BuilderPlaceContext);
-
+function CustomPalette({ customPalette }: { customPalette?: iBuilderPlacePalette }) {
   /*
     Optim idea:
       - pass all color in rgb mode.
@@ -35,29 +32,29 @@ function CustomPalette() {
       <style>
         {`
           :root {
-            --primary: ${builderPlace?.palette?.primary || '#FF71A2'};
-            --primary-50: ${(builderPlace?.palette?.primary || '#FF71A2') + '60'};
-            --primary-focus: ${builderPlace?.palette?.primaryFocus || '#FFC2D1'};
-            --primary-content: ${builderPlace?.palette?.primaryContent || '#ffffff'};
+            --primary: ${customPalette?.primary || '#FF71A2'};
+            --primary-50: ${(customPalette?.primary || '#FF71A2') + '60'};
+            --primary-focus: ${customPalette?.primaryFocus || '#FFC2D1'};
+            --primary-content: ${customPalette?.primaryContent || '#ffffff'};
 
-            --base-100: ${builderPlace?.palette?.base100 || '#ffffff'};
-            --base-200: ${builderPlace?.palette?.base200 || '#fefcfa'};
-            --base-300: ${builderPlace?.palette?.base300 || '#fae4ce'};
-            --base-content: ${builderPlace?.palette?.baseContent || '#000000'};
-            --base-content-50: ${(builderPlace?.palette?.baseContent || '#000000') + '90'};
+            --base-100: ${customPalette?.base100 || '#ffffff'};
+            --base-200: ${customPalette?.base200 || '#fefcfa'};
+            --base-300: ${customPalette?.base300 || '#fae4ce'};
+            --base-content: ${customPalette?.baseContent || '#000000'};
+            --base-content-50: ${(customPalette?.baseContent || '#000000') + '90'};
 
-            --info: ${builderPlace?.palette?.info || '#f4dabe'};
-            --info-content: ${builderPlace?.palette?.infoContent || '#000000'};
+            --info: ${customPalette?.info || '#f4dabe'};
+            --info-content: ${customPalette?.infoContent || '#000000'};
 
-            --success: ${builderPlace?.palette?.success || '#C5F1A4'};
-            --success-50: ${(builderPlace?.palette?.success || '#C5F1A4') + '60'};
-            --success-content: ${builderPlace?.palette?.successContent || '#000000'};
+            --success: ${customPalette?.success || '#C5F1A4'};
+            --success-50: ${(customPalette?.success || '#C5F1A4') + '60'};
+            --success-content: ${customPalette?.successContent || '#000000'};
 
-            --warning: ${builderPlace?.palette?.warning || '#FFE768'};
-            --warning-content: ${builderPlace?.palette?.warningContent || '#000000'};
+            --warning: ${customPalette?.warning || '#FFE768'};
+            --warning-content: ${customPalette?.warningContent || '#000000'};
 
-            --error: ${builderPlace?.palette?.error || '#FFC2D1'};
-            --error-content: ${builderPlace?.palette?.errorContent || '#000000'};
+            --error: ${customPalette?.error || '#FFC2D1'};
+            --error-content: ${customPalette?.errorContent || '#000000'};
           }
 
           html .bg-primary {

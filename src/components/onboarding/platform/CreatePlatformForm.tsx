@@ -1,3 +1,5 @@
+'use client';
+
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
@@ -16,6 +18,7 @@ import UploadImage from '../../UploadImage';
 import AccessDenied from './AccessDenied';
 import AlreadyOwnsPlatform from './AlreadyOwnsPlatform';
 import { PlatformNameInput } from './PlatformNameInput';
+import { useRouter } from 'next/navigation';
 
 export interface ICreatePlatformFormValues {
   name: string;
@@ -46,7 +49,8 @@ export interface ICreatePlatform
  *  ELSE
  *      Access denied
  */
-function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => void }) {
+function CreatePlatformForm() {
+  const router = useRouter();
   const { address } = useAccount();
   const { loading: isLoadingUser, user } = useContext(UserContext);
   const { open: openConnectModal } = useWeb3Modal();
@@ -59,6 +63,13 @@ function CreatePlatformForm({ onSuccess }: { onSuccess: (subdomain: string) => v
   );
   const alreadyOwnsAPlatform = existingDatabasePlatform?.ownerId === user?.id;
   const domain = existingDatabasePlatform?.customDomain || existingDatabasePlatform?.subdomain;
+
+  const onSuccess = (subdomain: string) => {
+    console.log('*DEBUG* onSuccess REDIRECT');
+    router.push(
+      `${window.location.protocol}//${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}/dashboard?platformonboarding=1`,
+    );
+  };
 
   const initialValues: ICreatePlatformFormValues = {
     name: '',

@@ -1,4 +1,5 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react';
+import Link from 'next/link';
 import { useAccount } from 'wagmi';
 
 function AccessDenied() {
@@ -15,12 +16,11 @@ function AccessDenied() {
           Access denied
         </h1>
         <p className='mt-6 text-base-content leading-7 text-base-content'>
-          Please create a user account first{' '}
-          <a
+          <Link
             href='/newonboarding/create-profile'
-            className='text-base-300 font-bold hover:opacity-50'>
-            Create now
-          </a>
+            className='px-5 py-2 rounded-xl text-white bg-pink-500 hover:opacity-60'>
+            Create an account first
+          </Link>
         </p>
         <div className='mt-10 flex items-center justify-center gap-x-6'>
           {!address && (

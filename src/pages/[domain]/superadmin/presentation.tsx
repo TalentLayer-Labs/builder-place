@@ -4,9 +4,7 @@ import { useContext } from 'react';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
 import SubmitButton from '../../../components/Form/SubmitButton';
-import Loading from '../../../components/Loading';
 import UserNeedsMoreRights from '../../../components/UserNeedsMoreRights';
-import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
 import usePlatform from '../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../hooks/useTalentLayerClient';
@@ -30,18 +28,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 function AdminPresentation() {
-  const { user: talentLayerUser, loading } = useContext(TalentLayerContext);
-  const { builderPlace } = useContext(BuilderPlaceContext);
+  const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
   const platform = usePlatform(builderPlace?.talentLayerPlatformId);
   const platformDescription = platform?.description;
   const chainId = useChainId();
   const publicClient = usePublicClient({ chainId });
   const talentLayerClient = useTalentLayerClient();
 
-  if (loading) {
-    return <Loading />;
-  }
-  if (!talentLayerUser?.isAdmin) {
+  if (!isBuilderPlaceOwner) {
     return <UserNeedsMoreRights />;
   }
 

@@ -21,6 +21,7 @@
 
 ## Ticket to create 
 
+- use react query everywhere
 - Migrate service to DB
     - everytime we create/edit one service, it's first saved in the DB and then synced onchain (async process?)
         - we need to find an easy to handle edge case (tx that failed)

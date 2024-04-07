@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { IBuilderPlace } from '../types';
 import { useAccount, useChainId } from 'wagmi';

@@ -1,5 +1,3 @@
-'use client';
-
 import { EntityStatus } from '@prisma/client';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
@@ -50,6 +48,8 @@ function CreateUserForm({ onSuccess }: { onSuccess: () => void }) {
   const { user: talentLayerUser, refreshData } = useContext(TalentLayerContext);
   const { open: openConnectModal } = useWeb3Modal();
   const { createNewUser } = useCreateUser();
+
+  console.log('DEBUG', { user, isLoadingUser, talentLayerUser, address });
 
   /**
    * @dev if user already got an account, we redirect him to the next step
