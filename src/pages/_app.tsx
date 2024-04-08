@@ -47,14 +47,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   console.log('MyApp', { pageProps });
 
   const router = useRouter();
-  useEffect(() => {
-    const handleRouteChange = () => posthog.capture('$pageview');
-    router.events.on('routeChangeComplete', handleRouteChange);
+  // useEffect(() => {
+  //   const handleRouteChange = () => posthog.capture('$pageview');
+  //   router.events.on('routeChangeComplete', handleRouteChange);
 
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, []);
+  //   return () => {
+  //     router.events.off('routeChangeComplete', handleRouteChange);
+  //   };
+  // }, []);
 
   return (
     <>

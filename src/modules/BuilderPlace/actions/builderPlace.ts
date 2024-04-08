@@ -33,7 +33,7 @@ import {
 } from '../domains';
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
-import { IRemoveBuilderPlaceCollaborator } from '../../../pages/[domain]/admin/collaborator-card';
+import { IRemoveBuilderPlaceCollaborator } from '../../../pages/old[domain]/admin/collaborator-card';
 import { PlatformsFilters } from '../../../app/api/platforms/route';
 
 /**

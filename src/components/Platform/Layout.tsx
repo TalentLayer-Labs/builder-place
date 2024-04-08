@@ -3,22 +3,22 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { Fragment, ReactNode, useContext, useEffect, useState } from 'react';
-import Logo from '../components/Layout/Logo';
-import MenuBottom from '../components/Layout/MenuBottom';
-import SideMenu from '../components/Layout/SideMenu';
-import Loading from '../components/Loading';
-import NetworkSwitch from '../components/NetworkSwitch';
-import UserAccount from '../components/UserAccount';
-import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import UserContext from '../modules/BuilderPlace/context/UserContext';
-import Template from './template';
+import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../modules/BuilderPlace/context/UserContext';
+import Loading from '../Loading';
+import Logo from '../Layout/Logo';
+import NetworkSwitch from '../NetworkSwitch';
+import UserAccount from '../UserAccount';
+import SideMenu from '../Layout/SideMenu';
+import Template from '../../app/[domain]/template';
+import MenuBottom from '../Layout/MenuBottom';
 
 interface ContainerProps {
   children: ReactNode;
   className?: string;
 }
 
-function Layout({ children, className }: ContainerProps) {
+function PlatformLayout({ children, className }: ContainerProps) {
   const pathname = usePathname();
   const { builderPlace, isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
   const { user, loading: userLoading } = useContext(UserContext);
@@ -217,4 +217,4 @@ function Layout({ children, className }: ContainerProps) {
   );
 }
 
-export default Layout;
+export default PlatformLayout;

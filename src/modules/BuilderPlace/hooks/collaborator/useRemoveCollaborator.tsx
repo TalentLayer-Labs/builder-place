@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { useConfig } from '../../../../hooks/useConfig';
-import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/[domain]/admin/collaborator-card';
+import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/old[domain]/admin/collaborator-card';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
 
 const useRemoveCollaborator = () => {
