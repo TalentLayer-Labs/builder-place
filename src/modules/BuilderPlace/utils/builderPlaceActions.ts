@@ -16,11 +16,6 @@ export const generateWhereClauseFindMany = (filters: PlatformsFilters) => {
     whereClause?.owner
       ? (whereClause.owner.talentLayerId = filters.ownerTalentLayerId)
       : (whereClause.owner = { talentLayerId: filters.ownerTalentLayerId });
-  }
-  if (filters.ownerTalentLayerId) {
-    whereClause?.owner
-      ? (whereClause.owner.talentLayerId = filters.ownerTalentLayerId)
-      : (whereClause.owner = { talentLayerId: filters.ownerTalentLayerId });
   } else if (filters.collaboratorAddress) {
     whereClause.collaborators = {
       some: {
