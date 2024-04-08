@@ -16,6 +16,12 @@ export const generateWhereClause = (filters: PlatformsFilters) => {
     whereClause.talentLayerPlatformName = filters.talentLayerPlatformName;
   } else if (filters.subdomain) {
     whereClause.subdomain = filters.subdomain;
+  } else if (filters.collaboratorAddress) {
+    whereClause.collaborators = {
+      some: {
+        address: filters.collaboratorAddress,
+      },
+    };
   }
   return whereClause;
 };

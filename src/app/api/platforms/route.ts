@@ -16,6 +16,7 @@ export interface PlatformsFilters {
   talentLayerPlatformId?: string | null;
   talentLayerPlatformName?: string | null;
   subdomain?: string | null;
+  collaboratorAddress?: string | null;
 }
 
 /**

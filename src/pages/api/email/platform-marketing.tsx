@@ -6,7 +6,7 @@ import { renderMail } from '../utils/generateMail';
 import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { EmailNotificationType } from '../../../types';
 import { EmailType } from '.prisma/client';
-import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 
 export const config = {
@@ -54,10 +54,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json(`Invalid Signature`);
     }
 
-    const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(
-      signatureAddress,
-      builderPlaceId,
-    );
+    const builderPlace = await getPlatformBy({
+      collaboratorAddress: signatureAddress,
+      id: Number(builderPlaceId),
+    });
 
     const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 

@@ -1,6 +1,5 @@
 import {
   DOMAIN_CONTAINS_BUILDER_PLACE,
-  ERROR_FETCHING_BUILDERPLACE,
   ERROR_UPDATING_DOMAIN,
   INVALID_CUSTOM_DOMAIN,
 } from '../apiResponses';
@@ -15,7 +14,6 @@ import {
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { PlatformsFilters } from '../../../app/api/platforms/route';
-import { BuilderPlace } from '@prisma/client';
 import { generateWhereClause } from '../utils/builderPlaceActions';
 
 export const getPlatformsBy = async (filters: PlatformsFilters) => {
@@ -34,7 +32,7 @@ export const getPlatformsBy = async (filters: PlatformsFilters) => {
   return platform;
 };
 
-export const getPlatformBy = async (filters: PlatformsFilters): Promise<BuilderPlace | null> => {
+export const getPlatformBy = async (filters: PlatformsFilters) => {
   console.log('*DEBUG* Getting Platform with filters:', filters);
 
   const whereClause = generateWhereClause(filters);
@@ -133,87 +131,5 @@ export const updateDomain = async (builderPlace: UpdateBuilderPlaceDomain) => {
     return response;
   } catch (error: any) {
     handleApiError(error, errorMessage, ERROR_UPDATING_DOMAIN);
-  }
-};
-
-export const getBuilderPlaceByOwnerTlIdAndId = async (
-  ownerTalentLayerId: string,
-  builderPlaceId: string,
-) => {
-  let errorMessage = '';
-  try {
-    console.log(
-      "getting builderPlace with owner's TlId & postgres id:",
-      ownerTalentLayerId,
-      builderPlaceId,
-    );
-    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
-      where: {
-        AND: [{ owner: { talentLayerId: ownerTalentLayerId } }, { id: Number(builderPlaceId) }],
-      },
-      include: {
-        owner: true,
-        collaborators: true,
-      },
-    });
-    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
-    if (builderPlaceSubdomain) {
-      return builderPlaceSubdomain;
-    }
-
-    return null;
-  } catch (error: any) {
-    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
-  }
-};
-
-export const getBuilderPlaceByCollaboratorAddressAndId = async (
-  address: string,
-  builderPlaceId: string,
-) => {
-  let errorMessage = '';
-  try {
-    console.log('getting builderPlace with admin address & id:', address, builderPlaceId);
-    const builderPlaceSubdomain = await prisma.builderPlace.findFirst({
-      where: {
-        id: Number(builderPlaceId),
-        collaborators: {
-          some: {
-            address: address,
-          },
-        },
-      },
-    });
-
-    console.log('fetched builderPlace, ', builderPlaceSubdomain?.subdomain);
-    if (builderPlaceSubdomain) {
-      return builderPlaceSubdomain;
-    }
-
-    return null;
-  } catch (error: any) {
-    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
-  }
-};
-
-export const getBuilderPlaceByDomain = async (domain: string) => {
-  let errorMessage = '';
-  try {
-    console.log('getting builderPlace ', domain);
-    const builderPlace = await prisma.builderPlace.findFirst({
-      where: {
-        OR: [{ subdomain: domain }, { customDomain: domain }],
-      },
-      include: {
-        owner: true,
-        collaborators: true,
-      },
-    });
-
-    console.log('fetched builderPlaces, ', builderPlace?.subdomain);
-
-    return builderPlace;
-  } catch (error: any) {
-    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
   }
 };
