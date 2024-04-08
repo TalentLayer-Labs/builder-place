@@ -10,7 +10,7 @@
 ## To know
 
 - New Metadata that replace Head: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
-- useRouter
+- new routing hook useRouter: https://nextjs.org/docs/app/api-reference/functions/use-router
 
 
 ## TODO 
@@ -22,6 +22,7 @@
 ## Ticket to create 
 
 - use react query everywhere
+- Best practices: add simulate before each write: https://viem.sh/docs/contract/writeContract#usage
 - Migrate service to DB
     - everytime we create/edit one service, it's first saved in the DB and then synced onchain (async process?)
         - we need to find an easy to handle edge case (tx that failed)
@@ -48,4 +49,4 @@
     - loading management 
     - error management (frontend / backend)
     - form
-    
+- Platform Form: add sync to domain

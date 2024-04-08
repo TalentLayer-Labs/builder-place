@@ -1,8 +1,8 @@
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 
 import { cookieStorage, createStorage } from 'wagmi';
-import { Chain, polygon, polygonMumbai } from 'wagmi/chains';
-import { iexec } from '../chains';
+import { Chain, polygon } from 'wagmi/chains';
+import { iexec, polygonMumbai } from '../chains';
 import { NetworkEnum } from '../types';
 
 // Get projectId at https://cloud.walletconnect.com

@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import SearchTalentButton from '../../../components/Form/SearchTalentButton';
 import Loading from '../../../components/Loading';
 import UserItem from '../../../components/UserItem';

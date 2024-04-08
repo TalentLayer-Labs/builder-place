@@ -1,6 +1,6 @@
 import { ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 import { Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useSwitchChain } from 'wagmi';

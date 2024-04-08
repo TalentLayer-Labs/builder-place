@@ -6,7 +6,7 @@ import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 function UserAccount() {
   const router = useRouter();

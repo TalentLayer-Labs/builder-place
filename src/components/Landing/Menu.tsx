@@ -1,9 +1,16 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 function Menu() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const pathname = usePathname();
+  const isOnboarding = pathname?.includes('/newonboarding');
+
+  if (isOnboarding) return null;
+
+  console.log(pathname);
   return (
     <>
       <button

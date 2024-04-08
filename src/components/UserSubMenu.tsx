@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { useDisconnect } from 'wagmi';
 import UserContext from '../modules/BuilderPlace/context/UserContext';

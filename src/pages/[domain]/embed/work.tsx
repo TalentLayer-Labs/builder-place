@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import ServiceList from '../../../components/ServiceList';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
 

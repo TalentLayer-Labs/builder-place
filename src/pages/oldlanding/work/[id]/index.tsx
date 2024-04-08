@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Loading from '../../../../components/Loading';
 import ServiceDetail from '../../../../components/ServiceDetail';
 import useServiceById from '../../../../hooks/useServiceById';

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import useFilteredServices from '../hooks/useFilteredServices';
 import { IService, ServiceStatusEnum } from '../types';
 import Loading from './Loading';

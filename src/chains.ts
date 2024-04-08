@@ -1,7 +1,7 @@
 import { defineChain } from 'viem';
 import { NetworkEnum } from './types';
 import { Chain } from 'wagmi/chains';
-import { polygon, polygonMumbai } from 'viem/chains';
+import { polygon } from 'viem/chains';
 
 export const iexec = defineChain({
   id: 134,
@@ -24,6 +24,31 @@ export const iexec = defineChain({
     default: { name: 'BlockScout', url: 'https://blockscout-bellecour.iex.ec/' },
   },
   testnet: false,
+});
+
+export const polygonMumbai = /*#__PURE__*/ defineChain({
+  id: 80_001,
+  name: 'Polygon Mumbai',
+  nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://endpoints.omniatech.io/v1/matic/mumbai/public'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'PolygonScan',
+      url: 'https://mumbai.polygonscan.com',
+      apiUrl: 'https://api-testnet.polygonscan.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xca11bde05977b3631167028862be2a173976ca11',
+      blockCreated: 25770160,
+    },
+  },
+  testnet: true,
 });
 
 const viemFormattedChains: {

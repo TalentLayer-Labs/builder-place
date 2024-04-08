@@ -15,7 +15,7 @@ import '../styles/globals.css';
 import '../styles/markdown.css';
 import Layout from './Layout';
 import { Analytics } from '@vercel/analytics/react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';

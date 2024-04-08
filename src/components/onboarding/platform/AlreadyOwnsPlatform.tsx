@@ -1,6 +1,6 @@
+import { useRouter } from 'next/navigation';
 import AsyncButton from '../../AsyncButton';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 
 const AlreadyOwnsPlatform = ({ domain, logo }: { domain?: string; logo?: string | null }) => {
   const [redirecting, setRedirecting] = useState(false);

@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import { NextSeo } from 'next-seo';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
 import NotFound from '../../../../components/NotFound';

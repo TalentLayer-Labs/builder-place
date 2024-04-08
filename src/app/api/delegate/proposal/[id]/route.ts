@@ -1,16 +1,16 @@
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../../config';
-import {
-  getDelegationSigner,
-  getPublicClient,
-  isPlatformAllowedToDelegate,
-} from '../../../../utils/delegate';
 import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../../modules/BuilderPlace/actions/user';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../../modules/BuilderPlace/apiResponses';
+import {
+  getDelegationSigner,
+  getPublicClient,
+  isPlatformAllowedToDelegate,
+} from '../../../../utils/delegate';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
@@ -71,7 +71,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient?.account) {
+      if (!walletClient) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -91,7 +91,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         functionName: 'updateProposal',
         args: [userId, params.id, rateToken, rateAmount, cid, expirationDate],
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       await incrementWeeklyTransactionCounter(user);

@@ -3,7 +3,7 @@ import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceCon
 import Loading from './Loading';
 import useFilteredServices from '../hooks/useFilteredServices';
 import { ServiceStatusEnum } from '../types';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function OrganizationHeader() {

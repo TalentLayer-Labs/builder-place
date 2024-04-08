@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';

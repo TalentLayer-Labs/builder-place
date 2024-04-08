@@ -1,16 +1,16 @@
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
+import TalentLayerReview from '../../../../contracts/ABI/TalentLayerReview.json';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../modules/BuilderPlace/actions/user';
+import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 import {
   getDelegationSigner,
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
-import {
-  getUserByAddress,
-  getUserByTalentLayerId,
-} from '../../../../modules/BuilderPlace/actions/user';
-import TalentLayerReview from '../../../../contracts/ABI/TalentLayerReview.json';
-import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient?.account) {
+      if (!walletClient) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
         functionName: 'mint',
         args: [userId, serviceId, cid, rating],
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       await incrementWeeklyTransactionCounter(user);

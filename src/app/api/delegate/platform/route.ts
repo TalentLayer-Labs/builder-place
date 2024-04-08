@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
 import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getUserByAddress } from '../../../../modules/BuilderPlace/actions/user';
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   try {
     const walletClient = await getDelegationSigner();
-    if (!walletClient?.account) {
+    if (!walletClient) {
       console.log('Wallet client not found');
       return Response.json({ error: 'Server Error' }, { status: 500 });
     }
@@ -61,6 +61,8 @@ export async function POST(req: Request) {
     });
 
     console.log('MintFee', mintFee);
+    console.log('walletClient', walletClient);
+    console.log('chainId', body.chainId);
 
     const txHash = await walletClient.writeContract({
       address: config.contracts.talentLayerPlatformId,
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       args: [body.platformName, body.address],
       value: mintFee as bigint,
       chain: walletClient.chain,
-      account: walletClient.account.address,
+      account: walletClient.account as Account,
     });
 
     console.log('tx hash', txHash);

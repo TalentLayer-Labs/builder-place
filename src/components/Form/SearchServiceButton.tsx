@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Search } from 'heroicons-react';
 
 function SearchServiceButton(props?: { value?: string }) {

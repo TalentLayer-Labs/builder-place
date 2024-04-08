@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import CreateUserForm from '../../../components/onboarding/user/CreateUserForm';
 import { GetServerSidePropsContext } from 'next';
 import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';

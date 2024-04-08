@@ -1,5 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { formatUnits } from 'viem';
 import * as Yup from 'yup';
 import useAllowedTokens from '../../hooks/useAllowedTokens';

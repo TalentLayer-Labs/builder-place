@@ -1,22 +1,20 @@
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
+import TalentLayerEscrow from '../../../../contracts/ABI/TalentLayerEscrow.json';
+import {
+  getUserByAddress,
+  getUserByTalentLayerId,
+} from '../../../../modules/BuilderPlace/actions/user';
+import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 import {
   getDelegationSigner,
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
 import {
-  getUserByAddress,
-  getUserByTalentLayerId,
-} from '../../../../modules/BuilderPlace/actions/user';
-import TalentLayerEscrow from '../../../../contracts/ABI/TalentLayerEscrow.json';
-import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
-import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
-import { getViemFormattedChain } from '../../../../chains';
-import { NetworkEnum } from '../../../../types';
 
 export interface IExecutePayment {
   chainId: number;
@@ -71,7 +69,7 @@ export async function POST(req: Request) {
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient?.account) {
+      if (!walletClient) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
           functionName: 'release',
           args: [userId, transactionId, amount],
           chain: walletClient.chain,
-          account: walletClient.account.address,
+          account: walletClient.account as Account,
         });
       } else {
         transaction = await walletClient.writeContract({
@@ -100,7 +98,7 @@ export async function POST(req: Request) {
           functionName: 'reimburse',
           args: [userId, transactionId, amount],
           chain: walletClient.chain,
-          account: walletClient.account.address,
+          account: walletClient.account as Account,
         });
       }
 

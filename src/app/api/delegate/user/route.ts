@@ -1,4 +1,4 @@
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { getConfig } from '../../../../config';
 import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
   try {
     const walletClient = await getDelegationSigner();
-    if (!walletClient?.account) {
+    if (!walletClient) {
       console.log('Wallet client not found');
       return Response.json({ error: 'Server Error' }, { status: 500 });
     }
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     }
 
     let userId: bigint = 0n;
-    let transaction;
+    let txHash;
 
     /**
      * If addDelegateAndTransferId is true, we mint the TlId for the user, add the delegator address as delegate, then transfer it to them.
@@ -67,13 +67,13 @@ export async function POST(req: Request) {
         functionName: 'mintDelegateAndTransfer',
         args: [
           body.userAddress,
-          walletClient.account.address,
+          walletClient.account?.address,
           BigInt(body.platformId),
           body.handle,
         ],
         value: BigInt(body.handlePrice),
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       console.log('tx hash', txHash);
@@ -110,28 +110,28 @@ export async function POST(req: Request) {
       }
 
       console.log(
-        `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account.address} as delegate`,
+        `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account?.address} as delegate`,
       );
     } else {
-      transaction = await walletClient.writeContract({
+      txHash = await walletClient.writeContract({
         address: config.contracts.talentLayerId,
         abi: TalentLayerID.abi,
         functionName: 'mintForAddress',
         args: [body.userAddress, body.platformId, body.handle],
         value: BigInt(body.handlePrice),
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       console.log(`Minted TalentLayer Id for address ${body.userAddress}`);
 
       // Wait for transaction to be mined
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: transaction });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
       console.log('Mint Transaction Status', receipt.status);
 
       await publicClient.waitForTransactionReceipt({
         confirmations: 1,
-        hash: transaction,
+        hash: txHash,
       });
 
       // Get Minted UserId
@@ -145,7 +145,7 @@ export async function POST(req: Request) {
       console.log(`Minted id: ${userId} for user ${body.userAddress}`);
     }
 
-    return Response.json({ transaction: transaction, userId: String(userId) }, { status: 201 });
+    return Response.json({ transaction: txHash, userId: String(userId) }, { status: 201 });
   } catch (error: any) {
     console.log('CATCH error', error);
     // @TODO: move error handle to a middleware ? or factorize it ?

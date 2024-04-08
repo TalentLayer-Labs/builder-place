@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import ConnectBlock from '../../components/ConnectBlock';

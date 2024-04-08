@@ -1,16 +1,16 @@
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../../config';
+import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../../modules/BuilderPlace/actions/user';
-import TalentLayerService from '../../../../../contracts/ABI/TalentLayerService.json';
+import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../../modules/BuilderPlace/apiResponses';
 import {
   getDelegationSigner,
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../../utils/delegate';
-import { recoverMessageAddress } from 'viem';
-import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../../modules/BuilderPlace/apiResponses';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
@@ -67,7 +67,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient?.account) {
+      if (!walletClient) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -88,7 +88,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         functionName: 'updateServiceData',
         args: [userId, params.id, cid],
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       await incrementWeeklyTransactionCounter(user);

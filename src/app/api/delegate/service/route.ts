@@ -1,18 +1,18 @@
-import { recoverMessageAddress } from 'viem';
+import { Account, recoverMessageAddress } from 'viem';
 import { getConfig } from '../../../../config';
-import {
-  getDelegationSigner,
-  getPublicClient,
-  isPlatformAllowedToDelegate,
-} from '../../../utils/delegate';
 import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getServiceSignature } from '../../../../utils/signature';
-import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../modules/BuilderPlace/actions/user';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
+import { getPlatformPostingFees } from '../../../../queries/platform';
+import { getServiceSignature } from '../../../../utils/signature';
+import {
+  getDelegationSigner,
+  getPublicClient,
+  isPlatformAllowedToDelegate,
+} from '../../../utils/delegate';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       }
 
       const walletClient = await getDelegationSigner();
-      if (!walletClient?.account) {
+      if (!walletClient) {
         console.log('Wallet client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
         args: [userId, platformId, cid, signature],
         value: servicePostingFee,
         chain: walletClient.chain,
-        account: walletClient.account.address,
+        account: walletClient.account as Account,
       });
 
       await incrementWeeklyTransactionCounter(user);

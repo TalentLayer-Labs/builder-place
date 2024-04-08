@@ -1,5 +1,5 @@
 import { ChevronLeft } from 'heroicons-react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 function Back() {
   const router = useRouter();

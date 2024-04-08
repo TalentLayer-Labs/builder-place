@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { getAddress } from 'viem';
 import { useAccount, useWalletClient } from 'wagmi';

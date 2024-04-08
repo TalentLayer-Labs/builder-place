@@ -1,7 +1,7 @@
 import Notification from './Notification';
 import { showErrorTransactionToast } from '../utils/toast';
 import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { createVerificationEmailToast } from '../modules/BuilderPlace/utils/toast';
 import { useMutation } from '@tanstack/react-query';

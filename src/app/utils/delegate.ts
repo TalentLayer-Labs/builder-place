@@ -24,6 +24,12 @@ export async function isPlatformAllowedToDelegate(
 export async function getDelegationSigner(): Promise<WalletClient | null> {
   const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
 
+  console.log({
+    chain: getViemFormattedChain(
+      process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as NetworkEnum,
+    ),
+  });
+
   if (delegateSeedPhrase) {
     const account = mnemonicToAccount(delegateSeedPhrase);
     return createWalletClient({
