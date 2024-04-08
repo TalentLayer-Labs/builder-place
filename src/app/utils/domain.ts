@@ -55,7 +55,6 @@ export const checkOwnerSignature = async (
   });
 
   const builderPlace = await getPlatformBy({
-    ownerId: Number(ownerId),
     id: Number(builderPlaceId),
   });
 

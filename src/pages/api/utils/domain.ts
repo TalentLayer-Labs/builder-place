@@ -22,11 +22,10 @@ export const checkSignature = async (
     });
 
     const builderPlace = await getPlatformBy({
-      collaboratorAddress: address,
       id: Number(id),
     });
 
-    if (!builderPlace) {
+    if (!builderPlace?.collaborators.some(collaborator => collaborator.address === address)) {
       return res.status(400).json({ error: 'No BuilderPlace found.' });
     }
 
