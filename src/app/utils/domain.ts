@@ -16,11 +16,10 @@ export const checkSignature = async (id: string, signature: `0x${string}` | Uint
     });
 
     const builderPlace = await getPlatformBy({
-      collaboratorAddress: address,
       id: Number(id),
     });
 
-    if (!builderPlace) {
+    if (!builderPlace?.collaborators.some(collaborator => collaborator.address === address)) {
       return Response.json({ error: 'No BuilderPlace found' }, { status: 400 });
     }
 
