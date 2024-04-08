@@ -14,12 +14,23 @@ import {
 import prisma from '../../../postgre/postgreClient';
 import { handleApiError } from '../utils/error';
 import { PlatformsFilters } from '../../../app/api/platforms/route';
-import { generateWhereClause } from '../utils/builderPlaceActions';
+import {
+  generateWhereClauseFindMany,
+  generateWhereClauseFindUnique,
+} from '../utils/builderPlaceActions';
+
+export interface PlatformFilters {
+  id?: number | null;
+  ownerId?: number | null;
+  talentLayerPlatformId?: string | null;
+  talentLayerPlatformName?: string | null;
+  subdomain?: string | null;
+}
 
 export const getPlatformsBy = async (filters: PlatformsFilters) => {
   console.log('*DEBUG* Getting Platforms with filters:', filters);
 
-  const whereClause = generateWhereClause(filters);
+  const whereClause = generateWhereClauseFindMany(filters);
 
   const platform = await prisma.builderPlace.findMany({
     where: whereClause,
@@ -32,10 +43,10 @@ export const getPlatformsBy = async (filters: PlatformsFilters) => {
   return platform;
 };
 
-export const getPlatformBy = async (filters: PlatformsFilters) => {
+export const getPlatformBy = async (filters: PlatformFilters) => {
   console.log('*DEBUG* Getting Platform with filters:', filters);
 
-  const whereClause = generateWhereClause(filters);
+  const whereClause = generateWhereClauseFindUnique(filters);
 
   const platform = await prisma.builderPlace.findUnique({
     where: whereClause,
