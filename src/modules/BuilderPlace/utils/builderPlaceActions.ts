@@ -9,13 +9,9 @@ import { PlatformFilters } from '../actions/builderPlace';
 export const generateWhereClauseFindMany = (filters: PlatformsFilters) => {
   const whereClause: any = generateWhereClauseFindUnique(filters);
   if (filters.ownerAddress) {
-    whereClause?.owner
-      ? (whereClause.owner.address = filters.ownerAddress)
-      : (whereClause.owner = { address: filters.ownerAddress });
+    whereClause.owner = { address: filters.ownerAddress };
   } else if (filters.ownerTalentLayerId) {
-    whereClause?.owner
-      ? (whereClause.owner.talentLayerId = filters.ownerTalentLayerId)
-      : (whereClause.owner = { talentLayerId: filters.ownerTalentLayerId });
+    whereClause.owner = { talentLayerId: filters.ownerTalentLayerId };
   } else if (filters.collaboratorAddress) {
     whereClause.collaborators = {
       some: {
