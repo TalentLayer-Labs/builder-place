@@ -3,7 +3,7 @@ import { PlatformFilters } from '../actions/builderPlace';
 
 /**
  * Generate where clause for prisma findMany query - collaboratorAddress, owner.address,
- * owner.talentLayerId are not considered unique fields
+ * owner.talentLayerId are not considered unique fields and will make the "findUnique" query fail
  * @param filters
  */
 export const generateWhereClauseFindMany = (filters: PlatformsFilters) => {
