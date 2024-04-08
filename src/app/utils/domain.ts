@@ -16,11 +16,10 @@ export const checkSignature = async (id: string, signature: `0x${string}` | Uint
     });
 
     const builderPlace = await getPlatformBy({
-      collaboratorAddress: address,
       id: Number(id),
     });
 
-    if (!builderPlace) {
+    if (!builderPlace?.collaborators.some(collaborator => collaborator.address === address)) {
       return Response.json({ error: 'No BuilderPlace found' }, { status: 400 });
     }
 
@@ -37,16 +36,14 @@ export const checkSignature = async (id: string, signature: `0x${string}` | Uint
 
 /**
  * Checks if the signature is from the BuilderPlace owner by getting the BuilderPlace
- * by the owner DataBase id & BuilderPlace Database id
+ * by the owner address & BuilderPlace Database id
  * @param builderPlaceId Database BuilderPlace id
- * @param ownerId Database BuilderPlace owner id
  * @param signature Signature to verify
  * @param address Address to verify
  * @throws 401 if the signature is not from the BuilderPlace owner
  */
 export const checkOwnerSignature = async (
   builderPlaceId: string,
-  ownerId: string,
   signature: `0x${string}` | Uint8Array,
   address: `0x${string}`,
 ) => {
@@ -56,17 +53,13 @@ export const checkOwnerSignature = async (
   });
 
   const builderPlace = await getPlatformBy({
-    ownerId: Number(ownerId),
     id: Number(builderPlaceId),
   });
 
   /**
    * Check whether the signature is from the BuilderPlace owner
    */
-  if (
-    builderPlace &&
-    signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()
-  ) {
+  if (builderPlace && signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address) {
     throw new Error('Not Platform Owner');
   }
 

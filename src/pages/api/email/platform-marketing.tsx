@@ -55,9 +55,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const builderPlace = await getPlatformBy({
-      collaboratorAddress: signatureAddress,
       id: Number(builderPlaceId),
     });
+
+    if (
+      !builderPlace?.collaborators.some(collaborator => collaborator.address === signatureAddress)
+    ) {
+      return res.status(401).json(`Unauthorized`);
+    }
 
     const domain = builderPlace?.customDomain || builderPlace?.subdomain;
 

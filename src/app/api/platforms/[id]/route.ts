@@ -32,11 +32,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   // Check if the address is owner or collaborator
   const builderPlace = await getPlatformBy({
-    collaboratorAddress: signatureAddress,
     id: Number(params.id),
   });
 
-  if (!builderPlace) {
+  if (
+    !builderPlace?.collaborators.some(collaborator => collaborator.address === signatureAddress)
+  ) {
     return Response.json({ error: 'The signer is not owner or collaborator' }, { status: 401 });
   }
 

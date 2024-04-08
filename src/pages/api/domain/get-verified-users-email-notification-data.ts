@@ -34,7 +34,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
   }
 
   try {
-    await checkOwnerSignature(builderPlaceId, ownerId, signature, address, res);
+    await checkOwnerSignature(builderPlaceId, signature, address, res);
 
     const result = await getVerifiedUsersEmailData(includeSkills);
 

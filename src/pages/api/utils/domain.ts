@@ -22,11 +22,10 @@ export const checkSignature = async (
     });
 
     const builderPlace = await getPlatformBy({
-      collaboratorAddress: address,
       id: Number(id),
     });
 
-    if (!builderPlace) {
+    if (!builderPlace?.collaborators.some(collaborator => collaborator.address === address)) {
       return res.status(400).json({ error: 'No BuilderPlace found.' });
     }
 
@@ -42,7 +41,6 @@ export const checkSignature = async (
  * Checks if the signature is from the BuilderPlace owner by getting the BuilderPlace
  * by the owner DataBase id & BuilderPlace Database id
  * @param builderPlaceId Database BuilderPlace id
- * @param ownerId Database BuilderPlace owner id
  * @param signature Signature to verify
  * @param address Address to verify
  * @param res NextApiResponse
@@ -50,7 +48,6 @@ export const checkSignature = async (
  */
 export const checkOwnerSignature = async (
   builderPlaceId: string,
-  ownerId: string,
   signature: `0x${string}` | Uint8Array,
   address: `0x${string}`,
   res: NextApiResponse,
@@ -62,14 +59,10 @@ export const checkOwnerSignature = async (
     });
 
     const builderPlace = await getPlatformBy({
-      ownerId: Number(ownerId),
       id: Number(builderPlaceId),
     });
 
-    if (
-      builderPlace &&
-      signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address?.toLocaleLowerCase()
-    ) {
+    if (builderPlace && signatureAddress.toLocaleLowerCase() !== builderPlace?.owner?.address) {
       return res.status(401).json({ error: 'Not BuilderPlace owner' });
     }
 
