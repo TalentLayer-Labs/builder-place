@@ -13,7 +13,7 @@ import { generateMailProviders } from '../utils/mailProvidersSingleton';
 import { iBuilderPlacePalette } from '../../../modules/BuilderPlace/types';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
 import { IQueryData } from '../domain/get-verified-users-email-notification-data';
-import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformsBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 
 export const config = {
   maxDuration: 300, // 5 minutes.
@@ -116,9 +116,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const providers = generateMailProviders(emailNotificationType, privateKey);
 
     for (const proposal of proposalEmailsToBeSent) {
-      const builderPlace = await getPlatformBy({
+      const builderPlaceResponse = await getPlatformsBy({
         ownerTalentLayerId: proposal.service.buyer.id,
       });
+
+      const builderPlace = builderPlaceResponse[0];
 
       /**
        * @dev: If the user is not a BuilderPlace owner, we skip the email sending for this iteration
@@ -175,11 +177,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } finally {
     if (!req.query.sinceTimestamp) {
-      // Update cron probe in db
-      await persistCronProbe(EmailType.PROPOSAL_VALIDATED, sentEmails, nonSentEmails, cronDuration);
-      console.log(
-        `Cron probe updated in DB for ${EmailType.PROPOSAL_VALIDATED}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
-      );
+      try {
+        // Update cron probe in db
+        await persistCronProbe(
+          EmailType.PROPOSAL_VALIDATED,
+          sentEmails,
+          nonSentEmails,
+          cronDuration,
+        );
+        console.log(
+          `Cron probe updated in DB for ${EmailType.PROPOSAL_VALIDATED}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        );
+      } catch (e: any) {
+        console.error('Error while updating cron probe in DB', e.message);
+      }
     }
     console.log(
       `Web3 Emails sent - ${sentEmails} email successfully sent | ${nonSentEmails} non sent emails`,

@@ -61,7 +61,7 @@ export const getUserEmailsByAddresses = async (userAddresses: string[], res?: Ne
     const userEmails = await prisma.user.findMany({
       where: {
         address: {
-          in: userAddresses.map(address => address.toLocaleLowerCase()),
+          in: userAddresses.map(address => address),
         },
       },
       select: {
