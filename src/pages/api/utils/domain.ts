@@ -1,9 +1,6 @@
 import { recoverMessageAddress } from 'viem';
 import { NextApiResponse } from 'next';
-import {
-  getBuilderPlaceByCollaboratorAddressAndId,
-  getBuilderPlaceByOwnerTlIdAndId,
-} from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { User } from '.prisma/client';
 
 /**
@@ -24,10 +21,10 @@ export const checkSignature = async (
       signature: signature,
     });
 
-    const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(
-      address.toLocaleLowerCase(),
-      id,
-    );
+    const builderPlace = await getPlatformBy({
+      collaboratorAddress: address,
+      id: Number(id),
+    });
 
     if (!builderPlace) {
       return res.status(400).json({ error: 'No BuilderPlace found.' });
@@ -64,7 +61,10 @@ export const checkOwnerSignature = async (
       message: `connect with ${address}`,
     });
 
-    const builderPlace = await getBuilderPlaceByOwnerTlIdAndId(ownerId, builderPlaceId);
+    const builderPlace = await getPlatformBy({
+      ownerId: Number(ownerId),
+      id: Number(builderPlaceId),
+    });
 
     if (
       builderPlace &&

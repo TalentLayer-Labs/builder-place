@@ -1,13 +1,13 @@
 import { Prisma } from '.prisma/client';
 import { recoverMessageAddress } from 'viem';
 import { IConfigurePlace } from '../../../../components/ConfigurePlatform/ConfigurePlatformForm';
-import { getBuilderPlaceByCollaboratorAddressAndId } from '../../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformBy } from '../../../../modules/BuilderPlace/actions/builderPlace';
 import prisma from '../../../../postgre/postgreClient';
+import { logAndReturnApiError } from '../../../utils/handleApiErrors';
+import { ERROR_REMOVING_BUILDERPLACE_OWNER } from '../../../../modules/BuilderPlace/apiResponses';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
 import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
-import { logAndReturnApiError } from '../../../utils/handleApiErrors';
-import { ERROR_REMOVING_BUILDERPLACE_OWNER } from '../../../../modules/BuilderPlace/apiResponses';
 
 export async function GET(req: Request) {
   // TODO: implement GET
@@ -31,7 +31,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 
   // Check if the address is owner or collaborator
-  const builderPlace = await getBuilderPlaceByCollaboratorAddressAndId(signatureAddress, params.id);
+  const builderPlace = await getPlatformBy({
+    collaboratorAddress: signatureAddress,
+    id: Number(params.id),
+  });
 
   if (!builderPlace) {
     return Response.json({ error: 'The signer is not owner or collaborator' }, { status: 401 });

@@ -23,6 +23,7 @@ const useGetPlatformBy = (filters: PlatformsFilters): IReturn => {
     const platforms: IBuilderPlace[] = response.data.platforms;
 
     console.log(`*DEBUG* getPlatformBy results!`, platforms);
+
     return platforms[0];
   };
 

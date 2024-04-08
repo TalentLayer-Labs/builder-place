@@ -1,6 +1,6 @@
 import * as sgMail from '@sendgrid/mail';
 import { renderValidationMail } from './renderValidationEmail';
-import { getBuilderPlaceByDomain } from '../../../modules/BuilderPlace/actions/builderPlace';
+import { getPlatformBy } from '../../../modules/BuilderPlace/actions/builderPlace';
 import { encrypt } from '../../../app/utils/email';
 
 const SENDERS_EMAIL = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;
@@ -18,7 +18,9 @@ export const sendTransactionalEmailValidation = async (
     throw new Error('No APIKEY or SENDERS_EMAIL, skipping email.');
   }
 
-  const builderPlace = await getBuilderPlaceByDomain(domain);
+  const builderPlace = await getPlatformBy({
+    subdomain: domain,
+  });
 
   const hashedUserId = encrypt(userId);
 

@@ -1,12 +1,14 @@
 import { IBuilderPlace } from './types';
-import { getBuilderPlaceByDomain } from './actions/builderPlace';
+import { getPlatformBy } from './actions/builderPlace';
 
 // Used inside getServerSideProps
 export const getBuilderPlace = async (domain: string): Promise<IBuilderPlace> => {
   console.log('serverProps', domain);
   let builderPlace;
   try {
-    builderPlace = await getBuilderPlaceByDomain(domain);
+    builderPlace = await getPlatformBy({
+      subdomain: domain,
+    });
   } catch (error: any) {
     console.log(error.message);
   }
