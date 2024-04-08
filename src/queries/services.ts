@@ -194,6 +194,5 @@ export const getNewServicesForPlatform = (chainId: number, timestamp?: string): 
         }
       }
     `;
-  console.log('getNewServicesForPlatform query', query);
   return processRequest(chainId, query);
 };

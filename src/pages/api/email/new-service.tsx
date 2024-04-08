@@ -145,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         contact.address,
       );
       for (const service of services) {
-        console.log('service', service);
+        console.log('service', service.description?.title);
         // Check if a notification email has already been sent for these services
         const compositeId = `${contact.id}-${service.id}`;
         const emailHasBeenSent = await hasEmailBeenSent(compositeId, EmailType.NEW_SERVICE);
@@ -189,12 +189,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 `New mission available on BuilderPlace!`,
                 `Good news, the following open-source contribution mission: "${
                   service.description?.title
-                }" was recently posted by ${service.buyer.handle} and you are a good match for it.
-                  Here is what is proposed: ${service.description?.about}.
+                }" was recently posted by ${service.buyer.handle} and you are a good match for it. 
                   
-                  The skills you have which are required by this open-source contribution mission are: ${matchingSkills.join(
-                    ', ',
-                  )}.
+                  <br/><br/>
+                  
+                  The skills you have which are required by this open-source contribution mission are: ${matchingSkills
+                    .map(skill => `<b>${skill}</b>`)
+                    .join(', ')}.
                   
                   Be the first one to send a proposal !`,
                 emailNotificationType,
