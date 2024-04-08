@@ -25,7 +25,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   try {
     const response = await checkOwnerSignature(
       body.data.builderPlaceId,
-      body.data.ownerTalentLayerId,
       body.signature,
       body.address,
     );

@@ -21,7 +21,6 @@ export async function POST(req: Request) {
   try {
     const response = await checkOwnerSignature(
       body.data.builderPlaceId,
-      body.data.ownerTalentLayerId,
       body.signature,
       body.address,
     );
