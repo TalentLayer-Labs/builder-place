@@ -182,11 +182,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } finally {
     if (!req.query.sinceTimestamp) {
-      // Update cron probe in db
-      await persistCronProbe(EmailType.NEW_PROPOSAL, sentEmails, nonSentEmails, cronDuration);
-      console.log(
-        `Cron probe updated in DB for ${EmailType.NEW_PROPOSAL}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
-      );
+      try {
+        // Update cron probe in db
+        await persistCronProbe(EmailType.NEW_PROPOSAL, sentEmails, nonSentEmails, cronDuration);
+        console.log(
+          `Cron probe updated in DB for ${EmailType.NEW_PROPOSAL}: duration: ${cronDuration}, sentEmails: ${sentEmails}, nonSentEmails: ${nonSentEmails}`,
+        );
+      } catch (e: any) {
+        console.error('Error while updating cron probe in DB', e.message);
+      }
     }
     console.log(
       `Web3 Emails sent - ${sentEmails} email successfully sent | ${nonSentEmails} non sent emails`,
