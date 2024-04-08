@@ -32,15 +32,15 @@ export const getPlatformsBy = async (filters: PlatformsFilters) => {
 
   const whereClause = generateWhereClauseFindMany(filters);
 
-  const platform = await prisma.builderPlace.findMany({
+  const platforms = await prisma.builderPlace.findMany({
     where: whereClause,
     include: {
       owner: true,
       collaborators: true,
     },
   });
-  console.log('Fetched Platforms: ', platform?.length);
-  return platform;
+  console.log('Fetched Platforms: ', platforms?.length);
+  return platforms;
 };
 
 export const getPlatformBy = async (filters: PlatformFilters) => {
