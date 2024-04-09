@@ -17,6 +17,7 @@ export const delegateCreateService = async (body: ICreateService): Promise<any> 
       cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      serviceDetails: body.serviceDetails,
     });
   } catch (err) {
     console.error(err);
@@ -72,6 +73,7 @@ export const delegateCreateProposal = async (body: ICreateProposal): Promise<any
       cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      proposal: body.proposal,
     });
   } catch (err) {
     console.error(err);

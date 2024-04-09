@@ -17,6 +17,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { TalentLayerClient } from '@talentlayer/client';
 
 export interface ICreateService {
   chainId: number;
@@ -25,6 +26,7 @@ export interface ICreateService {
   cid: string;
   platformId: string;
   signature: `0x${string}` | Uint8Array;
+  serviceDetails: any;
 }
 
 /**
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
   console.log('POST');
   const body: ICreateService = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, platformId, signature } = body;
+  const { chainId, userId, userAddress, cid, platformId, signature, serviceDetails } = body;
 
   const config = getConfig(chainId);
 
@@ -94,7 +96,27 @@ export async function POST(req: Request) {
         cid: cid,
       });
 
-      console.log('Creating service with args', userId, platformId, cid, signature);
+      const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
+      const rpcUrl = process.env.NEXT_PUBLIC_YOUR_RPC_URL as string;
+      const talentLayerClient = new TalentLayerClient({
+        chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
+        ipfsConfig: {
+          clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
+          baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
+        },
+        platformId: parseInt(platformId),
+        walletConfig: {
+          rpcUrl: rpcUrl,
+          mnemonic: delegateSeedPhrase,
+        },
+      });
+
+      console.log('Creating service with args', serviceDetails, userId, platformId);
+      transaction = await talentLayerClient?.service.create(
+        serviceDetails,
+        userId,
+        parseInt(platformId),
+      )
 
       transaction = await walletClient.writeContract({
         address: config.contracts.serviceRegistry,

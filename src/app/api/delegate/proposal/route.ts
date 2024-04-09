@@ -17,6 +17,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { TalentLayerClient } from '@talentlayer/client';
 
 export interface ICreateProposal {
   chainId: number;
@@ -29,6 +30,7 @@ export interface ICreateProposal {
   cid: string;
   platformId: string;
   signature: `0x${string}` | Uint8Array;
+  proposal: any;
 }
 
 /**
@@ -49,6 +51,7 @@ export async function POST(req: Request) {
     expirationDate,
     serviceId,
     signature,
+    proposal,
   } = body;
 
   const config = getConfig(chainId);
@@ -109,23 +112,31 @@ export async function POST(req: Request) {
         cid: cid,
       });
 
-      console.log('Creating proposal with args', userId, platformId, cid, signature);
-      transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'createProposal',
-        args: [
-          userId,
-          serviceId,
-          rateToken,
-          rateAmount,
-          platformId,
-          cid,
-          expirationDate,
-          signature,
-        ],
-        value: proposalPostingFee,
+      const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
+      const rpcUrl = process.env.NEXT_PUBLIC_YOUR_RPC_URL as string;
+      const talentLayerClient = new TalentLayerClient({
+        chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
+        ipfsConfig: {
+          clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
+          baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
+        },
+        platformId: parseInt(platformId),
+        walletConfig: {
+          rpcUrl: rpcUrl,
+          mnemonic: delegateSeedPhrase,
+        },
       });
+
+      console.log('Creating proposal with args', proposal, userId, platformId);
+      transaction = await talentLayerClient.proposal.create(
+        proposal,
+        userId,
+        serviceId,
+        rateToken,
+        rateAmount,
+        expirationDate,
+        parseInt(platformId),
+      );
 
       await incrementWeeklyTransactionCounter(user);
 

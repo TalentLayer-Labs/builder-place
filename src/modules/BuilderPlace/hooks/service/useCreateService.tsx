@@ -57,17 +57,19 @@ const useCreateService = () => {
             message: `connect with ${address}`,
           });
 
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
+          const serviceDetails = {
             title: values.title,
             about: values.about,
             keywords: values.keywords,
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
-          });
+          };
+          cid = await talentLayerClient.service.updloadServiceDataToIpfs(serviceDetails);
 
           let response;
 
           response = await delegateCreateService({
+            serviceDetails,
             chainId,
             userId: usedId,
             userAddress: address,
