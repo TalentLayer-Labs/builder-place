@@ -24,73 +24,68 @@ export const sendMailToAddresses = async (
 
   console.log('Sending email to addresses');
 
-  try {
-    if (notificationType === EmailNotificationType.WEB2 && providers?.sendGrid) {
-      const sendersEmail = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;
-      if (!sendersEmail) {
-        throw new Error('Senders Email is not set');
-      }
-      emailSender = EmailSender.SENDGRID;
-      const usersEmails = await getUserEmailsByAddresses(addresses);
-      if (usersEmails && usersEmails.length > 0) {
-        const sendPromises = usersEmails.map(email =>
-          sendMarketingEmailTo(
-            // @ts-ignore
-            providers.sendGrid,
-            sendersEmail,
-            email,
-            emailSubject,
-            emailContent,
-          ),
-        );
+  if (notificationType === EmailNotificationType.WEB2 && providers?.sendGrid) {
+    const sendersEmail = process.env.NEXT_PRIVATE_SENDGRID_VERIFIED_SENDER;
+    if (!sendersEmail) {
+      throw new Error('Senders Email is not set');
+    }
+    emailSender = EmailSender.SENDGRID;
+    const usersEmails = await getUserEmailsByAddresses(addresses);
+    if (usersEmails && usersEmails.length > 0) {
+      const sendPromises = usersEmails.map(email =>
+        sendMarketingEmailTo(
+          // @ts-ignore
+          providers.sendGrid,
+          sendersEmail,
+          email,
+          emailSubject,
+          emailContent,
+        ),
+      );
 
-        results = await Promise.all(sendPromises);
-      }
-    } else if (notificationType === EmailNotificationType.WEB3) {
-      emailSender = EmailSender.IEXEC;
-      const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
-      if (!privateKey) {
-        throw new Error('Private key is not set');
-      }
-
-      if (providers.dataProtector && providers.web3mail) {
-        const sendPromises = addresses.map(address =>
-          sendWeb3MarketingEmailTo(
-            address,
-            providers.dataProtector as IExecDataProtector,
-            providers.web3mail as IExecWeb3mail,
-            emailSubject,
-            emailContent,
-            platformName,
-          ),
-        );
-
-        results = await Promise.all(sendPromises);
-      }
+      results = await Promise.all(sendPromises);
+    }
+  } else if (notificationType === EmailNotificationType.WEB3) {
+    emailSender = EmailSender.IEXEC;
+    const privateKey = process.env.NEXT_WEB3MAIL_PLATFORM_PRIVATE_KEY;
+    if (!privateKey) {
+      throw new Error('Private key is not set');
     }
 
-    /**
-     * @dev: If no ID is provided here it means that the emails are Marketing Emails,
-     * and the Database id will have the following format: <Date.getTime()-"address">
-     */
-    results.forEach(result => {
-      if (result.success) {
-        if (id) {
-          persistEmail(id, emailType, emailSender);
-        } else {
-          const nowMilliseconds = new Date().getTime();
-          const compositeId = nowMilliseconds + '-' + result.address;
-          persistEmail(compositeId, emailType, emailSender);
-        }
-        sentCount++;
-      } else {
-        nonSentCount++;
-      }
-    });
-  } catch (e: any) {
-    //TODO is this try catch useful ?
-    throw new Error(e.message);
+    if (providers.dataProtector && providers.web3mail) {
+      const sendPromises = addresses.map(address =>
+        sendWeb3MarketingEmailTo(
+          address,
+          providers.dataProtector as IExecDataProtector,
+          providers.web3mail as IExecWeb3mail,
+          emailSubject,
+          emailContent,
+          platformName,
+        ),
+      );
+
+      results = await Promise.all(sendPromises);
+    }
   }
+
+  /**
+   * @dev: If no ID is provided here it means that the emails are Marketing Emails,
+   * and the Database id will have the following format: <Date.getTime()-"address">
+   */
+  results.forEach(result => {
+    if (result.success) {
+      if (id) {
+        persistEmail(id, emailType, emailSender);
+      } else {
+        const nowMilliseconds = new Date().getTime();
+        const compositeId = nowMilliseconds + '-' + result.address;
+        persistEmail(compositeId, emailType, emailSender);
+      }
+      sentCount++;
+    } else {
+      nonSentCount++;
+    }
+  });
   return { successCount: sentCount, errorCount: nonSentCount };
 };
 
