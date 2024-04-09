@@ -1,3 +1,5 @@
+'use client';
+
 import UserLensFeed from '../../modules/Lens/components/UserLensFeed';
 import UserLensProfile from '../../modules/Lens/components/UserLensProfile';
 import useLensUser from './hooks/useLensUsers';

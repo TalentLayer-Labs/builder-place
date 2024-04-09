@@ -1,3 +1,5 @@
+'use client';
+
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
 import * as Yup from 'yup';

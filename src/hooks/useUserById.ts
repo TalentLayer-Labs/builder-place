@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { getUserById } from '../queries/users';
 import { IUser } from '../types';

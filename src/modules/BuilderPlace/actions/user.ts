@@ -1,4 +1,4 @@
-import { EntityStatus } from '.prisma/client';
+import { EntityStatus, Prisma } from '.prisma/client';
 import { NextApiResponse } from 'next';
 import {
   ERROR_CREATING_HIRER_PROFILE,
@@ -101,7 +101,19 @@ export const getVerifiedEmailCount = async (res?: NextApiResponse) => {
   }
 };
 
-export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextApiResponse) => {
+export type UserWithIncludes = Prisma.UserGetPayload<{
+  include: {
+    workerProfile: true;
+    hirerProfile: true;
+    ownedBuilderPlace: true;
+    managedPlaces: true;
+  };
+}>;
+
+export const getUserByTalentLayerId = async (
+  talentLayerId: string,
+  res?: NextApiResponse,
+): Promise<UserWithIncludes | undefined> => {
   let errorMessage = '';
   try {
     console.log('Getting Worker Profile with TalentLayer id:', talentLayerId);
@@ -118,7 +130,7 @@ export const getUserByTalentLayerId = async (talentLayerId: string, res?: NextAp
     });
     console.log('Fetched user name', userProfile?.name);
     if (!userProfile) {
-      return null;
+      return;
     }
 
     return userProfile;

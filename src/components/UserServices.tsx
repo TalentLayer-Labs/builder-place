@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import useServices from '../hooks/useServices';
 import { IUser, ServiceStatusEnum } from '../types';

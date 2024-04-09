@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { getLensProfileInfo } from '../queries/lensProfileData';
 import { IlensUser } from '../utils/types';

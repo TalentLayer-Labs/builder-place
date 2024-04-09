@@ -1,42 +1,41 @@
-import { User } from '@prisma/client';
-import { useQuery } from '@tanstack/react-query';
-
-import { NextSeo } from 'next-seo';
-import { useSearchParams } from 'next/navigation';
-import Loading from '../../../../components/Loading';
+import { Metadata } from 'next';
 import NotFound from '../../../../components/NotFound';
 import UserServices from '../../../../components/UserServices';
 import WorkerPublicDetail from '../../../../components/WorkerPublicDetail';
-import { getUserBy } from '../../../../modules/BuilderPlace/request';
+import { getUserByTalentLayerId } from '../../../../modules/BuilderPlace/actions/user';
 import LensModule from '../../../../modules/Lens/LensModule';
 import { ServiceStatusEnum } from '../../../../types';
 
-function Profile() {
-  const searchParams = useSearchParams();
-  const id = searchParams?.get('id');
+async function getProfile(id: string) {
+  return await getUserByTalentLayerId(id);
+}
 
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery<User, Error>({
-    queryKey: ['user', id],
-    queryFn: () => getUserBy({ talentLayerId: id as string }),
-  });
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata | null> {
+  const user = await getProfile(params.id);
 
-  if (isLoading) {
-    return <Loading />;
+  if (!user) {
+    return null;
   }
 
-  if (isError || !user) {
+  return {
+    title: `Profile | ${user.name}`,
+    description: `onChain work profile on BuilderPlace`,
+  };
+}
+
+async function Profile({ params }: { params: { id: string } }) {
+  const user = await getProfile(params.id);
+
+  if (!user) {
     return <NotFound />;
   }
 
   return (
     <div className='mx-auto text-base-content'>
-      <NextSeo
-        title={`Profile | ${user.name}`}
-        description={`onChain work profile on BuilderPlace`}></NextSeo>
       <div className='mb-6'>
         <WorkerPublicDetail user={user} />
       </div>

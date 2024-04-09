@@ -23,7 +23,6 @@
     "framer-motion": "^6.2.8",
     "heroicons-react": "^1.4.1",
     "ipfs-http-client": "^59.0.0",
-    "level-js": "^6.1.0",
     "loadash": "^1.0.0",
     "mermaid": "^10.6.1",
     "next": "^14.1.4",

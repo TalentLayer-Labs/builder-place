@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useContext, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';

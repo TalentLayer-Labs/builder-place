@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { getServices, searchServices } from '../queries/services';
 import { IService, ServiceStatusEnum } from '../types';
