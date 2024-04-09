@@ -1,5 +1,4 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import SubmitButton from '../../../components/Form/SubmitButton';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import { useChainId } from '../../../hooks/useChainId';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
@@ -7,6 +6,10 @@ import * as Yup from 'yup';
 import TalentLayerPlatformId from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getConfig } from '../../../config';
 import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
+import { getUserBy } from '../../../modules/BuilderPlace/request';
+import UserProfileDisplay from './UserProfileDisplay';
+import { useState } from 'react';
+import { User } from '@prisma/client';
 
 export interface IFormValues {
   toAddress: string;
@@ -25,6 +28,7 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
   const publicClient = usePublicClient({ chainId });
   const { address } = useAccount();
   const platform = usePlatformByOwner(address);
+  const [returnedUser, setReturnedUser] = useState<User | undefined>();
 
   const onSubmit = async (
     values: IFormValues,
@@ -70,12 +74,24 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
     }
   };
 
+  const handleInputChange = async (value: string) => {
+    setReturnedUser(undefined);
+    if (value.match(ethAddressRegex)) {
+      const user = await getUserBy({ address: value });
+      console.log('found user', user);
+      setReturnedUser(user);
+      if (!user) {
+        return 'User not found';
+      }
+    }
+  };
+
   return (
     <Formik
       initialValues={{ toAddress: '' }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}>
-      {({ isSubmitting, resetForm }) => (
+      {({ isSubmitting }) => (
         <Form>
           <label className='block'>
             <div className='mt-1 mb-4 flex rounded-md shadow-sm'>
@@ -85,9 +101,11 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
                 name='toAddress'
                 className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50 mr-4'
                 placeholder='Transfer to...'
+                validate={handleInputChange}
               />
-              <SubmitButton isSubmitting={isSubmitting} label='Transfer' />
+              {/*<SubmitButton isSubmitting={isSubmitting} label='Transfer' />*/}
             </div>
+            {returnedUser && <UserProfileDisplay user={returnedUser} isSubmitting={isSubmitting} />}
             <span className='text-alone-error'>
               <ErrorMessage name='toAddress' />
             </span>
