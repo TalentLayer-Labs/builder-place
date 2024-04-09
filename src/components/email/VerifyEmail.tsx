@@ -2,7 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { IVerifyEmail } from '../../app/api/emails/verify/route';
 import {
@@ -14,7 +14,8 @@ import Loading from '../Loading';
 
 const verifyEmail = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
   const [pageResponse, setPageResponse] = useState<string>();
   const emailMutation = useMutation({
     mutationFn: async (
@@ -55,7 +56,7 @@ const verifyEmail = () => {
     }
   };
 
-  if (emailMutation.isLoading || !pageResponse) {
+  if (emailMutation.isPending || !pageResponse) {
     return (
       <div className='py-20'>
         <Loading />

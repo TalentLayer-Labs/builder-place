@@ -45,11 +45,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       },
       data: {
         ...body.data,
-        palette: body.data.palette as JsonNull | InputJsonValue | undefined,
-        jobPostingConditions: body.data.jobPostingConditions as
-          | NullableJsonNullValueInput
-          | InputJsonValue
-          | undefined,
+        palette: body.data.palette,
+        jobPostingConditions: body.data.jobPostingConditions,
       },
     });
 

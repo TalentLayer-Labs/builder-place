@@ -1,7 +1,5 @@
-import { GetServerSidePropsContext } from 'next';
 import { useState } from 'react';
 import { postOpenAiRequest } from '../../../../modules/OpenAi/utils';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
 enum Creator {
   Me = 0,
@@ -17,10 +15,6 @@ interface MessageProps {
 interface InputProps {
   onSend: (input: string) => void;
   disable: boolean;
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
 }
 
 const ChatMessage = ({ text, from }: MessageProps) => {

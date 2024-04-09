@@ -1,5 +1,4 @@
-import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../../components/AccessDenied';
@@ -10,15 +9,11 @@ import Steps from '../../../../../components/Steps';
 import TalentLayerContext from '../../../../../context/talentLayer';
 import useServiceById from '../../../../../hooks/useServiceById';
 import BuilderPlaceContext from '../../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function EditService() {
   const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
   const { service, isLoading } = useServiceById(id as string);
   const account = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext);

@@ -1,19 +1,11 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useContext, useEffect, useState } from 'react';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';
 import DomainConfiguration from '../../../../modules/BuilderPlace/components/DomainConfiguration';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { useUpdateBuilderPlaceDomain } from '../../../../modules/BuilderPlace/hooks/UseUpdateBuilderPlaceDomain';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
-
-export default function CustomDomain(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) {
+export default function CustomDomain() {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();

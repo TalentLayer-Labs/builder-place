@@ -1,15 +1,9 @@
-import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import ServiceList from '../../../../components/ServiceList';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 const EmbedWork = () => {
-  const router = useRouter();
-  const boardTitle = (router.query?.title as string) || '';
+  const searchParams = useSearchParams();
+  const boardTitle = searchParams?.get('title') || '';
 
   return (
     <div className={'text-base-content bg-base-200'}>

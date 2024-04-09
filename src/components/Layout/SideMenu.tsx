@@ -1,9 +1,8 @@
-import { GetServerSidePropsContext } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useContext } from 'react';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+
 import {
   getWorkerNavigation,
   hirerAdminNavigation,
@@ -12,9 +11,6 @@ import {
 } from './navigation';
 import SideLink from './SideLink';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 function SideMenu() {
   const { isBuilderPlaceCollaborator, isBuilderPlaceOwner, builderPlace } =
     useContext(BuilderPlaceContext);

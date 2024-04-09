@@ -13,7 +13,7 @@ import useUserById from '../../hooks/useUserById';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
-import { EmailNotificationType, IEmailPreferences } from '../../types';
+import { EmailNotificationType } from '../../types';
 import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
@@ -36,7 +36,7 @@ function EmailPreferencesForm() {
   const userDescription = user?.talentLayerId
     ? useUserById(user?.talentLayerId)?.description
     : null;
-  const web2MailPreferences = user?.emailPreferences as IEmailPreferences;
+  const web2MailPreferences = user?.emailPreferences;
   const emailNotificationType =
     process.env.NEXT_PUBLIC_EMAIL_MODE === 'web3'
       ? EmailNotificationType.WEB3
@@ -51,7 +51,7 @@ function EmailPreferencesForm() {
     return <Loading />;
   }
 
-  const initialValues: IEmailPreferences =
+  const initialValues: PrismaJson.EmailPreferences =
     emailNotificationType === EmailNotificationType.WEB3
       ? {
           activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
@@ -64,16 +64,16 @@ function EmailPreferencesForm() {
             userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
         }
       : {
-          activeOnNewService: web2MailPreferences?.activeOnNewService,
-          activeOnNewProposal: web2MailPreferences?.activeOnNewProposal,
-          activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated,
-          activeOnFundRelease: web2MailPreferences?.activeOnFundRelease,
-          activeOnReview: web2MailPreferences?.activeOnReview,
-          activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing,
+          activeOnNewService: web2MailPreferences?.activeOnNewService ?? true,
+          activeOnNewProposal: web2MailPreferences?.activeOnNewProposal ?? true,
+          activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated ?? true,
+          activeOnFundRelease: web2MailPreferences?.activeOnFundRelease ?? true,
+          activeOnReview: web2MailPreferences?.activeOnReview ?? true,
+          activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing ?? true,
         };
 
   const onSubmit = async (
-    values: IEmailPreferences,
+    values: PrismaJson.EmailPreferences,
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
   ) => {
     try {

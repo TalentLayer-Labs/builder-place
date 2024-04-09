@@ -1,8 +1,8 @@
 import { User } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
-import { GetServerSidePropsContext } from 'next';
+
 import { NextSeo } from 'next-seo';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Loading from '../../../../components/Loading';
 import NotFound from '../../../../components/NotFound';
 import UserServices from '../../../../components/UserServices';
@@ -10,15 +10,11 @@ import WorkerPublicDetail from '../../../../components/WorkerPublicDetail';
 import { getUserBy } from '../../../../modules/BuilderPlace/request';
 import LensModule from '../../../../modules/Lens/LensModule';
 import { ServiceStatusEnum } from '../../../../types';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function Profile() {
-  const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
+
   const {
     data: user,
     isLoading,

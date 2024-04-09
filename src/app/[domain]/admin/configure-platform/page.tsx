@@ -1,4 +1,3 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useContext } from 'react';
 import 'react-color-palette/css';
 import AccessDenied from '../../../../components/AccessDenied';
@@ -7,15 +6,10 @@ import ConfigurePlatformForm from '../../../../components/ConfigurePlatform/Conf
 import Loading from '../../../../components/Loading';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../../../../modules/BuilderPlace/context/UserContext';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
-
-function ConfigurePlatform(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function ConfigurePlatform() {
   const { loading } = useContext(UserContext);
-  const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
+  const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
 
   //TODO a delete ?
   if (loading) {

@@ -1,13 +1,13 @@
 import { recoverMessageAddress } from 'viem';
-import prisma from '../../../../postgre/postgreClient';
-import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 import { ERROR_UPDATING_USER } from '../../../../modules/BuilderPlace/apiResponses';
-import { IEmailPreferences, IMutation } from '../../../../types';
+import prisma from '../../../../postgre/postgreClient';
+import { IMutation } from '../../../../types';
+import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 
 export interface UsersFields {
   // email?: string | null;
   //TODO complete
-  emailPreferences?: IEmailPreferences | null;
+  emailPreferences?: PrismaJson.EmailPreferences;
 }
 export interface IUpdateProfile extends IMutation<UsersFields> {}
 
@@ -41,9 +41,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       where: {
         id: Number(params.id),
       },
-      data: {
-        emailPreferences: { ...body.data.emailPreferences },
-      },
+      data: body.data,
     });
 
     return Response.json({ id: user?.id }, { status: 200 });

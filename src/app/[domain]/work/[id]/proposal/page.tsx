@@ -1,5 +1,4 @@
-import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../../components/AccessDenied';
@@ -14,11 +13,6 @@ import UserContext from '../../../../../modules/BuilderPlace/context/UserContext
 import ConnectButton from '../../../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../../../modules/Messaging/context/messging';
 import { ProposalStatusEnum, ServiceStatusEnum } from '../../../../../types';
-import { sharedGetServerSideProps } from '../../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function CreateOrEditProposal() {
   const account = useAccount();
@@ -26,7 +20,8 @@ function CreateOrEditProposal() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const { userExists } = useContext(MessagingContext);
   const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
   const { service, isLoading } = useServiceById(id as string);
   const existingProposal = useProposalById(`${id}-${user?.talentLayerId}`);
 

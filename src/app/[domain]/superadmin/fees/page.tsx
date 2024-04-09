@@ -1,4 +1,3 @@
-import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import { formatEther } from 'viem';
 import { useChainId } from 'wagmi';
@@ -11,11 +10,6 @@ import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatform
 import { useConfig } from '../../../../hooks/useConfig';
 import usePlatform from '../../../../hooks/usePlatform';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function AdminFees() {
   const chainId = useChainId();

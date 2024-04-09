@@ -23,17 +23,7 @@ export type IUserDetails = {
   about?: string;
   skills_raw?: string;
   user: IUser;
-  web3mailPreferences?: IEmailPreferences;
-};
-
-export type IEmailPreferences = {
-  activeOnNewService: boolean;
-  activeOnNewProposal: boolean;
-  activeOnProposalValidated: boolean;
-  activeOnFundRelease: boolean;
-  activeOnReview: boolean;
-  activeOnPlatformMarketing: boolean;
-  activeOnProtocolMarketing?: boolean;
+  web3mailPreferences?: PrismaJson.EmailPreferences;
 };
 
 export type IUserStats = {

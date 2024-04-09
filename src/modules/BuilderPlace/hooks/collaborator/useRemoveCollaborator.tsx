@@ -4,8 +4,8 @@ import { useContext } from 'react';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { useConfig } from '../../../../hooks/useConfig';
-import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/old[domain]/admin/collaborator-card';
 import BuilderPlaceContext from '../../context/BuilderPlaceContext';
+import { IRemoveBuilderPlaceCollaborator } from '../../../../app/[domain]/admin/collaborator-card/page';
 
 const useRemoveCollaborator = () => {
   const chainId = useChainId();
@@ -73,7 +73,7 @@ const useRemoveCollaborator = () => {
       body: {
         data: {
           collaboratorAddress: collaboratorAddress,
-          builderPlaceId: builderPlace.id,
+          builderPlaceId: builderPlace.id.toString(),
           ownerTalentLayerId: userId,
         },
         signature: signature,

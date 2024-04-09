@@ -50,3 +50,4 @@
     - error management (frontend / backend)
     - form
 - Platform Form: add sync to domain
+- Activate the email marketing sending page

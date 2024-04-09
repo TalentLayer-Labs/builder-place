@@ -1,22 +1,16 @@
-import { GetServerSidePropsContext } from 'next';
 import { NextSeo } from 'next-seo';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
 import NotFound from '../../../../components/NotFound';
 import ServiceDetail from '../../../../components/ServiceDetail';
 import useServiceById from '../../../../hooks/useServiceById';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function Service() {
   const { builderPlace } = useContext(BuilderPlaceContext);
-  const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
   const { service, isLoading } = useServiceById(id as string);
 
   if (isLoading) {

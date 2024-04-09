@@ -1,4 +1,3 @@
-import { IEmailPreferences } from '../../types';
 import { User } from '@prisma/client';
 import { UsersFilters } from '../../app/api/users/route';
 import axios from 'axios';
@@ -35,7 +34,7 @@ export const getUserBy = async (filters: UsersFilters): Promise<User> => {
 export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,
-  emailNotificationType: keyof IEmailPreferences,
+  emailNotificationType: keyof PrismaJson.EmailPreferences,
   address: `0x${string}`,
   signature: `0x${string}` | Uint8Array,
 ): Promise<any> => {

@@ -1,5 +1,4 @@
 import { ChartBarIcon } from '@heroicons/react/24/outline';
-import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import { ContactListForm } from '../../../../components/Form/ContactSelectForm';
@@ -8,11 +7,6 @@ import UserNeedsMoreRights from '../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../context/talentLayer';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { EmailNotificationType } from '../../../../types';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function Mail() {
   const account = useAccount();
@@ -51,7 +45,7 @@ function Mail() {
       </div>
       {builderPlace && (
         <ContactListForm
-          builderPlaceId={builderPlace?.id}
+          builderPlaceId={builderPlace?.id.toString()}
           userId={talentLayerUser.id}
           address={account?.address}
         />

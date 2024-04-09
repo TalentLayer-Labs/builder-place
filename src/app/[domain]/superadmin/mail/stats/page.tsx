@@ -1,6 +1,6 @@
 import { CogIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { PaperAirplane } from 'heroicons-react';
-import { GetServerSidePropsContext } from 'next';
+
 import dynamic from 'next/dynamic';
 import { useContext } from 'react';
 import Loading from '../../../../../components/Loading';
@@ -8,11 +8,6 @@ import UserNeedsMoreRights from '../../../../../components/UserNeedsMoreRights';
 import TalentLayerContext from '../../../../../context/talentLayer';
 import BuilderPlaceContext from '../../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import useEmailStats from '../../../../../modules/Web3mail/hooks/useEmailStats';
-import { sharedGetServerSideProps } from '../../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 const EmailNotificationsChart = dynamic(
   () => import('../../../../../modules/Web3mail/components/Web3mailChart'),

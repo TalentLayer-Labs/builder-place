@@ -1,5 +1,5 @@
 import { Field, Form, Formik } from 'formik';
-import { GetServerSidePropsContext } from 'next';
+
 import { useContext } from 'react';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';
@@ -9,7 +9,6 @@ import { useChainId } from '../../../../hooks/useChainId';
 import usePlatform from '../../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 import {
   createMultiStepsTransactionToast,
   showErrorTransactionToast,
@@ -25,10 +24,6 @@ interface IFormValues {
 const validationSchema = Yup.object({
   // nothing required
 });
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function AdminPresentation() {
   const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);

@@ -1,18 +1,13 @@
-import AccessDenied from '../../../../components/AccessDenied';
 import { useContext, useState } from 'react';
-import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import AccessDenied from '../../../../components/AccessDenied';
 import CollaboratorForm from '../../../../components/Form/CollaboratorForm';
 import TalentLayerContext from '../../../../context/talentLayer';
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import { useConfig } from '../../../../hooks/useConfig';
-import Loading from '../../../../components/Loading';
-import AdminSettingsLayout from '../../../../components/AdminSettingsLayout';
-import CollaboratorCard from '../collaborator-card/page';
+import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
+import AdminSettingsLayout from '../../../../components/AdminSettingsLayout';
+import Loading from '../../../../components/Loading';
+import { useConfig } from '../../../../hooks/useConfig';
+import CollaboratorCard from '../collaborator-card/page';
 
 export default function Collaborators() {
   const { user: talentLayerUser, loading } = useContext(TalentLayerContext);

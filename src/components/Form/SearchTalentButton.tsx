@@ -14,10 +14,7 @@ function SearchTalentButton(props?: { value?: string }) {
     const formElm = e.target as HTMLFormElement;
     const searchQueryRef = formElm.querySelector('input')!.value;
     if (searchQueryRef.length > 0) {
-      router.push({
-        pathname: '/profiles',
-        query: { search: searchQueryRef },
-      });
+      router.push(`/profiles?search${searchQueryRef}`);
     } else router.push('/profiles');
   }, []);
 

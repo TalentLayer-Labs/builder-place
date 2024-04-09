@@ -1,12 +1,5 @@
 import ServiceList from '../../components/ServiceList';
-
-import { GetServerSidePropsContext } from 'next';
 import OrganizationHeader from '../../components/OrganizationHeader';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 export default function BuilderPlaceHome() {
   return (

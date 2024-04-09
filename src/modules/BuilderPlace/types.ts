@@ -1,5 +1,4 @@
 import { EntityStatus, User, WorkType } from '.prisma/client';
-import { IEmailPreferences } from '../../types';
 import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
 import { iexec } from '../../chains';
 
@@ -177,7 +176,7 @@ export interface UpdateUserEmail {
 
 export interface UpdateUserEmailPreferences {
   userId: string;
-  preferences: IEmailPreferences;
+  preferences: PrismaJson.EmailPreferences;
   address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
 }
@@ -201,7 +200,7 @@ export interface SendVerificationEmail {
 export interface GetUserEmailData {
   builderPlaceId: string;
   ownerId: string;
-  emailNotificationType: keyof IEmailPreferences;
+  emailNotificationType: keyof PrismaJson.EmailPreferences;
   address: `0x${string}`;
   signature: `0x${string}` | Uint8Array;
   includeSkills?: boolean;
@@ -263,7 +262,7 @@ export interface UpdateWorkerProfileAction {
 
 export interface UpdateUserEmailPreferencesAction {
   address: `0x${string}`;
-  preferences: IEmailPreferences;
+  preferences: PrismaJson.EmailPreferences;
 }
 
 export interface UpdateUserEmailAction {

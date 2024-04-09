@@ -1,13 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Loading from '../../../../components/Loading';
 import ServiceDetail from '../../../../components/ServiceDetail';
 import useServiceById from '../../../../hooks/useServiceById';
 
 export default function WorkPage() {
-  const router = useRouter();
-  const { id } = router.query;
+  const searchParams = useSearchParams();
+  const id = searchParams?.get('id');
   const { service, isLoading } = useServiceById(id as string);
 
   if (isLoading) {

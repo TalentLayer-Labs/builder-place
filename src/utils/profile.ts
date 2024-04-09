@@ -1,4 +1,4 @@
-import { IUser, IUserDetails, IEmailPreferences } from '../types';
+import { IUser, IUserDetails } from '../types';
 
 export type ICompletionScores = {
   total: ICompletionScore;
@@ -61,7 +61,7 @@ export const getCompletionScores = (user: IUser): ICompletionScores => {
     userWeb3mailTotalPoint += value;
     if (
       user.description?.web3mailPreferences &&
-      user.description.web3mailPreferences[key as keyof IEmailPreferences] !== null
+      user.description.web3mailPreferences[key as keyof PrismaJson.EmailPreferences] !== null
     ) {
       score += value;
       userWeb3mailScore += value;

@@ -1,16 +1,14 @@
-import { BuilderPlace } from '@prisma/client';
 import CustomPalette from '../../components/CustomPalette';
 import PlatformLayout from '../../components/Platform/Layout';
 import { TalentLayerProvider } from '../../context/talentLayer';
 import { getBuilderPlaceByDomain } from '../../modules/BuilderPlace/actions/builderPlace';
+import { BuilderPlaceProvider } from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { UserProvider } from '../../modules/BuilderPlace/context/UserContext';
 import { XmtpContextProvider } from '../../modules/Messaging/context/XmtpContext';
 import { MessagingProvider } from '../../modules/Messaging/context/messging';
-import { BuilderPlaceProvider } from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 async function getBuilderPlace(domain: string) {
-  const builderPlace = await getBuilderPlaceByDomain(decodeURIComponent(domain));
-  return builderPlace;
+  return await getBuilderPlaceByDomain(decodeURIComponent(domain));
 }
 
 export default async function Layout({

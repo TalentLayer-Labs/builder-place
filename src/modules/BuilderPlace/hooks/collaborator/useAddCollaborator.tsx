@@ -50,7 +50,7 @@ const useAddCollaborator = () => {
     await collaboratorMutation.mutateAsync({
       data: {
         collaboratorAddress: collaboratorAddress,
-        builderPlaceId: builderPlace.id,
+        builderPlaceId: builderPlace.id.toString(),
         ownerTalentLayerId: talentLayerUser.id,
       },
       signature: signature,

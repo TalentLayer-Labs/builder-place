@@ -3,7 +3,6 @@ import { METHOD_NOT_ALLOWED, MISSING_DATA } from '../../../modules/BuilderPlace/
 import { GetUserEmailData } from '../../../modules/BuilderPlace/types';
 import { checkOwnerSignature } from '../utils/domain';
 import { getVerifiedUsersEmailData } from '../../../modules/BuilderPlace/actions/user';
-import { IEmailPreferences } from '../../../types';
 
 export interface IQueryData {
   id: number;
@@ -11,7 +10,7 @@ export interface IQueryData {
   email: string | null;
   name: string;
   skills: string[];
-  emailPreferences: IEmailPreferences;
+  emailPreferences: PrismaJson.EmailPreferences;
   workerProfile: { id: number; skills: string[] } | null;
 }
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {

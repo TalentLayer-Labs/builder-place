@@ -1,21 +1,14 @@
-import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
+import Loading from '../../../components/Loading';
 import Steps from '../../../components/Steps';
-import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
+import UserContext from '../../../modules/BuilderPlace/context/UserContext';
 import ConversationList from '../../../modules/Messaging/components/ConversationList';
 import SearchModal from '../../../modules/Messaging/components/SearchModal';
 import ShareModal from '../../../modules/Messaging/components/ShareModal';
 import { XmtpContext } from '../../../modules/Messaging/context/XmtpContext';
 import useStreamConversations from '../../../modules/Messaging/hooks/useStreamConversations';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-import Loading from '../../../components/Loading';
-import UserContext from '../../../modules/BuilderPlace/context/UserContext';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function MessagingIndex() {
   const chainId = useChainId();

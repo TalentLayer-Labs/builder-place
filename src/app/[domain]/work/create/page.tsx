@@ -1,21 +1,15 @@
-import { GetServerSidePropsContext } from 'next';
 import { useContext } from 'react';
+import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';
+import ConditionsStatusCard from '../../../../components/CreateService/ConditionsStatusCard ';
 import ServiceForm from '../../../../components/Form/ServiceForm';
+import Loading from '../../../../components/Loading';
+import Steps from '../../../../components/Steps';
+import useCheckJobPostConditions from '../../../../hooks/useCheckJobPostConditions';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
+import UserContext from '../../../../modules/BuilderPlace/context/UserContext';
 import ConnectButton from '../../../../modules/Messaging/components/ConnectButton';
 import MessagingContext from '../../../../modules/Messaging/context/messging';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-import useCheckJobPostConditions from '../../../../hooks/useCheckJobPostConditions';
-import Loading from '../../../../components/Loading';
-import ConditionsStatusCard from '../../../../components/CreateService/ConditionsStatusCard ';
-import { useAccount } from 'wagmi';
-import UserContext from '../../../../modules/BuilderPlace/context/UserContext';
-import Steps from '../../../../components/Steps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function CreateService() {
   const account = useAccount();
@@ -35,7 +29,7 @@ function CreateService() {
     return <Steps />;
   }
 
-  if (!builderPlace?.jobPostingConditions.allowPosts && !isBuilderPlaceCollaborator) {
+  if (!builderPlace?.jobPostingConditions?.allowPosts && !isBuilderPlaceCollaborator) {
     return <AccessDenied />;
   }
 
@@ -44,7 +38,7 @@ function CreateService() {
   return (
     <div className='max-w-7xl mx-auto text-base-content'>
       {/* Will not appear for collaborators */}
-      {builderPlace?.jobPostingConditions.allowPosts &&
+      {builderPlace?.jobPostingConditions?.allowPosts &&
         returnedPostingConditions.length > 0 &&
         !isBuilderPlaceCollaborator && (
           <div className='border border-info rounded-xl p-4 mb-6'>

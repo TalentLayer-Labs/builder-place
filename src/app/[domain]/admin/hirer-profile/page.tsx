@@ -2,13 +2,6 @@ import { useContext } from 'react';
 import AccessDenied from '../../../../components/AccessDenied';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
-
 export default function HirerProfile() {
   const { isBuilderPlaceCollaborator } = useContext(BuilderPlaceContext);
 

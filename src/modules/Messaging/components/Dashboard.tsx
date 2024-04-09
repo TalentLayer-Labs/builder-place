@@ -1,10 +1,11 @@
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useContext, useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
+import Loading from '../../../components/Loading';
 import Steps from '../../../components/Steps';
-import TalentLayerContext from '../../../context/talentLayer';
 import { useChainId } from '../../../hooks/useChainId';
 import useUserByAddress from '../../../hooks/useUserByAddress';
+import UserContext from '../../BuilderPlace/context/UserContext';
 import { XmtpContext } from '../context/XmtpContext';
 import useSendMessage from '../hooks/useSendMessage';
 import useStreamConversations from '../hooks/useStreamConversations';
@@ -13,8 +14,6 @@ import { ChatMessageStatus, XmtpChatMessage } from '../utils/types';
 import CardHeader from './CardHeader';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
-import UserContext from '../../BuilderPlace/context/UserContext';
-import Loading from '../../../components/Loading';
 
 function Dashboard() {
   const chainId = useChainId();
@@ -25,8 +24,8 @@ function Dashboard() {
   });
   const { providerState, setProviderState } = useContext(XmtpContext);
   const [messageContent, setMessageContent] = useState<string>('');
-  const router = useRouter();
-  const { address } = router.query;
+  const searchParams = useSearchParams();
+  const address = searchParams?.get('address');
   const selectedConversationPeerAddress = address as string;
   const [sendingPending, setSendingPending] = useState(false);
   const [messageSendingErrorMsg, setMessageSendingErrorMsg] = useState('');

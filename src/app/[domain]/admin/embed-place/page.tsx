@@ -1,14 +1,9 @@
 import { CheckCircle, ClipboardCopy } from 'heroicons-react';
-import { GetServerSidePropsContext } from 'next';
+
 import { useContext } from 'react';
 import AccessDenied from '../../../../components/AccessDenied';
 import useCopyToClipBoard from '../../../../hooks/useCopyToClipBoard';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 const BASE_URL = global?.location?.origin;
 const IFRAME_PATH = 'embed/work';

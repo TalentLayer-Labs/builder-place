@@ -1,12 +1,12 @@
-import Notification from './Notification';
-import { showErrorTransactionToast } from '../utils/toast';
+import { useMutation } from '@tanstack/react-query';
+import axios, { AxiosResponse } from 'axios';
+import { useSearchParams } from 'next/navigation';
 import { useContext, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { ISendVerificationEmail } from '../app/api/emails/send-verification/route';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import { createVerificationEmailToast } from '../modules/BuilderPlace/utils/toast';
-import { useMutation } from '@tanstack/react-query';
-import { ISendVerificationEmail } from '../app/api/emails/send-verification/route';
-import axios, { AxiosResponse } from 'axios';
+import { showErrorTransactionToast } from '../utils/toast';
+import Notification from './Notification';
 
 type VerifyEmailNotificationProps = {
   callback?: () => void | Promise<void>;
@@ -14,7 +14,8 @@ type VerifyEmailNotificationProps = {
 
 const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => {
   const { user } = useContext(UserContext);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const domainParam = searchParams?.get('domain');
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState(true);
   const sendVerificationEmailMutation = useMutation({
@@ -26,10 +27,7 @@ const VerifyEmailNotification = ({ callback }: VerifyEmailNotificationProps) => 
   });
 
   const onVerifyMail = async () => {
-    const domain =
-      typeof router.query.domain === 'object' && !!router.query.domain
-        ? router.query.domain[0]
-        : router.query.domain;
+    const domain = typeof domainParam === 'object' && !!domainParam ? domainParam[0] : domainParam;
     if (user?.email && !user.isEmailVerified && user?.id && domain) {
       try {
         setSubmitting(true);

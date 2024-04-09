@@ -1,4 +1,3 @@
-import { IRemoveBuilderPlaceCollaborator } from '../../../../pages/old[domain]/admin/collaborator-card';
 import { User } from '.prisma/client';
 import { checkOwnerSignature, isCollaboratorExists } from '../../../utils/domain';
 import prisma from '../../../../postgre/postgreClient';
@@ -7,6 +6,7 @@ import {
   ERROR_REMOVING_BUILDERPLACE_OWNER,
 } from '../../../../modules/BuilderPlace/apiResponses';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
+import { IRemoveBuilderPlaceCollaborator } from '../../../[domain]/admin/collaborator-card/page';
 
 /**
  * GET /api/collaborators/

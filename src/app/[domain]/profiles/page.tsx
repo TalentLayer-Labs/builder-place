@@ -1,20 +1,13 @@
-import { GetServerSidePropsContext } from 'next';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import SearchTalentButton from '../../../components/Form/SearchTalentButton';
 import Loading from '../../../components/Loading';
 import UserItem from '../../../components/UserItem';
 import useUsers from '../../../hooks/useUsers';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function Profiles() {
   const PAGE_SIZE = 36;
-  const router = useRouter();
-  const query = router.query;
-  const searchQuery = query.search as string;
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams?.get('search');
   const { users, hasMoreData, loading, loadMore } = useUsers(
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
@@ -40,7 +33,7 @@ function Profiles() {
       )}
 
       <div className='flex justify-center items-center gap-10 flex-col pb-5'>
-        <SearchTalentButton value={searchQuery} />
+        <SearchTalentButton value={searchQuery || ''} />
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4'>

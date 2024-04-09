@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const builderPlace = await prisma.builderPlace.create({
       data: {
         ...body.data,
-        palette: body.data.palette as unknown as JsonNull | InputJsonValue,
+        palette: body.data.palette,
         status: EntityStatus.VALIDATED,
       },
     });

@@ -2,12 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import CreateUserForm from '../../../../components/onboarding/user/CreateUserForm';
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 function createProfile() {
   const serviceId = new URL(window.location.href).searchParams.get('serviceId');
   const router = useRouter();

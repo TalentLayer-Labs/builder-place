@@ -1,12 +1,5 @@
 import Link from 'next/link';
 
-import { GetServerSidePropsContext } from 'next';
-import { sharedGetServerSideProps } from '../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
-
 export default function AdminDashboard() {
   return (
     <div>

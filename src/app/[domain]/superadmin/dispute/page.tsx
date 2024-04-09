@@ -1,4 +1,3 @@
-import { GetServerSidePropsContext } from 'next';
 import { useContext, useEffect, useState } from 'react';
 import { formatEther } from 'viem';
 import * as Yup from 'yup';
@@ -11,11 +10,6 @@ import usePlatform from '../../../../hooks/usePlatform';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 import { ZERO_ADDRESS } from '../../../../utils/constant';
-import { sharedGetServerSideProps } from '../../../../utils/sharedGetServerSideProps';
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
 
 function AdminDispute() {
   const { builderPlace, isBuilderPlaceOwner } = useContext(BuilderPlaceContext);
