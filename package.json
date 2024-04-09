@@ -7,7 +7,6 @@
     "@heroicons/react": "^2.0.12",
     "@iexec/dataprotector": "0.1.2",
     "@iexec/web3mail": "0.5.1",
-    "@leap-ai/sdk": "^0.0.119",
     "@prisma/client": "^5.7.1",
     "@sendgrid/mail": "^8.1.0",
     "@talentlayer/client": "^0.1.15",
