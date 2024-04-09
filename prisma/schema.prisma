@@ -2,6 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+  // namespace = "PrismaJson"
+  // clientOutput = "<finds it automatically>"
+  // (./ -> relative to schema, or an importable path to require() it)
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -17,8 +24,8 @@ model BuilderPlace {
   customDomain            String?      @unique
   talentLayerPlatformId   String       @unique
   talentLayerPlatformName String       @unique
-  owner                   User?        @relation(fields: [ownerId], references: [id])
-  ownerId                 Int?         @unique
+  owner                   User         @relation(fields: [ownerId], references: [id])
+  ownerId                 Int          @unique
   collaborators           User[]       @relation("BuilderPlaceCollaborators")
   baseline                String?
   about                   String?
@@ -27,7 +34,9 @@ model BuilderPlace {
   logo                    String?
   icon                    String?
   cover                   String?
+  /// [BuilderPlacePalette]
   palette                 Json
+  /// [JobPostingConditions]
   jobPostingConditions    Json?        @default("{\"allowPosts\": false, \"conditions\": []}")
   preferredWorkTypes      WorkType[]
 }
@@ -49,6 +58,7 @@ model User {
   hirerProfile             HirerProfile?  @relation("HirerProfile")
   ownedBuilderPlace        BuilderPlace?
   managedPlaces            BuilderPlace[] @relation("BuilderPlaceCollaborators")
+  /// [EmailPreferences]
   emailPreferences         Json           @default("{\"activeOnNewService\": false, \"activeOnNewProposal\": true, \"activeOnProposalValidated\": true, \"activeOnFundRelease\": true, \"activeOnReview\": true, \"activeOnPlatformMarketing\": false, \"activeOnProtocolMarketing\": true}")
 }
 

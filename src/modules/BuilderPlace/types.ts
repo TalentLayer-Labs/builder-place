@@ -3,6 +3,62 @@ import { IEmailPreferences } from '../../types';
 import { arbitrum, mainnet, opBNB, polygon } from 'viem/chains';
 import { iexec } from '../../chains';
 
+declare global {
+  export namespace PrismaJson {
+    export interface JobPostingConditions {
+      allowPosts: boolean;
+      conditions?: PostingCondition[];
+    }
+
+    export type PostingCondition = NFTCondition | TokenCondition;
+    export interface NFTCondition {
+      type: 'NFT';
+      chainId: JobConditionsChainIdEnum; // Chain ID of the NFT contract
+      address: string; // Address of the NFT contract
+      name: string; // Name of the NFT contract
+    }
+
+    export interface TokenCondition {
+      type: 'Token';
+      chainId: number; // Chain ID of the token contract
+      chainName: string;
+      address: string; // Address of the token contract
+      name: string; // Name of the NFT contract
+      symbol: string; // Token sign
+      minimumAmount: number; // Minimum amount of tokens required for frontend display
+      parsedMinimumAmount: string; // Minimum amount of tokens required in the smallest smart contract uint
+    }
+
+    export type EmailPreferences = {
+      activeOnNewService: boolean;
+      activeOnNewProposal: boolean;
+      activeOnProposalValidated: boolean;
+      activeOnFundRelease: boolean;
+      activeOnReview: boolean;
+      activeOnPlatformMarketing: boolean;
+      activeOnProtocolMarketing?: boolean;
+    };
+
+    export type BuilderPlacePalette = {
+      primary: string;
+      primaryFocus: string;
+      primaryContent: string;
+      base100: string;
+      base200: string;
+      base300: string;
+      baseContent: string;
+      info: string;
+      infoContent: string;
+      success: string;
+      successContent: string;
+      warning: string;
+      warningContent: string;
+      error: string;
+      errorContent: string;
+    };
+  }
+}
+
 export interface iBuilderPlacePalette {
   primary: string;
   primaryFocus: string;
