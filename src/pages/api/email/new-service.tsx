@@ -139,18 +139,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('Fetched Services:', services);
 
     // For each contact, check if an email was already sent for each new service. If not, check if skills match
-    for (const contact of validUsers) {
+    for (const user of validUsers) {
       console.log(
-        '*************************************Contact*************************************',
-        contact.address,
+        '************************************* User *************************************',
+        user.address,
       );
       for (const service of services) {
         console.log('service', service.description?.title);
         // Check if a notification email has already been sent for these services
-        const compositeId = `${contact.id}-${service.id}`;
+        const compositeId = `${user.id}-${service.id}`;
         const emailHasBeenSent = await hasEmailBeenSent(compositeId, EmailType.NEW_SERVICE);
         if (!emailHasBeenSent) {
-          const userSkills = contact.skills;
+          const userSkills = user.skills;
           const serviceSkills = service.description?.keywords_raw?.split(',');
           console.log('userSkills', userSkills);
           console.log('serviceSkills', serviceSkills);
@@ -162,10 +162,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           if (matchingSkills && matchingSkills?.length > 0) {
             console.log(
               `The skills ${
-                contact.name
-              } has which are required by this open-source contribution mission are: ${matchingSkills.join(
-                ', ',
-              )}`,
+                user.name
+              } has which are required by this mission are: ${matchingSkills.join(', ')}`,
             );
 
             const builderPlaceResponse = await getPlatformsBy({
@@ -187,13 +185,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
               const email = renderMail(
                 `New mission available on BuilderPlace!`,
-                `Good news, the following open-source contribution mission: "${
+                `Good news, the following mission: "${
                   service.description?.title
                 }" was recently posted by ${service.buyer.handle} and you are a good match for it. 
                   
                   <br/><br/>
                   
-                  The skills you have which are required by this open-source contribution mission are: ${matchingSkills
+                  The skills you have which are required by this mission are: ${matchingSkills
                     .map(skill => `<b>${skill}</b>`)
                     .join(', ')}.
                   
@@ -202,14 +200,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 builderPlace.palette as unknown as iBuilderPlacePalette,
                 domain,
                 builderPlace.logo,
-                contact.name,
+                user.name,
                 `${domain}/work/${service.id}`,
                 `Go to open-source mission details`,
               );
               const { successCount, errorCount } = await sendMailToAddresses(
                 `A new open-source mission matching your skills is available on BuilderPlace !`,
                 email,
-                [contact.address],
+                [user.address],
                 service.platform.name,
                 providers,
                 emailNotificationType,
