@@ -180,6 +180,7 @@ export type IServiceDetailsBuyer = {
 export type IReview = {
   id: string;
   service: IService;
+  proposal: IProposal;
   to: IUser;
   uri: string;
   rating: number;
@@ -279,6 +280,7 @@ export type IPayment = {
   createdAt: number;
   id: string;
   amount: string;
+  proposal: IProposal;
   rateToken: IToken;
   paymentType: PaymentTypeEnum;
   transactionHash: string;
