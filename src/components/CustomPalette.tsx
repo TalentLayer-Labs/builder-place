@@ -1,7 +1,4 @@
-import Head from 'next/head';
-import { iBuilderPlacePalette } from '../modules/BuilderPlace/types';
-
-function CustomPalette({ customPalette }: { customPalette?: iBuilderPlacePalette }) {
+function CustomPalette({ customPalette }: { customPalette?: PrismaJson.BuilderPlacePalette }) {
   /*
     Optim idea:
       - pass all color in rgb mode.
@@ -27,10 +24,10 @@ function CustomPalette({ customPalette }: { customPalette?: iBuilderPlacePalette
             "_id": "653b6e82d0c68fbc2750dfc9"
         },
     */
+
   return (
-    <Head>
-      <style>
-        {`
+    <style>
+      {`
           :root {
             --primary: ${customPalette?.primary || '#FF71A2'};
             --primary-50: ${(customPalette?.primary || '#FF71A2') + '60'};
@@ -177,8 +174,7 @@ function CustomPalette({ customPalette }: { customPalette?: iBuilderPlacePalette
             border-color: var(--error);
           }
         `}
-      </style>
-    </Head>
+    </style>
   );
 }
 

@@ -26,7 +26,7 @@ export default async function Layout({
     <UserProvider>
       <TalentLayerProvider>
         <BuilderPlaceProvider data={builderPlace}>
-          <CustomPalette />
+          <CustomPalette customPalette={builderPlace.palette} />
           <XmtpContextProvider>
             <MessagingProvider>
               <PlatformLayout>{children}</PlatformLayout>
