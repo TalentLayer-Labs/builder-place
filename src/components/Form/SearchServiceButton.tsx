@@ -2,7 +2,7 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'heroicons-react';
 
-function SearchServiceButton(props?: { value?: string }) {
+function SearchServiceButton(props?: { value?: string | null }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -16,10 +16,7 @@ function SearchServiceButton(props?: { value?: string }) {
     const formElm = e.target as HTMLFormElement;
     const searchQueryRef = formElm.querySelector('input')!.value;
     if (searchQueryRef.length > 0) {
-      router.push({
-        pathname: '/work',
-        query: { search: searchQueryRef },
-      });
+      router.push(`/work/?search=${searchQueryRef}`);
     } else router.push('/work');
   }, []);
 

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useFilteredServices from '../hooks/useFilteredServices';
 import { IService, ServiceStatusEnum } from '../types';
 import Loading from './Loading';
@@ -10,9 +10,9 @@ import SearchServiceButton from './Form/SearchServiceButton';
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
   const PAGE_SIZE = 30;
-  const router = useRouter();
-  const query = router.query;
-  const searchQuery = query.search as string;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams?.get('search');
   const [view, setView] = useState(1);
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
@@ -72,7 +72,7 @@ function ServiceList() {
         services.map((service: IService, i: number) => (
           <ServiceItem
             service={service}
-            embedded={router.asPath.includes('embed/')}
+            embedded={pathname?.includes('embed/')}
             key={i}
             view={view}
           />
@@ -92,7 +92,7 @@ function ServiceList() {
             {services.map((service: IService, i: number) => (
               <ServiceItem
                 service={service}
-                embedded={router.asPath.includes('embed/')}
+                embedded={pathname?.includes('embed/')}
                 key={i}
                 view={view}
               />

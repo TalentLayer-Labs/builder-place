@@ -1,13 +1,13 @@
-import React, { useContext } from 'react';
-import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
-import Loading from './Loading';
-import useFilteredServices from '../hooks/useFilteredServices';
-import { ServiceStatusEnum } from '../types';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useContext } from 'react';
+import useFilteredServices from '../hooks/useFilteredServices';
+import BuilderPlaceContext from '../modules/BuilderPlace/context/BuilderPlaceContext';
+import { ServiceStatusEnum } from '../types';
+import Loading from './Loading';
 
 function OrganizationHeader() {
-  const router = useRouter();
+  const pathname = usePathname();
   const { builderPlace } = useContext(BuilderPlaceContext);
 
   const { services } = useFilteredServices(
@@ -60,7 +60,7 @@ function OrganizationHeader() {
             <div className='relative flex w-full h-full mr-3 overflow-x-auto'>
               <Link
                 className={`hover:opacity-100 opacity-${
-                  router.asPath == '/' ? '100' : '50'
+                  pathname == '/' ? '100' : '50'
                 } text-base-content items-center font-medium py-3 flex mr-6`}
                 href='/'>
                 missions{' '}
@@ -72,14 +72,14 @@ function OrganizationHeader() {
               </Link>
               <Link
                 className={`hover:opacity-100 opacity-${
-                  router.asPath == '/about' ? '100' : '50'
+                  pathname == '/about' ? '100' : '50'
                 } text-base-content items-center font-medium py-3 flex mr-6`}
                 href='/about'>
                 about{' '}
               </Link>
               <Link
                 className={`hover:opacity-100 opacity-${
-                  router.asPath == '/tech' ? '100' : '50'
+                  pathname == '/tech' ? '100' : '50'
                 } text-base-content items-center font-medium py-3 flex mr-6`}
                 href='/tech'>
                 tech{' '}

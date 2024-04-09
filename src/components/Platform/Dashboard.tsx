@@ -1,34 +1,30 @@
-import { GetServerSidePropsContext } from 'next';
+'use client';
+
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import ConnectBlock from '../../components/ConnectBlock';
-import DashboardUserServices from '../../components/DashboardUserServices';
-import DelegationNotification from '../../components/DelegationNotification';
-import Notification from '../../components/Notification';
-import Steps from '../../components/Steps';
-import UserDetail from '../../components/UserDetail';
-import UserGains from '../../components/UserGains';
-import UserPayments from '../../components/UserPayments';
-import UserProposals from '../../components/UserProposals';
-import VerifyEmailNotification from '../../components/VerifyEmailNotification';
 import TalentLayerContext from '../../context/talentLayer';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import { sharedGetServerSideProps } from '../../utils/sharedGetServerSideProps';
+import ConnectBlock from '../ConnectBlock';
+import DashboardUserServices from '../DashboardUserServices';
+import DelegationNotification from '../DelegationNotification';
+import Notification from '../Notification';
+import Steps from '../Steps';
+import UserDetail from '../UserDetail';
+import UserGains from '../UserGains';
+import UserPayments from '../UserPayments';
+import UserProposals from '../UserProposals';
+import VerifyEmailNotification from '../VerifyEmailNotification';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return sharedGetServerSideProps(context);
-}
-
-function Dashboard() {
+function PlatformDashboard() {
   const account = useAccount();
   const { user: talentLayerUser } = useContext(TalentLayerContext); // Add refreshData
   const { user, getUser } = useContext(UserContext);
-  const pathname = usePathname();
   const { isBuilderPlaceCollaborator, builderPlace } = useContext(BuilderPlaceContext);
-  const isComingFromHirerOnboarding = pathname?.includes('platformonboarding');
+  const searchParams = useSearchParams();
+  const isComingFromHirerOnboarding = !!searchParams?.get('platformonboarding');
 
   useEffect(() => {
     getUser();
@@ -125,7 +121,7 @@ function Dashboard() {
               <div className='mb-12'>
                 <DashboardUserServices userId={user.talentLayerId} type='seller' />
               </div>
-              {builderPlace.jobPostingConditions.allowPosts && (
+              {builderPlace.jobPostingConditions?.allowPosts && (
                 <div className='mb-12 mt-2'>
                   <DashboardUserServices userId={user.talentLayerId} type='buyer' />
                 </div>
@@ -141,4 +137,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default PlatformDashboard;

@@ -1,8 +1,9 @@
 import { IBuilderPlace } from './types';
 import { getBuilderPlaceByDomain } from './actions/builderPlace';
+import { BuilderPlace } from '@prisma/client';
 
 // Used inside getServerSideProps
-export const getBuilderPlace = async (domain: string): Promise<IBuilderPlace> => {
+export const getBuilderPlace = async (domain: string): Promise<BuilderPlace> => {
   console.log('serverProps', domain);
   let builderPlace;
   try {
@@ -15,10 +16,10 @@ export const getBuilderPlace = async (domain: string): Promise<IBuilderPlace> =>
     throw new Error(`BuilderPlace not found for domain ${domain}`);
   }
 
-  const serializedBuilderPlace = JSON.parse(JSON.stringify(builderPlace));
+  // const serializedBuilderPlace = JSON.parse(JSON.stringify(builderPlace));
 
-  console.log({
-    serializedBuilderPlace,
-  });
-  return serializedBuilderPlace;
+  // console.log({
+  //   serializedBuilderPlace,
+  // });
+  return builderPlace;
 };

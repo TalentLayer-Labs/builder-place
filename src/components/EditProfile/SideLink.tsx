@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -12,12 +12,13 @@ function SideLink({
   isCompleted: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const isDashboard = href == '/profiles/edit';
   let className = isDashboard
-    ? router.asPath === href
+    ? pathname === href
       ? 'text-info bg-info'
       : ''
-    : router.asPath.includes(href)
+    : pathname?.includes(href)
     ? 'text-info bg-info'
     : '';
 

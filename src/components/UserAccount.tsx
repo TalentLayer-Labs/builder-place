@@ -1,20 +1,18 @@
 import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import UserContext from '../modules/BuilderPlace/context/UserContext';
 import ConnectBlock from './ConnectBlock';
 import ProfileImage from './ProfileImage';
 import UserSubMenu from './UserSubMenu';
-import { useRouter } from 'next/navigation';
 
 function UserAccount() {
-  const router = useRouter();
+  const pathname = usePathname();
   const { isConnected } = useAccount();
   const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
-
-  console.log('router.asPath', router.asPath);
 
   // Tips to prevent nextJs error: Hydration failed because the initial UI does not match what was rendered on the server.
   useEffect(() => {
@@ -25,7 +23,7 @@ function UserAccount() {
     return null;
   }
 
-  if (router.asPath.includes('onboarding')) {
+  if (pathname?.includes('onboarding')) {
     return null;
   }
 

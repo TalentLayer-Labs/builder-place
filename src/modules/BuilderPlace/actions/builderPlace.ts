@@ -1,4 +1,4 @@
-import { EntityStatus } from '.prisma/client';
+import { EntityStatus, Prisma } from '.prisma/client';
 import {
   COLLABORATOR_NOT_FOUND,
   DOMAIN_CONTAINS_BUILDER_PLACE,
@@ -327,26 +327,30 @@ export const getBuilderPlaceByOwnerTalentLayerId = async (id: string) => {
   }
 };
 
-export const getBuilderPlaceByDomain = async (domain: string) => {
-  let errorMessage = '';
-  try {
-    console.log('getting builderPlace ', domain);
-    const builderPlace = await prisma.builderPlace.findFirst({
-      where: {
-        OR: [{ subdomain: domain }, { customDomain: domain }],
-      },
-      include: {
-        owner: true,
-        collaborators: true,
-      },
-    });
+export type BuilderPlaceWithOwnerAndCollaborators = Prisma.BuilderPlaceGetPayload<{
+  include: { owner: true; collaborators: true };
+}>;
 
-    console.log('fetched builderPlaces, ', builderPlace?.subdomain);
+export const getBuilderPlaceByDomain = async (
+  domain: string,
+): Promise<BuilderPlaceWithOwnerAndCollaborators> => {
+  console.log('getting builderPlace ', domain);
+  const builderPlace = await prisma.builderPlace.findFirst({
+    where: {
+      OR: [{ subdomain: domain }, { customDomain: domain }],
+    },
+    include: {
+      owner: true,
+      collaborators: true,
+    },
+  });
+  console.log('fetched builderPlaces, ', builderPlace?.subdomain);
 
-    return builderPlace;
-  } catch (error: any) {
-    handleApiError(error, errorMessage, ERROR_FETCHING_BUILDERPLACE);
+  if (!builderPlace) {
+    throw new Error(`BuilderPlace not found`);
   }
+
+  return builderPlace;
 };
 
 export const getBuilderPlaceById = async (id: string) => {

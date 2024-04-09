@@ -1,23 +1,35 @@
+import { BuilderPlace } from '@prisma/client';
 import CustomPalette from '../../components/CustomPalette';
+import PlatformLayout from '../../components/Platform/Layout';
 import { TalentLayerProvider } from '../../context/talentLayer';
-import { BuilderPlaceProvider } from '../../modules/BuilderPlace/context/BuilderPlaceContext';
+import { getBuilderPlaceByDomain } from '../../modules/BuilderPlace/actions/builderPlace';
 import { UserProvider } from '../../modules/BuilderPlace/context/UserContext';
-import { getBuilderPlace } from '../../modules/BuilderPlace/queries';
-import { IBuilderPlace } from '../../modules/BuilderPlace/types';
 import { XmtpContextProvider } from '../../modules/Messaging/context/XmtpContext';
 import { MessagingProvider } from '../../modules/Messaging/context/messging';
+import { BuilderPlaceProvider } from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
-  const projects = await getBuilderPlace();
+async function getBuilderPlace(domain: string) {
+  const builderPlace = await getBuilderPlaceByDomain(decodeURIComponent(domain));
+  return builderPlace;
+}
+
+export default async function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { domain: string };
+}) {
+  const builderPlace = await getBuilderPlace(params.domain);
 
   return (
     <UserProvider>
       <TalentLayerProvider>
-        <BuilderPlaceProvider>
+        <BuilderPlaceProvider data={builderPlace}>
           <CustomPalette />
           <XmtpContextProvider>
             <MessagingProvider>
-              <Layout>{children}</Layout>
+              <PlatformLayout>{children}</PlatformLayout>
             </MessagingProvider>
           </XmtpContextProvider>
         </BuilderPlaceProvider>

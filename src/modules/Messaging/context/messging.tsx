@@ -1,3 +1,5 @@
+'use client';
+
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { getAddress } from 'viem';
