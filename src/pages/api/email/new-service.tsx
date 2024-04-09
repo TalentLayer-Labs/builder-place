@@ -89,10 +89,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         response?.data?.data?.userDescriptions &&
         response.data.data.userDescriptions.length > 0
       ) {
-        const validUserDescriptions = response.data.data.userDescriptions.filter(
-          (contact: IUserDetails) => contact.user?.description?.id === contact.id,
-        );
         // Only select the latest version of each user metaData
+        const validUserDescriptions = response.data.data.userDescriptions.filter(
+          (userDetails: IUserDetails) => userDetails.user?.description?.id === userDetails.id,
+        );
+        // For each unique user, format it and push it to "validUsers" array
         validUserDescriptions.forEach((userDetails: IUserDetails) => {
           const user = validUsers.find(user => user.id === userDetails.id);
           if (!user) {
