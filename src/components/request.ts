@@ -14,9 +14,9 @@ export const delegateCreateService = async (body: ICreateService): Promise<any> 
       chainId: body.chainId,
       userId: body.userId,
       userAddress: body.userAddress,
-      cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      serviceDetails: body.serviceDetails,
     });
   } catch (err) {
     console.error(err);
@@ -69,9 +69,9 @@ export const delegateCreateProposal = async (body: ICreateProposal): Promise<any
       rateToken: body.rateToken,
       rateAmount: body.rateAmount,
       expirationDate: body.expirationDate,
-      cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      proposal: body.proposal,
     });
   } catch (err) {
     console.error(err);
