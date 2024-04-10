@@ -1,21 +1,16 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
-import { useChainId } from '../../../hooks/useChainId';
-import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../../utils/toast';
+import { useAccount } from 'wagmi';
+import { showErrorTransactionToast } from '../../../utils/toast';
 import * as Yup from 'yup';
-import TalentLayerPlatformId from '../../../contracts/ABI/TalentLayerPlatformID.json';
-import { getConfig } from '../../../config';
 import { getUserBy } from '../../../modules/BuilderPlace/request';
 import UserProfileDisplay from './UserProfileDisplay';
 import { useState } from 'react';
 import { User } from '@prisma/client';
 import Loading from '../../../components/Loading';
 import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
-import { useMutation } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
 import { IMutation } from '../../../types';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
+import useTransferPlatform from '../../../modules/BuilderPlace/hooks/platform/useTransferPlatform';
 
 export interface IFormValues {
   toAddress: string;
@@ -30,22 +25,13 @@ const validationSchema = Yup.object({
 });
 
 function PlatformTransferForm({ callback }: { callback?: () => void }) {
-  const chainId = useChainId();
-  const config = getConfig(chainId);
-  const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
   const { address } = useAccount();
   const router = useRouter();
   const { platform } = useGetPlatformBy({ ownerAddress: address });
   const [isFetchingUser, setIsFetchingUser] = useState<boolean>(false);
   const [returnedUser, setReturnedUser] = useState<User | undefined>();
   const [previousValue, setPreviousValue] = useState<string>('');
-  const platformMutation = useMutation(
-    async (body: ITransferPlatformOwnership): Promise<AxiosResponse<{ id: string }>> => {
-      return await axios.put(`/api/platforms/transfer-owner/${platform?.id}`, body);
-    },
-  );
-
+  const { transferPlatform } = useTransferPlatform();
   const onSubmit = async (
     values: IFormValues,
     {
@@ -54,56 +40,11 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      if (
-        values.toAddress === undefined ||
-        !platform ||
-        !walletClient ||
-        !returnedUser ||
-        !address
-      ) {
+      if (values.toAddress === undefined || !platform || !returnedUser) {
         return;
       }
 
-      //  @ts-ignore
-      const transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerPlatformId,
-        abi: TalentLayerPlatformId.abi,
-        functionName: 'transferFrom',
-        args: [address, values.toAddress, platform?.id],
-      });
-
-      await createMultiStepsTransactionToast(
-        chainId,
-        {
-          pending: 'Updating informations ...',
-          success: 'Congrats! Your informations has been updated',
-          error: 'An error occurred while updating your informations',
-        },
-        publicClient,
-        transaction,
-        'platform',
-      );
-
-      /**
-       * @dev Sign message to prove ownership of the address
-       */
-      const signature = await walletClient.signMessage({
-        account: address,
-        message: `connect with ${address}`,
-      });
-
-      await platformMutation.mutateAsync({
-        data: {
-          ownerId: returnedUser.id,
-        },
-        signature: signature,
-        address: address,
-        domain: `${window.location.hostname}${
-          window.location.port ? ':' + window.location.port : ''
-        }`,
-      });
-
-      toast.success('Congrats! Your platform was successfully transferred');
+      await transferPlatform(values.toAddress, returnedUser.id);
 
       if (callback) {
         callback();
@@ -112,10 +53,9 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
       resetForm();
 
       setSubmitting(false);
+      router.push('/dashboard');
     } catch (error) {
       showErrorTransactionToast(error);
-    } finally {
-      router.push('/dashboard');
     }
   };
 
