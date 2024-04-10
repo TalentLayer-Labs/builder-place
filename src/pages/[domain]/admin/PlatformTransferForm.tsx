@@ -5,16 +5,23 @@ import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../
 import * as Yup from 'yup';
 import TalentLayerPlatformId from '../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getConfig } from '../../../config';
-import usePlatformByOwner from '../../../hooks/usePlatformByOwnerAddress';
 import { getUserBy } from '../../../modules/BuilderPlace/request';
 import UserProfileDisplay from './UserProfileDisplay';
 import { useState } from 'react';
 import { User } from '@prisma/client';
 import Loading from '../../../components/Loading';
+import useGetPlatformBy from '../../../modules/BuilderPlace/hooks/platform/useGetPlatformBy';
+import { useMutation } from 'react-query';
+import axios, { AxiosResponse } from 'axios';
+import { IMutation } from '../../../types';
+import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 export interface IFormValues {
   toAddress: string;
 }
+
+export interface ITransferPlatformOwnership extends IMutation<{ ownerId: number }> {}
 
 const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
@@ -28,10 +35,16 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   const { address } = useAccount();
-  const platform = usePlatformByOwner(address);
+  const router = useRouter();
+  const { platform } = useGetPlatformBy({ ownerAddress: address });
+  const [isFetchingUser, setIsFetchingUser] = useState<boolean>(false);
   const [returnedUser, setReturnedUser] = useState<User | undefined>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [previousValue, setPreviousValue] = useState<string>('');
+  const platformMutation = useMutation(
+    async (body: ITransferPlatformOwnership): Promise<AxiosResponse<{ id: string }>> => {
+      return await axios.put(`/api/platforms/transfer-owner/${platform?.id}`, body);
+    },
+  );
 
   const onSubmit = async (
     values: IFormValues,
@@ -41,7 +54,13 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
     }: { setSubmitting: (isSubmitting: boolean) => void; resetForm: () => void },
   ) => {
     try {
-      if (values.toAddress === undefined || !platform || !walletClient) {
+      if (
+        values.toAddress === undefined ||
+        !platform ||
+        !walletClient ||
+        !returnedUser ||
+        !address
+      ) {
         return;
       }
 
@@ -65,7 +84,26 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
         'platform',
       );
 
-      //TODO: Persist in DB (on fait,quoi en cas de problème avec la 2ème tx ?)
+      /**
+       * @dev Sign message to prove ownership of the address
+       */
+      const signature = await walletClient.signMessage({
+        account: address,
+        message: `connect with ${address}`,
+      });
+
+      await platformMutation.mutateAsync({
+        data: {
+          ownerId: returnedUser.id,
+        },
+        signature: signature,
+        address: address,
+        domain: `${window.location.hostname}${
+          window.location.port ? ':' + window.location.port : ''
+        }`,
+      });
+
+      toast.success('Congrats! Your platform was successfully transferred');
 
       if (callback) {
         callback();
@@ -76,6 +114,8 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
       setSubmitting(false);
     } catch (error) {
       showErrorTransactionToast(error);
+    } finally {
+      router.push('/dashboard');
     }
   };
 
@@ -84,13 +124,18 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
 
     setPreviousValue(value);
     setReturnedUser(undefined);
-    //TODO use React query
+
     if (value.match(ethAddressRegex)) {
-      setLoading(true);
+      setIsFetchingUser(true);
+
       const user = await getUserBy({ address: value });
-      setLoading(false);
+
+      setIsFetchingUser(false);
+
       console.log('found user', user);
+
       setReturnedUser(user);
+
       if (!user) {
         return 'User not found';
       }
@@ -112,10 +157,10 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
                 id='toAddress'
                 name='toAddress'
                 className={`mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 ${
-                  loading && 'opacity-50'
+                  isFetchingUser && 'opacity-50'
                 } shadow-sm focus:ring-opacity-50 mr-4`}
                 placeholder='Transfer to...'
-                disabled={loading}
+                disabled={isFetchingUser}
                 validate={validateInput}
                 onKeyDown={(e: any) => {
                   if (e.key === 'Enter') {
@@ -123,7 +168,7 @@ function PlatformTransferForm({ callback }: { callback?: () => void }) {
                   }
                 }}
               />
-              {loading && <Loading />}
+              {isFetchingUser && <Loading />}
             </div>
             {!!returnedUser && (
               <UserProfileDisplay user={returnedUser} isSubmitting={isSubmitting} />

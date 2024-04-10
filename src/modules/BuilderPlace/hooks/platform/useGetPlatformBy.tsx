@@ -1,10 +1,10 @@
 import { PlatformsFilters } from '../../../../app/api/platforms/route';
 import { useQuery } from 'react-query';
-import { IBuilderPlace } from '../../types';
 import axios from 'axios';
+import { BuilderPlace } from '@prisma/client';
 
 interface IReturn {
-  platform?: IBuilderPlace;
+  platform?: BuilderPlace;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
@@ -13,14 +13,14 @@ interface IReturn {
 const useGetPlatformBy = (filters: PlatformsFilters): IReturn => {
   const queryKey = ['platform', filters];
 
-  const fetchPlatformBy = async (): Promise<IBuilderPlace> => {
+  const fetchPlatformBy = async (): Promise<BuilderPlace> => {
     console.log(`*DEBUG* getPlatformsBy fetch!`, filters);
 
     const response = await axios.get('/api/platforms', {
       params: filters,
     });
 
-    const platforms: IBuilderPlace[] = response.data.platforms;
+    const platforms: BuilderPlace[] = response.data.platforms;
 
     console.log(`*DEBUG* getPlatformBy results!`, platforms);
 
@@ -32,7 +32,7 @@ const useGetPlatformBy = (filters: PlatformsFilters): IReturn => {
     isLoading,
     isError,
     error,
-  } = useQuery<IBuilderPlace, Error>(queryKey, fetchPlatformBy, {
+  } = useQuery<BuilderPlace, Error>(queryKey, fetchPlatformBy, {
     enabled: !!filters,
   });
 
