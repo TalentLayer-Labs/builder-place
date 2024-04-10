@@ -42,8 +42,8 @@ function TransferPlatformModal() {
             </div>
             <div className='p-6 space-y-6'>
               <div className='flex-row'>
-                <h4 className='text-lg font-semibold text-base-content'>
-                  ⚠️ This operation is not reversible
+                <h4 className='mb-1 text-lg font-semibold text-base-content'>
+                  ⚠️ This operation is irreversible
                 </h4>
                 <p className='text-base-content opacity-50 text-sm'>
                   Please input the address to which you want to transfer the ownership of this
