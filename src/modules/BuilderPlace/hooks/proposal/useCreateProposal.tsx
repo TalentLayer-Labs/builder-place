@@ -53,8 +53,6 @@ const useCreateProposal = () => {
           video_url: values.video_url,
         };
 
-        cid = await talentLayerClient?.proposal?.upload(proposal);
-
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
 
@@ -74,7 +72,6 @@ const useCreateProposal = () => {
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
             expirationDate: convertExpirationDateString,
-            cid,
             platformId: process.env.NEXT_PUBLIC_PLATFORM_ID as string,
             signature,
             proposal

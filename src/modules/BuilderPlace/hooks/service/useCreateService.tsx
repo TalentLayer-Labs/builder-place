@@ -64,7 +64,6 @@ const useCreateService = () => {
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
           };
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs(serviceDetails);
 
           let response;
 
@@ -73,7 +72,6 @@ const useCreateService = () => {
             chainId,
             userId: usedId,
             userAddress: address,
-            cid,
             platformId: builderPlace.talentLayerPlatformId,
             signature,
           });

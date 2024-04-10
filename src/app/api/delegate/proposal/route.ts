@@ -27,7 +27,6 @@ export interface ICreateProposal {
   rateToken: string;
   rateAmount: string;
   expirationDate: string;
-  cid: string;
   platformId: string;
   signature: `0x${string}` | Uint8Array;
   proposal: any;
@@ -44,7 +43,6 @@ export async function POST(req: Request) {
     chainId,
     userId,
     userAddress,
-    cid,
     platformId,
     rateAmount,
     rateToken,
@@ -105,12 +103,6 @@ export async function POST(req: Request) {
       const platformFeesResponse = await getPlatformPostingFees(chainId, platformId);
       let proposalPostingFee = platformFeesResponse?.data?.data?.platform.proposalPostingFee;
       proposalPostingFee = BigInt(Number(proposalPostingFee) || '0');
-
-      const signature = await getProposalSignature({
-        profileId: Number(userId),
-        serviceId: Number(serviceId),
-        cid: cid,
-      });
 
       const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
       const rpcUrl = process.env.NEXT_PUBLIC_YOUR_RPC_URL as string;
