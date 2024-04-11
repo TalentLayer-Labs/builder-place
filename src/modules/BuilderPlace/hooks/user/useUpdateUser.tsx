@@ -1,8 +1,7 @@
 import { useContext } from 'react';
-import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { createMultiStepsTransactionToast } from '../../../../utils/toast';
 import { IUpdateProfileFormValues } from '../../../../components/Form/ProfileForm';
 import { delegateUpdateProfileData } from '../../../../components/request';
 import { useMutation } from 'react-query';
@@ -15,7 +14,6 @@ import { toast } from 'react-toastify';
 const useUpdateUser = () => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
-  const publicClient = usePublicClient({ chainId });
   const { address } = useAccount();
   const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
   const { user, getUser } = useContext(UserContext);
@@ -32,6 +30,15 @@ const useUpdateUser = () => {
     }
 
     try {
+      const promises = [];
+      /**
+       * @dev Sign message to prove ownership of the address
+       */
+      const signature = await walletClient.signMessage({
+        account: address,
+        message: `connect with ${address}`,
+      });
+
       // Update off-chain data
       if (talentLayerUser?.id && isOffChainDataUpdated(values, talentLayerUser?.description)) {
         const profile = {
@@ -45,23 +52,13 @@ const useUpdateUser = () => {
           web3mailPreferences: talentLayerUser.description?.web3mailPreferences,
         };
 
-        let tx;
-        let cid = '';
-
+        let updateOnChain;
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
 
-          /**
-           * @dev Sign message to prove ownership of the address
-           */
-          const signature = await walletClient.signMessage({
-            account: address,
-            message: `connect with ${address}`,
-          });
+          const cid = await talentLayerClient.profile.upload(profile);
 
-          cid = await talentLayerClient.profile.upload(profile);
-
-          const response = await delegateUpdateProfileData(
+          updateOnChain = delegateUpdateProfileData(
             {
               chainId,
               userAddress: address.toString(),
@@ -70,39 +67,16 @@ const useUpdateUser = () => {
             },
             talentLayerUser?.id,
           );
-          tx = response.data.transaction;
         } else {
           console.log('Update profile', profile, talentLayerUser.id);
-          const res = await talentLayerClient?.profile.update(profile, talentLayerUser.id);
-
-          tx = res.tx;
+          updateOnChain = talentLayerClient?.profile.update(profile, talentLayerUser.id);
         }
 
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Updating profile...',
-            success: 'Congrats! Your profile has been updated',
-            error: 'An error occurred while updating your profile',
-          },
-          publicClient,
-          tx,
-          'user',
-          !!cid ? cid : undefined,
-        );
+        promises.push(updateOnChain);
       }
 
       // Update database data
-
-      /**
-       * @dev Sign message to prove ownership of the address
-       */
-      const signature = await walletClient.signMessage({
-        account: address,
-        message: `connect with ${address}`,
-      });
-
-      await userMutation.mutateAsync({
+      const updateDataBase = userMutation.mutateAsync({
         data: {
           name: values.name,
           email: values.email,
@@ -119,6 +93,10 @@ const useUpdateUser = () => {
           window.location.port ? ':' + window.location.port : ''
         }`,
       });
+
+      promises.push(updateDataBase);
+
+      await Promise.all(promises);
 
       getUser();
 

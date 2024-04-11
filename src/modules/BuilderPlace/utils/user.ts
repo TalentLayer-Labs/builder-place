@@ -18,7 +18,7 @@ export const isOffChainDataUpdated = (
       console.log('Comparing', key, ':', updateValue, 'vs', existingValue);
 
       // Comparing values if truthy
-      if (!!updateValue && !!existingValue && updateValue !== existingValue) {
+      if (!!updateValue && updateValue !== existingValue) {
         console.log('Difference found in', key);
         return true;
       }

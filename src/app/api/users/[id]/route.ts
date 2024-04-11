@@ -3,6 +3,7 @@ import prisma from '../../../../postgre/postgreClient';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
 import { ERROR_UPDATING_USER } from '../../../../modules/BuilderPlace/apiResponses';
 import { IEmailPreferences, IMutation } from '../../../../types';
+import { sendTransactionalEmailValidation } from '../../../../pages/api/utils/sendgrid';
 
 export interface UsersFields {
   name?: string;
@@ -48,15 +49,27 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   try {
     console.log('Updating profile...', params.id);
 
+    // Fetch current user data from the database
+    const currentUser = await prisma.user.findUnique({
+      where: { id: Number(params.id) },
+    });
+
+    if (!currentUser) {
+      return Response.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const { workerProfileFields, emailPreferences, ...userDataFields } = body.data;
+
+    const isEmailUpdated = !!userDataFields.email && userDataFields.email !== currentUser.email;
 
     let updatedUserDataFields = {
       ...userDataFields,
       // Reset isEmailVerified if email is updated
-      ...(!!userDataFields.email && { isEmailVerified: false }),
+      ...(isEmailUpdated && { isEmailVerified: false }),
     };
 
     console.log('userDataFields', updatedUserDataFields);
+    console.log('isEmailUpdated', isEmailUpdated);
     console.log('emailPreferences', emailPreferences);
     console.log('userDataFields', userDataFields);
 
@@ -82,6 +95,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         },
       });
     }
+
+    // Send validation email if email is updated
+    if (isEmailUpdated)
+      await sendTransactionalEmailValidation(
+        user.email,
+        user.id.toString(),
+        user.name,
+        body?.domain,
+      );
 
     return Response.json({ id: user?.id }, { status: 200 });
   } catch (e: any) {

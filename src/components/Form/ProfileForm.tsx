@@ -10,6 +10,7 @@ import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { createVerificationEmailToast } from '../../modules/BuilderPlace/utils/toast';
 
 export interface IUpdateProfileFormValues {
   title?: string;
@@ -60,6 +61,10 @@ function ProfileForm({ callback }: { callback?: () => void }) {
 
       if (callback) {
         callback();
+      }
+
+      if (initialValues.email !== values.email) {
+        await createVerificationEmailToast();
       }
 
       refreshData();
