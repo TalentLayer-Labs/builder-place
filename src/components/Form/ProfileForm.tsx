@@ -9,6 +9,7 @@ import { showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import SubmitButton from './SubmitButton';
 import { SkillsInput } from './skills-input';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export interface IUpdateProfileFormValues {
   title?: string;
@@ -124,12 +125,33 @@ function ProfileForm({ callback }: { callback?: () => void }) {
 
             <label className='block'>
               <span className='text-base-content'>email</span>
-              <Field
-                type='email'
-                id='email'
-                name='email'
-                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
-                placeholder=''></Field>
+              <div className='flex items-center'>
+                <Field
+                  type='email'
+                  id='email'
+                  name='email'
+                  className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                  placeholder=''></Field>
+              </div>
+              {user?.isEmailVerified ? (
+                <div className={'flex flex-row items-center'}>
+                  <CheckIcon
+                    width={25}
+                    height={25}
+                    className='bg-base-100 bg-success p-1 mx-2 border border-success-100 rounded-full'
+                  />
+                  <p className='text-sm text-success-500'>Email verified</p>
+                </div>
+              ) : (
+                <div className={'flex flex-row items-center'}>
+                  <XMarkIcon
+                    width={20}
+                    height={20}
+                    className='bg-base-100 bg-error p-1 mx-2 border border-error-200 rounded-full'
+                  />
+                  <p className='text-sm text-error-500'>Email not verified</p>
+                </div>
+              )}
               <span className='text-alone-error'>
                 <ErrorMessage name='email' />
               </span>

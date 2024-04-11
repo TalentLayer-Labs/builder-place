@@ -5,9 +5,19 @@ import { ERROR_UPDATING_USER } from '../../../../modules/BuilderPlace/apiRespons
 import { IEmailPreferences, IMutation } from '../../../../types';
 
 export interface UsersFields {
-  // email?: string | null;
-  //TODO complete
+  name?: string;
+  email?: string;
+  about?: string;
+  picture?: string;
+  video?: string;
+  title?: string;
+  role?: string;
+  workerProfileFields?: WorkerProfileFields;
   emailPreferences?: IEmailPreferences | null;
+}
+
+interface WorkerProfileFields {
+  skills?: string[];
 }
 export interface IUpdateProfile extends IMutation<UsersFields> {}
 
@@ -37,14 +47,41 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
   try {
     console.log('Updating profile...', params.id);
+
+    const { workerProfileFields, emailPreferences, ...userDataFields } = body.data;
+
+    let updatedUserDataFields = {
+      ...userDataFields,
+      // Reset isEmailVerified if email is updated
+      ...(!!userDataFields.email && { isEmailVerified: false }),
+    };
+
+    console.log('userDataFields', updatedUserDataFields);
+    console.log('emailPreferences', emailPreferences);
+    console.log('userDataFields', userDataFields);
+
+    // Update User data
     const user = await prisma.user.update({
       where: {
         id: Number(params.id),
       },
       data: {
-        emailPreferences: { ...body.data.emailPreferences },
+        ...updatedUserDataFields,
+        emailPreferences: { ...emailPreferences },
       },
     });
+
+    // Update or create WorkerProfile if skills are provided
+    if (workerProfileFields?.skills) {
+      await prisma.workerProfile.upsert({
+        where: { id: Number(params.id) },
+        update: { skills: workerProfileFields.skills },
+        create: {
+          id: Number(params.id),
+          skills: workerProfileFields.skills,
+        },
+      });
+    }
 
     return Response.json({ id: user?.id }, { status: 200 });
   } catch (e: any) {
