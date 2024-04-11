@@ -6,7 +6,7 @@ import {
   ERROR_REMOVING_BUILDERPLACE_OWNER,
 } from '../../../../modules/BuilderPlace/apiResponses';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
-import { IRemoveBuilderPlaceCollaborator } from '../../../[domain]/admin/collaborator-card/page';
+import { IRemoveBuilderPlaceCollaborator } from '../../../[domain]/admin/collaborator-card/CollaboratorCard';
 
 /**
  * GET /api/collaborators/

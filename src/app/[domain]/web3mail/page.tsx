@@ -1,3 +1,5 @@
+'use client';
+
 import Web3mailCard from '../../../modules/Web3mail/components/Web3mailCard';
 import Web3mailForm from '../../../modules/Web3mail/components/Web3mailForm';
 import { Web3MailProvider } from '../../../modules/Web3mail/context/web3mail';

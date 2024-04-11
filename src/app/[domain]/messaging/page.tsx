@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
 import Loading from '../../../components/Loading';

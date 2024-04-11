@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import { formatEther } from 'viem';
 import { useChainId } from 'wagmi';

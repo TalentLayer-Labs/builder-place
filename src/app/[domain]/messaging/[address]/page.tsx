@@ -1,3 +1,5 @@
+'use client';
+
 import Dashboard from '../../../../modules/Messaging/components/Dashboard';
 
 function MessagingAddress() {

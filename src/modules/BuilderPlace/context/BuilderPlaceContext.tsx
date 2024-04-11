@@ -30,18 +30,12 @@ const BuilderPlaceProvider = ({
   const [isBuilderPlaceOwner, setIsBuilderPlaceOwner] = useState(false);
   const ownerTalentLayerHandle = data?.owner?.talentLayerHandle;
 
-  console.log('BuilderPlaceProvider', { data: data.collaborators });
-
-  const fetchBuilderPlaceOwner = async () => {
+  useEffect(() => {
     if (!ownerTalentLayerHandle) {
       return;
     }
     const isUserBuilderPlaceOwner = address === data.owner?.address;
     setIsBuilderPlaceOwner(isUserBuilderPlaceOwner || false);
-  };
-
-  useEffect(() => {
-    fetchBuilderPlaceOwner();
   }, [chainId, data?.ownerId, address]);
 
   useEffect(() => {

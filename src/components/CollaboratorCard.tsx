@@ -1,15 +1,14 @@
-import ProfileImage from '../../../../components/ProfileImage';
-import { truncateAddress } from '../../../../utils';
-import { toggleDelegation } from '../../../../contracts/toggleDelegation';
 import { User } from '.prisma/client';
-import { usePublicClient, useWalletClient } from 'wagmi';
-import useRemoveCollaborator from '../../../../modules/BuilderPlace/hooks/collaborator/useRemoveCollaborator';
-import { showErrorTransactionToast } from '../../../../utils/toast';
+import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
 import { useState } from 'react';
-import { useChainId } from '../../../../hooks/useChainId';
-import { IMutation } from '../../../../types';
-import AsyncButton from '../../../../components/AsyncButton';
 import { toast } from 'react-toastify';
+import useRemoveCollaborator from '../modules/BuilderPlace/hooks/collaborator/useRemoveCollaborator';
+import { showErrorTransactionToast } from '../utils/toast';
+import { IMutation } from '../types';
+import { toggleDelegation } from '../contracts/toggleDelegation';
+import ProfileImage from './ProfileImage';
+import { truncateAddress } from '../utils';
+import AsyncButton from './AsyncButton';
 
 interface ICollaboratorCardProps {
   collaborator: User;

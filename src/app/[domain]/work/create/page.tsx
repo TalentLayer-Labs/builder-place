@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';

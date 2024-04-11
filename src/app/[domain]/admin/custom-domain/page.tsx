@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext, useEffect, useState } from 'react';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import AccessDenied from '../../../../components/AccessDenied';

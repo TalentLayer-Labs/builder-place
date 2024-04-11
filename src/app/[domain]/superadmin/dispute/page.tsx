@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext, useEffect, useState } from 'react';
 import { formatEther } from 'viem';
 import * as Yup from 'yup';

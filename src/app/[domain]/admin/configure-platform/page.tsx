@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import 'react-color-palette/css';
 import AccessDenied from '../../../../components/AccessDenied';

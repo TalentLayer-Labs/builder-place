@@ -1,3 +1,5 @@
+'use client';
+
 import { Cog8ToothIcon } from '@heroicons/react/24/outline';
 
 import Layout from '../../../../../components/EditProfile/Layout';

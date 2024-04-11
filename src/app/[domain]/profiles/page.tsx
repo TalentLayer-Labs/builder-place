@@ -1,3 +1,5 @@
+'use client';
+
 import { useSearchParams } from 'next/navigation';
 import SearchTalentButton from '../../../components/Form/SearchTalentButton';
 import Loading from '../../../components/Loading';

@@ -1,5 +1,6 @@
-import { Field, Form, Formik } from 'formik';
+'use client';
 
+import { Field, Form, Formik } from 'formik';
 import { useContext } from 'react';
 import { usePublicClient } from 'wagmi';
 import * as Yup from 'yup';

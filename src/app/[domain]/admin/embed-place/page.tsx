@@ -1,5 +1,6 @@
-import { CheckCircle, ClipboardCopy } from 'heroicons-react';
+'use client';
 
+import { CheckCircle, ClipboardCopy } from 'heroicons-react';
 import { useContext } from 'react';
 import AccessDenied from '../../../../components/AccessDenied';
 import useCopyToClipBoard from '../../../../hooks/useCopyToClipBoard';

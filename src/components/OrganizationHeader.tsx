@@ -81,9 +81,9 @@ function OrganizationHeader() {
               </Link>
               <Link
                 className={`hover:opacity-100 opacity-${
-                  pathname == '/tech' ? '100' : '50'
+                  pathname == '/about/tech' ? '100' : '50'
                 } text-base-content items-center font-medium py-3 flex mr-6`}
-                href='/tech'>
+                href='/about/tech'>
                 tech{' '}
               </Link>
             </div>

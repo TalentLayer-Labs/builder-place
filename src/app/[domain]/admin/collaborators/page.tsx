@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext, useState } from 'react';
 import AccessDenied from '../../../../components/AccessDenied';
 import CollaboratorForm from '../../../../components/Form/CollaboratorForm';
@@ -5,9 +7,9 @@ import TalentLayerContext from '../../../../context/talentLayer';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 import AdminSettingsLayout from '../../../../components/AdminSettingsLayout';
+import CollaboratorCard from '../../../../components/CollaboratorCard';
 import Loading from '../../../../components/Loading';
 import { useConfig } from '../../../../hooks/useConfig';
-import CollaboratorCard from '../collaborator-card/page';
 
 export default function Collaborators() {
   const { user: talentLayerUser, loading } = useContext(TalentLayerContext);

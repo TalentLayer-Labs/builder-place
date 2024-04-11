@@ -1,4 +1,6 @@
-import { useRouter, useSearchParams } from 'next/navigation';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import { useContext } from 'react';
 import { useAccount } from 'wagmi';
 import AccessDenied from '../../../../../components/AccessDenied';
@@ -11,7 +13,6 @@ import useServiceById from '../../../../../hooks/useServiceById';
 import BuilderPlaceContext from '../../../../../modules/BuilderPlace/context/BuilderPlaceContext';
 
 function EditService() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams?.get('id');
   const { service, isLoading } = useServiceById(id as string);

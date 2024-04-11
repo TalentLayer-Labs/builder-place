@@ -1,3 +1,5 @@
+'use client';
+
 import { NextSeo } from 'next-seo';
 import { useSearchParams } from 'next/navigation';
 import { useContext } from 'react';

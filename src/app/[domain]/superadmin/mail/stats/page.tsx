@@ -1,3 +1,5 @@
+'use client';
+
 import { CogIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { PaperAirplane } from 'heroicons-react';
 

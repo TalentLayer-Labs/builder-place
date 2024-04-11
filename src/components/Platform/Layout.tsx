@@ -3,17 +3,17 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Fragment, ReactNode, useContext, useEffect, useState } from 'react';
+import Template from '../../app/[domain]/template';
 import BuilderPlaceContext from '../../modules/BuilderPlace/context/BuilderPlaceContext';
 import UserContext from '../../modules/BuilderPlace/context/UserContext';
-import Loading from '../Loading';
 import Logo from '../Layout/Logo';
+import MenuBottom from '../Layout/MenuBottom';
+import SideMenu from '../Layout/SideMenu';
+import Loading from '../Loading';
 import NetworkSwitch from '../NetworkSwitch';
 import UserAccount from '../UserAccount';
-import SideMenu from '../Layout/SideMenu';
-import Template from '../../app/[domain]/template';
-import MenuBottom from '../Layout/MenuBottom';
 
 interface ContainerProps {
   children: ReactNode;

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import ServiceList from '../../../components/ServiceList';
 import Image from 'next/image';

@@ -1,3 +1,5 @@
+'use client';
+
 import Layout from '../../../../../components/EditProfile/Layout';
 import EmailPreferencesForm from '../../../../../components/Form/EmailPreferencesForm';
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import AccessDenied from '../../../../components/AccessDenied';
 import BuilderPlaceContext from '../../../../modules/BuilderPlace/context/BuilderPlaceContext';

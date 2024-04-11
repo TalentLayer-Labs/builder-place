@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext } from 'react';
 import Loading from '../../../../components/Loading';
 import Steps from '../../../../components/Steps';
