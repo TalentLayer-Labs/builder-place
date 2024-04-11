@@ -18,6 +18,7 @@ export interface IUpdateProfileFormValues {
   name?: string;
   about?: string;
   skills?: string;
+  email?: string;
 }
 
 const validationSchema = Yup.object({
@@ -36,14 +37,17 @@ function ProfileForm({ callback }: { callback?: () => void }) {
     return <Loading />;
   }
 
+  const initialSkills = user?.workerProfile?.skills.toString() || userDescription?.skills_raw || '';
+
   const initialValues: IUpdateProfileFormValues = {
-    title: userDescription?.title || '',
-    role: userDescription?.role || '',
-    image_url: userDescription?.image_url || user?.picture || '',
-    video_url: userDescription?.video_url || '',
-    name: userDescription?.name || user?.name || '',
-    about: userDescription?.about || '',
-    skills: userDescription?.skills_raw || '',
+    title: user?.title || userDescription?.title || '',
+    role: user?.role || userDescription?.role || '',
+    image_url: user?.picture || userDescription?.image_url || user?.picture || '',
+    video_url: user?.video || userDescription?.video_url || '',
+    name: user?.name || userDescription?.name || user?.name || '',
+    about: user?.about || userDescription?.about || '',
+    skills: initialSkills,
+    email: user?.email || '',
   };
 
   const onSubmit = async (
@@ -99,6 +103,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                 <ErrorMessage name='name' />
               </span>
             </label>
+
             <label className='block'>
               <span className='text-base-content'>role</span>
               <Field
@@ -114,6 +119,19 @@ function ProfileForm({ callback }: { callback?: () => void }) {
               </Field>
               <span className='text-alone-error'>
                 <ErrorMessage name='role' />
+              </span>
+            </label>
+
+            <label className='block'>
+              <span className='text-base-content'>email</span>
+              <Field
+                type='email'
+                id='email'
+                name='email'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                placeholder=''></Field>
+              <span className='text-alone-error'>
+                <ErrorMessage name='email' />
               </span>
             </label>
 
@@ -139,6 +157,32 @@ function ProfileForm({ callback }: { callback?: () => void }) {
             </label>
 
             <label className='block'>
+              <span className='text-base-content'>video presentation url</span>
+              <Field
+                type='text'
+                id='video_url'
+                name='video_url'
+                className='mt-1 mb-1 block w-full rounded-xl border-2 border-info bg-base-200 shadow-sm focus:ring-opacity-50'
+                placeholder=''
+              />
+              {values.video_url && (
+                <div className='border-2 border-info bg-base-200 relative w-full transition-all duration-300 rounded-xl p-4'>
+                  <div className='flex items-center justify-center py-3'>
+                    <video>
+                      <source width='300' src={values.video_url} type='video/webm' />
+                      <source src={values.video_url} type='video/mp4' />
+                      Sorry, your browser doesn't support videos.
+                    </video>
+                    <iframe src={values.video_url} width='300' height='auto' allowFullScreen />
+                  </div>
+                </div>
+              )}
+              <span className='text-alone-error'>
+                <ErrorMessage name='video_url' />
+              </span>
+            </label>
+
+            <label className='block'>
               <span className='text-base-content'>about</span>
               <Field
                 as='textarea'
@@ -156,7 +200,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
             <label className='block'>
               <span className='text-base-content'>skills</span>
 
-              <SkillsInput initialValues={userDescription?.skills_raw} entityId={'skills'} />
+              <SkillsInput initialValues={initialSkills} entityId={'skills'} />
 
               <Field type='hidden' id='skills' name='skills' />
               <span className='text-alone-error'>
