@@ -8,7 +8,7 @@ import { delegateUpdateProfileData } from '../../../../components/request';
 import { useMutation } from 'react-query';
 import axios, { AxiosResponse } from 'axios';
 import { IUpdateProfile } from '../../../../app/api/users/[id]/route';
-import { containsOffChainProperties } from '../../utils/user';
+import { isOffChainDataUpdated } from '../../utils/user';
 import UserContext from '../../context/UserContext';
 import { toast } from 'react-toastify';
 
@@ -18,7 +18,7 @@ const useUpdateUser = () => {
   const publicClient = usePublicClient({ chainId });
   const { address } = useAccount();
   const { canUseBackendDelegate, user: talentLayerUser } = useContext(TalentLayerContext);
-  const { user } = useContext(UserContext);
+  const { user, getUser } = useContext(UserContext);
   const talentLayerClient = useTalentLayerClient();
   const userMutation = useMutation(
     async (body: IUpdateProfile): Promise<AxiosResponse<{ id: string }>> => {
@@ -33,7 +33,7 @@ const useUpdateUser = () => {
 
     try {
       // Update off-chain data
-      if (talentLayerUser?.id && containsOffChainProperties(values)) {
+      if (talentLayerUser?.id && isOffChainDataUpdated(values, talentLayerUser?.description)) {
         const profile = {
           title: values.title,
           role: values.role,
@@ -119,6 +119,8 @@ const useUpdateUser = () => {
           window.location.port ? ':' + window.location.port : ''
         }`,
       });
+
+      getUser();
 
       toast.success('Profile updated successfully');
     } catch (error: any) {
