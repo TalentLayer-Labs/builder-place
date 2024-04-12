@@ -118,7 +118,7 @@ export const getUsersBy = async (filters: UsersFilters) => {
     whereClause.talentLayerId = filters.talentLayerId;
   }
 
-  const userProfile = await prisma.user.findMany({
+  const userProfiles = await prisma.user.findMany({
     where: whereClause,
     include: {
       workerProfile: true,
@@ -127,8 +127,13 @@ export const getUsersBy = async (filters: UsersFilters) => {
       managedPlaces: true,
     },
   });
-  console.log('Fetched User Profile: ', userProfile[0]?.name);
-  return userProfile;
+
+  console.log(`Fetched ${userProfiles.length} User(s) Profiles: `);
+  userProfiles.forEach(profile => {
+    console.log(profile.name);
+  });
+
+  return userProfiles;
 };
 
 export const getVerifiedUsersEmailData = async (includeSkills: boolean = false) => {

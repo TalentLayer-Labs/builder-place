@@ -54,7 +54,6 @@ export const prepareNonCronApi = (
   }
 };
 
-//TODO with new graph event this can be optimized
 export const getValidUsers = (userDescriptions: IUserDetails[]): string[] => {
   // Only select the latest version of each user metaData
   const validUsers = userDescriptions.filter(

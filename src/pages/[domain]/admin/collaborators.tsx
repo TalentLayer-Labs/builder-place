@@ -9,6 +9,7 @@ import { useConfig } from '../../../hooks/useConfig';
 import Loading from '../../../components/Loading';
 import AdminSettingsLayout from '../../../components/AdminSettingsLayout';
 import CollaboratorCard from './collaborator-card';
+import TransferPlatformModal from './TransferPlatformModal';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   return sharedGetServerSideProps(context);
@@ -72,6 +73,19 @@ export default function Collaborators() {
                 })}
             </div>
           )}
+        </div>
+
+        <div className='flex justify-between mt-10 rounded-lg border border-error p-4'>
+          <div className='flex flex-col'>
+            <span className='text-base-content font-bold pb-2 block'>
+              Transfer Platform ID Ownership
+            </span>
+            <span className='text-sm text-base-content'>
+              Transfer the ownership of your TalentLayer PlatformId to another ETH address, which
+              will then have admin rights on your platform.
+            </span>
+          </div>
+          <TransferPlatformModal />
         </div>
       </AdminSettingsLayout>
     </div>

@@ -4,7 +4,7 @@ import { IConfigurePlace } from '../../../../components/ConfigurePlatform/Config
 import { getPlatformBy } from '../../../../modules/BuilderPlace/actions/builderPlace';
 import prisma from '../../../../postgre/postgreClient';
 import { logAndReturnApiError } from '../../../utils/handleApiErrors';
-import { ERROR_REMOVING_BUILDERPLACE_OWNER } from '../../../../modules/BuilderPlace/apiResponses';
+import { ERROR_UPDATING_BUILDERPLACE } from '../../../../modules/BuilderPlace/apiResponses';
 import JsonNull = Prisma.NullTypes.JsonNull;
 import InputJsonValue = Prisma.InputJsonValue;
 import NullableJsonNullValueInput = Prisma.NullableJsonNullValueInput;
@@ -59,7 +59,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     return Response.json({ id: builderPlace?.id }, { status: 200 });
   } catch (e: any) {
-    const error = logAndReturnApiError(e, ERROR_REMOVING_BUILDERPLACE_OWNER);
+    const error = logAndReturnApiError(e, ERROR_UPDATING_BUILDERPLACE);
     return Response.json({ error: error }, { status: 500 });
   }
 }
