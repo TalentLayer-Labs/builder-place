@@ -66,6 +66,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       ...userDataFields,
       // Reset isEmailVerified if email is updated
       ...(isEmailUpdated && { isEmailVerified: false }),
+      ...(!!emailPreferences && { emailPreferences }),
     };
 
     console.log('userDataFields', updatedUserDataFields);
@@ -80,7 +81,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       },
       data: {
         ...updatedUserDataFields,
-        emailPreferences: { ...emailPreferences },
       },
     });
 
