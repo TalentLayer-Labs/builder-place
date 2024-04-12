@@ -145,7 +145,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                     height={25}
                     className='bg-base-100 bg-success p-1 mx-2 border border-success-100 rounded-full'
                   />
-                  <p className='text-sm text-success-500'>Email verified</p>
+                  <span className='text-sm text-base-content opacity-50'>Email verified</span>
                 </div>
               ) : (
                 <div className={'flex flex-row items-center'}>
@@ -154,7 +154,7 @@ function ProfileForm({ callback }: { callback?: () => void }) {
                     height={20}
                     className='bg-base-100 bg-error p-1 mx-2 border border-error-200 rounded-full'
                   />
-                  <p className='text-sm text-error-500'>Email not verified</p>
+                  <p className='text-sm text-base-content opacity-50'>Email not verified</p>
                 </div>
               )}
               <span className='text-alone-error'>
