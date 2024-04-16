@@ -15,6 +15,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../../utils/delegate';
 
 export interface IUpdateProposal {
   chainId: number;
@@ -23,7 +24,7 @@ export interface IUpdateProposal {
   rateToken: string;
   rateAmount: string;
   expirationDate: string;
-  cid: string;
+  proposal: any;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -34,7 +35,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   console.log('PUT');
   const body: IUpdateProposal = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, rateAmount, rateToken, expirationDate, signature } =
+  const { chainId, userId, userAddress, proposal, rateAmount, rateToken, expirationDate, signature } =
     body;
 
   const config = getConfig(chainId);
@@ -84,14 +85,17 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
       let transaction;
 
-      console.log('Updating proposal with args', userId, cid, signature);
-      transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'updateProposal',
-        args: [userId, params.id, rateToken, rateAmount, cid, expirationDate],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
 
+      console.log('Updating proposal with args', userId, proposal, signature);
+      transaction = await talentLayerClient.proposal.update(
+        proposal,
+        userId,
+        params.id,
+        rateToken,
+        rateAmount,
+        expirationDate,
+      )
       await incrementWeeklyTransactionCounter(user);
 
       return Response.json({ transaction: transaction }, { status: 201 });

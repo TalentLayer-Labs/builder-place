@@ -15,10 +15,11 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface IReview {
   serviceId: string;
-  cid: string;
+  reviewDetails: any;
   userAddress: string;
   userId: string;
   rating: number;
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
   console.log('POST');
   const body: IReview = await req.json();
   console.log('json', body);
-  const { serviceId, cid, rating, userAddress, userId, chainId, signature } = body;
+  const { serviceId, reviewDetails, rating, userAddress, userId, chainId, signature } = body;
 
   console.log('userId', userId);
 
@@ -82,14 +83,15 @@ export async function POST(req: Request) {
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
 
-      console.log('Minting review with args:', userId, serviceId, cid, rating);
+      console.log('Minting review with args:', userId, serviceId, reviewDetails, rating);
 
-      const transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerReview,
-        abi: TalentLayerReview.abi,
-        functionName: 'mint',
-        args: [userId, serviceId, cid, rating],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
+
+      const transaction = await talentLayerClient.review.create(
+        reviewDetails,
+        serviceId,
+        userId
+      )
 
       await incrementWeeklyTransactionCounter(user);
 

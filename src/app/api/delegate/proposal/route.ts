@@ -17,7 +17,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
-import { TalentLayerClient } from '@talentlayer/client';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface ICreateProposal {
   chainId: number;
@@ -104,20 +104,8 @@ export async function POST(req: Request) {
       let proposalPostingFee = platformFeesResponse?.data?.data?.platform.proposalPostingFee;
       proposalPostingFee = BigInt(Number(proposalPostingFee) || '0');
 
-      const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
-      const rpcUrl = process.env.NEXT_PUBLIC_YOUR_RPC_URL as string;
-      const talentLayerClient = new TalentLayerClient({
-        chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
-        ipfsConfig: {
-          clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
-          baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
-        },
-        platformId: parseInt(platformId),
-        walletConfig: {
-          rpcUrl: rpcUrl,
-          mnemonic: delegateSeedPhrase,
-        },
-      });
+      
+      const talentLayerClient = initializeTalentLayerClient(platformId);
 
       console.log('Creating proposal with args', proposal, userId, platformId);
       transaction = await talentLayerClient.proposal.create(

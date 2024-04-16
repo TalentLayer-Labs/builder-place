@@ -15,12 +15,13 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface IExecutePayment {
   chainId: number;
   userAddress: string;
   userId: string;
-  transactionId: number;
+  serviceId: string;
   amount: string;
   isBuyer: boolean;
   signature: `0x${string}` | Uint8Array;
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
   console.log('POST');
   const body: IExecutePayment = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, amount, isBuyer, transactionId, signature } = body;
+  const { chainId, userId, userAddress, amount, isBuyer, serviceId, signature } = body;
 
   const config = getConfig(chainId);
 
@@ -82,20 +83,20 @@ export async function POST(req: Request) {
 
       let transaction;
 
+      const talentLayerClient = initializeTalentLayerClient();
+
       if (isBuyer) {
-        transaction = await walletClient.writeContract({
-          address: config.contracts.talentLayerEscrow,
-          abi: TalentLayerEscrow.abi,
-          functionName: 'release',
-          args: [userId, transactionId, amount],
-        });
+        transaction = await talentLayerClient.escrow.release(
+          serviceId,
+          BigInt(amount),
+          parseInt(userId),
+        )
       } else {
-        transaction = await walletClient.writeContract({
-          address: config.contracts.talentLayerEscrow,
-          abi: TalentLayerEscrow.abi,
-          functionName: 'reimburse',
-          args: [userId, transactionId, amount],
-        });
+        transaction = await talentLayerClient.escrow.reimburse(
+          serviceId,
+          BigInt(amount),
+          parseInt(userId),
+        )
       }
 
       await incrementWeeklyTransactionCounter(user);

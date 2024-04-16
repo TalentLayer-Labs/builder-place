@@ -20,10 +20,12 @@ import Loading from '../Loading';
 import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { Toogle } from './Toggle';
+import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 
 function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
+  const talentLayerClient = useTalentLayerClient();
   const {
     canUseBackendDelegate,
     refreshData,
@@ -54,23 +56,23 @@ function EmailPreferencesForm() {
   const initialValues: IEmailPreferences =
     emailNotificationType === EmailNotificationType.WEB3
       ? {
-          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
-          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
-          activeOnProposalValidated:
-            userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
-          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
-          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
-          activeOnPlatformMarketing:
-            userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
-        }
+        activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
+        activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
+        activeOnProposalValidated:
+          userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
+        activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
+        activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
+        activeOnPlatformMarketing:
+          userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
+      }
       : {
-          activeOnNewService: web2MailPreferences?.activeOnNewService,
-          activeOnNewProposal: web2MailPreferences?.activeOnNewProposal,
-          activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated,
-          activeOnFundRelease: web2MailPreferences?.activeOnFundRelease,
-          activeOnReview: web2MailPreferences?.activeOnReview,
-          activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing,
-        };
+        activeOnNewService: web2MailPreferences?.activeOnNewService,
+        activeOnNewProposal: web2MailPreferences?.activeOnNewProposal,
+        activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated,
+        activeOnFundRelease: web2MailPreferences?.activeOnFundRelease,
+        activeOnReview: web2MailPreferences?.activeOnReview,
+        activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing,
+      };
 
   const onSubmit = async (
     values: IEmailPreferences,
@@ -96,9 +98,8 @@ function EmailPreferencesForm() {
           },
           signature: signature,
           address: address,
-          domain: `${window.location.hostname}${
-            window.location.port ? ':' + window.location.port : ''
-          }`,
+          domain: `${window.location.hostname}${window.location.port ? ':' + window.location.port : ''
+            }`,
         });
 
         toast.success('Email preferences updated successfully', {
@@ -106,25 +107,23 @@ function EmailPreferencesForm() {
           closeOnClick: true,
         });
       } else {
-        const cid = await postToIPFSwithQuickNode(
-          JSON.stringify({
-            title: userDescription?.title,
-            role: userDescription?.role,
-            image_url: userDescription?.image_url,
-            video_url: userDescription?.video_url,
-            name: userDescription?.name,
-            about: userDescription?.about,
-            skills: userDescription?.skills_raw,
-            web3mailPreferences: {
-              activeOnNewService: values.activeOnNewService,
-              activeOnNewProposal: values.activeOnNewProposal,
-              activeOnProposalValidated: values.activeOnProposalValidated,
-              activeOnFundRelease: values.activeOnFundRelease,
-              activeOnReview: values.activeOnReview,
-              activeOnPlatformMarketing: values.activeOnPlatformMarketing,
-            },
-          }),
-        );
+        const profile = JSON.stringify({
+          title: userDescription?.title,
+          role: userDescription?.role,
+          image_url: userDescription?.image_url,
+          video_url: userDescription?.video_url,
+          name: userDescription?.name,
+          about: userDescription?.about,
+          skills: userDescription?.skills_raw,
+          web3mailPreferences: {
+            activeOnNewService: values.activeOnNewService,
+            activeOnNewProposal: values.activeOnNewProposal,
+            activeOnProposalValidated: values.activeOnProposalValidated,
+            activeOnFundRelease: values.activeOnFundRelease,
+            activeOnReview: values.activeOnReview,
+            activeOnPlatformMarketing: values.activeOnPlatformMarketing,
+          },
+        });
 
         let tx;
         if (canUseBackendDelegate && address) {
@@ -142,21 +141,14 @@ function EmailPreferencesForm() {
             {
               chainId,
               userAddress: address,
-              cid,
+              profile,
               signature,
             },
             user.talentLayerId,
           );
           tx = response.data.transaction;
         } else {
-          tx = await walletClient.writeContract({
-            address: config.contracts.talentLayerId,
-            abi: TalentLayerID.abi,
-            functionName: 'updateProfileData',
-            args: [user.talentLayerId, cid],
-            account: address,
-          });
-        }
+          tx = await talentLayerClient.profile.update(profile, user.talentLayerId);
 
         await createMultiStepsTransactionToast(
           chainId,

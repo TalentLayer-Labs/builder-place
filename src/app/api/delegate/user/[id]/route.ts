@@ -15,11 +15,12 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../../utils/delegate';
 
 export interface IUpdateTalentLayerProfile {
   chainId: number;
   userAddress: string;
-  cid: string;
+  profile: any;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -30,7 +31,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   console.log('PUT');
   const body: IUpdateTalentLayerProfile = await req.json();
   console.log('json', body);
-  const { chainId, userAddress, cid, signature } = body;
+  const { chainId, userAddress, profile, signature } = body;
 
   const config = getConfig(chainId);
 
@@ -79,13 +80,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
       let transaction;
 
-      console.log('Updating profile with args', params.id, cid, signature);
-      transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerId.abi,
-        functionName: 'updateProfileData',
-        args: [params.id, cid],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
+
+      console.log('Updating profile with args', params.id, profile, signature);
+      transaction = await talentLayerClient.profile.update(
+        profile,
+        params.id,
+      )
 
       await incrementWeeklyTransactionCounter(user);
 

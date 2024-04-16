@@ -56,7 +56,7 @@ const useExecutePayment = () => {
             chainId,
             userAddress: address,
             userId: usedId,
-            transactionId: parseInt(transactionId, 10),
+            serviceId: serviceId,
             amount: amount.toString(),
             isBuyer,
             signature,
