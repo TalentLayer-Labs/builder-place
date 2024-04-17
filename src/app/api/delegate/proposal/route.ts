@@ -5,8 +5,6 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
-import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getProposalSignature } from '../../../../utils/signature';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
@@ -17,7 +15,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
-import { TalentLayerClient } from '@talentlayer/client';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface ICreateProposal {
   chainId: number;
@@ -85,12 +83,6 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -104,20 +96,12 @@ export async function POST(req: Request) {
       let proposalPostingFee = platformFeesResponse?.data?.data?.platform.proposalPostingFee;
       proposalPostingFee = BigInt(Number(proposalPostingFee) || '0');
 
-      const delegateSeedPhrase = process.env.NEXT_PRIVATE_DELEGATE_SEED_PHRASE;
-      const rpcUrl = process.env.NEXT_PUBLIC_YOUR_RPC_URL as string;
-      const talentLayerClient = new TalentLayerClient({
-        chainId: process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID as unknown as number,
-        ipfsConfig: {
-          clientSecret: process.env.NEXT_PUBLIC_IPFS_SECRET as string,
-          baseUrl: process.env.NEXT_PUBLIC_IPFS_WRITE_URL as string,
-        },
-        platformId: parseInt(platformId),
-        walletConfig: {
-          rpcUrl: rpcUrl,
-          mnemonic: delegateSeedPhrase,
-        },
-      });
+      
+      const talentLayerClient = initializeTalentLayerClient(platformId);
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
 
       console.log('Creating proposal with args', proposal, userId, platformId);
       transaction = await talentLayerClient.proposal.create(

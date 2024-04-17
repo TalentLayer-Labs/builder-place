@@ -9,16 +9,16 @@ import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../modules/BuilderPlace/actions/user';
-import TalentLayerReview from '../../../../contracts/ABI/TalentLayerReview.json';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface IReview {
   serviceId: string;
-  cid: string;
+  reviewDetails: any;
   userAddress: string;
   userId: string;
   rating: number;
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   console.log('POST');
   const body: IReview = await req.json();
   console.log('json', body);
-  const { serviceId, cid, rating, userAddress, userId, chainId, signature } = body;
+  const { serviceId, reviewDetails, rating, userAddress, userId, chainId, signature } = body;
 
   console.log('userId', userId);
 
@@ -70,26 +70,25 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
         return Response.json({ error: 'Server Error' }, { status: 500 });
       }
 
-      console.log('Minting review with args:', userId, serviceId, cid, rating);
+      console.log('Minting review with args:', userId, serviceId, reviewDetails, rating);
 
-      const transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerReview,
-        abi: TalentLayerReview.abi,
-        functionName: 'mint',
-        args: [userId, serviceId, cid, rating],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
+
+      const transaction = await talentLayerClient.review.create(
+        reviewDetails,
+        serviceId,
+        userId
+      )
 
       await incrementWeeklyTransactionCounter(user);
 

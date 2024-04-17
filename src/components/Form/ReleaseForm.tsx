@@ -72,7 +72,6 @@ function ReleaseForm({
       await executePayment(
         chainId,
         usedId,
-        service.transaction.id,
         percentToToken,
         isBuyer,
         service.id,
