@@ -9,7 +9,6 @@ import {
   getUserByAddress,
   getUserByTalentLayerId,
 } from '../../../../modules/BuilderPlace/actions/user';
-import TalentLayerEscrow from '../../../../contracts/ABI/TalentLayerEscrow.json';
 import { ERROR_EMAIL_NOT_VERIFIED } from '../../../../modules/BuilderPlace/apiResponses';
 import {
   checkOrResetTransactionCounter,
@@ -69,12 +68,6 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -84,6 +77,10 @@ export async function POST(req: Request) {
       let transaction;
 
       const talentLayerClient = initializeTalentLayerClient();
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
 
       if (isBuyer) {
         transaction = await talentLayerClient.escrow.release(

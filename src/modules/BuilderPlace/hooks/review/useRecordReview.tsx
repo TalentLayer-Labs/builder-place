@@ -4,7 +4,6 @@ import { IFormValues } from '../../../../components/Form/ReviewForm';
 import { delegateReview } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { postToIPFSwithQuickNode } from '../../../../utils/ipfs';
 import {
   createMultiStepsTransactionToast,
   showErrorTransactionToast,

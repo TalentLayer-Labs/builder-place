@@ -5,8 +5,6 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
-import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getProposalSignature } from '../../../../utils/signature';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
@@ -85,12 +83,6 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -106,6 +98,10 @@ export async function POST(req: Request) {
 
       
       const talentLayerClient = initializeTalentLayerClient(platformId);
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
 
       console.log('Creating proposal with args', proposal, userId, platformId);
       transaction = await talentLayerClient.proposal.create(

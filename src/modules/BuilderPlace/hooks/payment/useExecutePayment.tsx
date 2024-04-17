@@ -20,7 +20,6 @@ const useExecutePayment = () => {
   const executePayment = async (
     chainId: number,
     userId: string,
-    transactionId: string,
     amount: bigint,
     isBuyer: boolean,
     serviceId: string,
