@@ -33,7 +33,7 @@ export const delegateUpdateService = async (
       chainId: body.chainId,
       userId: body.userId,
       userAddress: body.userAddress,
-      cid: body.cid,
+      serviceDetails: body.serviceDetails,
       signature: body.signature,
     });
   } catch (err) {

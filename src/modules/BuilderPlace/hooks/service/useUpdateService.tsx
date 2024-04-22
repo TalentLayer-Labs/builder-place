@@ -61,13 +61,13 @@ const useUpdateService = () => {
             message: `connect with ${address}`,
           });
 
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
+          const serviceDetails = {
             title: values.title,
             about: values.about,
             keywords: values.keywords,
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
-          });
+          };
 
           let response;
 
@@ -76,7 +76,7 @@ const useUpdateService = () => {
               chainId,
               userId: usedId,
               userAddress: address,
-              cid,
+              serviceDetails,
               signature,
             },
             existingService.id,
@@ -87,20 +87,20 @@ const useUpdateService = () => {
           /**
            * @dev: Update a service on behalf of Platform owner
            */
-          cid = await talentLayerClient.service.updloadServiceDataToIpfs({
+          const serviceDetails = {
             title: values.title,
             about: values.about,
             keywords: values.keywords,
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
-          });
+          };
 
-          //TODO: Replace by SDK function when implemented
-          tx = await talentLayerClient.viemClient.writeContract(
-            'talentLayerService',
-            'updateServiceData',
-            [existingService?.buyer.id, existingService?.id, cid],
+          tx = await talentLayerClient.service.update(
+            serviceDetails,
+            existingService?.buyer.id,
+            parseInt(existingService?.id)
           );
+          cid = tx.cid;
         }
         return await createMultiStepsTransactionToast(
           chainId,
