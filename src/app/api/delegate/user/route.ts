@@ -4,6 +4,7 @@ import { getConfig } from '../../../../config';
 import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
 import TalentLayerID from '../../../../contracts/ABI/TalentLayerID.json';
 import TalentLayerIdUtils from '../../../../contracts/ABI/TalentLayerIdUtils.json';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface IUserMintForAddress {
   chainId: number;
@@ -111,13 +112,17 @@ export async function POST(req: Request) {
         `Minted id: ${userId} for user ${body.userAddress} and added ${walletClient.account.address} as delegate`,
       );
     } else {
-      transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerID.abi,
-        functionName: 'mintForAddress',
-        args: [body.userAddress, body.platformId, body.handle],
-        value: BigInt(body.handlePrice),
-      });
+      const talentLayerClient = initializeTalentLayerClient(body.platformId);
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
+      transaction = await talentLayerClient.profile.createForAddress(
+        body.handle,
+        body.userAddress,
+        parseInt(body.platformId),
+        body.handlePrice
+      );
 
       console.log(`Minted TalentLayer Id for address ${body.userAddress}`);
 

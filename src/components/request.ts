@@ -14,9 +14,9 @@ export const delegateCreateService = async (body: ICreateService): Promise<any> 
       chainId: body.chainId,
       userId: body.userId,
       userAddress: body.userAddress,
-      cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      serviceDetails: body.serviceDetails,
     });
   } catch (err) {
     console.error(err);
@@ -33,7 +33,7 @@ export const delegateUpdateService = async (
       chainId: body.chainId,
       userId: body.userId,
       userAddress: body.userAddress,
-      cid: body.cid,
+      serviceDetails: body.serviceDetails,
       signature: body.signature,
     });
   } catch (err) {
@@ -50,7 +50,7 @@ export const delegateUpdateProfileData = async (
     return await axios.put(`/api/delegate/user/${userId}`, {
       chainId: body.chainId,
       userAddress: body.userAddress,
-      cid: body.cid,
+      profile: body.profile,
       signature: body.signature,
     });
   } catch (err) {
@@ -69,9 +69,9 @@ export const delegateCreateProposal = async (body: ICreateProposal): Promise<any
       rateToken: body.rateToken,
       rateAmount: body.rateAmount,
       expirationDate: body.expirationDate,
-      cid: body.cid,
       platformId: body.platformId,
       signature: body.signature,
+      proposal: body.proposal,
     });
   } catch (err) {
     console.error(err);
@@ -91,7 +91,7 @@ export const delegateUpdateProposal = async (
       rateToken: body.rateToken,
       rateAmount: body.rateAmount,
       expirationDate: body.expirationDate,
-      cid: body.cid,
+      proposal: body.proposal,
       signature: body.signature,
     });
   } catch (err) {
@@ -106,7 +106,7 @@ export const delegatePayment = async (body: IExecutePayment): Promise<any> => {
       chainId: body.chainId,
       userAddress: body.userAddress,
       userId: body.userId,
-      transactionId: body.transactionId,
+      serviceId: body.serviceId,
       amount: body.amount,
       isBuyer: body.isBuyer,
       signature: body.signature,
@@ -124,7 +124,7 @@ export const delegateReview = async (body: IReview): Promise<any> => {
       userId: body.userId,
       userAddress: body.userAddress,
       serviceId: body.serviceId,
-      cid: body.cid,
+      reviewDetails: body.reviewDetails,
       rating: body.rating,
       signature: body.signature,
     });

@@ -51,8 +51,6 @@ const useUpdateProposal = () => {
           video_url: values.video_url,
         };
 
-        cid = await talentLayerClient?.proposal?.upload(proposal);
-
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
           /**
@@ -74,7 +72,7 @@ const useUpdateProposal = () => {
               rateToken: values.rateToken,
               rateAmount: parsedRateAmountString,
               expirationDate: convertExpirationDateString,
-              cid,
+              proposal,
               signature,
             },
             serviceId,

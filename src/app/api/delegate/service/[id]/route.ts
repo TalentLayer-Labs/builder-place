@@ -15,12 +15,13 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../../utils/delegate';
 
 export interface IUpdateService {
   chainId: number;
   userId: string;
   userAddress: string;
-  cid: string;
+  serviceDetails: any;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -31,7 +32,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   console.log('PUT');
   const body: IUpdateService = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, signature } = body;
+  const { chainId, userId, userAddress, serviceDetails, signature } = body;
 
   const config = getConfig(chainId);
 
@@ -66,12 +67,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -80,14 +75,16 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
       let transaction;
 
-      console.log(`Updating service ${params.id} with args`, userId, cid);
+      console.log(`Updating service ${params.id} with args`, userId, serviceDetails);
 
-      transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'updateServiceData',
-        args: [userId, params.id, cid],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
+
+      transaction = await talentLayerClient.service.update(serviceDetails, userId, parseInt(params.id));
+
 
       await incrementWeeklyTransactionCounter(user);
 

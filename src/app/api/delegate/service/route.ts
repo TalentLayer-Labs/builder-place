@@ -5,8 +5,6 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
-import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getServiceSignature } from '../../../../utils/signature';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
@@ -17,14 +15,15 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface ICreateService {
   chainId: number;
   userId: string;
   userAddress: string;
-  cid: string;
   platformId: string;
   signature: `0x${string}` | Uint8Array;
+  serviceDetails: any;
 }
 
 /**
@@ -34,7 +33,7 @@ export async function POST(req: Request) {
   console.log('POST');
   const body: ICreateService = await req.json();
   console.log('json', body);
-  const { chainId, userId, userAddress, cid, platformId, signature } = body;
+  const { chainId, userId, userAddress, platformId, signature, serviceDetails } = body;
 
   const config = getConfig(chainId);
 
@@ -70,12 +69,6 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -89,20 +82,19 @@ export async function POST(req: Request) {
       let servicePostingFee = platformFeesResponse?.data?.data?.platform.servicePostingFee;
       servicePostingFee = BigInt(Number(servicePostingFee) || '0');
 
-      const signature = await getServiceSignature({
-        profileId: Number(userId),
-        cid: cid,
-      });
+      
+      const talentLayerClient = initializeTalentLayerClient(platformId);
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
 
-      console.log('Creating service with args', userId, platformId, cid, signature);
-
-      transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'createService',
-        args: [userId, platformId, cid, signature],
-        value: servicePostingFee,
-      });
+      console.log('Creating service with args', serviceDetails, userId, platformId);
+      transaction = await talentLayerClient?.service.create(
+        serviceDetails,
+        userId,
+        parseInt(platformId),
+      )
 
       await incrementWeeklyTransactionCounter(user);
 

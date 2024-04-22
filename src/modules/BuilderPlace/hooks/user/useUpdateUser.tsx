@@ -46,18 +46,17 @@ const useUpdateUser = () => {
             message: `connect with ${address}`,
           });
 
-          cid = await talentLayerClient.profile.upload(profile);
-
           const response = await delegateUpdateProfileData(
             {
               chainId,
               userAddress: address.toString(),
-              cid,
+              profile,
               signature,
             },
             talentLayerUser?.id,
           );
           tx = response.data.transaction;
+          
         } else {
           console.log('Update profile', profile, talentLayerUser.id);
           const res = await talentLayerClient?.profile.update(profile, talentLayerUser.id);

@@ -5,7 +5,6 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../../utils/delegate';
-import TalentLayerId from '../../../../../contracts/ABI/TalentLayerID.json';
 import {
   getUserByAddress,
   getUserByTalentLayerId,
@@ -15,11 +14,12 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../../utils/delegate';
 
 export interface IUpdateTalentLayerProfile {
   chainId: number;
   userAddress: string;
-  cid: string;
+  profile: any;
   signature: `0x${string}` | Uint8Array;
 }
 
@@ -30,7 +30,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   console.log('PUT');
   const body: IUpdateTalentLayerProfile = await req.json();
   console.log('json', body);
-  const { chainId, userAddress, cid, signature } = body;
+  const { chainId, userAddress, profile, signature } = body;
 
   const config = getConfig(chainId);
 
@@ -65,12 +65,6 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -79,13 +73,17 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
       let transaction;
 
-      console.log('Updating profile with args', params.id, cid, signature);
-      transaction = await walletClient.writeContract({
-        address: config.contracts.talentLayerId,
-        abi: TalentLayerId.abi,
-        functionName: 'updateProfileData',
-        args: [params.id, cid],
-      });
+      const talentLayerClient = initializeTalentLayerClient();
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
+
+      console.log('Updating profile with args', params.id, profile, signature);
+      transaction = await talentLayerClient.profile.update(
+        profile,
+        params.id,
+      )
 
       await incrementWeeklyTransactionCounter(user);
 

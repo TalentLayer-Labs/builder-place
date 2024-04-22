@@ -4,6 +4,7 @@ import { getConfig } from '../../../../config';
 import TalentLayerPlatformID from '../../../../contracts/ABI/TalentLayerPlatformID.json';
 import { getUserByAddress } from '../../../../modules/BuilderPlace/actions/user';
 import { getDelegationSigner, getPublicClient } from '../../../utils/delegate';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface IPlatformMintForAddress {
   platformName: string;
@@ -62,13 +63,17 @@ export async function POST(req: Request) {
 
     console.log('MintFee', mintFee);
 
-    const txHash = await walletClient.writeContract({
-      address: config.contracts.talentLayerPlatformId,
-      abi: TalentLayerPlatformID.abi,
-      functionName: 'mintForAddress',
-      args: [body.platformName, body.address],
-      value: mintFee as bigint,
-    });
+    const talentLayerClient = initializeTalentLayerClient();
+    if (!talentLayerClient) {
+      console.log('TalentLayer client not found');
+      return Response.json({ error: 'Server Error' }, { status: 500 });
+    }
+
+    const txHash = await talentLayerClient.platform.mintForAddress(
+      body.platformName,
+      body.address,
+      mintFee
+    );
 
     console.log('tx hash', txHash);
 

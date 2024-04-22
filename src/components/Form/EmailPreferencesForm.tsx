@@ -14,16 +14,17 @@ import UserContext from '../../modules/BuilderPlace/context/UserContext';
 import Web2mailCard from '../../modules/Web3mail/components/Web2mailCard';
 import Web3mailCard from '../../modules/Web3mail/components/Web3mailCard';
 import { EmailNotificationType, IEmailPreferences } from '../../types';
-import { postToIPFSwithQuickNode } from '../../utils/ipfs';
 import { createMultiStepsTransactionToast, showErrorTransactionToast } from '../../utils/toast';
 import Loading from '../Loading';
 import { delegateUpdateProfileData } from '../request';
 import SubmitButton from './SubmitButton';
 import { Toogle } from './Toggle';
+import useTalentLayerClient from '../../hooks/useTalentLayerClient';
 
 function EmailPreferencesForm() {
   const config = useConfig();
   const chainId = useChainId();
+  const talentLayerClient = useTalentLayerClient();
   const {
     canUseBackendDelegate,
     refreshData,
@@ -54,23 +55,23 @@ function EmailPreferencesForm() {
   const initialValues: IEmailPreferences =
     emailNotificationType === EmailNotificationType.WEB3
       ? {
-          activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
-          activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
-          activeOnProposalValidated:
-            userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
-          activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
-          activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
-          activeOnPlatformMarketing:
-            userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
-        }
+        activeOnNewService: userDescription?.web3mailPreferences?.activeOnNewService ?? true,
+        activeOnNewProposal: userDescription?.web3mailPreferences?.activeOnNewProposal ?? true,
+        activeOnProposalValidated:
+          userDescription?.web3mailPreferences?.activeOnProposalValidated ?? true,
+        activeOnFundRelease: userDescription?.web3mailPreferences?.activeOnFundRelease ?? true,
+        activeOnReview: userDescription?.web3mailPreferences?.activeOnReview ?? true,
+        activeOnPlatformMarketing:
+          userDescription?.web3mailPreferences?.activeOnPlatformMarketing ?? false,
+      }
       : {
-          activeOnNewService: web2MailPreferences?.activeOnNewService,
-          activeOnNewProposal: web2MailPreferences?.activeOnNewProposal,
-          activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated,
-          activeOnFundRelease: web2MailPreferences?.activeOnFundRelease,
-          activeOnReview: web2MailPreferences?.activeOnReview,
-          activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing,
-        };
+        activeOnNewService: web2MailPreferences?.activeOnNewService,
+        activeOnNewProposal: web2MailPreferences?.activeOnNewProposal,
+        activeOnProposalValidated: web2MailPreferences?.activeOnProposalValidated,
+        activeOnFundRelease: web2MailPreferences?.activeOnFundRelease,
+        activeOnReview: web2MailPreferences?.activeOnReview,
+        activeOnPlatformMarketing: web2MailPreferences?.activeOnPlatformMarketing,
+      };
 
   const onSubmit = async (
     values: IEmailPreferences,
@@ -96,9 +97,8 @@ function EmailPreferencesForm() {
           },
           signature: signature,
           address: address,
-          domain: `${window.location.hostname}${
-            window.location.port ? ':' + window.location.port : ''
-          }`,
+          domain: `${window.location.hostname}${window.location.port ? ':' + window.location.port : ''
+            }`,
         });
 
         toast.success('Email preferences updated successfully', {
@@ -106,27 +106,25 @@ function EmailPreferencesForm() {
           closeOnClick: true,
         });
       } else {
-        const cid = await postToIPFSwithQuickNode(
-          JSON.stringify({
-            title: userDescription?.title,
-            role: userDescription?.role,
-            image_url: userDescription?.image_url,
-            video_url: userDescription?.video_url,
-            name: userDescription?.name,
-            about: userDescription?.about,
-            skills: userDescription?.skills_raw,
-            web3mailPreferences: {
-              activeOnNewService: values.activeOnNewService,
-              activeOnNewProposal: values.activeOnNewProposal,
-              activeOnProposalValidated: values.activeOnProposalValidated,
-              activeOnFundRelease: values.activeOnFundRelease,
-              activeOnReview: values.activeOnReview,
-              activeOnPlatformMarketing: values.activeOnPlatformMarketing,
-            },
-          }),
-        );
+        const profile = {
+          title: userDescription?.title,
+          role: userDescription?.role,
+          image_url: userDescription?.image_url,
+          video_url: userDescription?.video_url,
+          name: userDescription?.name,
+          about: userDescription?.about,
+          skills: userDescription?.skills_raw,
+          web3mailPreferences: {
+            activeOnNewService: values.activeOnNewService,
+            activeOnNewProposal: values.activeOnNewProposal,
+            activeOnProposalValidated: values.activeOnProposalValidated,
+            activeOnFundRelease: values.activeOnFundRelease,
+            activeOnReview: values.activeOnReview,
+            activeOnPlatformMarketing: values.activeOnPlatformMarketing,
+          },
+        };
 
-        let tx;
+        let tx, cid;
         if (canUseBackendDelegate && address) {
           console.log('DELEGATION');
 
@@ -142,97 +140,97 @@ function EmailPreferencesForm() {
             {
               chainId,
               userAddress: address,
-              cid,
+              profile,
               signature,
             },
             user.talentLayerId,
           );
           tx = response.data.transaction;
         } else {
-          tx = await walletClient.writeContract({
-            address: config.contracts.talentLayerId,
-            abi: TalentLayerID.abi,
-            functionName: 'updateProfileData',
-            args: [user.talentLayerId, cid],
-            account: address,
-          });
+          if (!talentLayerClient) {
+            console.log('TalentLayer client not found');
+            return Response.json({ error: 'Server Error' }, { status: 500 });
+          }
+          const transaction = await talentLayerClient.profile.update(profile, user.talentLayerId);
+          tx = transaction.tx;
+          cid = transaction.cid;
+
+          await createMultiStepsTransactionToast(
+            chainId,
+            {
+              pending: 'Updating your preferences...',
+              success: 'Congrats! Your preferences has been updated',
+              error: 'An error occurred while updating your preferences',
+            },
+            publicClient,
+            tx,
+            'user',
+            cid,
+          );
+
+          refreshData();
+          setSubmitting(false);
         }
-
-        await createMultiStepsTransactionToast(
-          chainId,
-          {
-            pending: 'Updating your preferences...',
-            success: 'Congrats! Your preferences has been updated',
-            error: 'An error occurred while updating your preferences',
-          },
-          publicClient,
-          tx,
-          'user',
-          cid,
-        );
-
-        refreshData();
-        setSubmitting(false);
       }
-    } catch (error) {
-      showErrorTransactionToast(error);
     }
-  };
+    catch (error) {
+      showErrorTransactionToast(error);
+    };
 
-  return (
-    <>
-      <div className='grid grid-cols-1 gap-6'>
-        {emailNotificationType === EmailNotificationType.WEB3 ? <Web3mailCard /> : <Web2mailCard />}
+    return (
+      <>
+        <div className='grid grid-cols-1 gap-6'>
+          {emailNotificationType === EmailNotificationType.WEB3 ? <Web3mailCard /> : <Web2mailCard />}
 
-        <Formik initialValues={initialValues} enableReinitialize={true} onSubmit={onSubmit}>
-          {({ isSubmitting }) => (
-            <Form>
-              <label className='block'>
-                <div className='mb-2 ml-0.5'>
-                  {emailNotificationType === EmailNotificationType.WEB3 && (
-                    <div className='mb-4'>
-                      <p className='font-heading text-base-content font-medium leading-none'>
-                        2. setup your notification preferences
-                      </p>
-                      <p className='font-sans text-xs font-normal leading-normal text-base-content mt-0.5'>
-                        receive email when:
-                      </p>
-                    </div>
-                  )}
+          <Formik initialValues={initialValues} enableReinitialize={true} onSubmit={onSubmit}>
+            {({ isSubmitting }) => (
+              <Form>
+                <label className='block'>
+                  <div className='mb-2 ml-0.5'>
+                    {emailNotificationType === EmailNotificationType.WEB3 && (
+                      <div className='mb-4'>
+                        <p className='font-heading text-base-content font-medium leading-none'>
+                          2. setup your notification preferences
+                        </p>
+                        <p className='font-sans text-xs font-normal leading-normal text-base-content mt-0.5'>
+                          receive email when:
+                        </p>
+                      </div>
+                    )}
 
-                  <Toogle
-                    entityId={'activeOnNewProposal'}
-                    label='a new proposal is posted on your open-source mission'
-                  />
+                    <Toogle
+                      entityId={'activeOnNewProposal'}
+                      label='a new proposal is posted on your open-source mission'
+                    />
 
-                  <Toogle
-                    entityId={'activeOnProposalValidated'}
-                    label='your proposal has been validated'
-                  />
+                    <Toogle
+                      entityId={'activeOnProposalValidated'}
+                      label='your proposal has been validated'
+                    />
 
-                  <Toogle entityId={'activeOnFundRelease'} label='You receive new income' />
+                    <Toogle entityId={'activeOnFundRelease'} label='You receive new income' />
 
-                  <Toogle entityId={'activeOnReview'} label='You receive a new review' />
+                    <Toogle entityId={'activeOnReview'} label='You receive a new review' />
 
-                  <Toogle
-                    entityId={'activeOnNewService'}
-                    label='a new open-source contribution mission corresponding to your skills is open'
-                  />
+                    <Toogle
+                      entityId={'activeOnNewService'}
+                      label='a new open-source contribution mission corresponding to your skills is open'
+                    />
 
-                  <Toogle
-                    entityId={'activeOnPlatformMarketing'}
-                    label='important annoucements, new features, new partnerships..'
-                  />
-                </div>
-              </label>
+                    <Toogle
+                      entityId={'activeOnPlatformMarketing'}
+                      label='important annoucements, new features, new partnerships..'
+                    />
+                  </div>
+                </label>
 
-              <SubmitButton isSubmitting={isSubmitting} label='update preferences' />
-            </Form>
-          )}
-        </Formik>
-      </div>
-    </>
-  );
-}
+                <SubmitButton isSubmitting={isSubmitting} label='update preferences' />
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </>
+    );
+  }
 
-export default EmailPreferencesForm;
+  export default EmailPreferencesForm;

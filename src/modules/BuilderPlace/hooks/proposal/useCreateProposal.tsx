@@ -53,8 +53,6 @@ const useCreateProposal = () => {
           video_url: values.video_url,
         };
 
-        cid = await talentLayerClient?.proposal?.upload(proposal);
-
         if (canUseBackendDelegate) {
           console.log('DELEGATION');
 
@@ -74,13 +72,13 @@ const useCreateProposal = () => {
             rateToken: values.rateToken,
             rateAmount: parsedRateAmountString,
             expirationDate: convertExpirationDateString,
-            cid,
             platformId: process.env.NEXT_PUBLIC_PLATFORM_ID as string,
             signature,
+            proposal
           });
           tx = proposalResponse.data.transaction;
         } else {
-          //TODO: update SDK - add platformId in params
+          const platformId = parseInt(process.env.NEXT_PUBLIC_PLATFORM_ID as string);
           proposalResponse = await talentLayerClient?.proposal.create(
             proposal,
             talentLayerUser.id,
@@ -88,6 +86,7 @@ const useCreateProposal = () => {
             values.rateToken,
             parsedRateAmountString,
             convertExpirationDateString,
+            platformId
           );
 
           cid = proposalResponse.cid;

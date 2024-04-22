@@ -4,7 +4,6 @@ import { IFormValues } from '../../../../components/Form/ReviewForm';
 import { delegateReview } from '../../../../components/request';
 import TalentLayerContext from '../../../../context/talentLayer';
 import useTalentLayerClient from '../../../../hooks/useTalentLayerClient';
-import { postToIPFSwithQuickNode } from '../../../../utils/ipfs';
 import {
   createMultiStepsTransactionToast,
   showErrorTransactionToast,
@@ -39,14 +38,11 @@ const useRecordReview = () => {
 
       try {
         if (talentLayerUser && publicClient && walletClient && builderPlace?.owner?.talentLayerId) {
-          const cid = await postToIPFSwithQuickNode(
-            JSON.stringify({
-              content: values.content,
-              rating: values.rating,
-            }),
-          );
-
-          let tx;
+          let reviewDetails = JSON.stringify({
+            content: values.content,
+            rating: values.rating,
+          })
+          let tx, cid;
           if (canUseBackendDelegate) {
             /**
              * @dev Sign message to prove ownership of the address
@@ -61,12 +57,13 @@ const useRecordReview = () => {
               userId: usedId,
               userAddress: address,
               serviceId,
-              cid,
+              reviewDetails,
               rating: values.rating,
               signature,
             });
             console.log('response', response);
             tx = response.data.transaction;
+            cid = response.data.transaction.cid;
           } else {
             if (talentLayerClient) {
               const res = await talentLayerClient.review.create(

@@ -5,8 +5,6 @@ import {
   getPublicClient,
   isPlatformAllowedToDelegate,
 } from '../../../utils/delegate';
-import TalentLayerService from '../../../../contracts/ABI/TalentLayerService.json';
-import { getProposalSignature } from '../../../../utils/signature';
 import { getPlatformPostingFees } from '../../../../queries/platform';
 import {
   getUserByAddress,
@@ -17,6 +15,7 @@ import {
   checkOrResetTransactionCounter,
   incrementWeeklyTransactionCounter,
 } from '../../../utils/email';
+import { initializeTalentLayerClient } from '../../../../utils/delegate';
 
 export interface ICreateProposal {
   chainId: number;
@@ -26,9 +25,9 @@ export interface ICreateProposal {
   rateToken: string;
   rateAmount: string;
   expirationDate: string;
-  cid: string;
   platformId: string;
   signature: `0x${string}` | Uint8Array;
+  proposal: any;
 }
 
 /**
@@ -42,13 +41,13 @@ export async function POST(req: Request) {
     chainId,
     userId,
     userAddress,
-    cid,
     platformId,
     rateAmount,
     rateToken,
     expirationDate,
     serviceId,
     signature,
+    proposal,
   } = body;
 
   const config = getConfig(chainId);
@@ -84,12 +83,6 @@ export async function POST(req: Request) {
         Response.json({ error: 'Delegation is Not activated for this address' }, { status: 401 });
       }
 
-      const walletClient = await getDelegationSigner();
-      if (!walletClient) {
-        console.log('Wallet client not found');
-        return Response.json({ error: 'Server Error' }, { status: 500 });
-      }
-
       const publicClient = getPublicClient();
       if (!publicClient) {
         console.log('Public client not found');
@@ -103,29 +96,23 @@ export async function POST(req: Request) {
       let proposalPostingFee = platformFeesResponse?.data?.data?.platform.proposalPostingFee;
       proposalPostingFee = BigInt(Number(proposalPostingFee) || '0');
 
-      const signature = await getProposalSignature({
-        profileId: Number(userId),
-        serviceId: Number(serviceId),
-        cid: cid,
-      });
+      
+      const talentLayerClient = initializeTalentLayerClient(platformId);
+      if (!talentLayerClient) {
+        console.log('TalentLayer client not found');
+        return Response.json({ error: 'Server Error' }, { status: 500 });
+      }
 
-      console.log('Creating proposal with args', userId, platformId, cid, signature);
-      transaction = await walletClient.writeContract({
-        address: config.contracts.serviceRegistry,
-        abi: TalentLayerService.abi,
-        functionName: 'createProposal',
-        args: [
-          userId,
-          serviceId,
-          rateToken,
-          rateAmount,
-          platformId,
-          cid,
-          expirationDate,
-          signature,
-        ],
-        value: proposalPostingFee,
-      });
+      console.log('Creating proposal with args', proposal, userId, platformId);
+      transaction = await talentLayerClient.proposal.create(
+        proposal,
+        userId,
+        serviceId,
+        rateToken,
+        rateAmount,
+        expirationDate,
+        parseInt(platformId),
+      );
 
       await incrementWeeklyTransactionCounter(user);
 
