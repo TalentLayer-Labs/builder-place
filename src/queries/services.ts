@@ -1,5 +1,23 @@
+
+import { IToken, ServiceStatusEnum } from '../types';
 import { processRequest } from '../utils/graphql';
 import { ServicesFilters } from '../app/api/services/route';
+
+interface IProps {
+  serviceStatus?: ServiceStatusEnum;
+  allowedTokens?: any;
+  buyerId?: string;
+  sellerId?: string;
+  numberPerPage?: number;
+  offset?: number;
+  searchQuery?: string;
+  platformId?: string;
+  keywordList?: string[];
+  selectedToken?: string;
+  minRate?: string; 
+  maxRate?: string;
+  selectedRatings?: string[];
+}
 
 const serviceQueryFields = `
   id
@@ -61,19 +79,42 @@ const getFilteredServiceCondition = (params: ServicesFilters) => {
   if (params.serviceStatus) condition += `status: "${params.serviceStatus}",`;
   if (params.buyerId) condition += `buyer: "${params.buyerId}",`;
   if (params.sellerId) condition += `seller: "${params.sellerId}",`;
-  if (params.platformId) condition += `platform_: {id: "${params.platformId}"}`;
+  if (params.platformId) condition += `platform: "${params.platformId}",`;
+  if (params.selectedToken) condition += `description_: {rateToken_contains: "${params.selectedToken}"},`;
+  // if (params.selectedRatings) {
+  //   const ratingList = params.selectedRatings.map(rating => `"${rating}"`).join(', ');
+  //   condition += `description_: {rating_in: [${ratingList}]},`;
+  // }
+  //LOGIC FOR RATE FILTER TO WORK ALONG WITH TOKEN FILTER
+
+  // if (params.selectedToken && (minRate || maxRate)) {
+  //   params.allowedTokens.forEach((token: IToken) => {
+  //     if (token.address === params.selectedToken) {
+  //       let rateCondition = `description_: { rateToken_contains: "${params.selectedToken}", AND: [`;
+  
+  //       if (minRate) {
+  //         rateCondition += `{rateAmount_gte: "${minRate * Math.pow(10, token.decimals)}"},`;
+  //       }
+  
+  //       if (maxRate) {
+  //         rateCondition += `{rateAmount_lte: "${maxRate * Math.pow(10, token.decimals)}"},`;
+  //       }
+  
+  //       rateCondition += `]},`;
+  
+  //       condition += rateCondition;
+  //     }
+  //   });
+  // }
 
   let keywordFilter = '';
-
-  // Filter by keyword
-  // This code filters the list of keywords to exclude those that are included in the keyword list.
 
   if (params.keywordList && params.keywordList.length > 0) {
     keywordFilter = params.keywordList
       .map(keyword => `{keywords_raw_not_contains: "${keyword}"}`)
       .join(', ');
   }
-  // Prepare description_ filter
+
   let descriptionCondition = '';
   if (params.searchQuery) {
     descriptionCondition += `{keywords_raw_not_contains: "${params.searchQuery}"}`;

@@ -6,6 +6,7 @@ import { IService, ServiceStatusEnum } from '../types';
 import Loading from './Loading';
 import ServiceItem from './ServiceItem';
 import SearchServiceButton from './Form/SearchServiceButton';
+import ServiceFilterPopup from './ServiceFilterPopup';
 
 function ServiceList() {
   const { builderPlace } = useContext(BuilderPlaceContext);
@@ -14,6 +15,15 @@ function ServiceList() {
   const query = router.query;
   const searchQuery = query.search as string;
   const [view, setView] = useState(1);
+  const [isPopupVisible, setPopupVisible] = useState(false);
+
+  // Consolidated state for filters
+  const [filters, setFilters] = useState({
+    minRate: '',
+    maxRate: '',
+    selectedToken: '',
+    selectedRatings: [''],
+  });
 
   const { hasMoreData, services, loading, loadMore } = useFilteredServices(
     ServiceStatusEnum.Opened,
@@ -21,8 +31,19 @@ function ServiceList() {
     undefined,
     searchQuery?.toLocaleLowerCase(),
     PAGE_SIZE,
+    filters,
     builderPlace?.talentLayerPlatformId,
   );
+
+  const handleResetFilter = () => {
+    setFilters({
+      minRate: '',
+      maxRate: '',
+      selectedToken: '',
+      selectedRatings: [''],
+    });
+    setPopupVisible(false);
+  };
 
   return (
     <>
@@ -54,29 +75,53 @@ function ServiceList() {
             Table View
           </button>
 
-          <button className='px-4 py-2 rounded-full ml-auto hidden text-base-content border mr-2'>
+
+          <button
+            className='px-4 py-2 rounded-full ml-auto md:hidden text-base-content border mr-2'
+            onClick={() => setPopupVisible(!isPopupVisible)}>
             Filter
           </button>
         </div>
 
-        <button className='hidden px-4 py-2 rounded-full ml-auto text-base-content border mr-2'>
-          Filter
-        </button>
 
+        {/* Filter */}
+        <div className='relative ml-auto'>
+          <button
+            className='hidden md:block px-4 py-2 rounded-full ml-auto text-base-content border mr-2'
+            onClick={() => setPopupVisible(!isPopupVisible)}>
+            Filter
+          </button>
+          {isPopupVisible && (
+            <ServiceFilterPopup
+              filters={filters}
+              setFilters={setFilters}
+              handleResetFilter={handleResetFilter}
+            />
+          )}
+        </div>
         <div className='mt-2 md:mt-0 flex justify-end'>
           <SearchServiceButton value={searchQuery} />
         </div>
       </div>
 
-      {view === 1 &&
-        services.map((service: IService, i: number) => (
-          <ServiceItem
-            service={service}
-            embedded={router.asPath.includes('embed/')}
-            key={i}
-            view={view}
-          />
-        ))}
+      {view === 1 && (
+        <>
+          {services.length > 0 ? (
+            services.map((service: IService, i: number) => (
+              <ServiceItem
+                service={service}
+                embedded={router.asPath.includes('embed/')}
+                key={i}
+                view={view}
+              />
+            ))
+          ) : (
+            <p className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+              No services found
+            </p>
+          )}
+        </>
+      )}
 
       {view === 2 && (
         <table className='min-w-full text-center'>
@@ -90,14 +135,20 @@ function ServiceList() {
             </tr>
           </thead>
           <tbody>
-            {services.map((service: IService, i: number) => (
-              <ServiceItem
-                service={service}
-                embedded={router.asPath.includes('embed/')}
-                key={i}
-                view={view}
-              />
-            ))}
+            {services.length > 0 ? (
+              services.map((service: IService, i: number) => (
+                <ServiceItem
+                  service={service}
+                  embedded={router.asPath.includes('embed/')}
+                  key={i}
+                  view={view}
+                />
+              ))
+            ) : (
+              <span className='text-xl text-base-content font-medium tracking-wider flex justify-center items-center'>
+                No services found
+              </span>
+            )}
           </tbody>
         </table>
       )}
@@ -107,7 +158,7 @@ function ServiceList() {
           <button
             type='submit'
             className={`px-5 py-2 mt-5 content-center border-2 text-base-content border-black rounded-xl font-medium text-content 
-                `}
+                  `}
             disabled={!hasMoreData}
             onClick={() => loadMore()}>
             Load More Posts

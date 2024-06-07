@@ -3,6 +3,7 @@ import { getServices } from '../../../queries/services';
 
 export interface ServicesFilters {
   serviceStatus?: ServiceStatusEnum;
+  allowedTokens?: any;
   buyerId?: string | null;
   sellerId?: string | null;
   numberPerPage?: number | null;
@@ -10,6 +11,10 @@ export interface ServicesFilters {
   searchQuery?: string | null;
   platformId?: string | null;
   keywordList?: string[];
+  selectedToken?: string | null;
+  minRate?: string | null; 
+  maxRate?: string | null;
+  selectedRatings?: string[] | null;
 }
 
 /**

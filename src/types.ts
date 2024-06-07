@@ -332,3 +332,13 @@ export interface IMutation<T> {
   address: `0x${string}`;
   domain: string;
 }
+
+export interface Filters {
+  minRate: string;
+  maxRate: string;
+  selectedToken: string;
+  selectedRatings: string[];
+}
+
+
+

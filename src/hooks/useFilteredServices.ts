@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { IService, ServiceStatusEnum } from '../types';
+import { Filters, IService, ServiceStatusEnum } from '../types';
 import { getFilteredServicesByKeywords } from '../pages/api/services/request';
 import { useChainId } from 'wagmi';
+import useAllowedTokens from './useAllowedTokens';
 
 const useFilteredServices = (
   serviceStatus?: ServiceStatusEnum,
@@ -9,6 +10,7 @@ const useFilteredServices = (
   sellerId?: string,
   searchQuery?: string,
   numberPerPage?: number,
+  filters?: Filters,
   platformId?: string,
 ): {
   hasMoreData: boolean;
@@ -21,6 +23,7 @@ const useFilteredServices = (
   const [loading, setLoading] = useState(false);
   const [offset, setOffset] = useState(0);
   const chainId = useChainId();
+  const allowedTokens = useAllowedTokens();
 
   useEffect(() => {
     setServices([]);
@@ -35,6 +38,7 @@ const useFilteredServices = (
 
         response = await getFilteredServicesByKeywords(
           serviceStatus,
+          allowedTokens,
           buyerId,
           sellerId,
           numberPerPage,
@@ -42,6 +46,7 @@ const useFilteredServices = (
           searchQuery,
           platformId,
           chainId,
+          filters
         );
 
         const newServices = response?.data?.services;
@@ -51,26 +56,25 @@ const useFilteredServices = (
         } else {
           setServices([...services, ...newServices]);
         }
-        if (numberPerPage && newServices.length < numberPerPage) {
+        if (newServices && numberPerPage && newServices.length < numberPerPage) {
           setHasMoreData(false);
         } else {
           setHasMoreData(true);
         }
       } catch (err: any) {
-        // eslint-disable-next-line no-console
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [numberPerPage, offset, searchQuery]);
+  }, [numberPerPage, offset, searchQuery, filters]);
 
   const loadMore = () => {
     numberPerPage ? setOffset(offset + numberPerPage) : '';
   };
 
-  return { hasMoreData: hasMoreData, services, loading, loadMore };
+  return { hasMoreData, services, loading, loadMore };
 };
 
 export default useFilteredServices;

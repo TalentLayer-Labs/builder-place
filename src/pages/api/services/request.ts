@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { ServiceStatusEnum } from '../../../types';
+import { IToken, ServiceStatusEnum } from '../../../types';
 
 export const getFilteredServicesByKeywords = async (
   serviceStatus?: ServiceStatusEnum,
+  allowedTokens?: IToken[],
   buyerId?: string,
   sellerId?: string,
   numberPerPage?: number,
@@ -10,11 +11,19 @@ export const getFilteredServicesByKeywords = async (
   searchQuery?: string,
   platformId?: string,
   chainId?: number,
+  filters?: {
+    selectedToken?: string;
+    minRate?: string;
+    maxRate?: string;
+    selectedRatings?: string[];
+    platformId?: string;
+  }
 ): Promise<any> => {
-  try {
-    return await axios.get('/api/services', {
+  try {  
+    return await axios.get('/api/services/filtered', {
       params: {
         serviceStatus,
+        allowedTokens: JSON.stringify(allowedTokens),
         buyerId,
         sellerId,
         numberPerPage,
@@ -22,6 +31,8 @@ export const getFilteredServicesByKeywords = async (
         searchQuery,
         platformId,
         chainId,
+        ...filters,
+        selectedRatings: JSON.stringify(filters?.selectedRatings),
       },
     });
   } catch (err) {
