@@ -32,6 +32,19 @@ export const getUserBy = async (filters: UsersFilters): Promise<User> => {
   return users[0];
 };
 
+// export const getPlatformBy = async (filters: PlatformsFilters): Promise<BuilderPlace> => {
+//   console.log(`*DEBUG* getPlatformBy fetch!`);
+//
+//   const response = await axios.get('/api/platforms', {
+//     params: filters,
+//   });
+//
+//   const builderPlaces: BuilderPlace[] = response.data.platforms;
+//
+//   console.log(`*DEBUG* getPlatformBy results!`, builderPlaces);
+//   return builderPlaces[0];
+// };
+
 export const getUsersNotificationData = async (
   builderPlaceId: string,
   ownerId: string,

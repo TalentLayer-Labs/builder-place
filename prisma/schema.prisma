@@ -43,6 +43,9 @@ model User {
   isEmailVerified          Boolean        @default(false)
   about                    String?
   picture                  String?
+  video                    String?
+  title                    String?
+  role                     String?
   counterStartDate         Int            @default(0)
   weeklyTransactionCounter Int            @default(0)
   workerProfile            WorkerProfile? @relation("WorkerProfile")

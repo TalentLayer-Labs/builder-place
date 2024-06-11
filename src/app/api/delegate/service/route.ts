@@ -94,7 +94,14 @@ export async function POST(req: Request) {
         cid: cid,
       });
 
-      console.log('Creating service with args', userId, platformId, cid, signature);
+      console.log(
+        'Creating service with args',
+        userId,
+        platformId,
+        cid,
+        signature,
+        servicePostingFee,
+      );
 
       transaction = await walletClient.writeContract({
         address: config.contracts.serviceRegistry,
